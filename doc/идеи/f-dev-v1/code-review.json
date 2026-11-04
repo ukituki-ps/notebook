@@ -1,0 +1,78 @@
+{
+  "schema": "orc.code-review/v1",
+  "scope": "adversarial code review of path-10 notebook DELETE feature (ff9b8e1..54a6efa)",
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  },
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e5a6730a7ffe1732KHTiLiyLjW",
+  "reviewer_session_id": "ses_e59dfd2d8ffeXXJvwENEvyGxlu",
+  "findings": [
+    {
+      "id": "RT-1",
+      "severity": "medium",
+      "status": "confirmed",
+      "verdict": "confirmed",
+      "title": "Doc oracles reference non-existent test names; documented acceptance commands pass vacuously",
+      "file_line": "doc/идеи/f-dev-v1/spec/contract-matrix.md:3",
+      "evidence": "T0001/brief.md and spec/contract-matrix.md name TestDeleteExisting/TestDeleteMissing/TestDeleteInvalidID/TestListAfterDelete/TestAddNote; go test -list shows only TestNotesLifecycle and TestDeleteNote. The documented run passes with '[no tests to run]'."
+    },
+    {
+      "id": "RT-2",
+      "severity": "low",
+      "status": "confirmed",
+      "verdict": "confirmed",
+      "title": "405 and negative-id paths on /api/notes/{id} untested in-repo; fault-verdicts overclaims test coverage",
+      "file_line": "main.go:83",
+      "evidence": "Behavior correct (probe: GET/POST/PUT/PATCH -> 405; DELETE -1 -> 404; overflow -> 400), but no in-repo test asserts 405/negative-id while fault-verdicts SEC-WRITE-VERB-REJECT says covered."
+    },
+    {
+      "id": "RT-3",
+      "severity": "low",
+      "status": "documented",
+      "verdict": "refuted",
+      "title": "Trailing-slash /api/notes/ behavior changed 404->405 on an undocumented edge",
+      "file_line": "main.go:83",
+      "evidence": "Base 404, head 405/400 on /api/notes/; documented contract /api/notes is unchanged."
+    },
+    {
+      "id": "RT-4",
+      "severity": "high",
+      "status": "refuted",
+      "verdict": "refuted",
+      "title": "Suspected Store.Delete splice aliasing/race — checked and clean",
+      "file_line": "main.go:44",
+      "evidence": "go test -race ./... ok; 100 adds + concurrent deletes/list -> remaining 50 ids 51..100, next id 101; mutex-guarded, List copies."
+    },
+    {
+      "id": "RT-5",
+      "severity": "medium",
+      "status": "refuted",
+      "verdict": "refuted",
+      "title": "Suspected audit canary ineffectiveness — checked and effective",
+      "file_line": "path1.project.json:31",
+      "evidence": "clean TestDeleteNote ok; after sed 204->200 the test FAILs (exit 1); canary detects the planted regression."
+    },
+    {
+      "id": "RT-6",
+      "severity": "high",
+      "status": "refuted",
+      "verdict": "refuted",
+      "title": "Suspected status-code/error-envelope drift vs spec — conformant",
+      "file_line": "main.go:88",
+      "evidence": "204/400 {'error':'invalid id'}/404 {'error':'not found'}, no panic; generic errors; List/Add unchanged."
+    }
+  ],
+  "proofs": [
+    "go build ./... -> exit 0",
+    "go vet ./... -> exit 0",
+    "go test -count=1 -v ./... -> TestNotesLifecycle PASS, TestDeleteNote PASS",
+    "go test -count=1 -race ./... -> ok 1.006s",
+    "go test -count=1 -run TestDeleteNote ./... -> PASS",
+    "canary: clean PASS; seeded 204->200 -> FAIL exit 1",
+    "probe: GET/POST/PUT/PATCH /api/notes/1 -> 405; DELETE -1 -> 404; overflow -> 400"
+  ],
+  "summary": "Feature is functionally correct and spec-conformant; Store.Delete is race-clean with monotonic ids; the audit canary detects its planted 204->200 regression. Confirmed issues are documentation/test-process (RT-1 medium, RT-2 low); high-severity suspicions were checked and refuted (RT-4, RT-6). No code changes required for s22b; recommend fixing doc oracles and adding 405/negative-id assertions."
+}
