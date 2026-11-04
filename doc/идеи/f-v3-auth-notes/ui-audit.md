@@ -2,7 +2,7 @@
 
 - **Platform:** web
 - **Stand:** `https://test2.nexus.ukituki.tech`
-- **Preview ref / stand.sha:** `80478e4c08c5e0ba9c2d550289c58f581b738b5d` (`80478e4`)
+- **Preview ref / stand.sha:** `4fbfbb15708194e1fb2545bce354f955b462d935` (`4fbfbb1`; UI/API идентичны `80478e4`, commit добавляет только actualized UI-граф)
 - **Audit scope:** чек-лист A–L, фактические `web/index.html`, `web/app.js`, `web/app.css`, actualized `arch/structure/ui-pages/*.yaml`, `web/e2e/auth-notes.spec.js`, `spec/core.md`.
 - **Evidence:** `doc/идеи/f-v3-auth-notes/scenario-evidence.json` + screenshots `E2E-1.png … E2E-7.png` (per-run артефакты execution root, в git не коммитятся).
 
@@ -53,10 +53,10 @@
 `stand.sha` в `ui-audit.json` равен ровно:
 
 ```
-80478e4c08c5e0ba9c2d550289c58f581b738b5d
+4fbfbb15708194e1fb2545bce354f955b462d935
 ```
 
-Это preview-deploy ref (`80478e4`), на котором выполнялся s20c E2E-прогон.
+Это preview-deploy ref (`4fbfbb1`), на котором выполняется E2E-прогон; UI/API идентичны `80478e4`, commit меняет только actualized UI-граф.
 
 ## Evidence
 
