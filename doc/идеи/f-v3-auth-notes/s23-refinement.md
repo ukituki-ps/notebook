@@ -34,6 +34,13 @@
 prod/main/stage/canary не затрагивались; s45/s46 не выполнялись; E1320 не тронут;
 fake evidence/self-sign/force/skip/waiver не применялись.
 
-## Native runner version alignment
+## Native runner version alignment (1.64.1)
 
-- `@playwright/test` пиннут на `1.53.0` (версия образа `mcr.microsoft.com/playwright:v1.53.0-noble`), `playwright.config.js` использует `/ms-playwright` при наличии — иначе npx пытался доставить 1.64.1 и падал без TTY.
+- `@playwright/test` — **1.64.1** (lock закоммичен). Версия 1.53.0 непригодна для
+  этого UI: после `fill()` textarea остаётся пустым (`value=""`, Add disabled),
+  E2E-3/4/5/6 падают; на 1.64.1 — 7/7 pass.
+- `playwright.config.js` использует `/ms-playwright` образа при наличии,
+  иначе host-кэш (host-local).
+- `path1.project.json` `e2e.command`:
+  `npm ci --no-audit --no-fund && npx --no-install playwright test`
+  (host-local runner; системные Chromium deps на pr01 установлены).

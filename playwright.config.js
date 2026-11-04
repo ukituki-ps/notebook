@@ -3,8 +3,8 @@
 //   E2E_BASE_URL=http://127.0.0.1:9082 npx playwright test
 "use strict";
 
-// Playwright Docker image (mcr.microsoft.com/playwright:v1.53.0-noble) ships
-// browsers under /ms-playwright. Prefer them when present (CI/stand-runner
+// Playwright 1.64.1. Docker image (mcr.microsoft.com/playwright:v1.64.1-noble)
+// ships browsers under /ms-playwright. Prefer them when present (CI/stand-runner
 // container); otherwise fall back to the local cache (host/dev).
 if (require("fs").existsSync("/ms-playwright")) {
   process.env.PLAYWRIGHT_BROWSERS_PATH = "/ms-playwright";
