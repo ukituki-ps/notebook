@@ -58,7 +58,9 @@
     "oracles": {
       "CONTRACT-STATUS-CODE": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed' ./...",
       "SEC-ERROR-LEAK": "go test -count=1 -run TestDeleteErrorEnvelope ./...",
-      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestNotesMethodNotAllowed ./..."
+      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestNotesMethodNotAllowed ./...",
+      "SEC-AUTH-REQUIRED": "go test -count=1 -run 'TestAuthRequired|TestLoginInvalid' ./...",
+      "SEC-USER-ISOLATION": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
     }
   }
 }
