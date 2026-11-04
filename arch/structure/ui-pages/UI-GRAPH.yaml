@@ -1,0 +1,186 @@
+# UI-граф (actualized) — индекс f-v3-auth-notes
+# Источник: s21.graph_actualize (E4312, from-code) по фактическому web/index.html, web/app.js, web/app.css
+# Base: s04.graph_builder_design (planned) — актуализировано по коду.
+schema: ui-graph/v1
+feature_id: f-v3-auth-notes
+status: actualized
+platform: web
+actualized_from:
+  branch: dev/f-v3-auth-notes
+  commit: 80478e4
+source_roots:
+  - web
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+pages:
+  - id: login
+    page_id: ui-page-login
+    route: /login
+    screen_attr: login
+    file: arch/structure/ui-pages/login.yaml
+    source_files:
+      - web/index.html
+      - web/app.js
+      - web/app.css
+    component_ids:
+      - screen-login
+      - login-card
+      - login-form
+      - login-username
+      - login-password
+      - login-submit
+      - login-error
+      - register-link
+    testids:
+      - login-card
+      - login-form
+      - login-username
+      - login-password
+      - login-submit
+      - login-error
+      - register-link
+  - id: register
+    page_id: ui-page-register
+    route: /register
+    screen_attr: register
+    file: arch/structure/ui-pages/register.yaml
+    source_files:
+      - web/index.html
+      - web/app.js
+      - web/app.css
+    component_ids:
+      - screen-register
+      - register-card
+      - register-form
+      - register-username
+      - register-password
+      - register-confirm
+      - register-submit
+      - register-error
+      - login-link
+    testids:
+      - register-card
+      - register-form
+      - register-username
+      - register-password
+      - register-confirm
+      - register-submit
+      - register-error
+      - login-link
+  - id: notes
+    page_id: ui-page-notes
+    route: /notes
+    screen_attr: notes
+    file: arch/structure/ui-pages/notes.yaml
+    source_files:
+      - web/index.html
+      - web/app.js
+      - web/app.css
+    component_ids:
+      - screen-notes
+      - notes-header
+      - user-name
+      - logout
+      - note-form
+      - note-input
+      - add-note
+      - notes-error
+      - notes-loading
+      - notes-empty
+      - notes-list
+      - note-item
+      - delete-note
+    testids:
+      - notes-header
+      - user-name
+      - logout
+      - note-form
+      - note-input
+      - add-note
+      - notes-error
+      - notes-loading
+      - notes-empty
+      - notes-list
+      - note-item
+      - delete-note
+edges:
+  - from: login
+    to: notes
+    kind: navigation
+    trigger: "login POST 200 -> localStorage notebook.token/user -> location.replace('/notes')"
+  - from: register
+    to: login
+    kind: navigation
+    trigger: "register POST 201 -> sessionStorage notebook.prefill=username -> location.replace('/login')"
+  - from: notes
+    to: login
+    kind: navigation
+    trigger: "401 на GET/POST/DELETE, отсутствие notebook.token, или click logout -> очистка ключей + location.replace('/login')"
+  - from: notes
+    to: notes
+    kind: self-update
+    trigger: "POST 201 append note-item; DELETE 204 remove note-item (+ notes-empty при опустении)"
+  - from: login
+    to: register
+    kind: navigation
+    trigger: "click [data-testid=register-link] -> location.replace('/register')"
+  - from: register
+    to: register
+    kind: self-update
+    trigger: "local mismatch / 400 / 409 -> inline-ошибка, форма сохраняется"
+components:
+  - id: header
+    pages: [notes]
+    selectors: ["[data-testid=notes-header]"]
+  - id: form
+    pages: [login, register, notes]
+    selectors:
+      - "[data-testid=login-form]"
+      - "[data-testid=register-form]"
+      - "[data-testid=note-form]"
+  - id: list
+    pages: [notes]
+    selectors: ["[data-testid=notes-list]", "[data-testid=note-item]"]
+  - id: empty
+    pages: [notes]
+    selectors: ["[data-testid=notes-empty]"]
+  - id: loading
+    pages: [notes]
+    selectors: ["[data-testid=notes-loading]"]
+  - id: error
+    pages: [login, register, notes]
+    selectors:
+      - "[data-testid=login-error]"
+      - "[data-testid=register-error]"
+      - "[data-testid=notes-error]"
+evidence_refs:
+  - id: E2E-1
+    page: register
+    title: "register: valid account redirects to /login with username prefilled"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-2
+    page: login
+    title: "login and token: 200 stores notebook.token and opens /notes"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-3
+    page: notes
+    title: "create note: Add renders #id text in notes-list"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-4
+    page: notes
+    title: "reload: note stays visible after page.reload()"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-5
+    page: notes
+    title: "delete note: 204 removes the row and empty state appears"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-6
+    page: notes
+    title: "isolation: user B cannot see or delete user A's note"
+    file: web/e2e/auth-notes.spec.js
+  - id: E2E-7
+    page: notes
+    title: "unauthenticated GET /api/notes returns 401 with WWW-Authenticate"
+    file: web/e2e/auth-notes.spec.js

@@ -1,27 +1,35 @@
-# UI-граф (planned) — страница Notes
-# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
-# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+# UI-граф (actualized) — страница Notes
+# Источник: s21.graph_actualize (E4312, from-code) по web/index.html, web/app.js, web/app.css
+# Base: s04.graph_builder_design (planned) — обновлено по фактическому коду, не по намерению.
 id: ui-page-notes
 title: Notes
-status: planned
+status: actualized
 platform: web
 route: /notes
+screen: notes
+actualized_from:
+  branch: dev/f-v3-auth-notes
+  commit: 80478e4
 source_files:
   - web/index.html
   - web/app.js
   - web/app.css
 components:
+  - id: screen-notes
+    kind: section
+    label: Экран заметок
+    selector: "[data-screen=notes]"
   - id: notes-header
     kind: header
-    label: Шапка (Notebook, username, Logout)
+    label: "Шапка (Notebook, username, Logout)"
     selector: "[data-testid=notes-header]"
   - id: user-name
     kind: text
-    label: Отображаемое имя пользователя
+    label: Отображаемое имя из localStorage[notebook.user]
     selector: "[data-testid=user-name]"
   - id: logout
     kind: button
-    label: Logout (клиентский, UI-only)
+    label: Logout (клиентский, без API)
     selector: "[data-testid=logout]"
   - id: note-form
     kind: form
@@ -37,103 +45,142 @@ components:
     selector: "[data-testid=add-note]"
   - id: notes-error
     kind: alert
-    label: Ошибка добавления/сессии
+    label: Ошибка загрузки/добавления/удаления/сессии
     selector: "[data-testid=notes-error]"
+  - id: notes-loading
+    kind: text
+    label: "«Загрузка...»"
+    selector: "[data-testid=notes-loading]"
+  - id: notes-empty
+    kind: text
+    label: "«Пока нет заметок. Добавьте первую выше.»"
+    selector: "[data-testid=notes-empty]"
   - id: notes-list
     kind: list
-    label: Список заметок
+    label: Список заметок (role=list)
     selector: "[data-testid=notes-list]"
   - id: note-item
     kind: list-item
-    label: Заметка (#id + text)
+    label: "Заметка: #<id> <text>, data-note-id=<id>, role=listitem"
     selector: "[data-testid=note-item]"
   - id: delete-note
     kind: button
-    label: Delete
+    label: "Delete (aria-label=«Удалить заметку #<id>»)"
     selector: "[data-testid=delete-note]"
-  - id: notes-empty
-    kind: text
-    label: Empty state
-    selector: "[data-testid=notes-empty]"
-  - id: notes-loading
-    kind: text
-    label: Загрузка...
-    selector: "[data-testid=notes-loading]"
 states:
-  - loading
-  - empty
-  - list
-  - submitting-add
-  - error-400-add
-  - error-401
-  - error-404-delete
-  - delete-pending
-  - logout-local
+  - id: loading
+    detail: "нет валидного GET-ответа: notes-loading видим, notes-list/notes-empty скрыты, note-form disabled (note-input.disabled=true, add-note.disabled=true)"
+  - id: empty
+    detail: "GET 200 [] (или удалена последняя): notes-empty видим, notes-list скрыт"
+  - id: list
+    detail: "GET 200 [..]: notes-list видим, note-item на каждую заметку из ответа (без фантомных)"
+  - id: error
+    detail: "notes-error видим: GET !=200/сеть, POST 400/прочее, DELETE 400/404/прочее"
+  - id: unauthorized
+    detail: "401 на GET/POST/DELETE или нет notebook.token: clear notebook.token/user, notes-error «Сессия истекла...», location.replace('/login') через 200ms"
+  - id: disabled
+    detail: "loading/adding: note-input disabled, add-note disabled; add-note также disabled при пустом/whitespace text; delete-note disabled во время pending"
+  - id: delete-pending
+    detail: "item.dataset.pending=1 + класс .pending (opacity .5), delete-note disabled; повторный клик игнорируется"
 selectors:
   - testid: notes-header
     purpose: шапка страницы
   - testid: user-name
     purpose: имя из localStorage[notebook.user]
   - testid: logout
-    purpose: клиентский выход (без API)
+    purpose: клиентский выход (удаление ключей -> /login, без API)
   - testid: note-form
     purpose: форма добавления заметки
   - testid: note-input
-    purpose: textarea ввода текста
+    purpose: textarea текста (Enter — submit, Shift+Enter — перенос)
   - testid: add-note
-    purpose: кнопка добавления
+    purpose: кнопка добавления («Add»/«Adding...»)
   - testid: notes-error
-    purpose: inline-ошибка/баннер 401
-  - testid: notes-list
-    purpose: контейнер списка
-  - testid: note-item
-    purpose: строка заметки (с data-note-id)
-  - testid: delete-note
-    purpose: удаление своей заметки
+    purpose: inline-ошибка/баннер 401 role=alert
+  - testid: notes-loading
+    purpose: состояние загрузки GET
   - testid: notes-empty
     purpose: пустой список
-  - testid: notes-loading
-    purpose: состояние загрузки
+  - testid: notes-list
+    purpose: контейнер списка (role=list)
+  - testid: note-item
+    purpose: строка заметки (шаблон #note-item-template, data-note-id)
+  - testid: delete-note
+    purpose: удаление своей заметки (в шаблоне строки)
 api_calls:
   - method: GET
     path: /api/notes
+    auth: "Authorization: Bearer <notebook.token>"
     status: "200, 401"
+    responses:
+      "200": '[{"id":N,"text":"..."}] ([] при пустом) -> renderNotes -> list|empty'
+      "401": '{"error":"unauthorized"} -> handleUnauthorized -> /login'
   - method: POST
     path: /api/notes
+    auth: "Authorization: Bearer <notebook.token>"
+    request_body: '{"text":"<raw>"}'
     status: "201, 400, 401"
+    responses:
+      "201": '{"id":N,"text":"..."} -> append makeNote, поле очищено, фокус в textarea'
+      "400": '{"error":"text required"} -> «Текст заметки не может быть пустым»'
+      "401": '{"error":"unauthorized"} -> handleUnauthorized -> /login'
   - method: DELETE
     path: /api/notes/{id}
+    auth: "Authorization: Bearer <notebook.token>"
     status: "204, 400, 401, 404"
+    responses:
+      "204": "без тела -> строка удалена из DOM; пусто -> notes-empty"
+      "400": '{"error":"invalid id"} -> «Некорректный запрос», строка остаётся'
+      "401": '{"error":"unauthorized"} -> handleUnauthorized -> /login'
+      "404": '{"error":"not found"} -> «Заметка не найдена» + повторный GET /api/notes'
 transitions:
+  - from: /login
+    to: /notes
+    trigger: "login 200 -> notebook.token/notebook.user -> location.replace('/notes') (E2E-2)"
   - from: /notes
     to: /login
-    trigger: "нет токена в localStorage[notebook.token] -> location.replace без запроса"
+    trigger: "открытие/reload без notebook.token -> location.replace('/login') без запроса"
+  - from: /notes
+    to: /login
+    trigger: "любой 401 (GET/POST/DELETE) -> очистка notebook.token/notebook.user, баннер «Сессия истекла...», location.replace('/login')"
+  - from: /notes
+    to: /login
+    trigger: "click [data-testid=logout] -> удаление notebook.token/notebook.user -> location.replace('/login') (API не вызывается)"
   - from: /notes
     to: /notes
-    trigger: "reload: токен есть -> GET /api/notes -> list|empty"
-  - from: /notes
-    to: /login
-    trigger: "любой ответ 401 -> очистка notebook.token/notebook.user -> location.replace"
-  - from: /notes
-    to: /login
-    trigger: "click [data-testid=logout] -> удалить токен (UI-only) -> location.replace"
+    trigger: "POST 201 -> note-item добавлен в конец notes-list (E2E-3); reload -> GET -> list (E2E-4)"
   - from: /notes
     to: /notes
-    trigger: "POST /api/notes 201 -> строка добавлена; DELETE 204 -> строка убрана"
+    trigger: "DELETE 204 -> note-item удалён; при 0 элементов notes-empty (E2E-5); DELETE 404 -> ошибка + повторный GET"
+  - from: /notes
+    to: /notes
+    trigger: "GET 200: только свои заметки пользователя (E2E-6); GET без bearer -> 401 (E2E-7)"
 a11y:
   - element: note-input
     role: textbox
-    label: Текст заметки (Enter — отправка, Shift+Enter — перенос)
+    label: "видимый <label for=note-input> «Текст заметки» (Enter — submit, Shift+Enter — перенос)"
   - element: add-note
     role: button
-    label: Add
+    label: "accessible name «Add»/«Adding...» (видимый текст)"
   - element: delete-note
     role: button
-    label: Delete (aria-label с id заметки)
+    label: "видимый текст «Delete» + aria-label=«Удалить заметку #<id>»"
   - element: notes-list
     role: list
-    label: Список заметок (элементы role=listitem)
+    label: "role=list; элементы role=listitem"
   - element: notes-error
     role: alert
-    label: aria-live=polite, одна видимая ошибка
-evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#3-notes-notes"
+    label: "role=alert + aria-live=polite, одновременно одна видимая ошибка"
+  - element: aria-invalid
+    detail: "notes не использует markFieldInvalid — aria-invalid на этой странице не выставляется"
+  - element: focus
+    label: ":focus-visible outline (app.css), min-height 44px, touch-target >= 44px"
+  - element: focus-management
+    detail: "после POST 201 фокус в note-input; при пустом text — фокус в note-input"
+evidence:
+  - E2E-2
+  - E2E-3
+  - E2E-4
+  - E2E-5
+  - E2E-6
+  - E2E-7

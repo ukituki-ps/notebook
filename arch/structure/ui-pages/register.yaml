@@ -1,41 +1,49 @@
-# UI-граф (planned) — страница Register
-# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
-# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+# UI-граф (actualized) — страница Register
+# Источник: s21.graph_actualize (E4312, from-code) по web/index.html, web/app.js, web/app.css
+# Base: s04.graph_builder_design (planned) — обновлено по фактическому коду, не по намерению.
 id: ui-page-register
 title: Register
-status: planned
+status: actualized
 platform: web
 route: /register
+screen: register
+actualized_from:
+  branch: dev/f-v3-auth-notes
+  commit: 80478e4
 source_files:
   - web/index.html
   - web/app.js
   - web/app.css
 components:
+  - id: screen-register
+    kind: section
+    label: Экран регистрации
+    selector: "[data-screen=register]"
   - id: register-card
     kind: container
-    label: Регистрация
+    label: Карточка «Регистрация»
     selector: "[data-testid=register-card]"
   - id: register-form
     kind: form
     label: Форма регистрации
     selector: "[data-testid=register-form]"
-  - id: username
+  - id: register-username
     kind: input
-    label: Username
+    label: "Username (3-32: a-z A-Z 0-9 _ -)"
     selector: "[data-testid=register-username]"
-  - id: password
+  - id: register-password
     kind: input
-    label: Password
+    label: "Password (>= 8 символов)"
     selector: "[data-testid=register-password]"
-  - id: confirm
+  - id: register-confirm
     kind: input
     label: Confirm password
     selector: "[data-testid=register-confirm]"
-  - id: submit
+  - id: register-submit
     kind: button
     label: Register
     selector: "[data-testid=register-submit]"
-  - id: error
+  - id: register-error
     kind: alert
     label: Ошибка регистрации
     selector: "[data-testid=register-error]"
@@ -44,57 +52,76 @@ components:
     label: Login
     selector: "[data-testid=login-link]"
 states:
-  - idle
-  - submitting
-  - error-local-mismatch
-  - error-400
-  - error-409
-  - success-201
+  - id: idle
+    detail: форма активна, ошибок нет
+  - id: loading
+    detail: "submitting: setFormBusy(registerForm, registerSubmit, true) — поля/кнопка disabled, текст кнопки «Registering...»"
+  - id: error
+    detail: "register-error видим (local mismatch / 400 / 409 / сеть), одна видимая ошибка"
+  - id: unauthorized
+    detail: "не применимо: /api/register не требует auth; 409 — конфликт username, не 401"
+  - id: disabled
+    detail: "во время запроса поля и submit disabled; при 400/409 снова enabled"
+  - id: success
+    detail: "201: sessionStorage[notebook.prefill]=username, location.replace('/login') (сразу, без промежуточного success-сообщения и без задержки)"
+  - id: invalid
+    detail: "markFieldInvalid: aria-invalid=true + .invalid на register-username/password/confirm"
 selectors:
   - testid: register-card
     purpose: корневая карточка страницы
   - testid: register-form
-    purpose: форма регистрации (submit по Enter)
+    purpose: форма регистрации (submit по Enter/кнопке)
   - testid: register-username
-    purpose: поле username
+    purpose: поле username (type=text, autocomplete=username)
   - testid: register-password
-    purpose: поле password
+    purpose: поле password (type=password, autocomplete=new-password)
   - testid: register-confirm
     purpose: поле подтверждения пароля (только клиентская проверка)
   - testid: register-submit
-    purpose: кнопка регистрации
+    purpose: кнопка Register (type=submit)
   - testid: register-error
-    purpose: inline-ошибка role=alert
+    purpose: inline-ошибка role=alert aria-live=polite, hidden при пустом
   - testid: login-link
-    purpose: переход на /login
+    purpose: переход на /login (wireLink -> location.replace)
 api_calls:
   - method: POST
     path: /api/register
+    request_body: '{"username":"<trim>","password":"<raw>"}'
     status: "201, 400, 409"
+    responses:
+      "201": '{"id":N,"username":"..."} -> sessionStorage[notebook.prefill]=username, location.replace("/login")'
+      "400": '{"error":"username and password required|invalid username|invalid password|invalid request body"} -> текст по коду + aria-invalid на поле'
+      "409": '{"error":"username taken"} -> «Username уже занят», фокус в Username'
+    note: "confirm не отправляется на сервер (проверяется локально); иные статусы/сеть -> generic ошибка"
 transitions:
   - from: /register
     to: /login
-    trigger: "submit -> 201: username предзаполнен, location.replace"
+    trigger: "submit -> 201: notebook.prefill=username, location.replace('/login') (E2E-1)"
   - from: /register
     to: /register
-    trigger: "local mismatch / 400 / 409: inline-ошибка, форма не очищается"
+    trigger: "local mismatch (Passwords do not match) / 400 / 409: inline-ошибка, форма не очищается"
   - from: /register
     to: /login
-    trigger: "click [data-testid=login-link]"
+    trigger: "click [data-testid=login-link] -> location.replace('/login')"
 a11y:
   - element: register-username
     role: textbox
-    label: "Username (3-32: a-z A-Z 0-9 _ -)"
+    label: "видимый <label for=register-username> «Username (3-32: a-z A-Z 0-9 _ -)»"
   - element: register-password
     role: textbox
-    label: Password (>= 8 символов)
+    label: "видимый <label for=register-password> «Password (>= 8 символов)», type=password"
   - element: register-confirm
     role: textbox
-    label: Confirm password
+    label: "видимый <label for=register-confirm> «Confirm password», type=password"
   - element: register-submit
     role: button
-    label: Register
+    label: "accessible name «Register» (видимый текст)"
   - element: register-error
     role: alert
-    label: aria-live=polite, одна видимая ошибка
-evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#2-register-register"
+    label: "role=alert + aria-live=polite, одновременно одна видимая ошибка"
+  - element: aria-invalid
+    detail: "markFieldInvalid выставляет aria-invalid=true и класс .invalid; снимает при новом submit"
+  - element: focus
+    label: ":focus-visible outline (app.css), min-height 44px"
+evidence:
+  - E2E-1

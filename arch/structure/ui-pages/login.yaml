@@ -1,37 +1,45 @@
-# UI-граф (planned) — страница Login
-# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
-# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+# UI-граф (actualized) — страница Login
+# Источник: s21.graph_actualize (E4312, from-code) по web/index.html, web/app.js, web/app.css
+# Base: s04.graph_builder_design (planned) — обновлено по фактическому коду, не по намерению.
 id: ui-page-login
 title: Login
-status: planned
+status: actualized
 platform: web
 route: /login
+screen: login
+actualized_from:
+  branch: dev/f-v3-auth-notes
+  commit: 80478e4
 source_files:
   - web/index.html
   - web/app.js
   - web/app.css
 components:
+  - id: screen-login
+    kind: section
+    label: Экран входа
+    selector: "[data-screen=login]"
   - id: login-card
     kind: container
-    label: Вход
+    label: Карточка «Вход»
     selector: "[data-testid=login-card]"
   - id: login-form
     kind: form
     label: Форма входа
     selector: "[data-testid=login-form]"
-  - id: username
+  - id: login-username
     kind: input
     label: Username
     selector: "[data-testid=login-username]"
-  - id: password
+  - id: login-password
     kind: input
     label: Password
     selector: "[data-testid=login-password]"
-  - id: submit
+  - id: login-submit
     kind: button
     label: Login
     selector: "[data-testid=login-submit]"
-  - id: error
+  - id: login-error
     kind: alert
     label: Ошибка входа
     selector: "[data-testid=login-error]"
@@ -40,51 +48,73 @@ components:
     label: Register
     selector: "[data-testid=register-link]"
 states:
-  - idle
-  - submitting
-  - error-400
-  - error-401
-  - success-200
+  - id: idle
+    detail: форма активна, ошибок нет
+  - id: loading
+    detail: "submitting: setFormBusy(form, button, true) — все input/button disabled, текст кнопки «Logging in...»"
+  - id: error
+    detail: "login-error видим (400/401/сеть/непредвиденный статус), одна видимая ошибка"
+  - id: unauthorized
+    detail: "401: «Неверный username или пароль», login-password очищается, фокус в Password"
+  - id: disabled
+    detail: "во время запроса поля и submit disabled; после ответа (кроме success) снова enabled"
+  - id: success
+    detail: "200 + data.token: token/user в localStorage, location.replace('/notes')"
 selectors:
   - testid: login-card
     purpose: корневая карточка страницы
   - testid: login-form
-    purpose: форма входа (submit по Enter)
+    purpose: форма входа (submit по Enter/кнопке)
   - testid: login-username
-    purpose: поле username
+    purpose: поле username (type=text, autocomplete=username)
   - testid: login-password
-    purpose: поле password
+    purpose: поле password (type=password, autocomplete=current-password)
   - testid: login-submit
-    purpose: кнопка входа
+    purpose: кнопка Login (type=submit)
   - testid: login-error
-    purpose: inline-ошибка role=alert
+    purpose: inline-ошибка role=alert aria-live=polite, hidden при пустом
   - testid: register-link
-    purpose: переход на /register
+    purpose: переход на /register (wireLink -> location.replace)
 api_calls:
   - method: POST
     path: /api/login
+    request_body: '{"username":"<trim>","password":"<raw>"}'
     status: "200, 400, 401"
+    responses:
+      "200": '{"token":"<opaque 43 base64url>"} -> localStorage[notebook.token], localStorage[notebook.user]=username'
+      "400": '{"error":"..."} -> «Username и password обязательны»'
+      "401": '{"error":"unauthorized"} + WWW-Authenticate: Bearer -> «Неверный username или пароль»'
+    note: "иные статусы/сеть -> generic «Не удалось войти...» / «Ошибка сети...»; 405 отдельно не обрабатывается"
 transitions:
   - from: /login
     to: /notes
-    trigger: "submit -> 200: token в localStorage[notebook.token], location.replace"
+    trigger: "submit -> 200: запись notebook.token/notebook.user, location.replace('/notes')"
   - from: /login
     to: /login
-    trigger: "submit -> 400/401: inline-ошибка, остаёмся на странице"
+    trigger: "submit -> 400/401/прочее: inline-ошибка, остаёмся на странице (пароль очищается только на 401)"
+  - from: /register
+    to: /login
+    trigger: "sessionStorage[notebook.prefill] задан: username предзаполнен, ключ удалён, фокус в Password (E2E-1)"
   - from: /login
     to: /register
-    trigger: "click [data-testid=register-link]"
+    trigger: "click [data-testid=register-link] -> location.replace('/register')"
 a11y:
   - element: login-username
     role: textbox
-    label: Username
+    label: "видимый <label for=login-username> «Username»"
   - element: login-password
     role: textbox
-    label: Password
+    label: "видимый <label for=login-password> «Password», type=password"
   - element: login-submit
     role: button
-    label: Login
+    label: "accessible name «Login» (видимый текст)"
   - element: login-error
     role: alert
-    label: aria-live=polite, одна видимая ошибка
-evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#1-login-login"
+    label: "role=alert + aria-live=polite, одновременно одна видимая ошибка"
+  - element: focus
+    label: ":focus-visible outline (app.css), min-height 44px у input/button"
+  - element: aria-invalid
+    detail: "login не вызывает markFieldInvalid — aria-invalid на этой странице не выставляется (в отличие от register)"
+evidence:
+  - E2E-1
+  - E2E-2
