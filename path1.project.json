@@ -44,6 +44,11 @@
   },
   "audit": {
     "mode": "app",
-    "database": false
+    "database": false,
+    "oracles": {
+      "CONTRACT-STATUS-CODE": "go test -count=1 -run TestDeleteNote ./...",
+      "SEC-ERROR-LEAK": "go test -count=1 -run TestDeleteNote ./...",
+      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestDeleteNote ./..."
+    }
   }
 }
