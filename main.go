@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -8,6 +9,12 @@ import (
 	"strings"
 	"sync"
 )
+
+// Static UI assets. Explicit patterns (not "web/") keep web/e2e and any
+// tooling files out of the binary.
+//
+//go:embed web/index.html web/app.js web/app.css
+var webFS embed.FS
 
 type Note struct {
 	ID   int    `json:"id"`
@@ -55,6 +62,62 @@ func (s *Store) Delete(id int) bool {
 
 func handler(s *Store) http.Handler {
 	mux := http.NewServeMux()
+
+	// ---- static UI (embed only; API paths are untouched) ----
+	serveAsset := func(name, contentType string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet && r.Method != http.MethodHead {
+				w.Header().Set("Allow", "GET, HEAD")
+				http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+				return
+			}
+			data, err := webFS.ReadFile(name)
+			if err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", contentType)
+			w.Header().Set("Cache-Control", "no-store")
+			w.WriteHeader(http.StatusOK)
+			if r.Method != http.MethodHead {
+				_, _ = w.Write(data)
+			}
+		}
+	}
+	serveIndex := func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			w.Header().Set("Allow", "GET, HEAD")
+			http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
+			return
+		}
+		data, err := webFS.ReadFile("web/index.html")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		w.WriteHeader(http.StatusOK)
+		if r.Method != http.MethodHead {
+			_, _ = w.Write(data)
+		}
+	}
+
+	mux.HandleFunc("/app.js", serveAsset("web/app.js", "text/javascript; charset=utf-8"))
+	mux.HandleFunc("/app.css", serveAsset("web/app.css", "text/css; charset=utf-8"))
+	for _, page := range []string{"/login", "/register", "/notes"} {
+		mux.HandleFunc(page, serveIndex)
+	}
+	// Root redirect; unknown paths must not fall through to the SPA shell.
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Cache-Control", "no-store")
+		http.Redirect(w, r, "/login", http.StatusFound)
+	})
+
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok\n"))

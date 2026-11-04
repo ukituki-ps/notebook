@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notebook</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <main class="app">
+    <!-- One visible error region for all screens (spec 6.2). -->
+    <p class="error" data-testid="error" role="alert" aria-live="polite" hidden></p>
+
+    <!-- /login -->
+    <section class="screen" data-screen="login" hidden>
+      <div class="card" data-testid="login-card">
+        <h1>Вход</h1>
+        <form data-testid="login-form" id="login-form" novalidate>
+          <label for="login-username">Username</label>
+          <input data-testid="username" id="login-username" name="username"
+                 type="text" autocomplete="username" autocapitalize="none"
+                 spellcheck="false" required>
+
+          <label for="login-password">Password</label>
+          <input data-testid="password" id="login-password" name="password"
+                 type="password" autocomplete="current-password" required>
+
+          <button data-testid="login-submit" id="login-submit" type="submit">Login</button>
+        </form>
+        <p class="alt">Нет аккаунта? <a data-testid="register-link" href="/register">Register</a></p>
+      </div>
+    </section>
+
+    <!-- /register -->
+    <section class="screen" data-screen="register" hidden>
+      <div class="card" data-testid="register-card">
+        <h1>Регистрация</h1>
+        <form data-testid="register-form" id="register-form" novalidate>
+          <label for="register-username">Username (3-32: a-z A-Z 0-9 _ -)</label>
+          <input data-testid="username" id="register-username" name="username"
+                 type="text" autocomplete="username" autocapitalize="none"
+                 spellcheck="false" required>
+
+          <label for="register-password">Password (&gt;= 8 символов)</label>
+          <input data-testid="password" id="register-password" name="password"
+                 type="password" autocomplete="new-password" required>
+
+          <label for="register-confirm">Confirm password</label>
+          <input data-testid="confirm-password" id="register-confirm" name="confirm"
+                 type="password" autocomplete="new-password" required>
+
+          <button data-testid="register-submit" id="register-submit" type="submit">Register</button>
+        </form>
+        <p class="alt">Уже есть аккаунт? <a data-testid="login-link" href="/login">Login</a></p>
+      </div>
+    </section>
+
+    <!-- /notes -->
+    <section class="screen" data-screen="notes" hidden>
+      <div class="card notes" data-testid="notes-card">
+        <header class="notes-header" data-testid="notes-header">
+          <span class="brand">Notebook</span>
+          <span class="user-name" data-testid="user-name"></span>
+          <button class="logout" data-testid="logout" id="logout" type="button">Logout</button>
+        </header>
+
+        <form class="note-form" data-testid="notes-form" id="notes-form" novalidate>
+          <label for="note-text">Текст заметки</label>
+          <textarea data-testid="note-text" id="note-text" name="text" rows="3"
+                    placeholder="Введите заметку..." required></textarea>
+          <button data-testid="add-note" id="add-note" type="submit" disabled>Add</button>
+        </form>
+
+        <p class="muted" data-testid="notes-loading" id="notes-loading">Загрузка...</p>
+        <p class="muted" data-testid="notes-empty" id="notes-empty" hidden>
+          Пока нет заметок. Добавьте первую выше.
+        </p>
+        <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list" hidden></ul>
+      </div>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #1f2328;
+  --muted: #5b6470;
+  --border: #d0d7de;
+  --accent: #1f6feb;
+  --accent-dark: #1554b8;
+  --danger: #b42318;
+  --danger-bg: #fef3f2;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 16px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid #ffbf47;
+  outline-offset: 2px;
+}
+
+form button[type="submit"] {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.alt {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+.alt a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 16px 0 0;
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.user-name {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.logout {
+  margin-left: auto;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.logout:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.note-form {
+  margin-top: 16px;
+}
+
+.notes-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.note-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.note-item.pending {
+  opacity: 0.5;
+}
+
+.note-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.delete-note {
+  flex: 0 0 auto;
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.delete-note:hover:not(:disabled) {
+  background: var(--danger-bg);
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 16px 12px 32px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  input,
+  textarea,
+  button {
+    width: 100%;
+  }
+
+  .note-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .delete-note {
+    width: 100%;
+  }
+
+  .logout {
+    margin-left: 0;
+  }
+}
