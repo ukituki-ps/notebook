@@ -63,6 +63,18 @@
     "low": 2,
     "info": 3
   },
+  "proofs": [
+    {
+      "id": "PR-5386aac82ddf",
+      "command": "go build ./... && go vet ./... && go test -count=1 ./...",
+      "result": "PASS"
+    },
+    {
+      "id": "PR-832f1391a9b9",
+      "command": "bash tools/path1-gate.sh fault-catalog && bash tools/path1-gate.sh catalog-invariants",
+      "result": "PASS"
+    }
+  ],
   "new_findings": [
     "CR-1",
     "CR-2",
