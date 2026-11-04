@@ -33,3 +33,7 @@
 
 prod/main/stage/canary не затрагивались; s45/s46 не выполнялись; E1320 не тронут;
 fake evidence/self-sign/force/skip/waiver не применялись.
+
+## Native runner version alignment
+
+- `@playwright/test` пиннут на `1.53.0` (версия образа `mcr.microsoft.com/playwright:v1.53.0-noble`), `playwright.config.js` использует `/ms-playwright` при наличии — иначе npx пытался доставить 1.64.1 и падал без TTY.
