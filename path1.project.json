@@ -41,5 +41,9 @@
   },
   "integration": {
     "command": "bash deploy/path1/e2e-preview.sh"
+  },
+  "audit": {
+    "mode": "app",
+    "database": false
   }
 }

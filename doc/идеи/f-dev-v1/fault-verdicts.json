@@ -59,7 +59,7 @@
   },
   "SEC-WRITE-VERB-REJECT": {
     "verdict": "covered",
-    "evidence": "go test ./...; неразрешённые методы → 405, DELETE write-path покрыт TestDeleteNote",
+    "evidence": "probe: GET/POST/PUT/PATCH /api/notes/1 -> 405; DELETE -1 -> 404; overflow -> 400; TestDeleteNote covers DELETE write-path; 405/negative-id not asserted in-repo (RT-2)",
     "detector_exit": 0
   },
   "UI-DATE-BOUNDARY": {
