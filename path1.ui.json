@@ -1,4 +1,4 @@
 {
-  "platform": "none",
-  "note": "Записная книга — backend-only сервис; UI-пробы не применяются"
+  "platform": "web",
+  "note": "Записная книга — web UI (login/register/notes), статика same-origin /api/*, токен в localStorage; UI-пробы применяются"
 }

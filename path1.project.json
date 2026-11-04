@@ -29,8 +29,18 @@
       "doc/идеи/*/*/{name}"
     ]
   },
+  "graph": {
+    "source_roots": [
+      "web"
+    ],
+    "artifact_globs": [
+      "arch/structure/ui-pages/*.yaml",
+      "arch/structure/ui-pages/*.yml",
+      "doc/идеи/*/UI-GRAPH.yaml"
+    ]
+  },
   "e2e": {
-    "frontend_dir": "",
+    "frontend_dir": "web",
     "command": "bash deploy/path1/e2e-preview.sh"
   },
   "deploy": {

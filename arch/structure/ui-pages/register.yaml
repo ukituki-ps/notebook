@@ -1,0 +1,100 @@
+# UI-граф (planned) — страница Register
+# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
+# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+id: ui-page-register
+title: Register
+status: planned
+platform: web
+route: /register
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+components:
+  - id: register-card
+    kind: container
+    label: Регистрация
+    selector: "[data-testid=register-card]"
+  - id: register-form
+    kind: form
+    label: Форма регистрации
+    selector: "[data-testid=register-form]"
+  - id: username
+    kind: input
+    label: Username
+    selector: "[data-testid=register-username]"
+  - id: password
+    kind: input
+    label: Password
+    selector: "[data-testid=register-password]"
+  - id: confirm
+    kind: input
+    label: Confirm password
+    selector: "[data-testid=register-confirm]"
+  - id: submit
+    kind: button
+    label: Register
+    selector: "[data-testid=register-submit]"
+  - id: error
+    kind: alert
+    label: Ошибка регистрации
+    selector: "[data-testid=register-error]"
+  - id: login-link
+    kind: link
+    label: Login
+    selector: "[data-testid=login-link]"
+states:
+  - idle
+  - submitting
+  - error-local-mismatch
+  - error-400
+  - error-409
+  - success-201
+selectors:
+  - testid: register-card
+    purpose: корневая карточка страницы
+  - testid: register-form
+    purpose: форма регистрации (submit по Enter)
+  - testid: register-username
+    purpose: поле username
+  - testid: register-password
+    purpose: поле password
+  - testid: register-confirm
+    purpose: поле подтверждения пароля (только клиентская проверка)
+  - testid: register-submit
+    purpose: кнопка регистрации
+  - testid: register-error
+    purpose: inline-ошибка role=alert
+  - testid: login-link
+    purpose: переход на /login
+api_calls:
+  - method: POST
+    path: /api/register
+    status: "201, 400, 409"
+transitions:
+  - from: /register
+    to: /login
+    trigger: "submit -> 201: username предзаполнен, location.replace"
+  - from: /register
+    to: /register
+    trigger: "local mismatch / 400 / 409: inline-ошибка, форма не очищается"
+  - from: /register
+    to: /login
+    trigger: "click [data-testid=login-link]"
+a11y:
+  - element: register-username
+    role: textbox
+    label: "Username (3-32: a-z A-Z 0-9 _ -)"
+  - element: register-password
+    role: textbox
+    label: Password (>= 8 символов)
+  - element: register-confirm
+    role: textbox
+    label: Confirm password
+  - element: register-submit
+    role: button
+    label: Register
+  - element: register-error
+    role: alert
+    label: aria-live=polite, одна видимая ошибка
+evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#2-register-register"

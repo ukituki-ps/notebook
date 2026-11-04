@@ -1,0 +1,139 @@
+# UI-граф (planned) — страница Notes
+# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
+# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+id: ui-page-notes
+title: Notes
+status: planned
+platform: web
+route: /notes
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+components:
+  - id: notes-header
+    kind: header
+    label: Шапка (Notebook, username, Logout)
+    selector: "[data-testid=notes-header]"
+  - id: user-name
+    kind: text
+    label: Отображаемое имя пользователя
+    selector: "[data-testid=user-name]"
+  - id: logout
+    kind: button
+    label: Logout (клиентский, UI-only)
+    selector: "[data-testid=logout]"
+  - id: note-form
+    kind: form
+    label: Новая заметка
+    selector: "[data-testid=note-form]"
+  - id: note-input
+    kind: textarea
+    label: Текст заметки
+    selector: "[data-testid=note-input]"
+  - id: add-note
+    kind: button
+    label: Add
+    selector: "[data-testid=add-note]"
+  - id: notes-error
+    kind: alert
+    label: Ошибка добавления/сессии
+    selector: "[data-testid=notes-error]"
+  - id: notes-list
+    kind: list
+    label: Список заметок
+    selector: "[data-testid=notes-list]"
+  - id: note-item
+    kind: list-item
+    label: Заметка (#id + text)
+    selector: "[data-testid=note-item]"
+  - id: delete-note
+    kind: button
+    label: Delete
+    selector: "[data-testid=delete-note]"
+  - id: notes-empty
+    kind: text
+    label: Empty state
+    selector: "[data-testid=notes-empty]"
+  - id: notes-loading
+    kind: text
+    label: Загрузка...
+    selector: "[data-testid=notes-loading]"
+states:
+  - loading
+  - empty
+  - list
+  - submitting-add
+  - error-400-add
+  - error-401
+  - error-404-delete
+  - delete-pending
+  - logout-local
+selectors:
+  - testid: notes-header
+    purpose: шапка страницы
+  - testid: user-name
+    purpose: имя из localStorage[notebook.user]
+  - testid: logout
+    purpose: клиентский выход (без API)
+  - testid: note-form
+    purpose: форма добавления заметки
+  - testid: note-input
+    purpose: textarea ввода текста
+  - testid: add-note
+    purpose: кнопка добавления
+  - testid: notes-error
+    purpose: inline-ошибка/баннер 401
+  - testid: notes-list
+    purpose: контейнер списка
+  - testid: note-item
+    purpose: строка заметки (с data-note-id)
+  - testid: delete-note
+    purpose: удаление своей заметки
+  - testid: notes-empty
+    purpose: пустой список
+  - testid: notes-loading
+    purpose: состояние загрузки
+api_calls:
+  - method: GET
+    path: /api/notes
+    status: "200, 401"
+  - method: POST
+    path: /api/notes
+    status: "201, 400, 401"
+  - method: DELETE
+    path: /api/notes/{id}
+    status: "204, 400, 401, 404"
+transitions:
+  - from: /notes
+    to: /login
+    trigger: "нет токена в localStorage[notebook.token] -> location.replace без запроса"
+  - from: /notes
+    to: /notes
+    trigger: "reload: токен есть -> GET /api/notes -> list|empty"
+  - from: /notes
+    to: /login
+    trigger: "любой ответ 401 -> очистка notebook.token/notebook.user -> location.replace"
+  - from: /notes
+    to: /login
+    trigger: "click [data-testid=logout] -> удалить токен (UI-only) -> location.replace"
+  - from: /notes
+    to: /notes
+    trigger: "POST /api/notes 201 -> строка добавлена; DELETE 204 -> строка убрана"
+a11y:
+  - element: note-input
+    role: textbox
+    label: Текст заметки (Enter — отправка, Shift+Enter — перенос)
+  - element: add-note
+    role: button
+    label: Add
+  - element: delete-note
+    role: button
+    label: Delete (aria-label с id заметки)
+  - element: notes-list
+    role: list
+    label: Список заметок (элементы role=listitem)
+  - element: notes-error
+    role: alert
+    label: aria-live=polite, одна видимая ошибка
+evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#3-notes-notes"

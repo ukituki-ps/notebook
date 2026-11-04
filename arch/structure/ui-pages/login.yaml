@@ -1,0 +1,90 @@
+# UI-граф (planned) — страница Login
+# Источник: s04.graph_builder_design (E4312, f-v3-auth-notes)
+# Дизайн-намерение; актуализация по коду — s21.graph_actualize.
+id: ui-page-login
+title: Login
+status: planned
+platform: web
+route: /login
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+components:
+  - id: login-card
+    kind: container
+    label: Вход
+    selector: "[data-testid=login-card]"
+  - id: login-form
+    kind: form
+    label: Форма входа
+    selector: "[data-testid=login-form]"
+  - id: username
+    kind: input
+    label: Username
+    selector: "[data-testid=login-username]"
+  - id: password
+    kind: input
+    label: Password
+    selector: "[data-testid=login-password]"
+  - id: submit
+    kind: button
+    label: Login
+    selector: "[data-testid=login-submit]"
+  - id: error
+    kind: alert
+    label: Ошибка входа
+    selector: "[data-testid=login-error]"
+  - id: register-link
+    kind: link
+    label: Register
+    selector: "[data-testid=register-link]"
+states:
+  - idle
+  - submitting
+  - error-400
+  - error-401
+  - success-200
+selectors:
+  - testid: login-card
+    purpose: корневая карточка страницы
+  - testid: login-form
+    purpose: форма входа (submit по Enter)
+  - testid: login-username
+    purpose: поле username
+  - testid: login-password
+    purpose: поле password
+  - testid: login-submit
+    purpose: кнопка входа
+  - testid: login-error
+    purpose: inline-ошибка role=alert
+  - testid: register-link
+    purpose: переход на /register
+api_calls:
+  - method: POST
+    path: /api/login
+    status: "200, 400, 401"
+transitions:
+  - from: /login
+    to: /notes
+    trigger: "submit -> 200: token в localStorage[notebook.token], location.replace"
+  - from: /login
+    to: /login
+    trigger: "submit -> 400/401: inline-ошибка, остаёмся на странице"
+  - from: /login
+    to: /register
+    trigger: "click [data-testid=register-link]"
+a11y:
+  - element: login-username
+    role: textbox
+    label: Username
+  - element: login-password
+    role: textbox
+    label: Password
+  - element: login-submit
+    role: button
+    label: Login
+  - element: login-error
+    role: alert
+    label: aria-live=polite, одна видимая ошибка
+evidence: "doc/идеи/f-v3-auth-notes/feature-brief.md#1-login-login"
