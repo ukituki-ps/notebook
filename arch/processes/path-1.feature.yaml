@@ -1,0 +1,3070 @@
+id: path-1.feature
+name: Path 1 — Feature Development
+version: 3.2.2
+path_type: feature
+enabled: true
+max_parallel: 3
+description: 'Версия 3.1.14 (PATCH; 2026-10-29; E2478): s24a.branch_fresh зависит от s22b.red_team_audit + s22c.adversarial_code_review — branch guard не может идти впереди обязательных ревью. • Версия 3.1.9 (PATCH; 2026-10-26; base absorbs stands-lease@1.2.0 + verification-hardening@1.11.0; D-1/D-2/D-3 fixed): • s19.stand_lease, s20b.preview_deploy, s20c.preview_verify, s22b.red_team_audit, s22c.adversarial_code_review теперь в базе (не оверлеями). • D-1: s20.sde_execution зависит от s17.coverage_audit + s19.stand_lease. • D-2: s22a.ui_audit и s22d.mobile_probe зависят от s20a.unit_integrate + s20c.preview_verify. • D-3: s22.result_audit зависит от s22a.ui_audit + s22d.mobile_probe + s20c.preview_verify (backend больше не обходит preview). • s22b ← s22.result_audit; s22c ← s22b + s20c; s23 ← s22.result_audit (не разорвано); s24 ← s23 + s24a + s22c. • Гейты stands-lease (s19/s20/s24), verification-hardening (s14/s17/s20/s20b/s20c/s22b/s22c/s24) и testing-stands (s20a/s24) смержены в базу без ослабления: s24 — 15 гейтов, s22b — 4, s22c — 1, s20c — 1. • Prompt-патчи verification-hardening (s11/s20/s22b/s22c) перенесены в шаги базы. • Для проектов, где stands-lease/verification-hardening были оверлеями, оверлеи подлежат deprecation (миграция: оставить только testing-stands; иначе дубли шагов). • Entry points, sub_processes feature-unit, branches и escalations — без изменений. 3.1.10 (PATCH): s05.architect_validation depends on s02.architect_scope_analysis (skip-chain s02→s03/s04→s05 fixed).
+
+  3.1.12 (PATCH): portable gate tooling for app-repo layout — gate-l1-unit и check-integration-on-stand определяют module root по path1.project.json (detectors.go_roots), выполняют go из backend с GOWORK=off; шаги/гейты/семантика не изменены.'
+owner: architect
+created_at: '2026-08-18T00:00:00Z'
+updated_at: '2026-10-28T10:31:40Z'
+entry_points:
+- id: accept
+  description: Финальная приёмка (s24) без исполнения/превью
+  start_from: s24.team_lead_accept
+  required_context:
+  - work_branch
+  skip_steps:
+  - s19.stand_lease
+  - s20b.preview_deploy
+  - s20c.preview_verify
+  - s21.graph_actualize
+  - s22a.ui_audit
+  - s22d.mobile_probe
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: integrate
+  description: Интеграция уже смерженных юнитов (s20a) без fan-out
+  start_from: s20a.unit_integrate
+  required_context:
+  - work_branch
+  skip_steps:
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: default
+  description: Полный цикл начиная с s01.product_discuss
+  start_from: s01.product_discuss
+  required_context:
+  - work_branch
+  skip_steps:
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: after_s00
+  description: Идея зафиксирована человеком, старт со s01.product_discuss (алиас default после снятия s00.idea_capture)
+  start_from: s01.product_discuss
+  required_context:
+  - work_branch
+  skip_steps:
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: after_s01
+  description: Обсуждение с product завершено, есть feature-brief. Старт со s02.architect_scope_analysis
+  start_from: s02.architect_scope_analysis
+  skip_steps:
+  - s01.product_discuss
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+  required_context:
+  - feature_brief_path
+  - work_branch
+- id: after_s01_snapshot
+  description: 'Готовый бриф + reality snapshot (C-1…C-5 исполняются): старт со s02, s06a–s06e НЕ в skip — сверка «код vs модель» до проектирования (s10.change_definition).'
+  start_from: s02.architect_scope_analysis
+  required_context:
+  - feature_brief_path
+  - work_branch
+  skip_steps:
+  - s01.product_discuss
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: after_s16
+  description: 'Старт после s16.brief_tasks (F98): планирование не перезапускается; s17.coverage_audit проверяет брифы/спеки и открывает s20 fan-out. required_context — producer-данные (unit_briefs/task_briefs), отсутствие — отказ резолва ДО старта; обход через orc_set_context запрещён.'
+  start_from: s17.coverage_audit
+  required_context:
+  - work_branch
+  - unit_briefs
+  - task_briefs
+  skip_steps:
+  - s01.product_discuss
+  - s02.architect_scope_analysis
+  - s03.proto_visualize
+  - s04.graph_builder_design
+  - s05.architect_validation
+  - s06.feature_brief_final
+  - s07.requirements_reconcile
+  - s08.intent_brief_review
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s10.change_definition
+  - s11.planner_high_level
+  - s13.plan_save
+  - s14.spec_generation
+  - s15.brief_milestone
+  - s16.brief_tasks
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+- id: unit_batch
+  description: 'Юнит-ветка: старт на fan-out контейнере s20.sde_execution (нужен context.unit_briefs)'
+  start_from: s20.sde_execution
+  skip_steps:
+  - s01.product_discuss
+  - s02.architect_scope_analysis
+  - s03.proto_visualize
+  - s04.graph_builder_design
+  - s05.architect_validation
+  - s06.feature_brief_final
+  - s07.requirements_reconcile
+  - s08.intent_brief_review
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s10.change_definition
+  - s11.planner_high_level
+  - s13.plan_save
+  - s14.spec_generation
+  - s15.brief_milestone
+  - s16.brief_tasks
+  - s17.coverage_audit
+  - s24a.branch_fresh
+  - s45.push_primary
+  - s46.post_deploy_verify
+  required_context:
+  - unit_briefs
+  - work_branch
+- id: branch_guard
+  description: 'Opt-in guard свежести рабочей ветки (C-17): s24a.branch_fresh исполняется, default-точки его скипают'
+  start_from: s01.product_discuss
+  skip_steps:
+  - s06a.reality_snapshot
+  - s06b.reconcile
+  - s06c.reconcile_verify
+  - s06d.canonize
+  - s06e.reproduce
+  - s45.push_primary
+  - s46.post_deploy_verify
+  required_context:
+  - work_branch
+  - target_repo_head
+- id: stand_contour
+  description: 'Opt-in пост-merge контур стенда (C-18/C-19): push primary → CI+образ+golden path; активация проектом через orc_start(entry_point=stand_contour, context={...})'
+  start_from: s45.push_primary
+  required_context:
+  - push_target
+  - work_branch
+  - target_repo_head
+  - stand_url
+  - golden_path_command
+steps:
+- id: s01.product_discuss
+  name: Обсуждение идеи с product
+  description: 'Обсуждение идеи с product: результат — черновик feature-brief.md. Опирается на: idea. ОБЯЗАТЕЛЬНО: сразу после создания каталога фичи задай в контекст исполнения feature_id=<F<NN>-<slug>> и feature_dir=doc/идеи/<F<NN>-<slug>> (orc_set_context) — иначе плейсхолдер {feature_id} в artifact-гейтах (s10/s13/s14) не отрендерится и приёмка упадёт «artifact not found» (инцидент E3061, s10).
+
+    '
+  phase: ideation
+  stage: exploration
+  agent: product
+  track: docs
+  mode: all
+  skippable: true
+  artifact: черновик feature-brief.md
+  inputs:
+  - idea
+  outputs:
+  - draft-feature-brief
+  depends_on: []
+  arch_reads:
+  - type: search
+    query: похожие реализованные фичи
+- id: s02.architect_scope_analysis
+  name: Scope Analysis (architect)
+  phase: ideation
+  stage: exploration
+  agent: architect
+  track: infra
+  mode: all
+  artifact: Scope Report
+  inputs:
+  - draft-feature-brief
+  outputs:
+  - scope-report
+  depends_on:
+  - s01.product_discuss
+  description: 'Архитектор определяет затронутые домены, ограничения архитектуры, потенциальные конфликты и даёт рекомендации для дизайна.
+
+    '
+  arch_reads:
+  - type: related
+    target: домены из draft-feature-brief
+  - type: gaps
+    filter: open violations in affected domains
+- id: s03.proto_visualize
+  name: Визуализация UI (proto)
+  description: 'Визуализация UI (proto): результат — ASCII-схема в feature-brief.md. Опирается на: draft-feature-brief, scope-report.
+
+    '
+  phase: ideation
+  stage: design
+  agent: proto
+  track: B
+  mode: subagent
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: ASCII-схема в feature-brief.md
+  inputs:
+  - draft-feature-brief
+  - scope-report
+  outputs:
+  - visualized-brief
+  depends_on:
+  - s02.architect_scope_analysis
+- id: s04.graph_builder_design
+  name: UI-граф из дизайна (graph-builder from-design)
+  description: 'UI-граф из дизайна (graph-builder from-design): результат — UI-GRAPH.yaml (planned-graph). Опирается на: visualized-brief, scope-report. Остаётся опциональным (дизайн-граф спекулятивен); обязательна только актуализация по коду — s21.'
+  phase: ideation
+  stage: design
+  agent: graph-builder
+  track: B
+  mode: subagent
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: UI-GRAPH.yaml (planned-graph)
+  inputs:
+  - visualized-brief
+  - scope-report
+  outputs:
+  - planned-ui-graph
+  depends_on:
+  - s03.proto_visualize
+  arch_writes:
+  - type: create_or_update
+    target: arch/frontend/pages/*.yaml
+    status: planned
+- id: s05.architect_validation
+  name: Валидация архитектора
+  phase: ideation
+  stage: validation
+  agent: architect
+  track: infra
+  mode: all
+  artifact: Expertise Report (валидация)
+  inputs:
+  - visualized-brief
+  - planned-ui-graph
+  - scope-report
+  outputs:
+  - expertise-report
+  depends_on:
+  - s04.graph_builder_design
+  - s02.architect_scope_analysis
+  description: 'Проверка соответствия дизайна архитектурным ограничениям. ОБЯЗАТЕЛЬНО публикуй open_decisions[] — развилки, где сырой запрос человека допускает ≥2 прочтения (напр. неоднозначная формулировка): архитектор формулирует варианты и рекомендацию, но НЕ решает двусмысленность молча — она уходит на s07.requirements_reconcile как вопрос человеку. Решения B* давай явно и трассируемо к пункту запроса (decision_ref), чтобы переинтерпретация не спряталась.
+
+    '
+- id: s06.feature_brief_final
+  name: Финализация feature-brief.md
+  description: 'Финализация feature-brief.md: результат — feature-brief.md (финал). Опирается на: expertise-report. Дополнительно сохраняет doc/идеи/<F>/invariants.json с теми же invariants[] (id/statement/test_ref/enforcement) — файл-артефакт machine-гейтов (test-ref-runnable, catalog-invariants, ui-audit). Если path1.ui.json.platform ∈ {web,mobile,both} — добавь в invariants.json core INV-UI-TRUTH, INV-UI-LABEL, INV-UI-A11Y-NAME, INV-UI-ORACLE (формат — doc/процесс/ui-invariants.md). Статусы ядра: INV-UI-TRUTH/LABEL/A11Y-NAME — active с исполнимым test_ref. INV-UI-ORACLE публикуй со status `proposed`: его enforcement — гейты s22a (gate-ui-audit-machine) и oracle-cited s22/s24, а ui-audit.json появляется только на s22a, поэтому active-инвариант с test_ref на s20a недопустим (gate-invariant-enforced). Общее правило: если оракул инварианта материализуется ПОЗЖЕ (стендовый E2E на s20c, ui-audit.json на s22a), публикуй его со status `proposed` до этого шага — иначе active-инвариант с test_ref на s20a недопустим (gate-invariant-enforced). Так же публикуй INV-UI-E2E-PREVIEW (его оракул — E2E на стенде со скриншотом, s20c).
+
+    '
+  phase: ideation
+  stage: validation
+  agent: product
+  track: docs
+  mode: all
+  artifact: feature-brief.md (финал)
+  inputs:
+  - expertise-report
+  outputs:
+  - feature-brief
+  depends_on:
+  - s05.architect_validation
+  result_schema:
+    type: object
+    required:
+    - invariants
+    - do
+    - dont
+    - out_of_scope
+    - change_class
+    properties:
+      invariants:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - id
+          - statement
+          - enforcement
+          properties:
+            id:
+              type: string
+            statement:
+              type: string
+            rationale:
+              type: string
+            enforcement:
+              type: string
+            status:
+              type: string
+              enum:
+              - proposed
+              - active
+              - deprecated
+            test_ref:
+              type: string
+      do:
+        type: array
+        minItems: 1
+        items:
+          type: string
+      dont:
+        type: array
+        minItems: 1
+        items:
+          type: string
+      out_of_scope:
+        type: array
+        items:
+          type: string
+      change_class:
+        type: string
+        enum:
+        - plain
+        - security
+        - invariant
+        - arch
+- id: s07.requirements_reconcile
+  name: Сверка требований «просил человек ↔ делаем» (product)
+  description: 'Обязательная сверка ДО планирования (закрывает дефект E2669: гейты проверяли согласованность с самими собой, а не с запросом человека). product читает НЕИЗМЕНЯЕМЫЙ сырой запрос человека (context.feature_request_path или doc/идеи/<F>/feature-request.md) и артефакты проектирования (feature-brief, scope-report, expertise-report, visualized-brief, planned-ui-graph) и публикует два артефакта: (1) doc/идеи/<F>/intent-trace.json — машинный манифест items[{item_id, raw_quote, our_interpretation, verdict∈{match,reinterpreted,missing,dropped}, decision_ref, scenario_ref, added, confirmed_by_human}] + open_questions[]; (2) doc/идеи/<F>/intent-brief.md — КОРОТКИЙ (1–2 экрана, НЕ спека и не план) человекочитаемый документ: цель, таблица «просил→делаем», отдельный раздел «где домыслили / что добавили от себя», ссылки на прототипы (s03/s04). Правила: каждый пункт сырого запроса обязан иметь запись (silent drop запрещён); verdict=reinterpreted или added требует явного подтверждения человеком (s08); двусмысленности из s05.open_decisions[] выносятся вопросами к человеку, а не решаются молча. Источник сверки — СЫРОЙ запрос, не бриф (иначе самопроверка тавтологична).
+
+    '
+  phase: ideation
+  stage: validation
+  agent: product
+  track: docs
+  mode: all
+  artifact: intent-trace.json + intent-brief.md
+  inputs:
+  - feature-request
+  - feature-brief
+  - scope-report
+  - expertise-report
+  - visualized-brief
+  - planned-ui-graph
+  outputs:
+  - intent-trace
+  - intent-brief
+  depends_on:
+  - s06.feature_brief_final
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - items
+    - open_questions
+    - context
+    properties:
+      artifact_path:
+        type: string
+      intent_brief_path:
+        type: string
+      items:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - item_id
+          - raw_quote
+          - our_interpretation
+          - verdict
+          properties:
+            item_id:
+              type: string
+            raw_quote:
+              type: string
+            our_interpretation:
+              type: string
+            verdict:
+              type: string
+              enum:
+              - match
+              - reinterpreted
+              - missing
+              - dropped
+            decision_ref:
+              type: string
+            scenario_ref:
+              type: string
+            added:
+              type: boolean
+            confirmed_by_human:
+              type: string
+              enum:
+              - true
+              - false
+              - edited
+      open_questions:
+        type: array
+        items:
+          type: string
+      summary:
+        type: object
+      context:
+        type: object
+- id: s08.intent_brief_review
+  name: Человек утверждает «что делаем» (intent-brief)
+  description: 'Обязательный человеческий чекпойнт перед планированием (возврат human-in-the-loop, снятого в 2.3.0). Человек получает КОРОТКИЙ intent-brief.md, а не 1000 страниц брифа/плана: цель, таблица «просил→делаем», список домыслов/добавлений, прототипы. Решение: approved=true + signature (policy(<process>@<version> <YYYY-MM-DD>) или свободная) и/или edits[] + disposition. Правки человека обязаны быть внесены в intent-trace.json (confirmed_by_human=edited) и при необходимости в feature-brief.md ДО перехода к s10. Без человеческого решения подтверждение не фиксируется (событие l5_unsigned) — планирование стартовать не должно.'
+  phase: ideation
+  stage: validation
+  agent: human
+  track: docs
+  mode: all
+  artifact: утверждение intent-brief
+  inputs:
+  - intent-brief
+  - intent-trace
+  outputs:
+  - approved-intent
+  depends_on:
+  - s07.requirements_reconcile
+  max_retries: 5
+- id: s06a.reality_snapshot
+  name: Reality-snapshot (auditor; C-1)
+  description: 'Снимок реального состояния кода: scope, узлы nodes[].{id,kind,ref[,run_result]}, commit, actual_behavior. Заземляет планирование фактом, а не текстом брифа.
+
+    '
+  phase: planning
+  agent: auditor
+  track: infra
+  mode: subagent
+  artifact: reality-snapshot
+  inputs:
+  - feature-brief
+  outputs:
+  - reality-snapshot
+  depends_on:
+  - s08.intent_brief_review
+  result_schema:
+    type: object
+    required:
+    - scope
+    - nodes
+    - commit
+    - context
+    properties:
+      scope:
+        type: string
+      commit:
+        type: string
+      actual_behavior:
+        type: string
+      nodes:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          - kind
+          - ref
+          properties:
+            id:
+              type: string
+            kind:
+              type: string
+            ref:
+              type: string
+            run_result: {}
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+- id: s06b.reconcile
+  name: Reconcile-вердикт с классификацией дрейфа (architect; C-2)
+  description: 'Сверка снимка с брифом/спеками: coverage{total,resolved} и divergences[] с classification ∈ doc_stale|code_bug|expectation_wrong|no_drift.
+
+    '
+  phase: planning
+  agent: architect
+  track: infra
+  mode: all
+  artifact: reconcile-verdict
+  inputs:
+  - reality-snapshot
+  - feature-brief
+  outputs:
+  - reconcile-verdict
+  depends_on:
+  - s06a.reality_snapshot
+  result_schema:
+    type: object
+    required:
+    - coverage
+    - divergences
+    - context
+    properties:
+      coverage:
+        type: object
+        required:
+        - total
+        - resolved
+        properties:
+          total:
+            type: integer
+          resolved:
+            type: integer
+      divergences:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          - classification
+          properties:
+            id:
+              type: string
+            classification:
+              type: string
+              enum:
+              - doc_stale
+              - code_bug
+              - expectation_wrong
+              - no_drift
+            outcome:
+              type: string
+            severity:
+              type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+- id: s06c.reconcile_verify
+  name: Независимая верификация reconcile (architect ≠ auditor; C-3)
+  description: 'Правило 4: кто снимал реальность (auditor), не проверяет сам себя; верификацию ведёт architect. Машинной проверки «разные личности» в движке нет (2.0.0) — здесь независимость обеспечивается разными агентами.
+
+    '
+  phase: planning
+  agent: architect
+  track: infra
+  mode: all
+  artifact: reconcile-verify
+  inputs:
+  - reconcile-verdict
+  outputs:
+  - reconcile-verified
+  depends_on:
+  - s06b.reconcile
+  result_schema:
+    type: object
+    required:
+    - verdict
+    - verified_by
+    - context
+    properties:
+      verdict:
+        type: string
+        enum:
+        - pass
+        - fail
+      verified_by:
+        type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+- id: s06d.canonize
+  name: Канонизация понятий (architect; C-4)
+  description: 'Одно понятие = одно определение (term/definition/storage/version). Публикует {context.canon} — путь к артефакту-канону для гейта поведения (C-5).
+
+    '
+  phase: planning
+  agent: architect
+  track: infra
+  mode: all
+  artifact: canon artifact
+  inputs:
+  - reconcile-verified
+  outputs:
+  - canon
+  depends_on:
+  - s06c.reconcile_verify
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - canon
+    - context
+    properties:
+      artifact_path:
+        type: string
+      canon:
+        type: array
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+  context_updates:
+    canon: '{result.artifact_path}'
+    canon_meta:
+      path: '{result.artifact_path}'
+      terms: '{result.canon}'
+- id: s06e.reproduce
+  name: Прогон сценария (auditor; C-4/C-5)
+  description: 'Воспроизводит сценарий из канона и публикует {context.run_result}. Command-гейт expected==actual сравнивает canon и run_result (C-5); без runner''а гейт активируется только overlay''ем ({context.drift_gate}).
+
+    '
+  phase: planning
+  agent: auditor
+  track: infra
+  mode: subagent
+  artifact: run-result
+  inputs:
+  - canon
+  outputs:
+  - run_result
+  depends_on:
+  - s06d.canonize
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - run_result
+    - repro
+    - context
+    properties:
+      artifact_path:
+        type: string
+      run_result: {}
+      repro:
+        type: object
+        required:
+        - test_ref
+        - pre_exit_code
+        - post_exit_code
+        properties:
+          test_ref:
+            type: string
+          pre_exit_code:
+            type: integer
+          post_exit_code:
+            type: integer
+          fails_before:
+            type: boolean
+          passes_after:
+            type: boolean
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+  context_updates:
+    run_result: '{result.artifact_path}'
+    run_result_meta:
+      path: '{result.artifact_path}'
+      result: '{result.run_result}'
+- id: s10.change_definition
+  name: Change-definition по доменам (architect)
+  description: 'Change-definition по доменам (architect): результат — change-definition.md для каждого домена. Опирается на: approved-feature-brief, scope-report.
+
+    '
+  phase: planning
+  agent: architect
+  track: infra
+  mode: all
+  artifact: change-definition.md для каждого домена
+  inputs:
+  - approved-feature-brief
+  - scope-report
+  outputs:
+  - change-definitions
+  depends_on:
+  - s06e.reproduce
+  - s08.intent_brief_review
+  arch_writes:
+  - type: create_or_update
+    target: change-definition artifacts
+- id: s11.planner_high_level
+  name: Верхнеуровневый план фичи (planner mode:all)
+  description: 'Верхнеуровневый план фичи (planner mode:all): результат — план в чате + plan.md. Опирается на: change-definitions, planned-ui-graph.
+
+    '
+  phase: planning
+  agent: planner
+  track: docs
+  mode: all
+  artifact: план в чате + plan.md
+  inputs:
+  - change-definitions
+  - planned-ui-graph
+  outputs:
+  - plan-draft
+  depends_on:
+  - s10.change_definition
+  arch_reads:
+  - type: history
+    target: похожие задачи из прошлых фичей
+  arch_writes:
+  - type: create
+    target: plan artifact, task relationships
+  prompt_patch: 'ДЕКОМПОЗИЦИЯ (ОБЯЗАТЕЛЬНО): один unit = ОДИН endpoint ЛИБО ОДИН экран/компонент + ЕГО тесты; запрещены «мега-юниты»; в каждом unit_brief — конкретные файлы, явные acceptance-оракулы, ≤ ~8 файлов.'
+- id: s13.plan_save
+  name: Сохранение плана в файл (planner)
+  description: 'Сохранение плана в файл (planner): результат — doc/идеи/F{NN}-{slug}/plan.md. Опирается на: approved-plan.
+
+    '
+  phase: planning
+  agent: planner
+  track: docs
+  mode: all
+  artifact: doc/идеи/F{NN}-{slug}/plan.md
+  inputs:
+  - approved-plan
+  outputs:
+  - saved-plan
+  depends_on:
+  - s11.planner_high_level
+- id: s14.spec_generation
+  name: Генерация спеков (spec subagent)
+  description: 'Генерация спеков (spec subagent): результат — core.md + openapi/modules/*.yaml. Опирается на: saved-plan.
+
+    '
+  phase: planning
+  agent: spec
+  track: A
+  mode: subagent
+  artifact: core.md + openapi/modules/*.yaml
+  inputs:
+  - saved-plan
+  - change-definitions
+  outputs:
+  - specs
+  depends_on:
+  - s13.plan_save
+  result_schema:
+    type: object
+    required:
+    - context
+    - specs
+    - contract_diff
+    - contract_parity
+    properties:
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+      specs:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - domain
+          - core_path
+          properties:
+            domain:
+              type: string
+            core_path:
+              type: string
+            openapi_path:
+              type: string
+            contract_diff:
+              type: object
+              required:
+              - added
+              - removed
+              - changed
+              properties:
+                added:
+                  type: integer
+                  minimum: 0
+                removed:
+                  type: integer
+                  minimum: 0
+                changed:
+                  type: integer
+                  minimum: 0
+      contract_diff:
+        type: object
+        required:
+        - added
+        - removed
+        - changed
+        properties:
+          added:
+            type: integer
+            minimum: 0
+          removed:
+            type: integer
+            minimum: 0
+          changed:
+            type: integer
+            minimum: 0
+      contract_parity:
+        type: object
+        required:
+        - drift_count
+        - items
+        properties:
+          drift_count:
+            type: integer
+            minimum: 0
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                op:
+                  type: string
+                kind:
+                  type: string
+                expected:
+                  type: string
+                actual:
+                  type: string
+  context_updates:
+    contract_diff: '{result.contract_diff}'
+  arch_reads:
+  - type: get
+    target: существующие API contracts
+  arch_writes:
+  - type: update
+    target: contract artifacts
+- id: s15.brief_milestone
+  name: Бриф вехи (planner subagent)
+  description: 'Бриф вехи (planner subagent): результат — M{NN}/brief.md. Опирается на: saved-plan, specs. ОБЯЗАТЕЛЕН (ревизия 2.11.11): экономия на подготовке не оправдывает риск «сделали не то»; бриф вехи фиксирует границы вехи до кода.'
+  phase: planning
+  agent: planner
+  track: docs
+  mode: subagent
+  artifact: M{NN}/brief.md
+  inputs:
+  - saved-plan
+  - specs
+  outputs:
+  - milestone-brief
+  depends_on:
+  - s14.spec_generation
+  arch_writes:
+  - type: create
+    target: milestone artifact
+- id: s16.brief_tasks
+  name: Детальные брифы задач (planner subagent)
+  description: 'Детальные брифы задач (planner subagent): результат — T{NNNN}/brief.md × N. Опирается на: milestone-brief, specs. Для change_class=plain допускается СЛИЯНИЕ брифов: один brief на unit (без отдельного milestone-брифа), Каждый unit_brief задаёт `sde` (роль исполнителя): frontend/* → sde-frontend, backend/* → sde-backend, infra → sde-infra, mobile/* → sde-mobile.
+
+    '
+  phase: planning
+  agent: planner
+  track: docs
+  mode: subagent
+  artifact: T{NNNN}/brief.md × N
+  inputs:
+  - milestone-brief
+  - specs
+  outputs:
+  - task-briefs
+  depends_on:
+  - s15.brief_milestone
+  result_schema:
+    type: object
+    required:
+    - unit_briefs
+    - context
+    properties:
+      unit_briefs:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - unit_id
+          - domain
+          - sde
+          - change_class
+          - scope
+          - files
+          properties:
+            unit_id:
+              type: string
+              minLength: 1
+            domain:
+              type: string
+            sde:
+              type: string
+              enum:
+              - sde-backend
+              - sde-frontend
+              - sde-infra
+              - sde-mobile
+            change_class:
+              type: string
+              enum:
+              - plain
+              - security
+              - invariant
+              - arch
+            scope:
+              type: array
+              minItems: 1
+              items:
+                type: string
+            files:
+              type: array
+              items:
+                type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+  context_updates:
+    unit_briefs: '{result.unit_briefs}'
+  arch_writes:
+  - type: create
+    target: task artifacts с деталями
+- id: s17.coverage_audit
+  name: Аудит покрытия (architect)
+  phase: planning
+  agent: architect
+  track: infra
+  mode: all
+  artifact: отчёт об аудите покрытия
+  inputs:
+  - task-briefs
+  - specs
+  - saved-plan
+  outputs:
+  - coverage-audit
+  depends_on:
+  - s16.brief_tasks
+  max_retries: 2
+  result_schema:
+    type: object
+    required:
+    - context
+    - verdict
+    - gaps
+    properties:
+      verdict:
+        type: string
+        enum:
+        - pass
+        - pass_with_gaps
+        - fail
+      gaps_has_blocking:
+        type: boolean
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+      gaps:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          - severity
+          - owner
+          properties:
+            id:
+              type: string
+            severity:
+              type: string
+              enum:
+              - info
+              - minor
+              - major
+              - critical
+            owner:
+              type: string
+            description:
+              type: string
+            check:
+              type: string
+      coverage:
+        type: object
+  description: 'КРИТИЧЕСКИЙ ГЕЙТ перед переходом к исполнению. Проверяет что spec полностью готова ко всем аспектам. Плюс вердикты по КАТАЛОГУ ОТКАЗОВ: сохрани doc/идеи/<F>/fault-verdicts.json — {"<catalog_id>": {"verdict":"covered|gap|na", "check":"…", "proof_run_id|detector_exit|evidence":"…"(covered), "justification":"…"(na/gap)}} по каждому id из audit/fault-catalog/*. covered без proof недопустим (вердикт на суждении); na — только с обоснованием (наследование базового инварианта и т.п.). Если proof унаследован из другого прогона/фичи (proof_run_id чужого прогона) — добавь inherited_from: "<feature>/<run>" (иначе вердикт считается недоказанным). Гейт gate-catalog-invariants (s20a) принимает na+justification вместо активного инварианта. ВЕРДИКТ (3.1.1): публикуй verdict ∈ {pass,pass_with_gaps,fail} и gaps[].{severity ∈ info|minor|major|critical, owner}; ОБЯЗАТЕЛЬНО сохрани машинное зеркало doc/идеи/<F>/coverage-audit.json {verdict, coverage{total,resolved}, gaps[{id,severity,owner,description,check}]} — его читает gate-coverage-verdict. Правило: verdict=fail или любой gap major/critical → гейт FAIL (в т.ч. pass_with_gaps); pass_with_gaps только с info/minor проходит и открывает s20; при FAIL работает ветка s17→s16 (max_cycles 2 → quarantine). Флаг gaps_has_blocking = true при любом gap severity major|critical — на него опирается условие ветки (правила условий не ищут по массиву gaps).
+
+    '
+- agent: team-lead
+  context_updates:
+    stand_dsn_ref: '{result.dsn_ref}'
+    stand_url: '{result.stand_url}'
+  depends_on:
+  - s17.coverage_audit
+  id: s19.stand_lease
+  inputs:
+  - coverage-audit
+  name: STAND LEASE — арендовать тестовый стенд (эксклюзивно) под исполнение
+  optional: false
+  outputs:
+  - stand-lease
+  phase: execution
+  track: B
+- id: s20.sde_execution
+  name: BATCH — юнит-модель feature-unit (C-10/C-14)
+  phase: execution
+  agent: orc
+  track: infra
+  mode: all
+  invoke:
+    sub_process: feature-unit
+    for_each: context.unit_briefs
+    max_parallel: 3
+    unit_key: unit_id
+    block_on_quarantine: true
+  inputs:
+  - task-briefs
+  - specs
+  outputs:
+  - implementation
+  depends_on:
+  - s17.coverage_audit
+  - s19.stand_lease
+  prompt_patch: 'DoD КАЖДОГО юнита: валидация всех входов (400); статус-коды по spec/contract-matrix.md (вкл. 405/403/envelope auth-слоя); envelope во ВСЕХ слоях = common.yaml#APIError; тест на каждый негатив; без мёртвых веток/двойных источников.'
+- id: s20a.unit_integrate
+  name: Интеграция юнитов + сводный отчёт (C-10)
+  phase: execution
+  agent: architect
+  track: infra
+  mode: all
+  artifact: сводный report.md
+  inputs:
+  - implementation
+  outputs:
+  - integrated-implementation
+  depends_on:
+  - s20.sde_execution
+  max_retries: 2
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - context
+    - evidence
+    - contract_parity
+    - divergent
+    - counts
+    properties:
+      artifact_path:
+        type: string
+      new_findings:
+        type: array
+      divergent:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          properties:
+            id:
+              type: string
+            kind:
+              type: string
+            expected:
+              type: string
+            actual:
+              type: string
+      counts:
+        type: object
+        properties:
+          model:
+            type: integer
+          code:
+            type: integer
+          drifted:
+            type: integer
+          baseline:
+            type: integer
+          delta:
+            type: integer
+      contract_parity:
+        type: object
+        required:
+        - drift_count
+        - items
+        properties:
+          drift_count:
+            type: integer
+            minimum: 0
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                op:
+                  type: string
+                kind:
+                  type: string
+                expected:
+                  type: string
+                actual:
+                  type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+      evidence:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          - command
+          properties:
+            id:
+              type: string
+            command:
+              type: string
+            evidence_id:
+              type: string
+            file:
+              type: string
+            line:
+              type: integer
+            before:
+              type: string
+            after:
+              type: string
+  context_updates:
+    report_path: '{result.artifact_path}'
+  description: 'Агрегирует результаты юнитов в сводный отчёт, проверяет совместность и публикует report_path для downstream-гейтов. Универсальный агент определяет режим автоматически; полный контекст — через arch_ctx.
+
+    '
+  arch_reads:
+  - type: ctx
+    target: полный контекст задачи через push-package pattern
+  arch_writes:
+  - type: update_status
+    target: task status, reports
+- agent: orc
+  depends_on:
+  - s20a.unit_integrate
+  id: s20b.preview_deploy
+  inputs:
+  - implementation
+  name: PREVIEW DEPLOY — выкат ветки на арендованный стенд
+  outputs:
+  - preview-url
+  phase: execution
+  track: infra
+- agent: browser
+  depends_on:
+  - s20b.preview_deploy
+  id: s20c.preview_verify
+  inputs:
+  - preview-url
+  name: PREVIEW VERIFY — E2E по сценариям на стенде
+  outputs:
+  - preview-verdict
+  phase: execution
+  track: B
+- id: s21.graph_actualize
+  name: Актуализация UI-графа (graph-builder from-code)
+  description: 'Актуализация UI-графа (graph-builder from-code): результат — UI-GRAPH.yaml (актуализированный). Опирается на: implementation. ОБЯЗАТЕЛЕН для UI-фич (platform web|mobile|both): гейт gate-graph-actualized на s21 и на s24 не даёт принять UI-фичу без актуализированного графа. Для backend-only фич не требуется (гейт PASS-NA).'
+  phase: execution
+  agent: graph-builder
+  track: B
+  mode: subagent
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: UI-GRAPH.yaml (актуализированный)
+  inputs:
+  - implementation
+  outputs:
+  - actualized-ui-graph
+  depends_on:
+  - s20a.unit_integrate
+  arch_writes:
+  - type: update
+    target: arch/frontend/pages/*.yaml
+    status: implemented
+- id: s22a.ui_audit
+  name: UI/UX-аудит (designer; чек-лист A–L / M)
+  description: 'Независимый аудит интерфейса: состояния/честность, информативность, человеческий слой, визуальная система, композиция, взаимодействие, a11y, адаптив/устройства, данные/контракты, перф, завершённость, доказательства; для mobile — блок M (safe-area, тач-цели, нативные паттерны, dynamic type, permissions, offline, VoiceOver/TalkBack, golden path). Каждый пункт — criterion + oracle. Публикует ui-audit.{md,json}, привязанный к SHA стенда. ВАЖНО: stand.sha ОБЯЗАН равняться выкаченному ref из preview-deploy.json (корень репо; gate-ui-audit сверяет и падает «аудит не на том билде»). Не записывай sha локального HEAD. Файлы (ровно один doc/идеи/<F>/ui-audit.json): platform; stand{url,sha=билд стенда}; summary{open_critical_high:0,blockers:0}; items[{id,block,verdict(ok|violation|na),severity,criterion,oracle(исполнимый cmd:/sh:/<file>::<Test>/url/dom),evidence{kind,ref}}]. Обязательные блоки: web A–L, mobile A,C,D,F,G,I,K,L,M, both A–M. Также требуется doc/идеи/<F>/invariants.json с core INV-UI-*. Точный контракт — doc/процесс/ui-invariants.md §Форматы; проверяет bash tools/path1-gate.sh ui-audit {execution_id}. Зависит от s20a.unit_integrate и s20c.preview_verify (base 3.1.9): порядок «аудит после превью» гарантирован базовым DAG (gate-preview-before-ui).'
+  phase: acceptance
+  agent: designer
+  track: B
+  mode: subagent
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: ui-audit.md + ui-audit.json
+  inputs:
+  - implementation
+  - actualized-ui-graph
+  - specs
+  - preview-verdict
+  outputs:
+  - ui-audit
+  depends_on:
+  - s20a.unit_integrate
+  - s20c.preview_verify
+  max_retries: 2
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - platform
+    - stand
+    - summary
+    - items
+    - context
+    properties:
+      artifact_path:
+        type: string
+      platform:
+        type: string
+        enum:
+        - web
+        - mobile
+        - both
+        - none
+      stand:
+        type: object
+        required:
+        - sha
+        - url
+        properties:
+          sha:
+            type: string
+          url:
+            type: string
+      summary:
+        type: object
+        required:
+        - blockers
+        - majors
+        - open_critical_high
+        properties:
+          blockers:
+            type: integer
+          majors:
+            type: integer
+          minors:
+            type: integer
+          cosmetics:
+            type: integer
+          open_critical_high:
+            type: integer
+          ui_absent_reason:
+            type: string
+      items:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - id
+          - block
+          - criterion
+          - verdict
+          - evidence
+          properties:
+            id:
+              type: string
+            block:
+              type: string
+            criterion:
+              type: string
+            verdict:
+              type: string
+              enum:
+              - ok
+              - violation
+              - na
+            severity:
+              type: string
+              enum:
+              - blocker
+              - major
+              - minor
+              - cosmetic
+            oracle:
+              type: string
+            reason:
+              type: string
+            evidence:
+              type: object
+              required:
+              - kind
+              - ref
+              properties:
+                kind:
+                  type: string
+                  enum:
+                  - command
+                  - screenshot
+                  - url
+                  - dom
+                ref:
+                  type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+- id: s22d.mobile_probe
+  name: Mobile-проба (tester-run-mobile; устройства + golden path)
+  description: 'Снимает доказательства для блока M на устройствах/эмуляторах: матрица (iPhone + Android), safe-area, тач-цели, dynamic type, тёмная тема, permissions, offline/плохая сеть, VoiceOver/TalkBack, golden path как Maestro-флоу. Публикует mobile-evidence.json (stand.sha, devices[], flows[], screenshots[]). Опционально; активируется для platform mobile/both. Base 3.1.9 зависит от s20a.unit_integrate и s20c.preview_verify; превью-гейт gate-preview-before-mobile — в базе.
+
+    '
+  phase: acceptance
+  agent: tester-run-mobile
+  track: B
+  mode: subagent
+  when:
+    param: platform
+    in:
+    - mobile
+    - both
+  artifact: mobile-evidence.json + screenshots
+  inputs:
+  - implementation
+  - preview-verdict
+  outputs:
+  - mobile-evidence
+  depends_on:
+  - s20a.unit_integrate
+  - s20c.preview_verify
+  max_retries: 2
+- id: s22.result_audit
+  name: Аудит результата (architect)
+  description: 'Аудит результата (architect): результат — результат аудита. Опирается на: implementation, actualized-ui-graph, change-definitions.
+
+    '
+  phase: acceptance
+  agent: architect
+  track: infra
+  mode: all
+  artifact: результат аудита
+  inputs:
+  - implementation
+  - actualized-ui-graph
+  - change-definitions
+  outputs:
+  - result-audit
+  depends_on:
+  - s22a.ui_audit
+  - s22d.mobile_probe
+  - s20c.preview_verify
+  max_retries: 2
+  result_schema:
+    type: object
+    required:
+    - verdict
+    - new_findings
+    - context
+    - evidence
+    - acceptance_criteria
+    - oracles
+    properties:
+      verdict:
+        type: string
+        enum:
+        - pass
+        - fail
+      new_findings:
+        type: array
+      acceptance_criteria:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - id
+          properties:
+            id:
+              type: string
+            statement:
+              type: string
+      oracles:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - criterion_id
+          - oracle
+          - proof
+          properties:
+            criterion_id:
+              type: string
+            oracle:
+              type: string
+            proof:
+              type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+      evidence:
+        type: array
+        items:
+          type: object
+          required:
+          - id
+          - command
+          properties:
+            id:
+              type: string
+            command:
+              type: string
+            evidence_id:
+              type: string
+            file:
+              type: string
+            line:
+              type: integer
+            before:
+              type: string
+            after:
+              type: string
+- agent: reviewer
+  depends_on:
+  - s22.result_audit
+  id: s22b.red_team_audit
+  inputs:
+  - result-audit
+  name: RED-TEAM AUDIT — adversarial на стенде (attack-log)
+  outputs:
+  - red-team-verdict
+  phase: acceptance
+  prompt_patch: 'RED-TEAM АУДИТ (adversarial, attack-log). Идёт на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090 model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) → проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`. В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy) или provider deepseek; V4 Pro не использовать по умолчанию. Атакуй реализацию: реальные вызовы эндпоинтов/RLS/скоупов, канарейки (машинное доказательство), битые состояния, код-статусы. Артефакт doc/идеи/<F>/fault-verdicts.json + attack-log.  НЕЗАВИСИМОСТЬ (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ team-lead, НЕ автор). В артефакт пиши author_session_id (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться (gate-code-review fail-close при совпадении/отсутствии). Модель — по кросс-паре tools/model-policy.json. Самопроверка запрещена.'
+  track: B
+- agent: reviewer
+  depends_on:
+  - s22b.red_team_audit
+  - s20c.preview_verify
+  id: s22c.adversarial_code_review
+  inputs:
+  - result-audit
+  - preview-verdict
+  name: CODE REVIEW — адверсариальный разбор кода независимой моделью
+  outputs:
+  - code-review
+  phase: acceptance
+  prompt_patch: 'АДВЕРСАРИАЛЬНОЕ КОД-РЕВЬЮ (не отчётов). Обязан идти на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090 model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) → проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`. В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy) или provider deepseek; V4 Pro не использовать по умолчанию. Читай `git diff <base>...HEAD` и САМ КОД; локально запускай go build/vet/test, tsc/vitest; сверяй spec/openapi/common.yaml с фактическим поведением; форензика evidence. Ищи реальные дефекты: off-by-one, dead-end состояния, scope/RLS mismatch, дрейф контракта, утечки, мёртвый код. Read-only. Артефакт doc/идеи/<F>/code-review.json.  НЕЗАВИСИМОСТЬ (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ team-lead, НЕ автор). В артефакт пиши author_session_id (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться (gate-code-review fail-close при совпадении/отсутствии). Модель — по кросс-паре tools/model-policy.json. Самопроверка запрещена.'
+  track: B
+- id: s23.refinement
+  name: Доработка по замечаниям (sde-backend/sde-frontend)
+  description: 'Доработка по замечаниям (sde-backend/sde-frontend): результат — исправленный код. Опирается на: result-audit.
+
+    '
+  phase: acceptance
+  agent: sde-backend
+  track: A
+  mode: subagent
+  artifact: исправленный код
+  inputs:
+  - result-audit
+  outputs:
+  - refined-implementation
+  depends_on:
+  - s22.result_audit
+  - s22b.red_team_audit
+  - s22c.adversarial_code_review
+  optional: true
+  max_retries: 2
+  invalidates:
+  - s20a.unit_integrate
+  skip_satisfied_deps: true
+- id: s24a.branch_fresh
+  name: BRANCH-FRESH — head рабочей ветки = target_repo_head (C-17; opt-in)
+  description: 'Machine-guard свежести рабочей ветки до финальной приёмки: head(work_branch) обязан совпасть с доставляемым target_repo_head. Активация — entry point branch_guard + required_context [work_branch, target_repo_head].
+
+    '
+  phase: acceptance
+  agent: orc
+  track: infra
+  mode: all
+  inputs: []
+  outputs: []
+  depends_on:
+  - s23.refinement
+  - s22b.red_team_audit
+  - s22c.adversarial_code_review
+- id: s24.team_lead_accept
+  name: Приёмка и коммит (team-lead)
+  description: 'Приёмка и коммит (team-lead): результат — коммит + отчёт. Опирается на: refined-implementation, result-audit.
+
+    '
+  phase: done
+  agent: team-lead
+  track: infra
+  mode: all
+  artifact: коммит + отчёт
+  inputs:
+  - refined-implementation
+  - result-audit
+  outputs:
+  - committed
+  depends_on:
+  - s23.refinement
+  - s24a.branch_fresh
+  - s22c.adversarial_code_review
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - context
+    properties:
+      artifact_path:
+        type: string
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+            enum:
+            - orc_ctx
+            - arch_ctx
+          tokens:
+            type: integer
+          artifacts:
+            type: array
+            items:
+              type: string
+  arch_writes:
+  - type: commit_log
+    target: execution log в git
+- id: s45.push_primary
+  name: PUSH-PRIMARY — push уже влитой ветки в primary для старта CI (C-19; opt-in)
+  skippable: true
+  description: 'Явный push ДО post-deploy verify: терминальная финализация срабатывает только на завершении прогона (после s46), поэтому без явного push CI/деплой не стартуют. Пушит в {context.push_target} (свойство проекта).
+
+    '
+  phase: acceptance
+  agent: orc
+  track: infra
+  mode: all
+  inputs: []
+  outputs: []
+  depends_on:
+  - s24.team_lead_accept
+- id: s46.post_deploy_verify
+  name: POST-DEPLOY VERIFY — CI+образ+golden path по стенду (C-18; opt-in)
+  skippable: true
+  phase: acceptance
+  agent: tester-run
+  track: B
+  mode: subagent
+  inputs: []
+  outputs:
+  - post-deploy-verdict
+  depends_on:
+  - s45.push_primary
+  result_schema:
+    type: object
+    required:
+    - context
+    - evidence
+    - ci_run
+    - stand_image
+    - golden_path
+    - outcome
+    properties:
+      context:
+        type: object
+      evidence:
+        type: array
+      ci_run:
+        type: object
+      stand_image:
+        type: string
+      golden_path:
+        type: string
+      outcome:
+        type: string
+        enum:
+        - deploy_verified
+        - deploy_failed
+        - blocked_no_credentials
+sub_processes:
+  feature-unit:
+    id: feature-unit
+    params:
+    - unit_id
+    - sde
+    - change_class
+    - scope
+    - files
+    steps:
+    - id: s10.unit_plan
+      name: PLAN юнита (C-10)
+      agent: planner
+      track: docs
+      mode: subagent
+      result_schema:
+        type: object
+        required:
+        - unit_plan
+        - context
+        properties:
+          unit_plan:
+            type: array
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on: []
+    - id: s11.unit_execution
+      name: DO юнита (C-10)
+      agent: sde-backend
+      agent_param: sde
+      track: A
+      mode: subagent
+      result_schema:
+        type: object
+        required:
+        - artifact_path
+        - fixed_confirmed
+        - context
+        - evidence
+        properties:
+          artifact_path:
+            type: string
+          fixed_confirmed:
+            type: boolean
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+          evidence:
+            type: array
+            items:
+              type: object
+              required:
+              - id
+              - command
+              properties:
+                id:
+                  type: string
+                command:
+                  type: string
+                evidence_id:
+                  type: string
+                file:
+                  type: string
+                line:
+                  type: integer
+                before:
+                  type: string
+                after:
+                  type: string
+      context_updates:
+        report_path: '{result.artifact_path}'
+      depends_on:
+      - s10.unit_plan
+    - id: s11a.arch_approve
+      name: ARCH-APPROVE плана (when change_class ∈ security|invariant|arch; C-13)
+      agent: architect
+      track: infra
+      mode: all
+      when:
+        param: change_class
+        in:
+        - security
+        - invariant
+        - arch
+      result_schema:
+        type: object
+        required:
+        - approved
+        - context
+        properties:
+          approved:
+            type: boolean
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s10.unit_plan
+    - id: s12.unit_check
+      name: CHECK юнита (C-10)
+      agent: sde-backend
+      agent_param: sde
+      track: A
+      mode: subagent
+      result_schema:
+        type: object
+        required:
+        - fixed_confirmed
+        - context
+        - evidence
+        properties:
+          fixed_confirmed:
+            type: boolean
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+          evidence:
+            type: array
+            items:
+              type: object
+              required:
+              - id
+              - command
+              properties:
+                id:
+                  type: string
+                command:
+                  type: string
+                evidence_id:
+                  type: string
+                file:
+                  type: string
+                line:
+                  type: integer
+                before:
+                  type: string
+                after:
+                  type: string
+      depends_on:
+      - s11.unit_execution
+      - s11a.arch_approve
+    - id: s13.unit_verify
+      name: VERIFY юнита (architect ≠ executor; C-14/Правило 4)
+      agent: architect
+      track: infra
+      mode: all
+      result_schema:
+        type: object
+        required:
+        - verdict
+        - verified_by
+        - context
+        properties:
+          verdict:
+            type: string
+            enum:
+            - pass
+            - fail
+          verified_by:
+            type: string
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s12.unit_check
+    - id: s14.unit_quality
+      name: QUALITY юнита (crutch density)
+      agent: architect
+      track: infra
+      mode: all
+      result_schema:
+        type: object
+        required:
+        - crutch_density_grew
+        - context
+        properties:
+          crutch_density_grew:
+            type: boolean
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s13.unit_verify
+    - id: s15.unit_regression
+      name: REGRESSION юнита
+      agent: auditor
+      track: infra
+      mode: subagent
+      result_schema:
+        type: object
+        required:
+        - new_findings
+        - context
+        properties:
+          new_findings:
+            type: array
+            items:
+              type: object
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s13.unit_verify
+    - id: s16.unit_spec_sync
+      name: SPEC-SYNC юнита
+      agent: architect
+      track: infra
+      mode: all
+      result_schema:
+        type: object
+        required:
+        - synced
+        - context
+        properties:
+          synced:
+            type: boolean
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s13.unit_verify
+    - id: s17.unit_verdict
+      name: VERDICT юнита (machine outcome; C-14)
+      agent: orc
+      track: infra
+      mode: all
+      result_schema:
+        type: object
+        required:
+        - outcome
+        - context
+        properties:
+          outcome:
+            type: string
+            enum:
+            - clean
+            - not_clean
+            - new_findings
+          context:
+            type: object
+            required:
+            - source
+            - tokens
+            properties:
+              source:
+                type: string
+                enum:
+                - orc_ctx
+                - arch_ctx
+              tokens:
+                type: integer
+              artifacts:
+                type: array
+                items:
+                  type: string
+      depends_on:
+      - s14.unit_quality
+      - s15.unit_regression
+      - s16.unit_spec_sync
+    - id: s18.unit_merge_unit
+      name: MERGE_UNIT (machine merge в feature-ветку; C-14)
+      agent: orc
+      track: infra
+      mode: all
+      result_schema:
+        type: object
+        required:
+        - merged
+        properties:
+          merged:
+            type: boolean
+      depends_on:
+      - s17.unit_verdict
+    gates:
+      s13.unit_verify:
+      - id: gate-unit-executor-distinct
+        kind: executor-distinct
+        layer: 1
+        criteria:
+        - 'baseline_step: s12.unit_check'
+        on_fail:
+          action: retry
+          max_attempts: 2
+          reason: verify-executor не отличается от executor (Правило 4)
+          disposition: quarantine
+      s17.unit_verdict:
+      - id: gate-unit-verdict
+        kind: unit-verdict
+        layer: 1
+        criteria:
+        - 'fix_step: s12.unit_check'
+        - 'fix_field: fixed_confirmed'
+        - 'quality_step: s14.unit_quality'
+        - 'quality_field: crutch_density_grew'
+        - 'regression_step: s15.unit_regression'
+        - 'regression_field: new_findings'
+        - 'spec_sync_step: s16.unit_spec_sync'
+        - 'spec_sync_field: synced'
+        on_fail:
+          action: retry
+          max_attempts: 2
+          reason: unit outcome не подтверждён машиной (не-clean)
+          disposition: quarantine
+      s18.unit_merge_unit:
+      - id: gate-unit-merge
+        kind: merge-unit
+        layer: 1
+        criteria:
+        - 'branch: {context.parent_work_branch}'
+        on_fail:
+          action: retry
+          max_attempts: 2
+          reason: machine merge юнита в feature-ветку не выполнен
+          disposition: quarantine
+    branches:
+    - from: s13.unit_verify
+      condition: s13.unit_verify.verdict == 'fail'
+      target_step: s11.unit_execution
+      max_cycles: 2
+      on_exhausted: quarantine
+    - from: s17.unit_verdict
+      condition: s17.unit_verdict.outcome == 'not_clean'
+      target_step: s10.unit_plan
+      max_cycles: 2
+      on_exhausted: quarantine
+    - from: s11a.arch_approve
+      when:
+        param: change_class
+        in:
+        - security
+        - invariant
+        - arch
+      condition: s11a.arch_approve.approved != 'true'
+      target_step: s10.unit_plan
+      max_cycles: 2
+      on_exhausted: quarantine
+    - from: s12.unit_check
+      when:
+        param: change_class
+        in:
+        - security
+        - invariant
+        - arch
+      condition: s11a.arch_approve.approved != 'true'
+      target_step: s10.unit_plan
+      max_cycles: 2
+      on_exhausted: quarantine
+gates:
+  s06a.reality_snapshot:
+  - id: gate-snapshot-freshness
+    kind: freshness
+    layer: 1
+    criteria:
+    - 'commit_key: commit'
+    - 'head_ref: HEAD'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: снимок не пиннится к коммиту (freshness)
+      disposition: quarantine
+  - id: gate-snapshot-no-drift-proof
+    kind: no-drift-proof
+    layer: 1
+    criteria:
+    - 'scope_key: scope'
+    - 'nodes_key: nodes'
+    - 'node_kinds: all'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: не доказана полнота снимка (scope/nodes/ref/run_result)
+      disposition: quarantine
+  s06b.reconcile:
+  - id: gate-reconcile-coverage
+    kind: coverage
+    layer: 1
+    criteria:
+    - 'total_key: coverage.total'
+    - 'resolved_key: coverage.resolved'
+    - 'divergences_key: divergences'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: не каждая дивергенция покрыта вердиктом (coverage)
+      disposition: quarantine
+  - id: gate-reconcile-finding-block
+    kind: finding-block
+    layer: 1
+    criteria:
+    - 'divergences_key: divergences'
+    - 'scope: process'
+    - 'max_open_critical_high: 0'
+    on_fail: escalate
+  s06c.reconcile_verify:
+  - id: gate-reconcile-verify
+    kind: agent
+    layer: 4
+    criteria:
+    - verifier (architect) ≠ snapshot author (auditor)
+    - независимая перепроверка классификации дрейфа
+  - id: gate-rule4-executor-distinct
+    kind: executor-distinct
+    layer: 1
+    criteria:
+    - 'baseline_step: s06a.reality_snapshot'
+    - 'snapshot_actor_key: author'
+    - 'verify_actor_key: verified_by'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: verify-executor не отличается от snapshot-executor (Правило 4)
+      disposition: quarantine
+  s06e.reproduce:
+  - id: gate-drift-expected-actual
+    kind: command
+    layer: 1
+    command: '{context.drift_gate} verify --expected {context.canon} --actual {context.run_result}'
+    require_exit_zero: true
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: 'expected != actual: сделали не то, что описали (C-5)'
+      disposition: quarantine
+  - id: gate-repro-first
+    kind: repro-first
+    layer: 1
+    criteria:
+    - 'repro_key: repro'
+    - 'pre_key: pre_exit_code'
+    - 'post_key: post_exit_code'
+    - 'test_ref_key: test_ref'
+    - 'allow_missing_before: true'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: нет доказательства «падает до / проходит после» (F165 D6)
+      disposition: quarantine
+  s06.feature_brief_final:
+  - id: gate-invariant-present
+    kind: invariant-present
+    layer: 1
+    criteria:
+    - 'invariants_key: invariants'
+    - 'min: 1'
+    - 'require_test_ref_for: active'
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: в брифе нет invariants[] или у active-инварианта нет test_ref (F165 D9)
+      disposition: quarantine
+  - id: gate-test-ref-runnable
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh test-ref-runnable
+    criteria:
+    - каждый active-инвариант имеет исполнимо-опровержимый test_ref (ADR-KIT-090 A2)
+    on_fail: retry
+  s07.requirements_reconcile:
+  - id: gate-requirement-trace
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh requirement-trace {execution_id}
+    criteria:
+    - каждый пункт сырого запроса покрыт записью items[]; verdict=reinterpreted/added без confirmed_by_human → fail-close (F190 C-22)
+    on_fail: retry
+  s08.intent_brief_review:
+  - id: gate-intent-review-approval
+    kind: approval
+    layer: 5
+    subject: brief
+    profile: blob
+    target: '{context.feature_dir}/intent-brief.md'
+    criteria:
+    - 'approval_ref: {context.approval_ref}'
+    - 'paths: doc/идеи/**,doc/**'
+    on_fail: escalate
+  s10.change_definition:
+  - id: gate-change-def-exists
+    kind: artifact-exists
+    layer: 1
+    target: '{feature_id}/change-definition'
+    on_fail: escalate
+  - id: gate-change-def-schema
+    kind: schema-valid
+    layer: 2
+    target: '{feature_id}/change-definition'
+    target_type: change-definition
+    on_fail: escalate
+  s13.plan_save:
+  - id: gate-plan-md-exists
+    kind: artifact-exists
+    layer: 1
+    target: '{feature_id}/plan.md'
+    on_fail: retry
+  s14.spec_generation:
+  - id: gate-spec-core-exists
+    kind: artifact-exists
+    layer: 1
+    on_fail: retry
+    target: '{feature_id}/spec/core.md'
+  - criteria:
+    - 'source: orc_ctx|arch_ctx'
+    - 'min_tokens: 1'
+    - 'max_tokens: 15000'
+    - 'require_artifacts: true'
+    - 'require_evidence: false'
+    - 'require_command: false'
+    id: ctx-manifest
+    kind: context-manifest
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: s14 без манифеста контекста (orc_ctx + result.context{source,tokens,artifacts})
+  - criteria:
+    - 'drift_key: contract_parity.drift_count'
+    - 'items_key: contract_parity.items'
+    - 'max_drift: 5'
+    - 'allow_ids: T-18,T-20,T-25,T-26,T-27'
+    - 'spec_glob: openapi/modules/*.yaml'
+    - 'code_root: .'
+    - 'generated_dir: internal/api/generated'
+    id: gate-contract-diff-present
+    kind: contract-sync
+    layer: 2
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: s14 не предъявил contract_diff/parity (F165 D10/D5)
+  - command: python3 tools/check-contract-matrix.py --root .
+    id: gate-contract-matrix
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 1
+      reason: спеке не хватает контракт-матрицы
+  s16.brief_tasks: []
+  s17.coverage_audit:
+  - id: gate-coverage-report
+    kind: schema-valid
+    layer: 2
+    on_fail: escalate
+    target: '{feature_id}/coverage-audit.md'
+    target_type: decision
+  - criteria:
+    - 'source: orc_ctx|arch_ctx'
+    - 'min_tokens: 1'
+    - 'max_tokens: 20000'
+    - 'require_artifacts: true'
+    - 'require_evidence: false'
+    - 'require_command: false'
+    id: ctx-manifest
+    kind: context-manifest
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: s17 без манифеста контекста (orc_ctx + result.context{source,tokens,artifacts})
+  - command: bash tools/path1-gate.sh coverage-verdict {execution_id}
+    criteria:
+    - 'artifact: doc/идеи/<F>/coverage-audit.json (машинное зеркало отчёта s17)'
+    - 'verdict: pass|pass_with_gaps|fail; verdict=fail → FAIL'
+    - 'gaps[].severity: info|minor|major|critical; любой major/critical → FAIL (owner обязателен)'
+    - pass_with_gaps только с info/minor → PASS и s20 открывается
+    id: gate-coverage-verdict
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 'coverage verdict fail-close: verdict=fail или gap major/critical — s20 не открывается, работает ветка s17→s16'
+    require_exit_zero: true
+  - command: python3 tools/check-spec-coverage.py --root .
+    id: gate-spec-coverage
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 1
+      reason: пункты контракта без оракулов
+  s20a.unit_integrate:
+  - id: gate-tools-untouched
+    kind: command
+    layer: 1
+    command: '[ ! -d tools ] || bash tools/check-tools-untouched.sh'
+    require_exit_zero: true
+    on_fail: escalate
+  - command: if [ -d orc ]; then for m in orc archd arch-validate nexus; do (cd "$m" && go build ./...) || exit 1; done; elif [ -f backend/go.mod ]; then (cd backend && go build ./...) || exit 1; elif [ -f go.mod ]; then go build ./... || exit 1; else echo skip; fi
+    criteria:
+    - 'Contract-тесты проходят (archkit-монорепо: мультимодульная сборка orc/archd/arch-validate/nexus; app-репо — no-op)'
+    id: gate-l0-contract
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - command: bash tools/gate-l1-unit.sh
+    criteria:
+    - Unit-тесты зелёные
+    - 'F157: сборка+vet+unit-тесты локально, как в CI'
+    id: gate-l1-unit
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - command: if [ -f .golangci.yml ] || [ -f .golangci.yaml ]; then golangci-lint run --timeout=3m; elif [ -f backend/.golangci.yml ] || [ -f backend/.golangci.yaml ]; then (cd backend && golangci-lint run --timeout=3m); else echo skip; fi
+    criteria:
+    - 'golangci-lint проходит (CI: e2e-boot/lint-typecheck)'
+    id: gate-l1-lint
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - command: if [ -f nexus-ui/tsconfig.json ]; then (cd nexus-ui && npm ci --no-audit --no-fund && npx tsc --noEmit --strict) || exit 1; elif [ -f frontend/tsconfig.json ]; then (cd frontend && npm ci --no-audit --no-fund && npx tsc --noEmit) || exit 1; else echo skip; fi
+    criteria:
+    - 'nexus-ui TypeScript strict проходит (F157: локально зелёно = CI зелёно)'
+    id: gate-l1-typecheck
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - command: bash tools/check-integration-on-stand.sh {execution_id}
+    criteria:
+    - Интеграция реально прогнана против БД арендованного стенда (TEST_DATABASE_URL, ADR-KIT-091)
+    - Нет TEST_DATABASE_URL/INTEGRATION_CMD/docker → fail-close, не pass
+    id: gate-l2-integration
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - command: '[ ! -f storybook/gate-storybook.mjs ] || node storybook/gate-storybook.mjs'
+    criteria:
+    - Каждый компонент frontend/src/ui/ имеет .stories.tsx (если фича трогает UI/Storybook/mocks/arch-frontend)
+    - 'Условный гейт: backend-only фичи — мгновенный PASS (diff-скоп)'
+    id: gate-storybook-compliance
+    kind: auto
+    layer: 1
+    on_fail: retry
+  - criteria:
+    - 'artifact_key: artifact_path'
+    - 'strict: true'
+    id: gate-deliverable
+    kind: deliverable
+    layer: 1
+    on_fail: retry
+  - criteria:
+    - Код соответствует core.md
+    - OpenAPI-first соблюдён
+    id: gate-spec-compliance
+    kind: spec-compliance
+    layer: 2
+    on_fail: escalate
+  - criteria:
+    - 'drift_key: contract_parity.drift_count'
+    - 'items_key: contract_parity.items'
+    - 'max_drift: 5'
+    - 'allow_ids: T-18,T-20,T-25,T-26,T-27'
+    - 'spec_glob: openapi/modules/*.yaml'
+    - 'code_root: .'
+    - 'generated_dir: internal/api/generated'
+    id: gate-contract-sync
+    kind: contract-sync
+    layer: 2
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: код и openapi разошлись (F165 D5)
+  - criteria:
+    - 'divergent_key: divergent'
+    - 'counts_key: counts'
+    - 'baseline_key: baseline'
+    - 'max_delta: 0'
+    - 'ratchet: true'
+    - 'models_glob: doc/спецификация/**/openapi.yaml'
+    - 'code_root: .'
+    id: gate-model-drift
+    kind: model-drift
+    layer: 3
+    on_fail: escalate
+  - criteria:
+    - 'step: s06.feature_brief_final'
+    - 'invariants_key: invariants'
+    - 'test_ref_key: test_ref'
+    - 'fail_on_missing: true'
+    - 'mutation: false'
+    - 'runner: auto'
+    - 'require_test_ref_for: active'
+    - 'require_executed: true'
+    id: gate-invariant-enforced
+    kind: invariant-enforced
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: test_ref активных инвариантов не прогнан или упал (F165 D4)
+  - criteria:
+    - Архитектор подтверждает качество
+    id: gate-agent-review
+    kind: agent
+    layer: 4
+    on_fail: escalate
+  - criteria:
+    - 'source: orc_ctx|arch_ctx'
+    - 'min_tokens: 1'
+    - 'max_tokens: 25000'
+    - 'require_artifacts: true'
+    - 'require_evidence: true'
+    - 'require_command: true'
+    id: ctx-manifest
+    kind: context-manifest
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 's20 без манифеста контекста и evidence-trail: orc_ctx + context{source,tokens,artifacts} + evidence[{id,command,...}]'
+  - command: if [ ! -f openapi/common.yaml ]; then echo "gate-shared-contract N/A - canon at doc/спецификация/lead-domain/openapi.yaml"; exit 0; fi; python3 tools/check-shared-contract.py --common openapi/common.yaml --modules 'openapi/modules/*.yaml'
+    criteria:
+    - модули не подменяют общий контракт; error-envelope через $ref common.yaml#APIError (ADR-KIT-090 A4)
+    id: gate-shared-contract
+    kind: command
+    layer: 2
+    on_fail: retry
+  s22a.ui_audit:
+  - command: bash tools/path1-gate.sh ui-audit {execution_id}
+    id: gate-ui-audit-machine
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: UI-аудит не проходит машингейт (схема/oracle/DoD/привязка к стенду)
+  - criteria:
+    - 'criteria_key: items'
+    - 'oracles_key: items'
+    - 'criterion_id_key: id'
+    - 'proof_key: evidence'
+    - 'max_missing: 0'
+    - 'require_proof: true'
+    id: gate-ui-audit-oracle
+    kind: oracle-cited
+    layer: 4
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: критерий UI без оракула
+  - criteria:
+    - 'agent: designer'
+    - 'verdict: accept|reject'
+    id: gate-ui-audit-accept
+    kind: agent
+    layer: 2
+    on_fail:
+      action: escalate
+      reason: designer не принял UI-аудит
+  - criteria:
+    - 'max_open_critical_high: 0'
+    id: gate-ui-audit-dod
+    kind: findings-dod
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 1
+      reason: открыты critical/high по UI
+  s22d.mobile_probe:
+  - command: bash tools/path1-gate.sh mobile-lab {execution_id}
+    id: gate-mobile-lab
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 'mobile-lab: устройства недоступны или нет реальных доказательств (оба движка)'
+  s22.result_audit:
+  - command: bash tools/path1-gate.sh fault-catalog {execution_id}
+    id: gate-fault-catalog
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 'каталог отказов не пройден: нет вердикта/доказательства по классу (ADR-KIT-091)'
+  - id: gate-result-audit
+    kind: schema-valid
+    layer: 2
+    on_fail:
+      action: refine
+      max_refine_cycles: 2
+      refine_step: s23.refinement
+    target: '{feature_id}/result-audit'
+    target_type: decision
+  - criteria:
+    - 'criteria_key: acceptance_criteria'
+    - 'oracles_key: oracles'
+    - 'max_missing: 0'
+    - 'require_proof: true'
+    id: gate-oracle-cited
+    kind: oracle-cited
+    layer: 4
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: критерий приёмки без независимого оракула/proof (F165 D7)
+  - criteria:
+    - 'source: orc_ctx|arch_ctx'
+    - 'min_tokens: 1'
+    - 'max_tokens: 25000'
+    - 'require_artifacts: true'
+    - 'require_evidence: true'
+    - 'require_command: true'
+    - 'require_proof: true'
+    id: ctx-manifest
+    kind: context-manifest
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 's22 без контекста/evidence/proof: нужен orc_proof_run и evidence[{id,command,evidence_id}]'
+  - id: gate-open-findings-verdict
+    kind: command
+    layer: 1
+    command: bash /opt/gate-tools/tools/check-open-findings-verdict.py {execution_id}
+    on_fail:
+      action: refine
+      refine_step: s23.refinement
+      max_refine_cycles: 2
+  s24.team_lead_accept:
+  - id: gate-tools-untouched
+    kind: command
+    layer: 1
+    command: '[ ! -d tools ] || bash tools/check-tools-untouched.sh'
+    require_exit_zero: true
+    on_fail: escalate
+  - id: gate-acceptance-approval
+    kind: approval
+    layer: 5
+    subject: s24
+    profile: blob
+    target: '{context.report_path}'
+    criteria:
+    - 'approval_ref: {context.approval_ref}'
+    - 'paths: doc/идеи/**,doc/**,artifacts/**'
+    on_fail: escalate
+  - id: gate-findings-seed
+    kind: findings-seed
+    layer: 1
+    on_fail: escalate
+  - criteria:
+    - 'artifact_key: artifact_path'
+    - 'strict: true'
+    id: gate-deliverable
+    kind: deliverable
+    layer: 1
+    on_fail: retry
+  - command: test -s {context.report_path}
+    id: gate-report-nonempty
+    kind: command
+    layer: 1
+    on_fail: retry
+    require_exit_zero: true
+  - command: '[ ! -d tools/procmeta ] || go run ./tools/procmeta -check'
+    id: gate-process-meta-lint
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: process-мета рассинхронизирована (knownGateKinds ↔ schema/FORMAT, F165 D8)
+    require_exit_zero: true
+  - criteria:
+    - 'source: orc_ctx|arch_ctx'
+    - 'min_tokens: 1'
+    - 'max_tokens: 15000'
+    - 'require_artifacts: false'
+    - 'require_evidence: false'
+    - 'require_command: false'
+    id: ctx-manifest
+    kind: context-manifest
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: s24 без манифеста контекста (orc_ctx + result.context{source,tokens})
+  - criteria:
+    - 'scope: project'
+    - 'max_open_critical_high: 0'
+    - 'require_seeded: true'
+    - 'expected_total: auto'
+    id: gate-findings-dod
+    kind: findings-dod
+    layer: 1
+    on_fail: escalate
+  - criteria:
+    - 'scope: process'
+    - 'step: s22.result_audit'
+    - 'divergences_key: new_findings'
+    - 'max_open_critical_high: 0'
+    id: gate-findings-dod-process
+    kind: findings-dod
+    layer: 1
+    on_fail: escalate
+  - criteria:
+    - 'step: s22.result_audit'
+    - 'criteria_key: acceptance_criteria'
+    - 'oracles_key: oracles'
+    - 'max_missing: 0'
+    - 'require_proof: true'
+    id: gate-oracle-cited-final
+    kind: oracle-cited
+    layer: 4
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: финальная приёмка без оракулов аудита s22 (F165 D7)
+  - command: bash tools/path1-gate.sh graph-actualized {execution_id}
+    criteria:
+    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном (E3877)
+    id: gate-graph-actualized
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 'UI-фича не актуализирована в UI-графе: модель разъезжается с кодом (выполни s21.graph_actualize)'
+  - command: bash tools/path1-gate.sh mobile-lab {execution_id}
+    id: gate-mobile-lab
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: 'mobile-lab: устройства недоступны или нет реальных доказательств (оба движка)'
+  - command: bash tools/check-stand-leased.sh {execution_id}
+    id: gate-stand-leased-accept
+    kind: command
+    layer: 1
+    on_fail: retry
+  - command: bash tools/path1-gate.sh scenario-coverage
+    id: gate-scenario-coverage
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: сценарии без пройденного E2E/скриншота
+  - command: bash tools/check-preview-evidence.sh
+    id: gate-preview-verified
+    kind: command
+    layer: 1
+    on_fail: retry
+  - command: bash tools/path1-gate.sh fault-catalog
+    id: gate-red-team-verdict
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: red-team вердикт отсутствует
+  - command: bash tools/check-evidence-authentic.sh {execution_id}
+    id: gate-evidence-authentic
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: доказательства не прошли проверку
+  s24a.branch_fresh:
+  - id: gate-branch-fresh
+    kind: command
+    layer: 1
+    command: test "$(git ls-remote origin refs/heads/{context.work_branch} | cut -f1)" = "{context.target_repo_head}"
+    require_exit_zero: true
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: head(work_branch) ≠ target_repo_head (C-17)
+      disposition: quarantine
+  s45.push_primary:
+  - id: gate-push-primary
+    kind: command
+    layer: 1
+    command: git push origin {context.push_target}
+    require_exit_zero: true
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: push в {context.push_target} не удался (C-19)
+      disposition: quarantine
+  s46.post_deploy_verify:
+  - id: gate-post-deploy-ci
+    kind: ci-status
+    layer: 1
+    workflows_context: ci_workflows
+    allow_missing: true
+    on_fail:
+      action: retry
+      max_attempts: 3
+      reason: CI/образ стенда не зелёный (C-18)
+      disposition: quarantine
+  - id: gate-post-deploy-golden
+    kind: command
+    layer: 1
+    command: '{context.golden_path_command}'
+    require_exit_zero: true
+    on_fail:
+      action: refine
+      refine_step: s10.change_definition
+      max_refine_cycles: 2
+      disposition: quarantine
+  s21.graph_actualize:
+  - id: gate-graph-actualized
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh graph-actualized {execution_id}
+    criteria:
+    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном (E3877)
+    on_fail:
+      action: retry
+      max_attempts: 2
+      reason: 'UI-фича не актуализирована в UI-графе: модель разъезжается с кодом (выполни s21.graph_actualize)'
+      disposition: quarantine
+  s19.stand_lease:
+  - command: bash tools/check-stand-leased.sh {execution_id}
+    id: gate-stand-leased
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: нет активной аренды стенда
+  s20.sde_execution:
+  - command: bash tools/check-stand-leased.sh {execution_id}
+    id: gate-stand-leased-work
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: работа без арендованного стенда
+  - command: bash tools/check-no-self-mock.sh
+    id: gate-no-self-mock
+    kind: command
+    layer: 1
+    on_fail: retry
+  s20b.preview_deploy:
+  - command: bash tools/path1-gate.sh preview-deploy {execution_id}
+    id: gate-preview-deploy
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 1
+      reason: выкат на стенд не удался
+  s20c.preview_verify:
+  - command: bash tools/path1-gate.sh e2e-preview {execution_id}
+    id: gate-e2e-preview
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: E2E на стенде не зелёный
+  s22b.red_team_audit:
+  - command: bash tools/canary-run.sh {execution_id}
+    id: gate-canary-run
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: canary-контур не отработал (детекторы/DSN/PATH) — доказательства ревью недостоверны
+  - command: bash /opt/gate-tools/tools/path1-gate.sh canary {execution_id}
+    id: gate-canary
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: канарейки не найдены
+  - command: bash tools/path1-gate.sh fault-catalog
+    id: gate-fault-catalog
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: неразобранные пункты каталога
+  - command: bash tools/path1-gate.sh fault-catalog-exec {execution_id}
+    id: gate-fault-catalog-exec
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: детектор каталога не исполняется
+  - command: bash tools/path1-gate.sh catalog-invariants
+    id: gate-catalog-invariants
+    kind: command
+    layer: 1
+    on_fail:
+      action: refine
+      refine_step: s23.refinement
+      max_refine_cycles: 2
+  s22c.adversarial_code_review:
+  - command: bash tools/check-code-review.sh
+    id: gate-code-review
+    kind: command
+    layer: 1
+    on_fail:
+      action: refine
+      refine_step: s23.refinement
+      max_refine_cycles: 2
+  - command: bash tools/path1-gate.sh catalog-invariants
+    id: gate-catalog-invariants
+    kind: command
+    layer: 1
+    on_fail:
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: high/critical каталога не покрыты инвариантами
+branches:
+- from: s17.coverage_audit
+  condition: s17.coverage_audit.verdict == 'fail' OR (s17.coverage_audit.verdict == 'pass_with_gaps' AND s17.coverage_audit.gaps_has_blocking == 'true')
+  target_step: s16.brief_tasks
+  priority: 2
+  max_cycles: 2
+  on_exhausted: quarantine
+- condition: s22.result_audit == 'fail' AND retry_count < 2
+  target_step: s23.refinement
+  priority: 1
+  max_cycles: 2
+  on_exhausted: quarantine
+- condition: retry_count >= 2
+  target_step: escalation
+  priority: 0
+escalations:
+- problem_type: architectural
+  trigger_after_retries: 2
+  route_to: architect
+  severity_threshold: high
+  description: 'Design violations, cross-domain impacts, pattern mismatches.
+
+    '
+- problem_type: scope
+  trigger_after_retries: 1
+  route_to: architect
+  severity_threshold: critical
+  description: 'Scope changes beyond feature boundary. Architect оценивает влияние и принимает решение.
+
+    '
+- problem_type: quality
+  trigger_after_retries: 2
+  route_to: team-lead
+  severity_threshold: high
+  description: 'Performance degradation, code smells, maintainability concerns.
+
+    '
+monitoring:
+  enabled: true
+  metrics_tracked:
+  - step_duration_seconds
+  - total_execution_time
+  - waiting_for_resources_ms
+  - idle_time_between_steps
+  alerts_only_when:
+    process_halted:
+      condition: no_activity_for_5min AND not_waiting_for_resource
+      action: notify_team_lead
+    resource_contention_detected:
+      condition: queue_length > threshold
+      action: log_and_monitor
+  NO_AUTO_ESCALATION:
+    policy: monitor_and_log_only
+    rationale: 'Агенты могут легитимно ждать доступ к GPU/CPU ресурсам. Автоматическая эскалация по времени приведёт к false positives. Время — это контекст для человека принимающего решение, но НЕ триггер для автоматических действий.
+
+      '
+conflict_policy:
+  default_strategy: serialize
+  timeout_seconds: 300
+  on_timeout:
+    action: notify_team_lead
+    message: Resource conflict resolution timeout exceeded

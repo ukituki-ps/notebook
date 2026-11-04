@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "no_self_mock": {
+    "go_roots": ["."],
+    "js_roots": []
+  },
+  "detectors": {
+    "go_roots": ["."],
+    "catalog_dir": "audit/fault-catalog"
+  },
+  "canaries": {
+    "clean_units": [],
+    "items": []
+  },
+  "feature_dir": {
+    "artifact_globs": ["doc/идеи/*/{name}", "doc/идеи/*/*/{name}"]
+  },
+  "e2e": {
+    "frontend_dir": "",
+    "command": ""
+  },
+  "deploy": {
+    "stand_command": ""
+  }
+}
