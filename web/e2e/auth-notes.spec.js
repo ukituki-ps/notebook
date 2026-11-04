@@ -30,6 +30,9 @@ async function loginViaUI(page, username, password = PASSWORD) {
   await page.getByTestId("login-submit").click();
   await page.waitForURL(/\/notes$/);
   await expect(page.getByTestId("notes-loading")).toBeHidden();
+  // The loading marker starts hidden in the static HTML. Wait for the notes
+  // form to actually become usable, otherwise the next fill races loadNotes().
+  await expect(page.getByTestId("note-input")).toBeEnabled();
 }
 
 async function createUserAndLogin(page, request, prefix) {
@@ -41,7 +44,9 @@ async function createUserAndLogin(page, request, prefix) {
 
 async function addNote(page, text) {
   await page.getByTestId("note-input").fill(text);
-  await page.getByTestId("add-note").click();
+  const add = page.getByTestId("add-note");
+  await expect(add).toBeEnabled();
+  await add.click();
   const item = page.getByTestId("note-item").filter({ hasText: text });
   await expect(item).toBeVisible();
   return item;

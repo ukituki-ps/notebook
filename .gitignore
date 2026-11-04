@@ -10,3 +10,6 @@ doc/идеи/f-v3-auth-notes/e2e-report.json
 
 # Test-only Node deps from e2e runner (CR-5).
 node_modules/
+
+# Playwright per-run output (not committed).
+test-results/
