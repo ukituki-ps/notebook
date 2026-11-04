@@ -103,3 +103,9 @@ U01 и U03 вошли machine merge без конфликтов. U02 смерд�
 - `go build ./...` — OK
 - `go test ./...` — OK
 - `go vet ./...` — OK
+
+## Counts semantics (s20a)
+
+- `code=2851` — строки diff (U01+U02+U03), не drift.
+- `delta=0`, `drifted=0` — ни одна модель-единица не разошлась с кодом.
+- `model=8` — C1–C8 change-definition.
