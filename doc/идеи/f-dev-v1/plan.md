@@ -21,3 +21,6 @@
 - Все тесты зелёные.
 - List/Add не меняются.
 - Нет новых зависимостей.
+
+---
+Artifact: `f-dev-v1/plan.md` (approved in dev Nexus).
