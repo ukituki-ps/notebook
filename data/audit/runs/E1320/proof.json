@@ -1,0 +1,182 @@
+{
+  "mode": "execute",
+  "ok": true,
+  "results": [
+    {
+      "id": "CONTRACT-WIRE-CASING",
+      "status": "skipped_na",
+      "justification": "Нет wire-адаптера/casing-слоя."
+    },
+    {
+      "id": "CONTRACT-ERROR-ENVELOPE",
+      "status": "skipped_na",
+      "justification": "В app-репо нет общего error-envelope контракта (нет openapi/common.yaml); ошибки локальные строки."
+    },
+    {
+      "id": "CONTRACT-STATUS-CODE",
+      "status": "ok",
+      "exit": 0,
+      "detect": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed' ./...",
+      "stdout_sha256": "7769bb9bd97b2406"
+    },
+    {
+      "id": "CONTRACT-NULL-OMITEMPTY",
+      "status": "skipped_na",
+      "justification": "Нет optional/nullable wire-полей."
+    },
+    {
+      "id": "CONTRACT-DATE-BOUNDARY",
+      "status": "skipped_na",
+      "justification": "API не содержит дат/временных границ."
+    },
+    {
+      "id": "DATA-ADAPTER-REAL-TRANSPORT",
+      "status": "skipped_na",
+      "justification": "In-memory Store, нет transport-адаптера."
+    },
+    {
+      "id": "DATA-CURSOR-STABLE-KEY",
+      "status": "skipped_na",
+      "justification": "Нет пагинации/курсоров."
+    },
+    {
+      "id": "DATA-HASMORE-OVERSCAN",
+      "status": "skipped_na",
+      "justification": "Нет пагинации/overscan."
+    },
+    {
+      "id": "DATA-SCOPE-VALIDATION",
+      "status": "skipped_na",
+      "justification": "Нет scope-модели."
+    },
+    {
+      "id": "DATA-DESCRIPTION-DERIVATION",
+      "status": "skipped_na",
+      "justification": "Нет производных описаний."
+    },
+    {
+      "id": "SEC-RLS-SCOPE-PREDICATE",
+      "status": "skipped_na",
+      "justification": "Нет БД/RLS."
+    },
+    {
+      "id": "SEC-SKIP-TAGGED-INVARIANT",
+      "status": "skipped_na",
+      "justification": "Нет skip-tagged инвариантов."
+    },
+    {
+      "id": "SEC-PREFIX-BOUNDARY",
+      "status": "skipped_na",
+      "justification": "Нет prefix-based авторизации."
+    },
+    {
+      "id": "SEC-WRITE-VERB-REJECT",
+      "status": "ok",
+      "exit": 0,
+      "detect": "go test -count=1 -run TestNotesMethodNotAllowed ./...",
+      "stdout_sha256": "e4dbfa8dbb4f5e14"
+    },
+    {
+      "id": "SEC-ERROR-LEAK",
+      "status": "ok",
+      "exit": 0,
+      "detect": "go test -count=1 -run TestDeleteErrorEnvelope ./...",
+      "stdout_sha256": "7769bb9bd97b2406"
+    },
+    {
+      "id": "UI-EMPTY-STATE-CONTROLS",
+      "status": "skipped_na",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-DATE-BOUNDARY",
+      "status": "skipped_na",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-LOADING-ERROR-STATES",
+      "status": "skipped_na",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-FILTER-SERIALIZATION",
+      "status": "skipped_na",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-E2E-PREVIEW",
+      "status": "skipped_na",
+      "justification": "Backend-only: UI-surface отсутствует; API smoke выполнен (preview-verdict verified, mode=api)."
+    }
+  ],
+  "skipped_na": [
+    {
+      "id": "CONTRACT-WIRE-CASING",
+      "justification": "Нет wire-адаптера/casing-слоя."
+    },
+    {
+      "id": "CONTRACT-ERROR-ENVELOPE",
+      "justification": "В app-репо нет общего error-envelope контракта (нет openapi/common.yaml); ошибки локальные строки."
+    },
+    {
+      "id": "CONTRACT-NULL-OMITEMPTY",
+      "justification": "Нет optional/nullable wire-полей."
+    },
+    {
+      "id": "CONTRACT-DATE-BOUNDARY",
+      "justification": "API не содержит дат/временных границ."
+    },
+    {
+      "id": "DATA-ADAPTER-REAL-TRANSPORT",
+      "justification": "In-memory Store, нет transport-адаптера."
+    },
+    {
+      "id": "DATA-CURSOR-STABLE-KEY",
+      "justification": "Нет пагинации/курсоров."
+    },
+    {
+      "id": "DATA-HASMORE-OVERSCAN",
+      "justification": "Нет пагинации/overscan."
+    },
+    {
+      "id": "DATA-SCOPE-VALIDATION",
+      "justification": "Нет scope-модели."
+    },
+    {
+      "id": "DATA-DESCRIPTION-DERIVATION",
+      "justification": "Нет производных описаний."
+    },
+    {
+      "id": "SEC-RLS-SCOPE-PREDICATE",
+      "justification": "Нет БД/RLS."
+    },
+    {
+      "id": "SEC-SKIP-TAGGED-INVARIANT",
+      "justification": "Нет skip-tagged инвариантов."
+    },
+    {
+      "id": "SEC-PREFIX-BOUNDARY",
+      "justification": "Нет prefix-based авторизации."
+    },
+    {
+      "id": "UI-EMPTY-STATE-CONTROLS",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-DATE-BOUNDARY",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-LOADING-ERROR-STATES",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-FILTER-SERIALIZATION",
+      "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+    },
+    {
+      "id": "UI-E2E-PREVIEW",
+      "justification": "Backend-only: UI-surface отсутствует; API smoke выполнен (preview-verdict verified, mode=api)."
+    }
+  ]
+}
