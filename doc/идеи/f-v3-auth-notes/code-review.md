@@ -327,3 +327,8 @@ task_id) — team-lead заполнит при приёмке; (3) код/ада
 
 Nexus artifact: `f-v3-auth-notes/code-review.md` (s22c.adversarial_code_review, E4312).
 Reviewer: независимый adversarial code review (НЕ автор, НЕ s22b; self-review не выполнялся).
+
+## Re-review after s23/platform fix
+
+- Preview `ea1e61f`, Playwright 1.64.1, E2E 7/7.
+- Код не менялся после ревью; findings CR-1…CR-5 прежние (0 critical/high), proofs валидны.
