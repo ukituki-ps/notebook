@@ -2,7 +2,7 @@
 
 - **Platform:** web
 - **Stand:** `https://test2.nexus.ukituki.tech`
-- **Preview ref / stand.sha:** `4fbfbb15708194e1fb2545bce354f955b462d935` (`4fbfbb1`; UI/API идентичны `80478e4`, commit добавляет только actualized UI-граф)
+- **Preview ref / stand.sha:** `ea1e61ffca92b6a7b9982e58c8c3fa97c106e1c7` (`ea1e61f`; UI/API идентичны `80478e4`; E2E 7/7 на Playwright 1.64.1)
 - **Audit scope:** чек-лист A–L, фактические `web/index.html`, `web/app.js`, `web/app.css`, actualized `arch/structure/ui-pages/*.yaml`, `web/e2e/auth-notes.spec.js`, `spec/core.md`.
 - **Evidence:** `doc/идеи/f-v3-auth-notes/scenario-evidence.json` + screenshots `E2E-1.png … E2E-7.png` (per-run артефакты execution root, в git не коммитятся).
 
@@ -53,10 +53,10 @@
 `stand.sha` в `ui-audit.json` равен ровно:
 
 ```
-4fbfbb15708194e1fb2545bce354f955b462d935
+ea1e61ffca92b6a7b9982e58c8c3fa97c106e1c7
 ```
 
-Это preview-deploy ref (`4fbfbb1`), на котором выполняется E2E-прогон; UI/API идентичны `80478e4`, commit меняет только actualized UI-граф.
+Это preview-deploy ref (`ea1e61f`), на котором выполнен E2E-прогон 7/7; UI/API идентичны `80478e4`.
 
 ## Evidence
 
