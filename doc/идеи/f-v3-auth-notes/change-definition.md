@@ -254,3 +254,6 @@
 | R10 | Dockerfile без `web/` или новые `.go` не скопированы | embed-сборка/образ падает | `COPY web/` (и `COPY *.go`) в build stage, локальный `docker build` | s20/s20b |
 | R11 | localStorage + HTTP на стенде (XSS/перехват) | компрометация сессии | dev-only допущение, TTL 24h, пароль не хранится, `Cache-Control: no-store` | s20 |
 | R12 | `/healthz` стенда — nginx JSON, app — `ok`; E2E путает | ложный E2E-фейл/успех | e2e проверяет UI/API; health-контракт nginx сохраняется | s20c |
+
+---
+Nexus artifact: `f-v3-auth-notes/change-definition` (draft, project f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9).
