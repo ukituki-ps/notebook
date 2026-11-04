@@ -11,14 +11,7 @@ const { test, expect } = require("@playwright/test");
 const BASE_URL = process.env.E2E_BASE_URL || "http://127.0.0.1:9082";
 const PASSWORD = "password123";
 
-// s20c requires one screenshot per scenario: doc/идеи/f-v3-auth-notes/screenshots/E2E-N.png.
-test.afterEach(async ({ page }, testInfo) => {
-  const m = testInfo.title.match(/^E2E-\d+/);
-  if (!m) return;
-  const dir = path.join(process.cwd(), "doc", "идеи", "f-v3-auth-notes", "screenshots");
-  fs.mkdirSync(dir, { recursive: true });
-  await page.screenshot({ path: path.join(dir, `${m[0]}.png`), fullPage: true });
-});
+
 
 function uniqueUsername(prefix) {
   const stamp = Date.now().toString(36);
@@ -63,6 +56,13 @@ async function addNote(page, text) {
   return item;
 }
 
+// s20c requires one scenario-specific screenshot per E2E id.
+async function shot(page, id) {
+  const dir = path.join(process.cwd(), "doc", "идеи", "f-v3-auth-notes", "screenshots");
+  fs.mkdirSync(dir, { recursive: true });
+  await page.screenshot({ path: path.join(dir, `${id}.png`), fullPage: true });
+}
+
 test("E2E-1 register: valid account redirects to /login with username prefilled", async ({ page }) => {
   const username = uniqueUsername("er");
 
@@ -75,6 +75,7 @@ test("E2E-1 register: valid account redirects to /login with username prefilled"
 
   await page.waitForURL(/\/login$/);
   await expect(page.getByTestId("login-form").getByTestId("login-username")).toHaveValue(username);
+  await shot(page, "E2E-1");
 });
 
 test("E2E-2 login and token: 200 stores notebook.token and opens /notes", async ({ page, request }) => {
@@ -88,6 +89,7 @@ test("E2E-2 login and token: 200 stores notebook.token and opens /notes", async 
   expect(token).toBeTruthy();
   expect(storedUser).toBe(username);
   await expect(page.getByTestId("note-form")).toBeVisible();
+  await shot(page, "E2E-2");
 });
 
 test("E2E-3 create note: Add renders #id text in notes-list", async ({ page, request }) => {
@@ -99,6 +101,7 @@ test("E2E-3 create note: Add renders #id text in notes-list", async ({ page, req
   await expect(item).toHaveAttribute("data-note-id", /^\d+$/);
   await expect(item).toContainText("#");
   await expect(page.getByTestId("notes-empty")).toBeHidden();
+  await shot(page, "E2E-3");
 });
 
 test("E2E-4 reload: note stays visible after page.reload()", async ({ page, request }) => {
@@ -111,6 +114,7 @@ test("E2E-4 reload: note stays visible after page.reload()", async ({ page, requ
   await expect(page.getByTestId("note-input")).toBeEnabled();
   await expect(page.getByTestId("notes-loading")).toBeHidden();
   await expect(page.getByTestId("note-item").filter({ hasText: text })).toBeVisible({ timeout: 10000 });
+  await shot(page, "E2E-4");
 });
 
 test("E2E-5 delete note: 204 removes the row and empty state appears", async ({ page, request }) => {
@@ -124,6 +128,7 @@ test("E2E-5 delete note: 204 removes the row and empty state appears", async ({ 
 
   await expect(page.getByTestId("note-item")).toHaveCount(0);
   await expect(page.getByTestId("notes-empty")).toBeVisible();
+  await shot(page, "E2E-5");
 });
 
 test("E2E-6 isolation: user B cannot see or delete user A's note", async ({ browser, request }) => {
@@ -143,6 +148,7 @@ test("E2E-6 isolation: user B cannot see or delete user A's note", async ({ brow
     await expect(pageB.getByTestId("notes-empty")).toBeVisible();
     await expect(pageB.getByTestId("note-item")).toHaveCount(0);
     await expect(pageB.getByText(textA)).toHaveCount(0);
+    await shot(pageB, "E2E-6");
 
     const tokenB = await pageB.evaluate(() => localStorage.getItem("notebook.token"));
     const res = await request.delete(`/api/notes/${noteId}`, {
@@ -158,7 +164,7 @@ test("E2E-6 isolation: user B cannot see or delete user A's note", async ({ brow
   }
 });
 
-test("E2E-7 unauthenticated GET /api/notes returns 401 with WWW-Authenticate", async ({ request }) => {
+test("E2E-7 unauthenticated GET /api/notes returns 401 with WWW-Authenticate", async ({ page, request }) => {
   const res = await request.get("/api/notes");
 
   expect(res.status()).toBe(401);
@@ -166,4 +172,8 @@ test("E2E-7 unauthenticated GET /api/notes returns 401 with WWW-Authenticate", a
 
   const body = await res.json();
   expect(body).toEqual({ error: "unauthorized" });
+
+  await page.goto("/register");
+  await expect(page.getByTestId("register-form")).toBeVisible();
+  await shot(page, "E2E-7");
 });
