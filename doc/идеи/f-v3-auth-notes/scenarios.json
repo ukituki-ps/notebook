@@ -1,0 +1,63 @@
+{
+  "schema": "orc.scenarios/v1",
+  "feature_id": "f-v3-auth-notes",
+  "ui_surface": "web",
+  "scenarios": [
+    {
+      "id": "E2E-1",
+      "title": "register: valid account redirects to /login with username prefilled",
+      "given": "гость на странице /register",
+      "when": "вводит уникальный username, password и confirm, нажимает Register",
+      "then": "редирект на /login, в login-username предзаполнен этот username",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-1 register"
+    },
+    {
+      "id": "E2E-2",
+      "title": "login and token: 200 stores notebook.token and opens /notes",
+      "given": "зарегистрированный пользователь",
+      "when": "логинится через /login",
+      "then": "200, в localStorage notebook.token непустой и notebook.user=username, открыт /notes с note-form",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-2 login and token"
+    },
+    {
+      "id": "E2E-3",
+      "title": "create note: Add renders #id text in notes-list",
+      "given": "залогиненный пользователь на /notes",
+      "when": "вводит текст заметки и нажимает Add",
+      "then": "POST 201, в notes-list появляется note-item с data-note-id и текстом #id, empty state скрыт",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-3 create note"
+    },
+    {
+      "id": "E2E-4",
+      "title": "reload: note stays visible after page.reload()",
+      "given": "пользователь создал заметку",
+      "when": "перезагружает страницу /notes",
+      "then": "после reload заметка остаётся видимой (GET /api/notes с Bearer), loading скрыт",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-4 reload"
+    },
+    {
+      "id": "E2E-5",
+      "title": "delete note: 204 removes the row and empty state appears",
+      "given": "у пользователя ровно одна заметка",
+      "when": "нажимает Delete у заметки",
+      "then": "DELETE 204, note-item исчезает, показывается notes-empty",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-5 delete note"
+    },
+    {
+      "id": "E2E-6",
+      "title": "isolation: user B cannot see or delete user A's note",
+      "given": "user A создал заметку, user B залогинен в отдельном контексте",
+      "when": "B открывает /notes и пытается DELETE заметку A по id",
+      "then": "B видит notes-empty и 0 note-item; DELETE чужой заметки -> 404; заметка A остаётся",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-6 isolation"
+    },
+    {
+      "id": "E2E-7",
+      "title": "unauthenticated GET /api/notes returns 401 with WWW-Authenticate",
+      "given": "нет bearer-токена",
+      "when": "GET /api/notes без Authorization",
+      "then": "401, заголовок WWW-Authenticate: Bearer, тело {\"error\":\"unauthorized\"}",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-7 unauthenticated"
+    }
+  ]
+}

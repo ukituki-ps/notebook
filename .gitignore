@@ -2,3 +2,8 @@
 *.log
 deploy/stands/.runtime/
 data/
+
+# s20c per-run E2E artifacts: execution root only, never commit.
+doc/идеи/f-v3-auth-notes/scenario-evidence.json
+doc/идеи/f-v3-auth-notes/screenshots/
+doc/идеи/f-v3-auth-notes/e2e-report.json
