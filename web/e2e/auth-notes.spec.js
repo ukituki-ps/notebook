@@ -57,7 +57,8 @@ async function addNote(page, text) {
 }
 
 // s20c requires one scenario-specific screenshot per E2E id.
-async function shot(page, id) {
+async function shot(page, id, size) {
+  if (size) await page.setViewportSize(size);
   const dir = path.join(process.cwd(), "doc", "идеи", "f-v3-auth-notes", "screenshots");
   fs.mkdirSync(dir, { recursive: true });
   await page.screenshot({ path: path.join(dir, `${id}.png`), fullPage: true });
@@ -89,7 +90,7 @@ test("E2E-2 login and token: 200 stores notebook.token and opens /notes", async 
   expect(token).toBeTruthy();
   expect(storedUser).toBe(username);
   await expect(page.getByTestId("note-form")).toBeVisible();
-  await shot(page, "E2E-2");
+  await shot(page, "E2E-2", { width: 390, height: 844 });
 });
 
 test("E2E-3 create note: Add renders #id text in notes-list", async ({ page, request }) => {
@@ -114,7 +115,7 @@ test("E2E-4 reload: note stays visible after page.reload()", async ({ page, requ
   await expect(page.getByTestId("note-input")).toBeEnabled();
   await expect(page.getByTestId("notes-loading")).toBeHidden();
   await expect(page.getByTestId("note-item").filter({ hasText: text })).toBeVisible({ timeout: 10000 });
-  await shot(page, "E2E-4");
+  await shot(page, "E2E-4", { width: 600, height: 900 });
 });
 
 test("E2E-5 delete note: 204 removes the row and empty state appears", async ({ page, request }) => {
@@ -128,7 +129,7 @@ test("E2E-5 delete note: 204 removes the row and empty state appears", async ({ 
 
   await expect(page.getByTestId("note-item")).toHaveCount(0);
   await expect(page.getByTestId("notes-empty")).toBeVisible();
-  await shot(page, "E2E-5");
+  await shot(page, "E2E-5", { width: 800, height: 900 });
 });
 
 test("E2E-6 isolation: user B cannot see or delete user A's note", async ({ browser, request }) => {
@@ -148,7 +149,7 @@ test("E2E-6 isolation: user B cannot see or delete user A's note", async ({ brow
     await expect(pageB.getByTestId("notes-empty")).toBeVisible();
     await expect(pageB.getByTestId("note-item")).toHaveCount(0);
     await expect(pageB.getByText(textA)).toHaveCount(0);
-    await shot(pageB, "E2E-6");
+    await shot(pageB, "E2E-6", { width: 430, height: 932 });
 
     const tokenB = await pageB.evaluate(() => localStorage.getItem("notebook.token"));
     const res = await request.delete(`/api/notes/${noteId}`, {
