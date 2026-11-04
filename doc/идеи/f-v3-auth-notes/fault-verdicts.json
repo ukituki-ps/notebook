@@ -1,21 +1,25 @@
 {
   "CONTRACT-WIRE-CASING": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestWireContract ./...; spec/core.md §1.1/§2.2 — ключи только id/text/token/username/error в нижнем регистре",
     "evidence": "invariant:INV-WIRE-CASING/test:TestWireContract"
   },
   "CONTRACT-ERROR-ENVELOPE": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestDeleteErrorEnvelope|TestNoSecretLeak|TestNotesMethodNotAllowed' ./...; все ошибки — {\"error\":\"<literal>\"} без stack/деталей",
     "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak"
   },
   "CONTRACT-STATUS-CODE": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestRegister|TestLogin|TestLoginInvalid|TestAuthRequired|TestNotesLifecycle|TestAddNote|TestDeleteNote|TestDeleteInvalidID|TestDeleteMissing|TestDeleteForeignNote|TestNotesMethodNotAllowed|TestTokenExpiry' ./...; полный набор статусов — spec/contract-matrix.md",
     "evidence": "spec:doc/идеи/f-v3-auth-notes/spec/contract-matrix.md"
   },
   "CONTRACT-NULL-OMITEMPTY": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestNotesLifecycle|TestWireContract' ./...; GET /api/notes при пустом списке отдаёт [] (не null), optional/nullable wire-полей нет",
     "evidence": "spec:doc/идеи/f-v3-auth-notes/spec/contract-matrix.md"
   },
@@ -26,6 +30,7 @@
   },
   "DATA-ADAPTER-REAL-TRANSPORT": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestHTTPTransport ./...; тесты идут через httptest.Server/HTTP, E2E — через реальный стенд",
     "evidence": "invariant:INV-REAL-TRANSPORT/test:TestHTTPTransport"
   },
@@ -41,6 +46,7 @@
   },
   "DATA-SCOPE-VALIDATION": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...; владелец берётся только из сессии, owner-поле запроса игнорируется",
     "evidence": "invariant:INV-USER-ISOLATION/test:TestNotesIsolation"
   },
@@ -51,31 +57,37 @@
   },
   "SEC-RLS-SCOPE-PREDICATE": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...; owner-предикат Note.UserID == session.UserID для List/Delete (RLS-эквивалент in-memory Store)",
     "evidence": "invariant:INV-USER-ISOLATION/test:TestNotesIsolation"
   },
   "SEC-SKIP-TAGGED-INVARIANT": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"; инвариантный набор не исключён build-тегами",
     "evidence": "invariant:INV-NO-SKIP-TAGS/test:build-tag-grep"
   },
   "SEC-PREFIX-BOUNDARY": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...; abc/пустой/overflow id → 400, /api/notes/1/extra не трактуется как id 1",
     "evidence": "invariant:INV-PREFIX-BOUNDARY/test:TestNotesPrefixBoundary"
   },
   "SEC-WRITE-VERB-REJECT": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestNotesMethodNotAllowed|TestAuthMethodOrder' ./...; неверный метод → 405 + Allow, auth раньше method",
     "evidence": "invariant:INV-VERB-REJECT/test:TestNotesMethodNotAllowed"
   },
   "SEC-ERROR-LEAK": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestNoSecretLeak ./...; generic error-envelope, нет stack/имён файлов/кредов/токенов",
     "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak"
   },
   "UI-EMPTY-STATE-CONTROLS": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./... + E2E-5; пустой список → data-testid=notes-empty, после удаления последней заметки empty state возвращается",
     "evidence": "invariant:INV-UI-EMPTY-STATE/test:TestUISemantics"
   },
@@ -86,16 +98,19 @@
   },
   "UI-LOADING-ERROR-STATES": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./... + E2E-2/4; notes-loading, одна role=alert область, 401 очищает notebook.token/notebook.user и уводит на /login",
     "evidence": "invariant:INV-UI-TRUTH/test:TestUISemantics"
   },
   "UI-FILTER-SERIALIZATION": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./... + E2E-1..7; фильтр-контролов нет, UI вызывает GET/POST/DELETE /api/notes без query/filter-параметров (T0004/T0005)",
     "evidence": "invariant:INV-UI-TRUTH/test:TestUISemantics"
   },
   "UI-E2E-PREVIEW": {
     "verdict": "covered",
+    "detector_exit": 0,
     "check": "s20c: E2E_BASE_URL=<stand> bash deploy/path1/e2e-preview.sh + npx playwright test (chromium) 7/7; evidence e2e-report/screenshots привязаны к SHA стенда; INV-UI-E2E-PREVIEW станет active к s21",
     "evidence": "invariant:INV-UI-E2E-PREVIEW/test:E2E-1..7"
   }
