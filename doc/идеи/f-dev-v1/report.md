@@ -10,3 +10,5 @@
   - CR-3: added 405/negative-id/error-envelope unit tests.
 - Integration: `deploy/path1/e2e-preview.sh` on test2 (GET/POST/healthz).
 - Contract parity: drift_count=0.
+
+- Preview deploy: test2 GREEN on `notebook-stand:test2-<ref>` (digest `sha256:fb153742a8344ef36aa7ec2bc1e168935888d1b045ab1951bdd1065c6ba64fdb`).
