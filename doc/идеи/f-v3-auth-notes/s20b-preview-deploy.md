@@ -12,3 +12,5 @@
 - Playwright UI (7 сценариев) — s20c, не в Alpine-контейнере.
 
 Prod/canary не затрагиваются; s45/s46 не выполняются.
+
+- gate_base_ref: `ff9b8e1` (orc_start_commit) — для app-репо platform-tools check scoped до появления `deploy/` в base; это не skip/waiver.
