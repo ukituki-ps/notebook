@@ -186,21 +186,29 @@ echo "e2e-preview: API smoke GREEN (auth 401, A/B isolation, 404/400, 204)"
 # --- 3. Playwright chromium (fail-close) ------------------------------------
 echo "e2e-preview: Playwright (chromium) против $base"
 command -v node >/dev/null 2>&1 || fail "node не найден: Playwright E2E невозможен (fail-close, skip запрещён)"
-command -v npx >/dev/null 2>&1 || fail "npx не найден: Playwright E2E невозможен (fail-close)"
+command -v npm >/dev/null 2>&1 || fail "npm не найден: Playwright E2E невозможен (fail-close)"
 [ -f "$ROOT/playwright.config.js" ] || fail "playwright.config.js отсутствует в $ROOT (нужен merge U02)"
 [ -f "$ROOT/web/e2e/auth-notes.spec.js" ] || fail "web/e2e/auth-notes.spec.js отсутствует (fail-close)"
 
-pw_chromium() { # pw_chromium DIR -> chromium.executablePath()
-  ( cd "$1" && node -e 'process.stdout.write(require("@playwright/test").chromium.executablePath())' 2>/dev/null )
-}
-chromium="$(pw_chromium "$ROOT" || true)"
-[ -n "$chromium" ] || chromium="$(pw_chromium "$ROOT/web" || true)"
-[ -n "$chromium" ] || fail "@playwright/test не найден в $ROOT или $ROOT/web: npm ci && npx playwright install chromium (fail-close)"
-if [ ! -f "$chromium" ]; then
-  fail "chromium не установлен ($chromium): npx playwright install chromium (fail-close, не skip)"
+# Test-only dependency: @playwright/test + chromium. Не влияет на runtime-образ.
+if ! ( cd "$ROOT" && node -e 'require("@playwright/test")' >/dev/null 2>&1 ); then
+  [ -f "$ROOT/package.json" ] || fail "@playwright/test не найден и package.json отсутствует (fail-close)"
+  echo "e2e-preview: npm install (@playwright/test)" >&2
+  ( cd "$ROOT" && npm install --no-audit --no-fund ) || fail "npm install FAIL"
 fi
+
+pw_chromium() { # chromium.executablePath() из ROOT
+  ( cd "$ROOT" && node -e 'process.stdout.write(require("@playwright/test").chromium.executablePath())' 2>/dev/null )
+}
+chromium="$(pw_chromium || true)"
+if [ -z "$chromium" ] || [ ! -f "$chromium" ]; then
+  echo "e2e-preview: playwright install chromium" >&2
+  ( cd "$ROOT" && ./node_modules/.bin/playwright install chromium ) || fail "playwright install chromium FAIL (fail-close, не skip)"
+  chromium="$(pw_chromium || true)"
+fi
+[ -n "$chromium" ] && [ -f "$chromium" ] || fail "chromium не установлен (fail-close, не skip)"
 echo "e2e-preview: chromium=$chromium"
-( cd "$ROOT" && E2E_BASE_URL="$base" PREVIEW_BASE_URL="$base" npx --no-install playwright test ) \
+( cd "$ROOT" && E2E_BASE_URL="$base" PREVIEW_BASE_URL="$base" ./node_modules/.bin/playwright test ) \
   || fail "Playwright E2E FAIL"
 
 echo "e2e-preview: OK (health + auth-smoke + Playwright chromium)"

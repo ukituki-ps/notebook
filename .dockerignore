@@ -10,3 +10,7 @@ data/
 # embed-файлы web/index.html, web/app.js, web/app.css остаются в контексте.
 web/e2e/
 web/node_modules/
+
+# Test-only Node deps (root); не входят в runtime-образ.
+node_modules/
+package-lock.json
