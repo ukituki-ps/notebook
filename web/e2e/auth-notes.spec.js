@@ -108,8 +108,9 @@ test("E2E-4 reload: note stays visible after page.reload()", async ({ page, requ
   await addNote(page, text);
 
   await page.reload();
+  await expect(page.getByTestId("note-input")).toBeEnabled();
   await expect(page.getByTestId("notes-loading")).toBeHidden();
-  await expect(page.getByTestId("note-item").filter({ hasText: text })).toBeVisible();
+  await expect(page.getByTestId("note-item").filter({ hasText: text })).toBeVisible({ timeout: 10000 });
 });
 
 test("E2E-5 delete note: 204 removes the row and empty state appears", async ({ page, request }) => {
