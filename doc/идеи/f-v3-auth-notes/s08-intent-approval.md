@@ -1,9 +1,13 @@
 # s08 — INVALID / PROVISIONAL: intent-brief approval (E4312)
 
 > **СТАТУС: INVALID (self-approval). НЕ ЯВЛЯЕТСЯ approval.**
-> **SUPERSEDED:** реальный approval получен —
-> `request_id=apr_31cc741c924de4f648cd4ca43f5dac46`, policy `notebook/brief@1`,
-> binding_profile=artifact-set, tree `sha256:4279e311f0837542274187467fd54fe2033f7bb9e60bcad4a969926cbcd2bc1f`.
+> **SUPERSEDED:** реальный approval получен.
+> Первый request `apr_31cc741c924de4f648cd4ca43f5dac46` (artifact-set) не
+> подошёл: гейт s08 объявлен `profile: blob`.
+> Действующий request: `apr_088762d85ca49ee703543e43d3f08c65`,
+> policy `notebook/brief@2` (binding_profile=blob),
+> payload_sha256 `sha256:4ab52a8c800c5071974be7fed7a329c27d9cf1e2e3ec64b631a33681feb7335b`
+> (точные байты intent-brief.md), branch `dev/f-v3-auth-notes`.
 > Приёмка s08 идёт по Nexus assertion, а не по этому файлу.
 > Этот файл создан агентом и содержит `approved = true` без реального
 > approval request/assertion от owner. Принимать s08 по нему запрещено.
