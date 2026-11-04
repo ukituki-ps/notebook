@@ -1,7 +1,7 @@
 {
   "CONTRACT-STATUS-CODE": {
     "verdict": "covered",
-    "evidence": "go test ./... (TestDeleteNote: 204 existing, 400 non-numeric, 404 missing)",
+    "evidence": "TestDeleteNote (204/400/404) + TestDeleteErrorEnvelope + TestNotesMethodNotAllowed (405)",
     "detector_exit": 0
   },
   "CONTRACT-ERROR-ENVELOPE": {
@@ -42,7 +42,7 @@
   },
   "SEC-ERROR-LEAK": {
     "verdict": "covered",
-    "evidence": "go test ./...; http.Error отдаёт только generic-сообщения, без внутренних деталей/стеков",
+    "evidence": "TestDeleteErrorEnvelope: 400/404 generic bodies, no internal detail/stack leak",
     "detector_exit": 0
   },
   "SEC-PREFIX-BOUNDARY": {
@@ -59,7 +59,7 @@
   },
   "SEC-WRITE-VERB-REJECT": {
     "verdict": "covered",
-    "evidence": "probe: GET/POST/PUT/PATCH /api/notes/1 -> 405; DELETE -1 -> 404; overflow -> 400; TestDeleteNote covers DELETE write-path; 405/negative-id not asserted in-repo (RT-2)",
+    "evidence": "TestNotesMethodNotAllowed: GET/POST/PUT/PATCH /api/notes/{id} -> 405",
     "detector_exit": 0
   },
   "UI-DATE-BOUNDARY": {

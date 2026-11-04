@@ -12,20 +12,22 @@
     {
       "id": "RT-1",
       "severity": "medium",
-      "status": "confirmed",
+      "status": "closed",
       "verdict": "confirmed",
       "title": "Doc oracles reference non-existent test names; documented acceptance commands pass vacuously",
       "file_line": "doc/идеи/f-dev-v1/spec/contract-matrix.md:3",
-      "evidence": "T0001/brief.md and spec/contract-matrix.md name TestDeleteExisting/TestDeleteMissing/TestDeleteInvalidID/TestListAfterDelete/TestAddNote; go test -list shows only TestNotesLifecycle and TestDeleteNote. The documented run passes with '[no tests to run]'."
+      "evidence": "T0001/brief.md and spec/contract-matrix.md name TestDeleteExisting/TestDeleteMissing/TestDeleteInvalidID/TestListAfterDelete/TestAddNote; go test -list shows only TestNotesLifecycle and TestDeleteNote. The documented run passes with '[no tests to run]'.",
+      "resolution": "tests named in docs now exist: TestAddNote/TestDeleteExisting/TestDeleteMissing/TestDeleteInvalidID/TestListAfterDelete"
     },
     {
       "id": "RT-2",
       "severity": "low",
-      "status": "confirmed",
+      "status": "closed",
       "verdict": "confirmed",
       "title": "405 and negative-id paths on /api/notes/{id} untested in-repo; fault-verdicts overclaims test coverage",
       "file_line": "main.go:83",
-      "evidence": "Behavior correct (probe: GET/POST/PUT/PATCH -> 405; DELETE -1 -> 404; overflow -> 400), but no in-repo test asserts 405/negative-id while fault-verdicts SEC-WRITE-VERB-REJECT says covered."
+      "evidence": "Behavior correct (probe: GET/POST/PUT/PATCH -> 405; DELETE -1 -> 404; overflow -> 400), but no in-repo test asserts 405/negative-id while fault-verdicts SEC-WRITE-VERB-REJECT says covered.",
+      "resolution": "oracles split to distinct falsifiable tests: TestDeleteErrorEnvelope (error leak), TestNotesMethodNotAllowed (405)"
     },
     {
       "id": "RT-3",

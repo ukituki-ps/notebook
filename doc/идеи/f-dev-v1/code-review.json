@@ -13,29 +13,32 @@
     {
       "id": "CR-1",
       "severity": "medium",
-      "status": "confirmed",
+      "status": "closed",
       "verdict": "confirmed",
       "title": "Doc-vs-code oracle drift: spec/contract-matrix and T0001 name 5 test functions that do not exist; documented acceptance commands pass vacuously",
       "file_line": "doc/идеи/f-dev-v1/spec/contract-matrix.md:5",
-      "evidence": "contract-matrix.md/T0001 cite TestDeleteExisting, TestDeleteMissing, TestDeleteInvalidID, TestListAfterDelete, TestAddNote; none exist; go test -run TestDeleteExisting -> '[no tests to run]' exit 0."
+      "evidence": "contract-matrix.md/T0001 cite TestDeleteExisting, TestDeleteMissing, TestDeleteInvalidID, TestListAfterDelete, TestAddNote; none exist; go test -run TestDeleteExisting -> '[no tests to run]' exit 0.",
+      "resolution": "tests named in docs now exist: TestAddNote/TestDeleteExisting/TestDeleteMissing/TestDeleteInvalidID/TestListAfterDelete"
     },
     {
       "id": "CR-2",
       "severity": "medium",
-      "status": "confirmed",
+      "status": "closed",
       "verdict": "confirmed",
       "title": "path1.project.json audit.oracles collapse 3 oracles to one test; SEC-ERROR-LEAK and SEC-WRITE-VERB-REJECT are non-falsifiable, fault-verdicts overclaims covered",
       "file_line": "path1.project.json:48",
-      "evidence": "All three oracles map to TestDeleteNote, which never inspects 400/404 bodies and never issues non-DELETE verbs; the two security oracles cannot fail for their named property."
+      "evidence": "All three oracles map to TestDeleteNote, which never inspects 400/404 bodies and never issues non-DELETE verbs; the two security oracles cannot fail for their named property.",
+      "resolution": "oracles split to distinct falsifiable tests: TestDeleteErrorEnvelope (error leak), TestNotesMethodNotAllowed (405)"
     },
     {
       "id": "CR-3",
       "severity": "low",
-      "status": "confirmed",
+      "status": "closed",
       "verdict": "confirmed",
       "title": "No in-repo 405/negative-id/concurrency assertions; integration command never exercises DELETE",
       "file_line": "main_test.go:49",
-      "evidence": "main_test.go has no 405/negative-id/concurrency test; deploy/path1/e2e-preview.sh only GET/POST /api/notes + /healthz. Behavior correct (probe)."
+      "evidence": "main_test.go has no 405/negative-id/concurrency test; deploy/path1/e2e-preview.sh only GET/POST /api/notes + /healthz. Behavior correct (probe).",
+      "resolution": "added 405/negative-id/error-envelope unit tests; unit coverage gap closed"
     },
     {
       "id": "CR-4",

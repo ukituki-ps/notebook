@@ -46,9 +46,9 @@
     "mode": "app",
     "database": false,
     "oracles": {
-      "CONTRACT-STATUS-CODE": "go test -count=1 -run TestDeleteNote ./...",
-      "SEC-ERROR-LEAK": "go test -count=1 -run TestDeleteNote ./...",
-      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestDeleteNote ./..."
+      "CONTRACT-STATUS-CODE": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed' ./...",
+      "SEC-ERROR-LEAK": "go test -count=1 -run TestDeleteErrorEnvelope ./...",
+      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestNotesMethodNotAllowed ./..."
     }
   }
 }
