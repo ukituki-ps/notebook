@@ -13,8 +13,15 @@
     "catalog_dir": "audit/fault-catalog"
   },
   "canaries": {
+    "require_dsn": false,
     "clean_units": [],
-    "items": []
+    "items": [
+      {
+        "id": "CANARY-DELETE-STATUS",
+        "seed": "sed -i 's/http.StatusNoContent/http.StatusOK/' {worktree}/main.go",
+        "detect": "cd {worktree} && go test -run TestDeleteNote ./..."
+      }
+    ]
   },
   "feature_dir": {
     "artifact_globs": [
