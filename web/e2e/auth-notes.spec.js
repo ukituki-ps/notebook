@@ -4,10 +4,21 @@
 // No skips/fixmes: a missing browser or stand must fail the run.
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
 const { test, expect } = require("@playwright/test");
 
 const BASE_URL = process.env.E2E_BASE_URL || "http://127.0.0.1:9082";
 const PASSWORD = "password123";
+
+// s20c requires one screenshot per scenario: doc/идеи/f-v3-auth-notes/screenshots/E2E-N.png.
+test.afterEach(async ({ page }, testInfo) => {
+  const m = testInfo.title.match(/^E2E-\d+/);
+  if (!m) return;
+  const dir = path.join(process.cwd(), "doc", "идеи", "f-v3-auth-notes", "screenshots");
+  fs.mkdirSync(dir, { recursive: true });
+  await page.screenshot({ path: path.join(dir, `${m[0]}.png`), fullPage: true });
+});
 
 function uniqueUsername(prefix) {
   const stamp = Date.now().toString(36);
