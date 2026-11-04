@@ -109,3 +109,12 @@ U01 и U03 вошли machine merge без конфликтов. U02 смерд�
 - `code=2851` — строки diff (U01+U02+U03), не drift.
 - `delta=0`, `drifted=0` — ни одна модель-единица не разошлась с кодом.
 - `model=8` — C1–C8 change-definition.
+
+## Re-integration after s23 refinement (E4312)
+
+- s23 refinement: CR-5 fixed; Playwright pinned **1.64.1** with committed lock
+  (`package-lock.json`); `e2e.command` = host-local
+  `npm ci --no-audit --no-fund && npx --no-install playwright test`.
+- 1.53.0 непригоден: `fill()` textarea остаётся пустым (4 E2E fail); 1.64.1 — 7/7.
+- Units U01/U02/U03 и runtime-код не переделывались; re-run gates:
+  go build/vet/test, API-smoke на test2, 7/7 E2E native/host-local.
