@@ -118,3 +118,17 @@ U01 и U03 вошли machine merge без конфликтов. U02 смерд�
 - 1.53.0 непригоден: `fill()` textarea остаётся пустым (4 E2E fail); 1.64.1 — 7/7.
 - Units U01/U02/U03 и runtime-код не переделывались; re-run gates:
   go build/vet/test, API-smoke на test2, 7/7 E2E native/host-local.
+
+## s24 — Final acceptance (E4312)
+
+- Feature: f-v3-auth-notes (регистрация, логин, заметки, per-user isolation, web UI).
+- Base: `8e0e949` (path-10); branch `dev/f-v3-auth-notes`.
+- Preview: test2, build `ea1e61f`, health 200, unauth `/api/notes` 401.
+- E2E: Playwright **1.64.1**, 7/7 (E2E-1..7), pngdiff OK,
+  preview-verdict `result=pass`, `status=verified`.
+- Accepted: s20a → s20b → s20c → s21 → s22 → s22a → s22b → s22c → s23 → s24a.
+- UI audit A–L: 0 blockers/majors; red-team 15 attacks, 0 critical/high;
+  code review pass, 0 critical/high; fault catalog 15 covered/5 na/0 gap.
+- s45/s46 skipped; prod/main/stage/canary не затрагивались; E1320 не тронут.
+- Residual: no rate-limit/lockout (dev), token localStorage XSS-residual,
+  in-memory persistence, no logout revocation.
