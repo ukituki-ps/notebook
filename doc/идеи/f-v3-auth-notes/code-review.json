@@ -1,0 +1,114 @@
+{
+  "schema": "orc.code-review/v1",
+  "execution_id": "E4312",
+  "step_id": "s22c.adversarial_code_review",
+  "verdict": "pass",
+  "reviewer_session_id": "ses_e582df527ffesIGPJ7s8OL7KUP",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy",
+  "author_session_id": "ses_e593bd426ffe9M4ppZe008bX36",
+  "independent": true,
+  "findings": [
+    {
+      "id": "CR-1",
+      "severity": "low",
+      "file": "main.go",
+      "line": 359,
+      "summary": "decodeJSON: json.NewDecoder(...).Decode читает только первое JSON-значение и молча игнорирует trailing-контент: POST /api/notes с телом `{\"text\":\"a\"} x` или `{\"text\":\"a\"}{\"text\":\"b\"}` -> 201 (подтверждено исполненным пробом на ba4a132; spec §1.4 trailing-контент не требует 400, т.е. код соответствует спеке, но строгий JSON-контракт не закреплён).",
+      "recommendation": "После Decode проверять остаток тела (dec.More()/второй Decode -> io.EOF) и при наличии -> 400 {\"error\":\"invalid request body\"} + негативные тесты на все три decodeJSON-эндпоинта (register/login/POST notes); при принятии решения обновить spec §1.4."
+    },
+    {
+      "id": "CR-5",
+      "severity": "low",
+      "file": "deploy/path1/e2e-preview.sh",
+      "line": 204,
+      "summary": "npm install --no-audit --no-fund выполняется в корне репо ($ROOT) и создаёт node_modules/ и package-lock.json; .gitignore их не покрывает (покрыты только .dockerignore) -> после прогона e2e git status нечистый, риск случайного коммита тестовых зависимостей.",
+      "recommendation": "Добавить в .gitignore node_modules/ и package-lock.json (либо зафиксировать package-lock.json для воспроизводимости e2e-зависимости и игнорировать только node_modules/)."
+    },
+    {
+      "id": "CR-2",
+      "severity": "info",
+      "file": "main.go",
+      "line": 80,
+      "summary": "Store.usersByID (map[int]*User) создаётся (строка 92) и заполняется в CreateUser (строка 134), но нигде не читается: lookup только usersByName, списки/удаление через notes/noteOrder — write-only мёртвая структура.",
+      "recommendation": "Удалить поле/инициализацию/запись usersByID (wire-контракт не меняется) или использовать при появлении по-userID-контракта."
+    },
+    {
+      "id": "CR-3",
+      "severity": "info",
+      "file": "main.go",
+      "line": 36,
+      "summary": "Глобальный var pbkdf2Iterations с комментарием 'Tests may lower it temporarily': активной гонки нет (тесты не мутируют), но мутация при живом httptest-сервере заведёт data race (запись глобальной vs чтение в pbkdf2Key из handler-goroutines) — латентный mine.",
+      "recommendation": "Перенести work factor в Store (инъекция как у now) или явный параметр iterations в pbkdf2Key/hashPassword; тестам — свой Store с пониженным фактором."
+    },
+    {
+      "id": "CR-4",
+      "severity": "info",
+      "file": "main.go",
+      "line": 434,
+      "summary": "Страницы UI зарегистрированы только как точные /login /register /notes; trailing-slash варианты (GET /login/ -> 404 {\"error\":\"not found\"}, подтверждено пробой) падают в JSON-404 fallback, а не SPA-shell; spec §6.1 тракт без слэша, UI ходит строго на /login — недостижимо с экрана.",
+      "recommendation": "Задокументировать как осознанное в spec §6.1 либо маппить trailing-slash варианты на serveIndex."
+    }
+  ],
+  "counts": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 2,
+    "info": 3
+  },
+  "new_findings": [
+    "CR-1",
+    "CR-2",
+    "CR-3",
+    "CR-4",
+    "CR-5"
+  ],
+  "residual_risks": [
+    {
+      "id": "R-1",
+      "severity": "low",
+      "summary": "нет rate-limit/lockout/CAPTCHA на /api/login и /api/register (accepted dev-risk OD-16; в prod — high)"
+    },
+    {
+      "id": "R-2",
+      "severity": "low",
+      "summary": "нет server-side logout/revocation: клиентский logout чистит localStorage, серверная сессия живёт до TTL 24h"
+    },
+    {
+      "id": "R-3",
+      "severity": "info",
+      "summary": "токен в localStorage = поверхность XSS; DOM-injection sink на сегодня отсутствует (UI рендерит только textContent), регрессия при будущем innerHTML/eval"
+    },
+    {
+      "id": "R-4",
+      "severity": "info",
+      "summary": "in-memory Store без персистентности: рестарт очищает users/sessions/notes (accepted dev scope, spec §13)"
+    },
+    {
+      "id": "R-5",
+      "severity": "info",
+      "summary": "нет квоты на число заметок/сессий; истёкшие сессии удаляются лениво только при предъявлении токена — map растёт до рестарта (dev)"
+    },
+    {
+      "id": "R-6",
+      "severity": "info",
+      "summary": "username-existence oracle через register 201/409 (login анти-enumeration-защищён dummy-PBKDF2; register — осознанно)"
+    },
+    {
+      "id": "R-7",
+      "severity": "info",
+      "summary": "PBKDF2-HMAC-SHA256 @ 210k итераций — нижний предел по NIST/OWASP-2023 (600k); перед prod перекалибровать (Argon2id)"
+    },
+    {
+      "id": "R-8",
+      "severity": "low",
+      "summary": "нет X-Frame-Options/CSP на stand-образах (TLS-терминация на nginx-прокси; clickjacking-риск минимален для internal dev-инструмента) — prod-hardening"
+    },
+    {
+      "id": "R-9",
+      "severity": "info",
+      "summary": "go test -race не исполнялся в окружении s22c (нет cgo/C-компилятора, нет root); активные гонки покрыты статическим разбором (Store.mu/regMu/now-swap под mu, PBKDF2-вне-mu по спеке); -race обязателен в CI (AC-20)"
+    }
+  ]
+}
