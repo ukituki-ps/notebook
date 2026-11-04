@@ -1,0 +1,148 @@
+{
+  "feature": "f-v3-auth-notes",
+  "execution_id": "E4312",
+  "step": "s06.feature_brief_final",
+  "change_class": "security",
+  "branch": "dev/f-v3-auth-notes",
+  "invariants": [
+    {
+      "id": "INV-AUTH-REQUIRED",
+      "status": "active",
+      "statement": "Любой запрос к /api/notes* без bearer-заголовка, с битым или истёкшим токеном => 401 (auth проверяется раньше method/id/body); логин с неверной парой => 401 без различения пользователя.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestAuthRequired|TestLoginInvalid' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-USER-ISOLATION",
+      "status": "active",
+      "statement": "User A не видит и не удаляет notes user B: GET отдаёт только свои, DELETE чужой/несуществующей => 404; принадлежность по UserID.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+      "covers": [
+        "SEC-RLS-SCOPE-PREDICATE",
+        "DATA-SCOPE-VALIDATION"
+      ]
+    },
+    {
+      "id": "INV-NO-SECRET-LEAK",
+      "status": "active",
+      "statement": "password/hash/salt/token не появляются в JSON-ответах (token только в успешном login) и не логируются.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestNoSecretLeak' ./...",
+      "covers": [
+        "SEC-ERROR-LEAK"
+      ]
+    },
+    {
+      "id": "INV-PASSWORD-HASHED",
+      "status": "active",
+      "statement": "Пароль не хранится открыто: соль 16B + PBKDF2-HMAC-SHA256 (210k, 32B), сравнение constant-time.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestPasswordHashed' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-VERB-REJECT",
+      "status": "active",
+      "statement": "Неверный метод на защищённом пути => 405 с Allow; auth-проверка раньше method-проверки.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestNotesMethodNotAllowed|TestAuthMethodOrder' ./...",
+      "covers": [
+        "SEC-WRITE-VERB-REJECT"
+      ]
+    },
+    {
+      "id": "INV-PREFIX-BOUNDARY",
+      "status": "active",
+      "statement": "/api/notes/{id}: нечисловой, пустой, отрицательный или overflow id => 400/404 без паники; границы префикса пути не размываются.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...",
+      "covers": [
+        "SEC-PREFIX-BOUNDARY"
+      ]
+    },
+    {
+      "id": "INV-WIRE-CASING",
+      "status": "active",
+      "statement": "Wire-поля JSON ровно id/text/token/username/error в нижнем регистре; лишние и секретные поля не сериализуются.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestWireContract' ./...",
+      "covers": [
+        "CONTRACT-WIRE-CASING"
+      ]
+    },
+    {
+      "id": "INV-REAL-TRANSPORT",
+      "status": "active",
+      "statement": "Тесты идут через httptest.Server/реальный HTTP-транспорт, а не прямыми вызовами Store.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestHTTPTransport' ./...",
+      "covers": [
+        "DATA-ADAPTER-REAL-TRANSPORT"
+      ]
+    },
+    {
+      "id": "INV-NO-SKIP-TAGS",
+      "status": "active",
+      "statement": "Тесты не исключены build-тегами integration/e2e/manual; инвариантный набор исполняется штатным go test.",
+      "enforcement": "test",
+      "test_ref": "cmd:sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
+      "covers": [
+        "SEC-SKIP-TAGGED-INVARIANT"
+      ]
+    },
+    {
+      "id": "INV-UI-TRUTH",
+      "status": "active",
+      "statement": "UI показывает реальные данные API (GET /api/notes) и не содержит захардкоженных/фантомных заметок; состояние после reload совпадает с сервером.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-UI-LABEL",
+      "status": "active",
+      "statement": "У каждого поля и кнопки есть видимая или aria-подпись; submit-кнопки имеют текст Login/Register/Add/Delete.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-UI-A11Y-NAME",
+      "status": "active",
+      "statement": "У полей и кнопок есть доступное имя и корректная role; ошибки выводятся в role=alert c aria-live=polite.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-UI-EMPTY-STATE",
+      "status": "active",
+      "statement": "Пустой список заметок показывает empty state (data-testid=notes-empty), а не пустую область или фейковые строки.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "covers": [
+        "UI-EMPTY-STATE-CONTROLS"
+      ]
+    },
+    {
+      "id": "INV-UI-ORACLE",
+      "status": "proposed",
+      "statement": "У каждого критерия UI-аудита (блоки A-L) есть исполнимый оракул и evidence.",
+      "enforcement": "s22a.ui_audit: ui-audit.json items[].oracle/evidence + gates gate-ui-audit-oracle, gate-ui-audit-machine",
+      "test_ref": "",
+      "covers": []
+    },
+    {
+      "id": "INV-UI-E2E-PREVIEW",
+      "status": "proposed",
+      "statement": "UI-сценарии проходят на стенде и подтверждены e2e-report/screenshot.",
+      "enforcement": "s20c: E2E на стенде через deploy/path1/e2e-preview.sh + Playwright web/e2e/auth-notes.spec.js",
+      "test_ref": "",
+      "covers": [
+        "UI-E2E-PREVIEW"
+      ]
+    }
+  ]
+}

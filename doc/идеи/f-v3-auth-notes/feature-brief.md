@@ -1,6 +1,6 @@
-# Feature brief (ЧЕРНОВИК) — f-v3-auth-notes
+# Feature brief (FINAL) — f-v3-auth-notes
 
-Статус: draft для s01 → вход в s02–s05.
+Статус: **FINAL (s06.feature_brief_final)**.
 Источник истины: [feature-request.md](./feature-request.md) (неизменяем).
 Ветка: `dev/f-v3-auth-notes`, база `8e0e949`. Строго path-10, in-memory, без БД.
 
@@ -479,3 +479,79 @@ Login / Register, 360px:
 - Селекторы для UI-графа s04/s21 (предложение): `#login-form`, `#register-form`,
   `#note-form`, `#note-input`, `#add-note`, `#notes-list`, `#error`/`#form-error`,
   `[data-note-id]`, `#logout`, `#user-name`.
+
+---
+
+## Invariants (final)
+
+Машиночитаемая форма — [invariants.json](./invariants.json). `active` — есть
+исполнимый `test_ref`; `proposed` — оракул материализуется позже (s22a/s20c).
+
+| id | statement | enforcement | test_ref |
+|---|---|---|---|
+| INV-AUTH-REQUIRED | `/api/notes*` без заголовка/битым/истёкшим bearer → 401 (до 405/400); неверная пара логина → 401 | `test` (auth раньше method/id/body) | `go test -count=1 -run 'TestAuthRequired\|TestLoginInvalid' ./...` |
+| INV-USER-ISOLATION | user A не видит и не удаляет notes B; чужая/несуществующая → 404 | `test` (owner-scoped Store) | `go test -count=1 -run 'TestNotesIsolation\|TestDeleteForeignNote' ./...` |
+| INV-NO-SECRET-LEAK | `password`/`hash`/`salt`/`token` не появляются в JSON-ответах (кроме `token` в login 200) и логах | `test` (response-структуры + `json:"-"`) | `go test -count=1 -run 'TestNoSecretLeak' ./...` |
+| INV-PASSWORD-HASHED | пароль не хранится открыто: соль + PBKDF2-HMAC-SHA256, сравнение constant-time | `test` (unit PBKDF2) | `go test -count=1 -run 'TestPasswordHashed' ./...` |
+| INV-VERB-REJECT | неверный метод на защищённом пути → 405 + `Allow`; auth проверяется раньше метода | `test` (405-матрица) | `go test -count=1 -run 'TestNotesMethodNotAllowed\|TestAuthMethodOrder' ./...` |
+| INV-PREFIX-BOUNDARY | `/api/notes/{id}`: нечисловой/пустой/отрицательный/overflow id → 400/404 без паники | `test` (parse+границы) | `go test -count=1 -run 'TestDeleteInvalidID\|TestNotesPrefixBoundary' ./...` |
+| INV-WIRE-CASING | wire-поля ровно `id`/`text`/`token`/`username`/`error`, нижний регистр, без лишних | `test` (JSON-ключи) | `go test -count=1 -run 'TestWireContract' ./...` |
+| INV-REAL-TRANSPORT | тесты идут через `httptest.Server`/HTTP, не прямыми вызовами Store | `test` (транспорт) | `go test -count=1 -run 'TestHTTPTransport' ./...` |
+| INV-NO-SKIP-TAGS | тесты не исключены build-тегами `integration`/`e2e`/`manual` | `test` (grep по `_test.go`) | `sh -c "! grep -R -E '^//go:build.*(integration\|e2e\|manual)' --include='*_test.go' ."` |
+| INV-UI-TRUTH | UI показывает реальные данные API (`GET /api/notes`), без захардкоженных/фантомных заметок; reload = сервер | `test` (embed+семантика) | `go test -count=1 -run 'TestUISemantics' ./...` |
+| INV-UI-LABEL | у каждого поля/кнопки видимая или aria-подпись; тексты `Login`/`Register`/`Add`/`Delete` | `test` (label-контракт) | `go test -count=1 -run 'TestUISemantics' ./...` |
+| INV-UI-A11Y-NAME | accessible name/role; ошибки в `role="alert"` + `aria-live="polite"` | `test` (a11y-контракт) | `go test -count=1 -run 'TestUISemantics' ./...` |
+| INV-UI-EMPTY-STATE | пустой список показывает empty state `data-testid=notes-empty` | `test` (empty-состояние) | `go test -count=1 -run 'TestUISemantics' ./...` |
+| INV-UI-ORACLE | у каждого критерия UI-аудита есть исполнимый оракул и evidence | `s22a` — `ui-audit.json` (gate-ui-audit-oracle) | — (proposed) |
+| INV-UI-E2E-PREVIEW | UI-сценарии проходят на стенде, есть e2e-report/screenshot | `s20c` — E2E на стенде (`e2e-preview.sh`) | — (proposed) |
+
+## Do
+
+1. Проверять auth **первым** на всех `/api/notes*`: нет/битый/истёкший bearer →
+   401 раньше method/id/body.
+2. Хэшировать пароль PBKDF2-HMAC-SHA256 на stdlib: соль 16B, 210k итераций,
+   32B ключ, `crypto/subtle.ConstantTimeCompare`.
+3. Выдавать непрозрачный токен 32B `crypto/rand`, хранить `map[token]Session`,
+   TTL 24h, ленивое удаление истёкших.
+4. Держать `Store` owner-scoped: `List`/`Delete` фильтруют по `UserID`, id
+   глобально монотонные, `Note.UserID` не сериализуется.
+5. Отвечать единым JSON-envelope `{"error":"..."}` со стабильными литералами;
+   `401` + `WWW-Authenticate`, `405` + `Allow`, `204` без тела.
+6. Сохранять набор и имена тестов B10 (`TestDeleteNote`,
+   `TestNotesMethodNotAllowed`, …) и гонять `go test -race ./...`.
+7. Отдавать UI через `go:embed web/` теми же 3 страницами (`login`, `register`,
+   `notes`), same-origin, с `data-testid`, `role="alert"`, `aria-live`.
+8. Держать `feature_profile=full`, `path1.ui.json.platform=web`, актуализировать
+   `arch/structure/ui-pages/*.yaml` на s21 — гейт не скипать.
+9. Обновлять `e2e-preview.sh` под auth: register/login → authed GET/POST/DELETE
+   + проверка 401 и изоляции A/B.
+
+## Dont
+
+1. Не хранить пароли открыто — только `Salt` + `PasswordHash`.
+2. Не отдавать `hash`/`salt`/`password` в JSON и не логировать креды/токены.
+3. Не смешивать заметки users: никаких глобальных `List`/`Delete` без `UserID`.
+4. Не деплоить prod, не менять `main`/`stage`, не push в primary.
+5. Не выполнять `s45.push_primary` и `s46.post_deploy_verify`.
+6. Не запускать canary rollout (audit-canary — можно).
+7. Не добавлять БД, refresh/logout API, rate limiting, фреймворки/сборщики.
+8. Не скипать `s21`/`gate-graph-actualized`; не применять force/skip/waiver.
+9. Не выносить DELETE-обработчик из `main.go` — сломает `CANARY-DELETE-STATUS`.
+10. Не писать direct-код вне ORC-шагов; не трогать E2495/f002.5, lk-agena-v2,
+    kh_pg, E1320.
+
+## Out of scope
+
+- БД/персистентность, DSN, миграции (in-memory, рестарт = очистка).
+- Prod-деплой, canary rollout, `s45.push_primary`, `s46.post_deploy_verify`,
+  push в primary.
+- Refresh/sliding TTL, logout API (`POST /api/logout`), password reset/change,
+  remember-me, email.
+- Rate limiting, lockout, CAPTCHA (принятый риск dev-уровня, OD-16).
+- Фреймворки, сборщики, npm-рантайм для UI.
+- Multi-tenant роли/права, admin, sharing заметок.
+
+## Change class
+
+**security.** Фича вводит аутентификацию, хэширование паролей, owner-scoped
+доступ и защиту от утечек; меняет контракт `/api/notes*` (auth обязателен).
