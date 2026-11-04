@@ -1,0 +1,196 @@
+{
+  "platform": "web",
+  "stand": {
+    "sha": "80478e4c08c5e0ba9c2d550289c58f581b738b5d",
+    "url": "https://test2.nexus.ukituki.tech"
+  },
+  "summary": {
+    "blockers": 0,
+    "majors": 0,
+    "minors": 9,
+    "cosmetics": 6,
+    "open_critical_high": 0
+  },
+  "items": [
+    {
+      "id": "A1",
+      "block": "A",
+      "criterion": "Визуальная иерархия и типографика: на каждом экране один h1 (Вход / Регистрация / Notebook), карточка с border/radius, label 600, body 1rem/1.45, единый system-ui стек без внешних шрифтов.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js -g \"E2E-2\"",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-2.png"
+      }
+    },
+    {
+      "id": "B1",
+      "block": "B",
+      "criterion": "Адаптивность <=640px: @media (max-width: 640px) меняет padding, делает input/textarea/button на всю ширину, note-item в колонку, Delete/Logout на всю ширину; тач-таргеты >=44px, горизонтального скролла нет.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -n \"@media (max-width: 640px)\" web/app.css",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-3.png"
+      }
+    },
+    {
+      "id": "C1",
+      "block": "C",
+      "criterion": "Навигация и переходы: register 201 -> /login с prefill username; login 200 -> /notes; 401 -> очистка token/user + /login через 200ms; logout -> очистка + /login; все переходы через location.replace.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js -g \"E2E-1|E2E-2|E2E-7\"",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+      }
+    },
+    {
+      "id": "D1",
+      "block": "D",
+      "criterion": "Формы и валидация: у полей видимые label for; confirm-password проверяется только клиентски; 400/409 показываются inline, форма не очищается; на register выставляется aria-invalid.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js -g \"E2E-1\"",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+      }
+    },
+    {
+      "id": "D2",
+      "block": "D",
+      "criterion": "Одна видимая область ошибки на экран; новая ошибка заменяет старую; введённый текст сохраняется, кроме password при 401 на login.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -nE \"Passwords do not match|Username уже занят|aria-invalid\" web/app.js",
+      "evidence": {
+        "kind": "command",
+        "ref": "grep -nE \"Passwords do not match|Username уже занят|aria-invalid\" web/app.js -> совпадения в register/login handlers"
+      }
+    },
+    {
+      "id": "E1",
+      "block": "E",
+      "criterion": "Состояния notes: loading (форма disabled, notes-loading видим), empty (notes-empty), list (note-item из ответа), error (notes-error), delete-pending (opacity .5, Delete disabled); login/register — submitting с текстом кнопки.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js -g \"E2E-4|E2E-5\"",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-5.png"
+      }
+    },
+    {
+      "id": "F1",
+      "block": "F",
+      "criterion": "A11y: у полей видимые label for; ошибки role=alert + aria-live=polite; accessible names кнопок; notes-list role=list, note-item role=listitem; aria-invalid на register; focus-visible присутствует.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "go test -count=1 -run TestUISemantics ./...",
+      "evidence": {
+        "kind": "command",
+        "ref": "go test -count=1 -run TestUISemantics ./... -> ok github.com/ukituki-ps/notebook 0.002s"
+      }
+    },
+    {
+      "id": "F2",
+      "block": "F",
+      "criterion": "Focus indicator и touch-target: :focus-visible outline 3px + offset 2px, min-height 44px у input/textarea/button. Остаточное замечание: #ffbf47 на белом даёт 1.64:1 (WCAG 1.4.11 recommendation), не блокер по spec §6.7.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:grep -nE \":focus-visible|min-height: 44px\" web/app.css",
+      "evidence": {
+        "kind": "command",
+        "ref": "grep -nE \":focus-visible|min-height: 44px\" web/app.css -> outline 3px #ffbf47; min-height 44px"
+      }
+    },
+    {
+      "id": "G1",
+      "block": "G",
+      "criterion": "Консистентность текста/переходов: spec §6.4 обещает сообщение «Аккаунт создан. Войдите.» и задержку ~0.8s, фактический код сразу делает location.replace('/login'). Зафиксировано как cosmetic, код=истина, без блокера.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js -g \"E2E-1\"",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+      }
+    },
+    {
+      "id": "H1",
+      "block": "H",
+      "criterion": "Обработка ошибок UX: 400/401/404/409 и сеть дают человеческие inline-сообщения; 401 очищает сессию и показывает banner «Сессия истекла...»; нет stack trace, имён файлов и секретов в UI.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:grep -nE \"Неверный username|Сессия истекла|Заметка не найдена|Username уже занят\" web/app.js",
+      "evidence": {
+        "kind": "command",
+        "ref": "grep -nE \"Неверный username|Сессия истекла|Заметка не найдена|Username уже занят\" web/app.js -> литералы присутствуют"
+      }
+    },
+    {
+      "id": "I1",
+      "block": "I",
+      "criterion": "Производительность и ресурсы: только локальные /app.css и /app.js; нет внешних CDN, шрифтов и рантайм-зависимостей; статика отдаётся из go:embed с Cache-Control: no-store.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -nE \"<(script|link)[^>]*(src|href)=\" web/index.html",
+      "evidence": {
+        "kind": "command",
+        "ref": "grep -nE \"<(script|link)[^>]*(src|href)=\" web/index.html -> только /app.css и /app.js"
+      }
+    },
+    {
+      "id": "J1",
+      "block": "J",
+      "criterion": "Security UX: password только type=password; token не выводится в DOM и не логируется, передаётся только Authorization: Bearer; logout и 401 очищают notebook.token/notebook.user; в ответах API нет password/hash/salt.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "go test -count=1 -run TestNoSecretLeak ./...",
+      "evidence": {
+        "kind": "command",
+        "ref": "go test -count=1 -run TestNoSecretLeak ./... -> ok github.com/ukituki-ps/notebook"
+      }
+    },
+    {
+      "id": "J2",
+      "block": "J",
+      "criterion": "Logout — клиентский: удаляет notebook.token и notebook.user, делает location.replace('/login'), POST /api/logout не вызывается.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -n \"removeStorage(localStorage, TOKEN_KEY)\" web/app.js",
+      "evidence": {
+        "kind": "command",
+        "ref": "grep -n \"removeStorage(localStorage, TOKEN_KEY)\" web/app.js -> logout и handleUnauthorized"
+      }
+    },
+    {
+      "id": "K1",
+      "block": "K",
+      "criterion": "Соответствие actualized UI-графу: все 27 data-testid из login/register/notes присутствуют в web/index.html; legacy testid отсутствуют; note-item/delete-note живут в template.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "go test -count=1 -run TestUISemantics ./...",
+      "evidence": {
+        "kind": "command",
+        "ref": "go test -count=1 -run TestUISemantics ./... -> ok; requiredTestIDs 27/27"
+      }
+    },
+    {
+      "id": "L1",
+      "block": "L",
+      "criterion": "E2E-покрытие: 7/7 сценариев (E2E-1..E2E-7) прошли на preview, screenshots и scenario-evidence.json приложены; остаточное замечание — негативные UI-пути 400/409/login 401 не входят в 7 E2E и покрыты статикой/кодом.",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "npx playwright test --project=chromium web/e2e/auth-notes.spec.js",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+      }
+    }
+  ]
+}
