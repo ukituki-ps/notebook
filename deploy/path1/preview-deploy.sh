@@ -41,7 +41,16 @@ printf '{"schema":"orc.stand-build-provenance/v1","stand":"%s","image":"%s","ima
 net="notebook-stand-${stand}-net"
 app="notebook-stand-${stand}-app"
 edge="notebook-stand-${stand}-edge"
-docker network inspect "$net" >/dev/null 2>&1 || docker network create "$net" >/dev/null
+# pr01's default Docker address pool is exhausted: always pin an explicit,
+# free /24 for the stand network instead of relying on auto-allocation.
+case "$stand" in
+  test1) subnet="10.77.11.0/24" ;;
+  test2) subnet="10.77.12.0/24" ;;
+  *) echo "preview-deploy: no subnet mapping for stand '$stand'" >&2; exit 2 ;;
+esac
+if ! docker network inspect "$net" >/dev/null 2>&1; then
+  docker network create --subnet "$subnet" "$net" >/dev/null
+fi
 docker rm -f "$edge" "$app" >/dev/null 2>&1 || true
 
 docker run -d --name "$app" --network "$net" --restart unless-stopped \
