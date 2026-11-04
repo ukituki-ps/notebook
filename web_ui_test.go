@@ -85,7 +85,7 @@ func TestUISemantics(t *testing.T) {
 
 	// No phantom notes: no list rows outside the inert template.
 	outsideTemplate := strings.Replace(html, match[0], "", 1)
-	if strings.Contains(outsideTemplate, "<li") {
+	if regexp.MustCompile(`(?i)<li[\s>]`).MatchString(outsideTemplate) {
 		t.Error("index.html contains a hardcoded <li> note row outside the template")
 	}
 	if !regexp.MustCompile(`(?s)<ul[^>]*data-testid="notes-list"[^>]*>\s*</ul>`).MatchString(html) {
