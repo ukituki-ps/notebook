@@ -1,0 +1,471 @@
+{
+  "feature": "f-v3-auth-notes",
+  "step": "s07.requirements_reconcile",
+  "execution_id": "E4312",
+  "source_file": "doc/идеи/f-v3-auth-notes/feature-request.md",
+  "source_count_command": "grep -cE '^\\s*([0-9]+[.)]|[-*])\\s+\\S' doc/идеи/f-v3-auth-notes/feature-request.md",
+  "source_items_total": 32,
+  "items": [
+    {
+      "item_id": "R01",
+      "raw_quote": "- `POST /api/register` body `{\"username\":\"...\",\"password\":\"...\"}` -> 201",
+      "our_interpretation": "Реализуем POST /api/register: принимает JSON {username,password}, создаёт пользователя и отвечает 201.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B1/OD-05",
+      "scenario_ref": "s20c/API-smoke"
+    },
+    {
+      "item_id": "R02",
+      "raw_quote": "- `POST /api/login` body `{\"username\":\"...\",\"password\":\"...\"}` -> 200 `{\"token\":\"...\"}`;\n  401 при неверных данных",
+      "our_interpretation": "POST /api/login: 200 с непрозрачным токеном при верной паре, 401 при неверной паре и при несуществующем username (одинаковый ответ).",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B1/B4/OD-02",
+      "scenario_ref": "E2E-2"
+    },
+    {
+      "item_id": "R03",
+      "raw_quote": "- `GET /api/notes` `Authorization: Bearer <token>` -> список заметок ТОЛЬКО\n  текущего пользователя",
+      "our_interpretation": "GET /api/notes с bearer возвращает 200 и только заметки текущего пользователя, []; фильтрация по Note.UserID.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B1/B5/OD-01",
+      "scenario_ref": "E2E-6"
+    },
+    {
+      "item_id": "R04",
+      "raw_quote": "- `POST /api/notes` `Authorization: Bearer <token>` body `{\"text\":\"...\"}` ->\n  создать заметку текущего пользователя",
+      "our_interpretation": "POST /api/notes с bearer создаёт заметку, привязанную к user_id из токена, и отвечает 201 с созданной записью.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B1/B5/OD-07",
+      "scenario_ref": "E2E-3"
+    },
+    {
+      "item_id": "R05",
+      "raw_quote": "- `DELETE /api/notes/{id}` `Authorization: Bearer <token>` -> удалить только свою\n  заметку",
+      "our_interpretation": "DELETE /api/notes/{id} с bearer удаляет заметку, только если она принадлежит текущему пользователю; иначе удаления нет.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B1/B5/OD-01",
+      "scenario_ref": "E2E-5"
+    },
+    {
+      "item_id": "R06",
+      "raw_quote": "- users, sessions, notes — in-memory;",
+      "our_interpretation": "users, sessions и notes хранятся в памяти процесса в одном Store под mutex, без БД и файлов.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B2",
+      "scenario_ref": "s20/s24"
+    },
+    {
+      "item_id": "R07",
+      "raw_quote": "- пароли не хранить в открытом виде: соль + hash;",
+      "our_interpretation": "Храним только соль (16B, crypto/rand) и PBKDF2-HMAC-SHA256 hash (32B, 210k итераций); сравнение constant-time.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B3/OD-02",
+      "scenario_ref": "s20/TestPasswordHashVerify"
+    },
+    {
+      "item_id": "R08",
+      "raw_quote": "- bearer-токен;",
+      "our_interpretation": "Аутентификация через заголовок Authorization: Bearer <opaque token>; токен 32B crypto/rand, хранится на сервере.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B4/OD-03",
+      "scenario_ref": "E2E-2"
+    },
+    {
+      "item_id": "R09",
+      "raw_quote": "- user A не видит и не удаляет заметки user B;",
+      "our_interpretation": "Owner-scoped Store: List фильтрует по UserID, Delete проверяет владельца; чужая заметка не видна и не удаляется.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B5/OD-01",
+      "scenario_ref": "E2E-6"
+    },
+    {
+      "item_id": "R10",
+      "raw_quote": "- без авторизации — 401;",
+      "our_interpretation": "Любой запрос к /api/notes* без валидного bearer получает 401 (проверка auth раньше method/id/body).",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B4/B5",
+      "scenario_ref": "E2E-7"
+    },
+    {
+      "item_id": "R11",
+      "raw_quote": "- без утечки паролей/хэшей;",
+      "our_interpretation": "Поля password/hash/salt помечены json:\"-\" и не попадают в ответы; креды и токены не логируются; тест по телу ответа.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B3/B6",
+      "scenario_ref": "s20/TestPasswordNotLeaked"
+    },
+    {
+      "item_id": "R12",
+      "raw_quote": "- данные живут в рамках процесса (рестарт = очистка, это ок для dev).",
+      "our_interpretation": "Персистентности нет: рестарт процесса полностью очищает users, sessions, notes — принято как норма для dev.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B2",
+      "scenario_ref": "s20/s24"
+    },
+    {
+      "item_id": "R13",
+      "raw_quote": "- статическая страница;",
+      "our_interpretation": "UI — статические HTML-страницы без серверного рендеринга и без сборки.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/OD-08",
+      "scenario_ref": "s03-wireframes"
+    },
+    {
+      "item_id": "R14",
+      "raw_quote": "- регистрация;",
+      "our_interpretation": "Страница /register с формой username/password, вызывает POST /api/register, при 201 ведёт на /login.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/B9/OD-09",
+      "scenario_ref": "E2E-1"
+    },
+    {
+      "item_id": "R15",
+      "raw_quote": "- логин;",
+      "our_interpretation": "Страница /login с формой username/password, вызывает POST /api/login, при 200 кладёт токен и ведёт на /notes.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/B9/OD-10",
+      "scenario_ref": "E2E-2"
+    },
+    {
+      "item_id": "R16",
+      "raw_quote": "- список заметок;",
+      "our_interpretation": "Страница /notes рендерит список из GET /api/notes, включая empty state при пустом списке.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/B9",
+      "scenario_ref": "E2E-4"
+    },
+    {
+      "item_id": "R17",
+      "raw_quote": "- добавление;",
+      "our_interpretation": "На /notes форма добавления вызывает POST /api/notes и добавляет созданную заметку в список без полного перезапроса.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7",
+      "scenario_ref": "E2E-3"
+    },
+    {
+      "item_id": "R18",
+      "raw_quote": "- удаление;",
+      "our_interpretation": "У каждой своей заметки на /notes кнопка Delete вызывает DELETE /api/notes/{id} и убирает строку из DOM.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7",
+      "scenario_ref": "E2E-5"
+    },
+    {
+      "item_id": "R19",
+      "raw_quote": "- токен в памяти/localStorage;",
+      "our_interpretation": "Токен хранится в localStorage[\"notebook.token\"], что сохраняет сессию при reload вкладки.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/OD-10",
+      "scenario_ref": "E2E-4"
+    },
+    {
+      "item_id": "R20",
+      "raw_quote": "- ошибки 401/400 показывать пользователю;",
+      "our_interpretation": "Все ответы 400 и 401 отображаются inline в role=alert рядом с формой; 401 на /notes очищает токен и ведёт на /login.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B6/B7",
+      "scenario_ref": "E2E-7"
+    },
+    {
+      "item_id": "R21",
+      "raw_quote": "- без React/Vue, минимальный HTML/JS/CSS или Go embed.",
+      "our_interpretation": "UI на чистом HTML/CSS/JS без фреймворков и сборки, раздаётся через go:embed из того же Go-процесса.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B7/OD-08",
+      "scenario_ref": "s03-wireframes"
+    },
+    {
+      "item_id": "R22",
+      "raw_quote": "- Не ломать существующий path10 adapter.",
+      "our_interpretation": "path10 adapter сохраняется: deploy.stand_command и preview-deploy.sh не меняются, меняется только тело e2e-preview.sh и UI-артефакты.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8",
+      "scenario_ref": "s20c adapter"
+    },
+    {
+      "item_id": "R23",
+      "raw_quote": "- Обновить `path1.project.json`: `e2e.frontend_dir: web`,\n  `e2e.command` — команда Playwright или штатный runner,\n  `deploy.stand_command` — существующий path10 adapter, не archkit fallback,\n  `audit.mode: app`, `audit.database: false`, `canaries.require_dsn: false`.",
+      "our_interpretation": "path1.project.json приводится к целевому состоянию: frontend_dir=web, e2e.command=bash deploy/path1/e2e-preview.sh, stand_command=preview-deploy.sh, audit.mode=app, audit.database=false, canaries.require_dsn=false.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8/OD-12",
+      "scenario_ref": "s20c adapter"
+    },
+    {
+      "item_id": "R24",
+      "raw_quote": "- Обновить `path1.ui.json`: `platform: web`.",
+      "our_interpretation": "path1.ui.json получает platform: web, чтобы UI-шаги s03/s04/s21/s22a исполнялись.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8/OD-15",
+      "scenario_ref": "s21 gate-graph-actualized"
+    },
+    {
+      "item_id": "R25",
+      "raw_quote": "- Добавить UI-граф: `arch/structure/ui-pages/...` или `UI-GRAPH.yaml`.\n  Страницы: login, register, notes.",
+      "our_interpretation": "UI-граф ведётся как arch/structure/ui-pages/{login,register,notes}.yaml (один источник истины, без второго UI-GRAPH.yaml).",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B9/OD-11",
+      "scenario_ref": "s04 ui-pages + s21 actualize"
+    },
+    {
+      "item_id": "R26",
+      "raw_quote": "- Добавить Playwright `web/e2e/auth-notes.spec.js`.\n  Сценарии: регистрация; логин; создание заметки; reload — заметка видна;\n  удаление; user B не видит заметку user A; неавторизованный GET /api/notes -> 401.",
+      "our_interpretation": "Создаём web/e2e/auth-notes.spec.js с 7 сценариями: register, login, create, reload-visible, delete, A/B isolation, unauth GET -> 401.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8/B10/OD-12",
+      "scenario_ref": "E2E-1..E2E-7"
+    },
+    {
+      "item_id": "R27",
+      "raw_quote": "- s21 gate-graph-actualized не скипать.",
+      "our_interpretation": "s21 gate-graph-actualized исполняется и не скипается; граф актуализируется по фактическому коду.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B9/OD-15",
+      "scenario_ref": "s21"
+    },
+    {
+      "item_id": "R28",
+      "raw_quote": "- prod не деплоить; main/stage не менять; push в primary не делать.",
+      "our_interpretation": "Работаем только в dev/f-v3-auth-notes; prod-деплой, изменения main/stage и push в primary не выполняются.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8",
+      "scenario_ref": "границы прогона (s24)"
+    },
+    {
+      "item_id": "R29",
+      "raw_quote": "- s45.push_primary и s46.post_deploy_verify не выполнять; canary rollout не\n  запускать; audit-canary можно.",
+      "our_interpretation": "s45.push_primary и s46.post_deploy_verify не запускаются, canary rollout исключён, audit-canary допустим.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8",
+      "scenario_ref": "границы прогона (s24)"
+    },
+    {
+      "item_id": "R30",
+      "raw_quote": "- E2495/f002.5, lk-agena-v2, kh_pg не трогать; E1320 не трогать.",
+      "our_interpretation": "Чужие исполнения/проекты и E1320 не изменяются; фича — новая v3, не продолжение E1320.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8",
+      "scenario_ref": "границы прогона (s24)"
+    },
+    {
+      "item_id": "R31",
+      "raw_quote": "- force/skip/waiver не применять.",
+      "our_interpretation": "Ни один шаг не закрывается через force/skip/waiver; гейты проходятся штатно.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B9",
+      "scenario_ref": "s21/s24"
+    },
+    {
+      "item_id": "R32",
+      "raw_quote": "- direct-код вне ORC-шагов не писать.",
+      "our_interpretation": "Код и артефакты создаются только внутри шагов процесса; на s07 пишется только документация.",
+      "verdict": "match",
+      "added": false,
+      "decision_ref": "B8",
+      "scenario_ref": "s07/s20"
+    }
+  ],
+  "added_notes": [
+    {
+      "id": "AN-01",
+      "note": "409 Conflict на регистрацию с занятым username (в сыром запросе код не задан).",
+      "rationale": "Явный и простой ответ; enumeration через register принят для dev.",
+      "decision_ref": "OD-06/B1",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-02",
+      "note": "405 Method Not Allowed + заголовок Allow для неверных методов на существующих путях; auth проверяется раньше метода.",
+      "rationale": "Стабильный контракт и сохранение canary/audit-оракулов.",
+      "decision_ref": "B1/B5",
+      "needs_human_confirmation": false
+    },
+    {
+      "id": "AN-03",
+      "note": "Поле Confirm password на /register — только клиентская проверка, на сервер не уходит.",
+      "rationale": "Защита от опечатки при вводе пароля; в запросе поля нет.",
+      "decision_ref": "B7",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-04",
+      "note": "Строгая валидация: username [A-Za-z0-9_-]{3,32} (trim, case-sensitive), password 8-128, text 1-4096.",
+      "rationale": "В запросе только «битые/пустые поля»; строгие правила добавлены нами.",
+      "decision_ref": "OD-07/OD-13",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-05",
+      "note": "TTL bearer-токена 24 часа fixed от логина, без refresh и sliding expiry; истёкшая сессия удаляется лениво.",
+      "rationale": "TTL в запросе не задан; выбран безопасный дефолт для dev.",
+      "decision_ref": "OD-03/B4",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-06",
+      "note": "DELETE чужой или несуществующей заметки -> 404 (не 403), не раскрывая существование чужого id.",
+      "rationale": "Анти-энумерация; в запросе сказано только «удалить только свою».",
+      "decision_ref": "OD-01/B5",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-07",
+      "note": "Единый JSON-envelope ошибок {\"error\":\"...\"} для всех кодов, включая 400 (нечисловой id, пустой text, битый JSON), 404 и 500.",
+      "rationale": "Стабильные литералы для audit-оракулов и тестов.",
+      "decision_ref": "B6",
+      "needs_human_confirmation": false
+    },
+    {
+      "id": "AN-08",
+      "note": "401 сопровождается WWW-Authenticate: Bearer; тело {\"error\":\"unauthorized\"}; истёкший токен трактуется как невалидный.",
+      "rationale": "Стандартная HTTP-семантика bearer.",
+      "decision_ref": "B4",
+      "needs_human_confirmation": false
+    },
+    {
+      "id": "AN-09",
+      "note": "Ответ POST /api/register — 201 {\"id\":N,\"username\":\"...\"} без тела токена (логин отдельным шагом).",
+      "rationale": "Код 201 задан в запросе, состав тела — наше решение.",
+      "decision_ref": "OD-05/B1",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-10",
+      "note": "Кнопка Logout на /notes — только клиентская (чистит localStorage и ведёт на /login); POST /api/logout не добавляем.",
+      "rationale": "Эндпоинта logout в запросе нет; серверная сессия живёт до TTL.",
+      "decision_ref": "OD-04/B7",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-11",
+      "note": "Порядок заметок в GET /api/notes — порядок вставки; новые не поднимаются наверх.",
+      "rationale": "Минимизация дрейфа существующего контракта и тестов.",
+      "decision_ref": "OD-14",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-12",
+      "note": "Лимит тела запроса 1 MiB (http.MaxBytesReader) на register/login/notes.",
+      "rationale": "Защита от мусорных тел, не пользовательская фича.",
+      "decision_ref": "B3/B6",
+      "needs_human_confirmation": false
+    },
+    {
+      "id": "AN-13",
+      "note": "Раздача UI через go:embed web/ (выбран один из двух вариантов, разрешённых запросом).",
+      "rationale": "Один бинарь, preview без volume.",
+      "decision_ref": "OD-08/B7",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-14",
+      "note": "Переписывание существующих безавторизационных тестов main_test.go и поведения /api/notes под auth.",
+      "rationale": "Фича ломает текущий контракт; иначе тесты не соберутся.",
+      "decision_ref": "B10",
+      "needs_human_confirmation": true
+    },
+    {
+      "id": "AN-15",
+      "note": "UI-состояния сверх запроса: empty state, loading, блокировка формы при submitting, data-testid, role=alert/aria-live.",
+      "rationale": "Нужны для E2E и UI-инвариантов s22a.",
+      "decision_ref": "B7/B9",
+      "needs_human_confirmation": false
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OD-01",
+      "question": "DELETE чужой заметки: 404 (анти-энумерация) или 403 (явный запрет)?",
+      "recommendation": "404 — не раскрывать существование чужого id.",
+      "default_decision": "404 {\"error\":\"not found\"}",
+      "decision_ref": "FR:22, FR:30; B5",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-07",
+      "question": "Строгая валидация полей (username 3-32 [A-Za-z0-9_-], password >=8, text 1-4096) или только non-empty?",
+      "recommendation": "Строгая, но помечена как добавленная от себя; при отказе — только non-empty.",
+      "default_decision": "строгая валидация",
+      "decision_ref": "FR:15-23, FR:44; AN-04",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-03",
+      "question": "TTL bearer-токена: 24h fixed приемлемо, или нужен другой срок/refresh?",
+      "recommendation": "24h fixed, без refresh/sliding.",
+      "default_decision": "24 часа",
+      "decision_ref": "FR:29; B4; AN-05",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-04",
+      "question": "Нужен ли серверный logout (POST /api/logout), которого нет в запросе?",
+      "recommendation": "Не добавлять; UI-выход чистит localStorage.",
+      "default_decision": "logout только клиентский",
+      "decision_ref": "FR:15-23; B7; AN-10",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-08",
+      "question": "Раздача UI: go:embed в бинарь или отдача каталога web/ с диска?",
+      "recommendation": "go:embed — один бинарь, preview без volume.",
+      "default_decision": "go:embed web/",
+      "decision_ref": "FR:45; B7; AN-13",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-09",
+      "question": "Структура UI: три отдельных HTML (login/register/notes) или один index.html SPA?",
+      "recommendation": "Три отдельных HTML — проще UI-граф и reload/E2E.",
+      "default_decision": "3 HTML-страницы",
+      "decision_ref": "FR:37-42, FR:55; B7/B9",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-12",
+      "question": "E2E-runner на стенде: Playwright обязателен (fail-close без браузеров) или опционален с curl-префлайтом?",
+      "recommendation": "Playwright обязателен; API-smoke — префлайт.",
+      "default_decision": "Playwright обязателен",
+      "decision_ref": "FR:57-59; B8",
+      "needs_confirmation_at": "s08"
+    },
+    {
+      "id": "OD-05",
+      "question": "Ответ POST /api/register: 201 {id,username} (как сейчас), 201 без тела, или 201 сразу с токеном? Также нужен ли 409 на занятый username?",
+      "recommendation": "201 {id,username}, без auto-login; 409 на дубль.",
+      "default_decision": "201 {id,username} + 409",
+      "decision_ref": "FR:15-16; OD-05/OD-06; AN-01/AN-09",
+      "needs_confirmation_at": "s08"
+    }
+  ]
+}
