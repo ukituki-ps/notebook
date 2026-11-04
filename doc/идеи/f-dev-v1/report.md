@@ -16,3 +16,5 @@
 - E2E preview verified: test2 `be5a077` (api mode, result pass).
 
 - Red-team re-audit after s23: canary app-mode + app-oracles green.
+
+- Adversarial code review re-run after s23: findings closed; oracles/docs aligned.
