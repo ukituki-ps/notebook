@@ -80,7 +80,7 @@ server {
 }
 CONF
 docker run -d --name "$edge" --network "$net" --restart unless-stopped \
-  -p 192.168.1.20:9082:80 \
+  -p 9082:80 \
   -v "$runtime/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
   nginx:alpine >/dev/null
 
