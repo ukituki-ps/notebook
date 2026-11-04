@@ -14,3 +14,9 @@
 Prod/canary не затрагиваются; s45/s46 не выполняются.
 
 - gate_base_ref: `ff9b8e1` (orc_start_commit) — для app-репо platform-tools check scoped до появления `deploy/` в base; это не skip/waiver.
+
+## Re-deploy after s23 (Playwright 1.64.1)
+
+- Повторный preview после refinement: runtime-код U01/U02/U03 не менялся;
+  обновлены test-infra (Playwright 1.64.1 + lock, host-local e2e command).
+- E2E 1.64.1: 7/7 pass (проверка fill() textarea; 1.53.0 давал 4 fail).
