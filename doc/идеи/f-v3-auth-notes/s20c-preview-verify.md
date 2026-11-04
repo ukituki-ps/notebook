@@ -16,3 +16,8 @@ Runner записал `artifact_digest` без префикса `sha256:`; пр�
 нормализован (`sha256:` + тот же digest), значение evidence не менялось.
 Запрошен platform-фикс: `run-stand-e2e.sh` должен писать digest сразу с
 `sha256:` или gate должен нормализовать префикс.
+
+## Platform fix applied (dev)
+
+- `gate-e2e-preview` PASS подтверждён на E4312 после platform-фикса digest.
+- Preview `ea1e61f`: 7/7 E2E, preview-verdict pass/verified; переприёмка s20c.
