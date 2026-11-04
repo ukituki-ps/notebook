@@ -14,3 +14,5 @@
 - Preview deploy: test2 GREEN on `notebook-stand:test2-<ref>` (digest `sha256:fb153742a8344ef36aa7ec2bc1e168935888d1b045ab1951bdd1065c6ba64fdb`).
 
 - E2E preview verified: test2 `be5a077` (api mode, result pass).
+
+- Red-team re-audit after s23: canary app-mode + app-oracles green.
