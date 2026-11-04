@@ -1,0 +1,45 @@
+# Actualized UI graph (s21, from-code) — docs-only artifact for
+# artifact_globs "doc/идеи/*/UI-GRAPH.yaml".
+schema: ui-graph/v1
+feature_id: f-v3-auth-notes
+status: actualized
+platform: web
+source_roots:
+  - web
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+pages:
+  - id: login
+    route: /login
+    components: [login-card, login-form, login-error, login-link]
+  - id: register
+    route: /register
+    components: [register-card, register-form, register-error, register-link]
+  - id: notes
+    route: /notes
+    components: [notes-header, note-form, notes-list, note-item, notes-empty, notes-loading, notes-error]
+edges:
+  - from: register
+    to: login
+    trigger: register-success
+  - from: login
+    to: notes
+    trigger: login-success
+  - from: notes
+    to: login
+    trigger: 401-or-logout
+  - from: notes
+    to: notes
+    trigger: add-or-delete
+testids_source: web/index.html
+testids_count: 27
+evidence:
+  - E2E-1
+  - E2E-2
+  - E2E-3
+  - E2E-4
+  - E2E-5
+  - E2E-6
+  - E2E-7
