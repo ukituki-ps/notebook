@@ -41,3 +41,9 @@
   `location.replace('/login')` (cosmetic, код принят как истина).
 - Focus-contrast `#ffbf47` на белом — minor recommendation (WCAG 1.4.11).
 - Playwright-контейнер runner без `libnspr4` — platform/infra, не код фичи.
+
+## Re-audit after s23 (Playwright 1.64.1)
+
+- Preview build `ea1e61f`: E2E 7/7, pngdiff OK, preview-verdict pass/verified.
+- 1.53.0 исключён (баг fill textarea); lock/package на 1.64.1.
+- Новых findings нет; verdict pass, open critical/high 0.
