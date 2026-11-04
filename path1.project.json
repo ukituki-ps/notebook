@@ -1,11 +1,15 @@
 {
   "version": 1,
   "no_self_mock": {
-    "go_roots": ["."],
+    "go_roots": [
+      "."
+    ],
     "js_roots": []
   },
   "detectors": {
-    "go_roots": ["."],
+    "go_roots": [
+      "."
+    ],
     "catalog_dir": "audit/fault-catalog"
   },
   "canaries": {
@@ -13,7 +17,10 @@
     "items": []
   },
   "feature_dir": {
-    "artifact_globs": ["doc/идеи/*/{name}", "doc/идеи/*/*/{name}"]
+    "artifact_globs": [
+      "doc/идеи/*/{name}",
+      "doc/идеи/*/*/{name}"
+    ]
   },
   "e2e": {
     "frontend_dir": "",
@@ -24,5 +31,8 @@
     "stand_command": "bash deploy/path1/preview-deploy.sh {stand} {ref}",
     "runtime_dir": "deploy/stands/.runtime",
     "dsn_command": ""
+  },
+  "integration": {
+    "command": "bash deploy/path1/e2e-preview.sh"
   }
 }
