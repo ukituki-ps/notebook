@@ -1,0 +1,85 @@
+{
+  "CONTRACT-STATUS-CODE": {
+    "verdict": "covered",
+    "evidence": "go test ./... (TestDeleteNote: 204 existing, 400 non-numeric, 404 missing)",
+    "detector_exit": 0
+  },
+  "CONTRACT-ERROR-ENVELOPE": {
+    "verdict": "na",
+    "justification": "В app-репо нет общего error-envelope контракта (нет openapi/common.yaml); ошибки локальные строки."
+  },
+  "CONTRACT-NULL-OMITEMPTY": {
+    "verdict": "na",
+    "justification": "Нет optional/nullable wire-полей."
+  },
+  "CONTRACT-DATE-BOUNDARY": {
+    "verdict": "na",
+    "justification": "API не содержит дат/временных границ."
+  },
+  "CONTRACT-WIRE-CASING": {
+    "verdict": "na",
+    "justification": "Нет wire-адаптера/casing-слоя."
+  },
+  "DATA-ADAPTER-REAL-TRANSPORT": {
+    "verdict": "na",
+    "justification": "In-memory Store, нет transport-адаптера."
+  },
+  "DATA-CURSOR-STABLE-KEY": {
+    "verdict": "na",
+    "justification": "Нет пагинации/курсоров."
+  },
+  "DATA-DESCRIPTION-DERIVATION": {
+    "verdict": "na",
+    "justification": "Нет производных описаний."
+  },
+  "DATA-HASMORE-OVERSCAN": {
+    "verdict": "na",
+    "justification": "Нет пагинации/overscan."
+  },
+  "DATA-SCOPE-VALIDATION": {
+    "verdict": "na",
+    "justification": "Нет scope-модели."
+  },
+  "SEC-ERROR-LEAK": {
+    "verdict": "covered",
+    "evidence": "go test ./...; http.Error отдаёт только generic-сообщения, без внутренних деталей/стеков",
+    "detector_exit": 0
+  },
+  "SEC-PREFIX-BOUNDARY": {
+    "verdict": "na",
+    "justification": "Нет prefix-based авторизации."
+  },
+  "SEC-RLS-SCOPE-PREDICATE": {
+    "verdict": "na",
+    "justification": "Нет БД/RLS."
+  },
+  "SEC-SKIP-TAGGED-INVARIANT": {
+    "verdict": "na",
+    "justification": "Нет skip-tagged инвариантов."
+  },
+  "SEC-WRITE-VERB-REJECT": {
+    "verdict": "covered",
+    "evidence": "go test ./...; неразрешённые методы → 405, DELETE write-path покрыт TestDeleteNote",
+    "detector_exit": 0
+  },
+  "UI-DATE-BOUNDARY": {
+    "verdict": "na",
+    "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+  },
+  "UI-E2E-PREVIEW": {
+    "verdict": "na",
+    "justification": "Backend-only: UI-surface отсутствует; API smoke выполнен (preview-verdict verified, mode=api)."
+  },
+  "UI-EMPTY-STATE-CONTROLS": {
+    "verdict": "na",
+    "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+  },
+  "UI-FILTER-SERIALIZATION": {
+    "verdict": "na",
+    "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+  },
+  "UI-LOADING-ERROR-STATES": {
+    "verdict": "na",
+    "justification": "Не применимо к backend-only API без БД/UI/контрактного адаптера (f-dev-v1)."
+  }
+}
