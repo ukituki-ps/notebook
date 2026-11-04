@@ -50,7 +50,7 @@
     "dsn_command": ""
   },
   "integration": {
-    "command": "bash deploy/path1/e2e-preview.sh"
+    "command": "E2E_API_ONLY=1 bash deploy/path1/e2e-preview.sh"
   },
   "audit": {
     "mode": "app",

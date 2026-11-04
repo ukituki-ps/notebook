@@ -183,6 +183,13 @@ ok "DELETE своей note B -> 204"
 
 echo "e2e-preview: API smoke GREEN (auth 401, A/B isolation, 404/400, 204)"
 
+# s20a integration-gate: API-smoke на стенде. Playwright (UI) выполняется на s20c
+# через host-runner/browser, т.к. ORC-контейнер Alpine/musl не запускает glibc-Chromium.
+if [ "${E2E_API_ONLY:-0}" = "1" ]; then
+  echo "e2e-preview: API-only mode (Playwright -> s20c)"
+  exit 0
+fi
+
 # --- 3. Playwright chromium (fail-close) ------------------------------------
 echo "e2e-preview: Playwright (chromium) против $base"
 command -v node >/dev/null 2>&1 || fail "node не найден: Playwright E2E невозможен (fail-close, skip запрещён)"
