@@ -7,3 +7,7 @@ data/
 doc/идеи/f-v3-auth-notes/scenario-evidence.json
 doc/идеи/f-v3-auth-notes/screenshots/
 doc/идеи/f-v3-auth-notes/e2e-report.json
+
+# Test-only Node deps from e2e runner (CR-5).
+node_modules/
+package-lock.json

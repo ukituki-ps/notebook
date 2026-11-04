@@ -51,7 +51,7 @@
   },
   "e2e": {
     "frontend_dir": "web",
-    "command": "bash deploy/path1/e2e-preview.sh"
+    "command": ""
   },
   "deploy": {
     "project_id": "f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9",
