@@ -1,0 +1,41 @@
+{
+  "schema": "orc.red-team-review/v1",
+  "execution_id": "E4312",
+  "feature_id": "f-v3-auth-notes",
+  "step_id": "s22b.red_team_audit",
+  "verdict": "pass",
+  "reviewer_session_id": "ses_e5833fef4ffeEVDbkTdydp0Z1E",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy",
+  "author_session_id": "ses_e593bd426ffe9M4ppZe008bX36",
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "independent": true,
+  "attacks_total": 15,
+  "blocked": 14,
+  "risk": 1,
+  "critical_high_open": 0,
+  "new_findings": [],
+  "residual_risks": [
+    {"id": "R-1", "severity": "low", "summary": "no rate-limit/lockout/CAPTCHA (high in prod)"},
+    {"id": "R-2", "severity": "low", "summary": "no server-side logout/revocation, TTL 24h"},
+    {"id": "R-3", "severity": "info", "summary": "token in localStorage = XSS-residual; no DOM-injection sink today"},
+    {"id": "R-4", "severity": "info", "summary": "in-memory, no persistence (dev scope)"},
+    {"id": "R-5", "severity": "info", "summary": "no note/session quota"},
+    {"id": "R-6", "severity": "info", "summary": "username-existence oracle via 409"},
+    {"id": "R-7", "severity": "info", "summary": "PBKDF2 210k lower bound; recalibrate for prod"}
+  ],
+  "attack_log_path": "doc/идеи/f-v3-auth-notes/red-team-attack-log.md",
+  "preview": {
+    "url": "https://test2.nexus.ukituki.tech",
+    "build_ref": "0afe7ee",
+    "health": "200",
+    "unauth_notes": 401
+  },
+  "scope": {
+    "prod": false,
+    "canary_rollout": false,
+    "s45_s46": false,
+    "e1320_touched": false
+  }
+}
