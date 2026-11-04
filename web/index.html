@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notebook</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <main class="app">
+    <!-- /login -->
+    <section class="screen" data-screen="login" hidden>
+      <div class="card" data-testid="login-card">
+        <h1>Вход</h1>
+        <p class="error" data-testid="login-error" role="alert" aria-live="polite" hidden></p>
+        <form data-testid="login-form" id="login-form" novalidate>
+          <label for="login-username">Username</label>
+          <input data-testid="login-username" id="login-username" name="username"
+                 type="text" autocomplete="username" autocapitalize="none"
+                 spellcheck="false" required>
+
+          <label for="login-password">Password</label>
+          <input data-testid="login-password" id="login-password" name="password"
+                 type="password" autocomplete="current-password" required>
+
+          <button data-testid="login-submit" id="login-submit" type="submit">Login</button>
+        </form>
+        <p class="alt">Нет аккаунта? <a data-testid="register-link" href="/register">Register</a></p>
+      </div>
+    </section>
+
+    <!-- /register -->
+    <section class="screen" data-screen="register" hidden>
+      <div class="card" data-testid="register-card">
+        <h1>Регистрация</h1>
+        <p class="error" data-testid="register-error" role="alert" aria-live="polite" hidden></p>
+        <form data-testid="register-form" id="register-form" novalidate>
+          <label for="register-username">Username (3-32: a-z A-Z 0-9 _ -)</label>
+          <input data-testid="register-username" id="register-username" name="username"
+                 type="text" autocomplete="username" autocapitalize="none"
+                 spellcheck="false" required>
+
+          <label for="register-password">Password (&gt;= 8 символов)</label>
+          <input data-testid="register-password" id="register-password" name="password"
+                 type="password" autocomplete="new-password" required>
+
+          <label for="register-confirm">Confirm password</label>
+          <input data-testid="register-confirm" id="register-confirm" name="confirm"
+                 type="password" autocomplete="new-password" required>
+
+          <button data-testid="register-submit" id="register-submit" type="submit">Register</button>
+        </form>
+        <p class="alt">Уже есть аккаунт? <a data-testid="login-link" href="/login">Login</a></p>
+      </div>
+    </section>
+
+    <!-- /notes -->
+    <section class="screen" data-screen="notes" hidden>
+      <div class="card notes">
+        <header class="notes-header" data-testid="notes-header">
+          <span class="brand">Notebook</span>
+          <span class="user-name" data-testid="user-name"></span>
+          <button class="logout" data-testid="logout" id="logout" type="button">Logout</button>
+        </header>
+
+        <p class="error" data-testid="notes-error" role="alert" aria-live="polite" hidden></p>
+
+        <form class="note-form" data-testid="note-form" id="note-form" novalidate>
+          <label for="note-input">Текст заметки</label>
+          <textarea data-testid="note-input" id="note-input" name="text" rows="3"
+                    placeholder="Введите заметку..." required></textarea>
+          <button data-testid="add-note" id="add-note" type="submit" disabled>Add</button>
+        </form>
+
+        <p class="muted" data-testid="notes-loading" id="notes-loading">Загрузка...</p>
+        <p class="muted" data-testid="notes-empty" id="notes-empty" hidden>
+          Пока нет заметок. Добавьте первую выше.
+        </p>
+        <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list" hidden></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Single row template: app.js clones it per note (no phantom data). -->
+  <template id="note-item-template">
+    <li class="note-item" data-testid="note-item" role="listitem">
+      <span class="note-text"></span>
+      <button class="delete-note" data-testid="delete-note" type="button">Delete</button>
+    </li>
+  </template>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

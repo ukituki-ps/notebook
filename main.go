@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/hmac"
+	"embed"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
@@ -17,6 +18,11 @@ import (
 	"time"
 	"unicode/utf8"
 )
+
+// Static UI assets. Explicit patterns keep web/e2e out of the binary.
+//
+//go:embed web/index.html web/app.js web/app.css
+var webFS embed.FS
 
 const (
 	maxBodyBytes = 1 << 20
@@ -382,6 +388,61 @@ func handler(s *Store) http.Handler {
 	mux.HandleFunc("/api/notes/", a.handleNoteItem)
 	mux.HandleFunc("/api/", a.handleAPINotFound)
 	mux.HandleFunc("/api", a.handleAPINotFound)
+
+	// ---- static UI (embed only; API paths keep their auth/envelope) ----
+	serveAsset := func(name, contentType string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet && r.Method != http.MethodHead {
+				w.Header().Set("Allow", "GET, HEAD")
+				writeErr(w, http.StatusMethodNotAllowed, "method not allowed")
+				return
+			}
+			data, err := webFS.ReadFile(name)
+			if err != nil {
+				writeErr(w, http.StatusNotFound, "not found")
+				return
+			}
+			w.Header().Set("Content-Type", contentType)
+			w.Header().Set("Cache-Control", "no-store")
+			w.WriteHeader(http.StatusOK)
+			if r.Method != http.MethodHead {
+				_, _ = w.Write(data)
+			}
+		}
+	}
+	serveIndex := func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			w.Header().Set("Allow", "GET, HEAD")
+			writeErr(w, http.StatusMethodNotAllowed, "method not allowed")
+			return
+		}
+		data, err := webFS.ReadFile("web/index.html")
+		if err != nil {
+			writeErr(w, http.StatusNotFound, "not found")
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		w.WriteHeader(http.StatusOK)
+		if r.Method != http.MethodHead {
+			_, _ = w.Write(data)
+		}
+	}
+
+	mux.HandleFunc("/app.js", serveAsset("web/app.js", "text/javascript; charset=utf-8"))
+	mux.HandleFunc("/app.css", serveAsset("web/app.css", "text/css; charset=utf-8"))
+	for _, page := range []string{"/login", "/register", "/notes"} {
+		mux.HandleFunc(page, serveIndex)
+	}
+	// Root redirect; unknown paths must not fall through to the SPA shell.
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			writeErr(w, http.StatusNotFound, "not found")
+			return
+		}
+		w.Header().Set("Cache-Control", "no-store")
+		http.Redirect(w, r, "/login", http.StatusFound)
+	})
 	return mux
 }
 
