@@ -28,7 +28,7 @@
   "attack_log_path": "doc/идеи/f-v3-auth-notes/red-team-attack-log.md",
   "preview": {
     "url": "https://test2.nexus.ukituki.tech",
-    "build_ref": "0afe7ee",
+    "build_ref": "ea1e61f",
     "health": "200",
     "unauth_notes": 401
   },

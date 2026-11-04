@@ -322,3 +322,8 @@ rate-limit/lockout (accepted dev risk, OD-16) — не повышает крит
 
 Nexus artifact: `f-v3-auth-notes/red-team-attack-log.md` (s22b.red_team_audit,
 E4312). Reviewer: independent red-team (self-review не выполнялся).
+
+## Re-audit after s23/platform fix
+
+- Preview `ea1e61f` (Playwright 1.64.1, E2E 7/7).
+- Attack surface/код не менялись; verdict pass, 0 critical/high, residual risks прежние.
