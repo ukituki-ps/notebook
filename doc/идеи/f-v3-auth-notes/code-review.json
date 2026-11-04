@@ -7,6 +7,12 @@
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy",
   "author_session_id": "ses_e593bd426ffe9M4ppZe008bX36",
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  },
   "independent": true,
   "findings": [
     {
