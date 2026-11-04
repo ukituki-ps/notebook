@@ -20,3 +20,10 @@ None.
 ## Notes
 - Backend-only increment; UI graph/mobile probe are N/A (skipped by process).
 - No contract drift (no OpenAPI modules in this app repo).
+
+## Re-audit after s23 (2026-11-04)
+
+- Review findings CR-1/CR-2/CR-3 (and RT-1/RT-2) closed: named tests added;
+  oracles split to falsifiable tests; 405 and error-envelope asserted.
+- Unit suite green; preview e2e verified on test2 (`be5a077`, API mode).
+- Verdict: pass.
