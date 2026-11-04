@@ -2,7 +2,8 @@
 FROM golang:1.23-alpine AS build
 WORKDIR /src
 COPY go.mod ./
-COPY main.go ./
+COPY *.go ./
+COPY web/ ./web/
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -o /out/notebook .
 
 FROM alpine:3.20
