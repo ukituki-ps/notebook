@@ -25,8 +25,8 @@ async function registerUser(request, username) {
 async function loginViaUI(page, username, password = PASSWORD) {
   await page.goto("/login");
   const form = page.getByTestId("login-form");
-  await form.getByTestId("username").fill(username);
-  await form.getByTestId("password").fill(password);
+  await form.getByTestId("login-username").fill(username);
+  await form.getByTestId("login-password").fill(password);
   await page.getByTestId("login-submit").click();
   await page.waitForURL(/\/notes$/);
   await expect(page.getByTestId("notes-loading")).toBeHidden();
@@ -40,7 +40,7 @@ async function createUserAndLogin(page, request, prefix) {
 }
 
 async function addNote(page, text) {
-  await page.getByTestId("note-text").fill(text);
+  await page.getByTestId("note-input").fill(text);
   await page.getByTestId("add-note").click();
   const item = page.getByTestId("note-item").filter({ hasText: text });
   await expect(item).toBeVisible();
@@ -52,13 +52,13 @@ test("E2E-1 register: valid account redirects to /login with username prefilled"
 
   await page.goto("/register");
   const form = page.getByTestId("register-form");
-  await form.getByTestId("username").fill(username);
-  await form.getByTestId("password").fill(PASSWORD);
-  await form.getByTestId("confirm-password").fill(PASSWORD);
+  await form.getByTestId("register-username").fill(username);
+  await form.getByTestId("register-password").fill(PASSWORD);
+  await form.getByTestId("register-confirm").fill(PASSWORD);
   await page.getByTestId("register-submit").click();
 
   await page.waitForURL(/\/login$/);
-  await expect(page.getByTestId("login-form").getByTestId("username")).toHaveValue(username);
+  await expect(page.getByTestId("login-form").getByTestId("login-username")).toHaveValue(username);
 });
 
 test("E2E-2 login and token: 200 stores notebook.token and opens /notes", async ({ page, request }) => {
@@ -71,7 +71,7 @@ test("E2E-2 login and token: 200 stores notebook.token and opens /notes", async 
   const storedUser = await page.evaluate(() => localStorage.getItem("notebook.user"));
   expect(token).toBeTruthy();
   expect(storedUser).toBe(username);
-  await expect(page.getByTestId("notes-form")).toBeVisible();
+  await expect(page.getByTestId("note-form")).toBeVisible();
 });
 
 test("E2E-3 create note: Add renders #id text in notes-list", async ({ page, request }) => {

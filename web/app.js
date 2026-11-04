@@ -6,7 +6,28 @@
   var PREFILL_KEY = "notebook.prefill";
   var SCREENS = ["login", "register", "notes"];
 
-  var errorEl = document.querySelector('[data-testid="error"]');
+  function byTestId(id) {
+    return document.querySelector('[data-testid="' + id + '"]');
+  }
+
+  var errorEls = {
+    login: byTestId("login-error"),
+    register: byTestId("register-error"),
+    notes: byTestId("notes-error")
+  };
+
+  function showError(screen, text) {
+    var el = errorEls[screen];
+    if (!el) return;
+    el.textContent = text || "";
+    el.hidden = !text;
+  }
+
+  function clearErrors() {
+    SCREENS.forEach(function (name) {
+      showError(name, "");
+    });
+  }
 
   function readStorage(store, key) {
     try {
@@ -32,20 +53,6 @@
     }
   }
 
-  function showError(text) {
-    if (!errorEl) return;
-    errorEl.textContent = text || "";
-    errorEl.hidden = !text;
-  }
-
-  function clearError() {
-    showError("");
-  }
-
-  function field(form, testid) {
-    return form.querySelector('[data-testid="' + testid + '"]');
-  }
-
   function setFormBusy(form, button, busy, busyText) {
     var fields = form.querySelectorAll("input, textarea, button");
     for (var i = 0; i < fields.length; i++) {
@@ -59,6 +66,17 @@
         button.textContent = button.dataset.idleText;
         delete button.dataset.idleText;
       }
+    }
+  }
+
+  function markFieldInvalid(el, invalid) {
+    if (!el) return;
+    if (invalid) {
+      el.classList.add("invalid");
+      el.setAttribute("aria-invalid", "true");
+    } else {
+      el.classList.remove("invalid");
+      el.removeAttribute("aria-invalid");
     }
   }
 
@@ -111,17 +129,17 @@
     SCREENS.forEach(function (n) {
       if (screenEls[n]) screenEls[n].hidden = n !== name;
     });
-    clearError();
+    clearErrors();
     if (name === "login") prepareLogin();
     if (name === "notes") initNotes();
   }
 
   // ---------------- login ----------------
 
-  var loginForm = document.getElementById("login-form");
-  var loginUsername = document.getElementById("login-username");
-  var loginPassword = document.getElementById("login-password");
-  var loginSubmit = document.getElementById("login-submit");
+  var loginForm = byTestId("login-form");
+  var loginUsername = byTestId("login-username");
+  var loginPassword = byTestId("login-password");
+  var loginSubmit = byTestId("login-submit");
 
   function prepareLogin() {
     var prefill = readStorage(sessionStorage, PREFILL_KEY);
@@ -133,12 +151,12 @@
 
   loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    clearError();
+    showError("login", "");
 
     var username = loginUsername.value.trim();
     var password = loginPassword.value;
     if (!username || !password) {
-      showError("Username и password обязательны");
+      showError("login", "Username и password обязательны");
       if (!username) loginUsername.focus();
       else loginPassword.focus();
       return;
@@ -159,19 +177,19 @@
           return;
         }
         if (res.status === 400) {
-          showError("Username и password обязательны");
+          showError("login", "Username и password обязательны");
           return;
         }
         if (res.status === 401) {
-          showError("Неверный username или пароль");
+          showError("login", "Неверный username или пароль");
           loginPassword.value = "";
           loginPassword.focus();
           return;
         }
-        showError("Не удалось войти. Попробуйте ещё раз.");
+        showError("login", "Не удалось войти. Попробуйте ещё раз.");
       })
       .catch(function () {
-        showError("Ошибка сети. Проверьте соединение.");
+        showError("login", "Ошибка сети. Проверьте соединение.");
       })
       .then(function () {
         if (!done) setFormBusy(loginForm, loginSubmit, false, "");
@@ -180,11 +198,17 @@
 
   // ---------------- register ----------------
 
-  var registerForm = document.getElementById("register-form");
-  var registerUsername = document.getElementById("register-username");
-  var registerPassword = document.getElementById("register-password");
-  var registerConfirm = document.getElementById("register-confirm");
-  var registerSubmit = document.getElementById("register-submit");
+  var registerForm = byTestId("register-form");
+  var registerUsername = byTestId("register-username");
+  var registerPassword = byTestId("register-password");
+  var registerConfirm = byTestId("register-confirm");
+  var registerSubmit = byTestId("register-submit");
+
+  function clearRegisterInvalid() {
+    markFieldInvalid(registerUsername, false);
+    markFieldInvalid(registerPassword, false);
+    markFieldInvalid(registerConfirm, false);
+  }
 
   function registerErrorText(code) {
     switch (code) {
@@ -203,21 +227,28 @@
 
   registerForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    clearError();
+    showError("register", "");
+    clearRegisterInvalid();
 
     var username = registerUsername.value.trim();
     var password = registerPassword.value;
     var confirm = registerConfirm.value;
 
     if (!confirm || confirm !== password) {
-      showError("Passwords do not match");
+      showError("register", "Passwords do not match");
+      markFieldInvalid(registerConfirm, true);
       registerConfirm.focus();
       return;
     }
     if (!username || !password) {
-      showError("Username и password обязательны");
-      if (!username) registerUsername.focus();
-      else registerPassword.focus();
+      showError("register", "Username и password обязательны");
+      if (!username) {
+        markFieldInvalid(registerUsername, true);
+        registerUsername.focus();
+      } else {
+        markFieldInvalid(registerPassword, true);
+        registerPassword.focus();
+      }
       return;
     }
 
@@ -231,26 +262,34 @@
         if (res.status === 201) {
           done = true;
           writeStorage(sessionStorage, PREFILL_KEY, username);
-          showError("Аккаунт создан. Войдите.");
-          window.setTimeout(function () {
-            location.replace("/login");
-          }, 800);
+          location.replace("/login");
           return;
         }
         if (res.status === 400) {
           var code = res.data && res.data.error;
-          showError(registerErrorText(code));
+          var marked = false;
+          if (code === "invalid username" || code === "username and password required") {
+            markFieldInvalid(registerUsername, true);
+            marked = true;
+          }
+          if (code === "invalid password" || code === "username and password required") {
+            markFieldInvalid(registerPassword, true);
+            marked = true;
+          }
+          if (!marked) markFieldInvalid(registerUsername, true);
+          showError("register", registerErrorText(code));
           return;
         }
         if (res.status === 409) {
-          showError("Username уже занят");
+          showError("register", "Username уже занят");
+          markFieldInvalid(registerUsername, true);
           registerUsername.focus();
           return;
         }
-        showError("Не удалось зарегистрироваться. Попробуйте ещё раз.");
+        showError("register", "Не удалось зарегистрироваться. Попробуйте ещё раз.");
       })
       .catch(function () {
-        showError("Ошибка сети. Проверьте соединение.");
+        showError("register", "Ошибка сети. Проверьте соединение.");
       })
       .then(function () {
         if (!done) setFormBusy(registerForm, registerSubmit, false, "");
@@ -259,20 +298,21 @@
 
   // ---------------- notes ----------------
 
-  var notesForm = document.getElementById("notes-form");
-  var noteText = document.getElementById("note-text");
-  var addButton = document.getElementById("add-note");
-  var notesList = document.getElementById("notes-list");
-  var notesEmpty = document.getElementById("notes-empty");
-  var notesLoading = document.getElementById("notes-loading");
-  var userNameEl = document.querySelector('[data-testid="user-name"]');
-  var logoutButton = document.getElementById("logout");
+  var notesForm = byTestId("note-form");
+  var noteInput = byTestId("note-input");
+  var addButton = byTestId("add-note");
+  var notesList = byTestId("notes-list");
+  var notesEmpty = byTestId("notes-empty");
+  var notesLoading = byTestId("notes-loading");
+  var userNameEl = byTestId("user-name");
+  var logoutButton = byTestId("logout");
+  var noteTemplate = document.getElementById("note-item-template");
 
   var notesInitialized = false;
 
   function setNotesEnabled(enabled) {
     notesForm.dataset.enabled = enabled ? "1" : "0";
-    noteText.disabled = !enabled;
+    noteInput.disabled = !enabled;
     if (!enabled) addButton.disabled = true;
     else updateAddState();
   }
@@ -282,32 +322,23 @@
       addButton.disabled = true;
       return;
     }
-    addButton.disabled = noteText.value.trim() === "";
+    addButton.disabled = noteInput.value.trim() === "";
   }
 
   function makeNote(note) {
-    var item = document.createElement("li");
-    item.className = "note-item";
-    item.setAttribute("data-testid", "note-item");
+    var item = noteTemplate.content.firstElementChild.cloneNode(true);
     item.setAttribute("data-note-id", String(note.id));
-    item.setAttribute("role", "listitem");
 
-    var text = document.createElement("span");
-    text.className = "note-text";
-    text.textContent = "#" + note.id + " " + note.text;
+    var text = item.querySelector(".note-text");
+    if (text) text.textContent = "#" + note.id + " " + note.text;
 
-    var remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "delete-note";
-    remove.setAttribute("data-testid", "delete-note");
-    remove.setAttribute("aria-label", "Удалить заметку #" + note.id);
-    remove.textContent = "Delete";
-    remove.addEventListener("click", function () {
-      deleteNote(note.id, item, remove);
-    });
-
-    item.appendChild(text);
-    item.appendChild(remove);
+    var remove = item.querySelector('[data-testid="delete-note"]');
+    if (remove) {
+      remove.setAttribute("aria-label", "Удалить заметку #" + note.id);
+      remove.addEventListener("click", function () {
+        deleteNote(note.id, item, remove);
+      });
+    }
     return item;
   }
 
@@ -329,7 +360,7 @@
     removeStorage(localStorage, TOKEN_KEY);
     removeStorage(localStorage, USER_KEY);
     setNotesEnabled(false);
-    showError("Сессия истекла. Перенаправление на вход...");
+    showError("notes", "Сессия истекла. Перенаправление на вход...");
     window.setTimeout(function () {
       location.replace("/login");
     }, 200);
@@ -354,7 +385,7 @@
           return;
         }
         if (res.status !== 200) {
-          showError("Не удалось загрузить заметки.");
+          showError("notes", "Не удалось загрузить заметки.");
           return;
         }
         renderNotes(Array.isArray(res.data) ? res.data : []);
@@ -362,7 +393,7 @@
       })
       .catch(function () {
         notesLoading.hidden = true;
-        showError("Ошибка сети. Проверьте соединение.");
+        showError("notes", "Ошибка сети. Проверьте соединение.");
       });
   }
 
@@ -381,7 +412,7 @@
   }
 
   function deleteNote(id, item, button) {
-    clearError();
+    showError("notes", "");
     if (item.dataset.pending === "1") return;
 
     item.dataset.pending = "1";
@@ -410,40 +441,40 @@
         button.disabled = false;
 
         if (res.status === 404) {
-          showError("Заметка не найдена");
+          showError("notes", "Заметка не найдена");
           loadNotes();
           return;
         }
         if (res.status === 400) {
-          showError("Некорректный запрос");
+          showError("notes", "Некорректный запрос");
           return;
         }
-        showError("Не удалось удалить заметку.");
+        showError("notes", "Не удалось удалить заметку.");
       })
       .catch(function () {
         item.dataset.pending = "0";
         item.classList.remove("pending");
         button.disabled = false;
-        showError("Ошибка сети. Проверьте соединение.");
+        showError("notes", "Ошибка сети. Проверьте соединение.");
       });
   }
 
   notesForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    clearError();
+    showError("notes", "");
     if (addButton.dataset.busy === "1" || notesForm.dataset.enabled !== "1") return;
 
-    var text = noteText.value;
+    var text = noteInput.value;
     if (text.trim() === "") {
-      showError("Текст заметки не может быть пустым");
-      noteText.focus();
+      showError("notes", "Текст заметки не может быть пустым");
+      noteInput.focus();
       return;
     }
 
     var idleText = addButton.textContent;
     addButton.dataset.busy = "1";
     addButton.disabled = true;
-    noteText.disabled = true;
+    noteInput.disabled = true;
     addButton.textContent = "Adding...";
 
     api("/api/notes", {
@@ -456,8 +487,8 @@
           notesList.appendChild(makeNote(res.data));
           notesList.hidden = false;
           notesEmpty.hidden = true;
-          noteText.value = "";
-          noteText.focus();
+          noteInput.value = "";
+          noteInput.focus();
           return;
         }
         if (res.status === 401) {
@@ -465,28 +496,28 @@
           return;
         }
         if (res.status === 400) {
-          showError("Текст заметки не может быть пустым");
+          showError("notes", "Текст заметки не может быть пустым");
           return;
         }
-        showError("Не удалось добавить заметку.");
+        showError("notes", "Не удалось добавить заметку.");
       })
       .catch(function () {
-        showError("Ошибка сети. Проверьте соединение.");
+        showError("notes", "Ошибка сети. Проверьте соединение.");
       })
       .then(function () {
         addButton.textContent = idleText;
         addButton.dataset.busy = "0";
         if (notesForm.dataset.enabled !== "0") {
-          noteText.disabled = false;
+          noteInput.disabled = false;
           updateAddState();
         }
       });
   });
 
-  noteText.addEventListener("input", updateAddState);
+  noteInput.addEventListener("input", updateAddState);
 
   // Enter submits the note; Shift+Enter inserts a newline.
-  noteText.addEventListener("keydown", function (event) {
+  noteInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       if (typeof notesForm.requestSubmit === "function") {
@@ -505,16 +536,16 @@
 
   // ---------------- boot ----------------
 
-  function wireLink(selector, target) {
-    var link = document.querySelector(selector);
+  function wireLink(testid, target) {
+    var link = byTestId(testid);
     if (!link) return;
     link.addEventListener("click", function (event) {
       event.preventDefault();
       location.replace(target);
     });
   }
-  wireLink('[data-testid="register-link"]', "/register");
-  wireLink('[data-testid="login-link"]', "/login");
+  wireLink("register-link", "/register");
+  wireLink("login-link", "/login");
 
   window.addEventListener("hashchange", function () {
     activate(screenFromLocation());

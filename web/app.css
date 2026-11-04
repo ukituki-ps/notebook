@@ -81,6 +81,14 @@ textarea {
   resize: vertical;
 }
 
+input.invalid,
+textarea.invalid,
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
 button {
   display: inline-flex;
   align-items: center;

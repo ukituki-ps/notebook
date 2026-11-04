@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -36,40 +37,101 @@ func TestUISemantics(t *testing.T) {
 		t.Fatal("embed includes web/e2e/auth-notes.spec.js; use explicit patterns")
 	}
 
-	// Every required data-testid is present. note-item/delete-note are created
-	// by app.js, the rest live in index.html.
-	staticIDs := []string{
-		"login-card", "login-form", "username", "password", "login-submit",
-		"register-link", "register-card", "register-form", "confirm-password",
-		"register-submit", "login-link", "notes-form", "note-text", "add-note",
-		"notes-list", "notes-empty", "notes-loading", "error", "logout",
-		"notes-header", "user-name", "notes-card",
+	// Full selector set from arch/structure/ui-pages/{login,register,notes}.yaml.
+	// note-item/delete-note live in <template id="note-item-template">.
+	requiredTestIDs := []string{
+		// login.yaml
+		"login-card", "login-form", "login-username", "login-password",
+		"login-submit", "login-error", "register-link",
+		// register.yaml
+		"register-card", "register-form", "register-username", "register-password",
+		"register-confirm", "register-submit", "register-error", "login-link",
+		// notes.yaml
+		"notes-header", "user-name", "logout", "note-form", "note-input",
+		"add-note", "notes-list", "note-item", "delete-note", "notes-empty",
+		"notes-loading", "notes-error",
 	}
-	for _, id := range staticIDs {
+	for _, id := range requiredTestIDs {
 		if !strings.Contains(html, `data-testid="`+id+`"`) {
 			t.Errorf("index.html missing data-testid=%q", id)
 		}
 	}
-	for _, id := range []string{"note-item", "delete-note"} {
-		if !strings.Contains(js, `"`+id+`"`) {
-			t.Errorf("app.js does not create data-testid=%q", id)
-		}
-		if !strings.Contains(js, fmtTestIDAttr(id)) {
-			t.Errorf("app.js does not set data-testid attribute for %q", id)
+
+	// The earlier, non-contract ids must be gone.
+	for _, id := range []string{
+		"username", "password", "confirm-password", "notes-form", "note-text",
+		"error", "notes-card",
+	} {
+		if strings.Contains(html, `data-testid="`+id+`"`) {
+			t.Errorf("index.html still has legacy data-testid=%q", id)
 		}
 	}
 
-	// Every form control has a visible <label for=...> pointing at its id.
+	// note-item/delete-note are a real template in HTML; app.js clones it.
+	templateRE := regexp.MustCompile(`(?s)<template id="note-item-template">(.*?)</template>`)
+	match := templateRE.FindStringSubmatch(html)
+	if match == nil {
+		t.Fatal(`index.html missing <template id="note-item-template">`)
+	}
+	templateBody := match[1]
+	for _, id := range []string{"note-item", "delete-note"} {
+		if !strings.Contains(templateBody, `data-testid="`+id+`"`) {
+			t.Errorf("note-item-template missing data-testid=%q", id)
+		}
+	}
+	if strings.Contains(html, "data-note-id=") {
+		t.Error("index.html contains a hardcoded note id")
+	}
+
+	// No phantom notes: no list rows outside the inert template.
+	outsideTemplate := strings.Replace(html, match[0], "", 1)
+	if strings.Contains(outsideTemplate, "<li") {
+		t.Error("index.html contains a hardcoded <li> note row outside the template")
+	}
+	if !regexp.MustCompile(`(?s)<ul[^>]*data-testid="notes-list"[^>]*>\s*</ul>`).MatchString(html) {
+		t.Error("notes-list must be an empty container in index.html")
+	}
+
+	// app.js must clone the template and never create rows from inline markup.
+	if !strings.Contains(js, `getElementById("note-item-template")`) {
+		t.Error(`app.js does not use <template id="note-item-template">`)
+	}
+	if !strings.Contains(js, "cloneNode(true)") {
+		t.Error("app.js does not clone the note-item template")
+	}
+	if !strings.Contains(js, "aria-label") {
+		t.Error("delete buttons need a per-note aria-label")
+	}
+
+	// Every control has a visible <label for=...> pointing at its id.
 	for _, id := range []string{
 		"login-username", "login-password",
 		"register-username", "register-password", "register-confirm",
-		"note-text",
+		"note-input",
 	} {
 		if !strings.Contains(html, `for="`+id+`"`) {
 			t.Errorf("missing <label for=%q>", id)
 		}
 		if !strings.Contains(html, `id="`+id+`"`) {
 			t.Errorf("missing control id=%q", id)
+		}
+	}
+
+	// Three per-screen error regions, each an alert live region.
+	for _, id := range []string{"login-error", "register-error", "notes-error"} {
+		tag := elementTag(html, id)
+		if tag == "" {
+			t.Errorf("missing error region data-testid=%q", id)
+			continue
+		}
+		if !strings.Contains(tag, `role="alert"`) {
+			t.Errorf("error region %q missing role=alert", id)
+		}
+		if !strings.Contains(tag, `aria-live="polite"`) {
+			t.Errorf("error region %q missing aria-live=polite", id)
+		}
+		if !strings.Contains(tag, "hidden") {
+			t.Errorf("error region %q must start hidden", id)
 		}
 	}
 
@@ -80,37 +142,40 @@ func TestUISemantics(t *testing.T) {
 		}
 	}
 
-	// Error region: role=alert + aria-live=polite.
-	if !strings.Contains(html, `role="alert"`) {
-		t.Error(`missing role="alert"`)
-	}
-	if !strings.Contains(html, `aria-live="polite"`) {
-		t.Error(`missing aria-live="polite"`)
-	}
-	if !strings.Contains(js, "aria-label") {
-		t.Error("delete buttons need a per-note aria-label")
-	}
-
-	// Empty/loading states exist and are hidden by default.
+	// Empty/loading states exist; empty is hidden until a 200 with no notes.
 	for _, id := range []string{"notes-empty", "notes-loading"} {
-		if !strings.Contains(html, `data-testid="`+id+`"`) {
+		if elementTag(html, id) == "" {
 			t.Errorf("missing %s state", id)
 		}
 	}
+	if tag := elementTag(html, "notes-empty"); !strings.Contains(tag, "hidden") {
+		t.Error("notes-empty must be hidden by default")
+	}
 
-	// No phantom notes: the static list must be empty and note rows are only
-	// created from GET responses in app.js.
-	if strings.Contains(html, "<li>") || strings.Contains(html, "<li ") {
-		t.Error("index.html contains a hardcoded <li> note row")
+	// app.js must drive the UI through the contract ids.
+	for _, id := range []string{
+		"login-error", "register-error", "notes-error",
+		"login-form", "login-username", "login-password", "login-submit",
+		"register-form", "register-username", "register-password",
+		"register-confirm", "register-submit",
+		"register-link", "login-link",
+		"note-form", "note-input", "add-note", "notes-list",
+		"notes-empty", "notes-loading", "user-name", "logout",
+		"delete-note",
+	} {
+		if !strings.Contains(js, `"`+id+`"`) {
+			t.Errorf("app.js does not reference data-testid=%q", id)
+		}
 	}
-	if strings.Contains(html, "data-note-id=") {
-		t.Error("index.html contains a hardcoded note id")
-	}
-	if strings.Contains(html, `data-testid="note-item"`) {
-		t.Error("note-item must be generated by app.js, not hardcoded in HTML")
-	}
+
 	if !strings.Contains(js, "fetch(") || !strings.Contains(js, `"/api/notes"`) {
 		t.Error("app.js must load notes from /api/notes")
+	}
+	if !strings.Contains(js, `location.replace("/login")`) {
+		t.Error("app.js must redirect to /login on 401/logout")
+	}
+	if !strings.Contains(js, "aria-invalid") {
+		t.Error("register 400 must mark the offending field with aria-invalid")
 	}
 
 	// CSS: narrow breakpoint, full-width controls, touch target and wrapping.
@@ -127,7 +192,8 @@ func TestUISemantics(t *testing.T) {
 	}
 }
 
-// fmtTestIDAttr matches the setAttribute("data-testid", "<id>") calls in app.js.
-func fmtTestIDAttr(id string) string {
-	return `"data-testid", "` + id + `"`
+// elementTag returns the opening tag that carries data-testid="id".
+func elementTag(html, id string) string {
+	re := regexp.MustCompile(`(?s)<[^>]*data-testid="` + regexp.QuoteMeta(id) + `"[^>]*>`)
+	return re.FindString(html)
 }
