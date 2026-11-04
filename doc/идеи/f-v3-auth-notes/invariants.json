@@ -128,18 +128,18 @@
     },
     {
       "id": "INV-UI-ORACLE",
-      "status": "proposed",
+      "status": "active",
       "statement": "У каждого критерия UI-аудита (блоки A-L) есть исполнимый оракул и evidence.",
       "enforcement": "s22a.ui_audit: ui-audit.json items[].oracle/evidence + gates gate-ui-audit-oracle, gate-ui-audit-machine",
-      "test_ref": "",
+      "test_ref": "cmd:python3 tools/ui-audit-check.py --platform web --expect-sha 4fbfbb1",
       "covers": []
     },
     {
       "id": "INV-UI-E2E-PREVIEW",
-      "status": "proposed",
+      "status": "active",
       "statement": "UI-сценарии проходят на стенде и подтверждены e2e-report/screenshot.",
       "enforcement": "s20c: E2E на стенде через deploy/path1/e2e-preview.sh + Playwright web/e2e/auth-notes.spec.js",
-      "test_ref": "",
+      "test_ref": "cmd:bash deploy/path1/e2e-preview.sh",
       "covers": [
         "UI-E2E-PREVIEW"
       ]

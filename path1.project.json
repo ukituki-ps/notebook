@@ -20,6 +20,16 @@
         "id": "CANARY-DELETE-STATUS",
         "seed": "sed -i 's/http.StatusNoContent/http.StatusOK/' {worktree}/main.go",
         "detect": "cd {worktree} && go test -run TestDeleteNote ./..."
+      },
+      {
+        "id": "sec-rls-predicate-drop",
+        "seed": "sed -i 's/if note.UserID == userID/if note.UserID != userID/' {worktree}/main.go",
+        "detect": "cd {worktree} && go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
+      },
+      {
+        "id": "sec-skip-tagged",
+        "seed": "sed -i '1i //go:build integration' {worktree}/main_test.go",
+        "detect": "cd {worktree} && sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\""
       }
     ]
   },
@@ -56,9 +66,21 @@
     "mode": "app",
     "database": false,
     "oracles": {
-      "CONTRACT-STATUS-CODE": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed' ./...",
-      "SEC-ERROR-LEAK": "go test -count=1 -run TestDeleteErrorEnvelope ./...",
-      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run TestNotesMethodNotAllowed ./...",
+      "CONTRACT-WIRE-CASING": "go test -count=1 -run TestWireContract ./...",
+      "CONTRACT-ERROR-ENVELOPE": "go test -count=1 -run 'TestDeleteErrorEnvelope|TestNoSecretLeak' ./...",
+      "CONTRACT-STATUS-CODE": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed|TestRegister|TestLogin' ./...",
+      "CONTRACT-NULL-OMITEMPTY": "go test -count=1 -run 'TestNotesLifecycle|TestWireContract' ./...",
+      "DATA-ADAPTER-REAL-TRANSPORT": "go test -count=1 -run TestHTTPTransport ./...",
+      "DATA-SCOPE-VALIDATION": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+      "SEC-RLS-SCOPE-PREDICATE": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+      "SEC-SKIP-TAGGED-INVARIANT": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
+      "SEC-PREFIX-BOUNDARY": "go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...",
+      "SEC-WRITE-VERB-REJECT": "go test -count=1 -run 'TestNotesMethodNotAllowed|TestAuthMethodOrder' ./...",
+      "SEC-ERROR-LEAK": "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./...",
+      "UI-EMPTY-STATE-CONTROLS": "go test -count=1 -run TestUISemantics ./...",
+      "UI-LOADING-ERROR-STATES": "go test -count=1 -run TestUISemantics ./...",
+      "UI-FILTER-SERIALIZATION": "go test -count=1 -run TestUISemantics ./...",
+      "UI-E2E-PREVIEW": "bash -c 'curl -fsS -m 10 https://test2.nexus.ukituki.tech/healthz >/dev/null && test \"$(curl -s -o /dev/null -w %{http_code} -m 10 https://test2.nexus.ukituki.tech/api/notes)\" = 401'",
       "SEC-AUTH-REQUIRED": "go test -count=1 -run 'TestAuthRequired|TestLoginInvalid' ./...",
       "SEC-USER-ISOLATION": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
     }
