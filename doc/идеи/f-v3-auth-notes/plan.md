@@ -577,3 +577,6 @@ go test -race ./...
   (auth-smoke + Playwright) → s21 (graph actualize) → s22a (ui-audit) → s24.
 - Главные риски: merge `main.go`, embed до `web/`, Dockerfile, Playwright на
   стенде, canary `CANARY-DELETE-STATUS`, SHA в `preview-deploy.json`.
+
+---
+Nexus artifact: `f-v3-auth-notes/plan.md` (approved, project f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9).
