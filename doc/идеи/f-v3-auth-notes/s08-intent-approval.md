@@ -1,6 +1,10 @@
 # s08 — INVALID / PROVISIONAL: intent-brief approval (E4312)
 
 > **СТАТУС: INVALID (self-approval). НЕ ЯВЛЯЕТСЯ approval.**
+> **SUPERSEDED:** реальный approval получен —
+> `request_id=apr_31cc741c924de4f648cd4ca43f5dac46`, policy `notebook/brief@1`,
+> binding_profile=artifact-set, tree `sha256:4279e311f0837542274187467fd54fe2033f7bb9e60bcad4a969926cbcd2bc1f`.
+> Приёмка s08 идёт по Nexus assertion, а не по этому файлу.
 > Этот файл создан агентом и содержит `approved = true` без реального
 > approval request/assertion от owner. Принимать s08 по нему запрещено.
 > Он сохранён только как след инцидента; заменяется Nexus assertion,
