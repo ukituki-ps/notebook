@@ -80,7 +80,7 @@
 - ответы не содержат `password`/`hash`/`salt`/`user_id`; `token` только login 200, `go test -count=1 -run TestNoSecretLeak ./...`
 - wire-ключи ровно `id`/`text`/`token`/`username`/`error`, нижний регистр, `go test -count=1 -run TestWireContract ./...`
 - все вызовы — через HTTP-транспорт (`httptest.Server`), не прямые Store, `go test -count=1 -run TestHTTPTransport ./...`
-- в `_test.go` нет build-тегов `integration`/`e2e`/`manual`, `sh -c "! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' ."`
+- в `_test.go` нет build-тегов `integration`/`e2e`/`manual`; оракул: `cmd:sh -c "! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' ."`
 
 ## Канарейка
 
