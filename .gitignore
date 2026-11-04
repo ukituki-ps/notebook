@@ -1,2 +1,3 @@
 /notebook
 *.log
+deploy/stands/.runtime/

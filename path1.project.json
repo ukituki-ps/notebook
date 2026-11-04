@@ -17,9 +17,12 @@
   },
   "e2e": {
     "frontend_dir": "",
-    "command": ""
+    "command": "bash deploy/path1/e2e-preview.sh"
   },
   "deploy": {
-    "stand_command": ""
+    "project_id": "f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9",
+    "stand_command": "bash deploy/path1/preview-deploy.sh {stand} {ref}",
+    "runtime_dir": "deploy/stands/.runtime",
+    "dsn_command": ""
   }
 }
