@@ -171,3 +171,10 @@ The machine-readable list is `invariants.json`. Core search invariants:
   independently.
 - Breaking create/delete/reload wiring — covered by the existing Go UI tests and
   the E2E regression scenarios.
+
+## Finalization note (s06)
+
+Finalized against `expertise-report.md` (`c1cf18c`). Machine-readable
+invariants: 16 active + 2 proposed (`INV-UI-ORACLE`, `INV-UI-E2E-PREVIEW`,
+whose oracles materialize at s22a/s20c). No auth/persistence invariant is
+relaxed by this feature.
