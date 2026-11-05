@@ -5,6 +5,7 @@
   "source_file": "doc/идеи/f-v4-note-search/feature-request.md",
   "source_count_command": "grep -cE '^[[:space:]]*([0-9]+[.)]|[-*])[[:space:]]+[^[:space:]]' doc/идеи/f-v4-note-search/feature-request.md",
   "source_items_total": 45,
+  "open_questions": [],
   "items": [
     {"item_id":"R01","raw_quote":"Feature is a new small feature `f-v4-note-search` in the path-10 contour.","our_interpretation":"Пункт R01 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
     {"item_id":"R02","raw_quote":"Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.","our_interpretation":"Пункт R02 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
