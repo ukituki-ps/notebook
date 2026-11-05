@@ -1,0 +1,52 @@
+# Planned UI graph (s04, from-design). s21 replaces this with the actualized
+# from-code graph, keeping the same artifact path.
+schema: ui-graph/v1
+feature_id: f-v4-note-search
+status: planned
+platform: web
+source_roots:
+  - web
+source_files:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+pages:
+  - id: login
+    route: /login
+    components: [login-card, login-form, login-error, login-link]
+  - id: register
+    route: /register
+    components: [register-card, register-form, register-error, register-link]
+  - id: notes
+    route: /notes
+    components:
+      - notes-header
+      - notes-search
+      - notes-search-clear
+      - note-form
+      - notes-list
+      - note-item
+      - notes-empty
+      - notes-search-empty
+      - notes-loading
+      - notes-error
+edges:
+  - from: register
+    to: login
+    trigger: register-success
+  - from: login
+    to: notes
+    trigger: login-success
+  - from: notes
+    to: login
+    trigger: 401-or-logout
+  - from: notes
+    to: notes
+    trigger: add-or-delete
+  - from: notes
+    to: notes
+    trigger: search-input-or-clear
+testids:
+  - notes-search
+  - notes-search-clear
+  - notes-search-empty

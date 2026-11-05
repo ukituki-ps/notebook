@@ -1,4 +1,4 @@
-# Feature brief — f-v4-note-search (DRAFT, s01)
+# Feature brief — f-v4-note-search (FINAL, s06)
 
 ## Problem
 
@@ -70,6 +70,72 @@ Search semantics:
 - Create, delete, and reload flows keep working; after create/delete the active
   query is re-applied to the updated list.
 
+## Wireframes (s03, ASCII)
+
+### Notes screen — default
+
+```
++------------------------------------------------------+
+| Notebook                                  [logout]   |
++------------------------------------------------------+
+| Notes                                                |
+| +--------------------------------------------------+ |
+| | Search notes                          [ x ]      | |
+| +--------------------------------------------------+ |
+| +--------------------------------------------------+ |
+| | Buy milk                                         | |
+| |                                                  | |
+| | [delete]                                         | |
+| +--------------------------------------------------+ |
+| +--------------------------------------------------+ |
+| | Project plan                                     | |
+| |                                                  | |
+| | [delete]                                         | |
+| +--------------------------------------------------+ |
+| +--------------------------------------------------+ |
+| | New note text...                     [add note]  | |
+| +--------------------------------------------------+ |
++------------------------------------------------------+
+```
+
+### Notes screen — query matches one note
+
+```
++------------------------------------------------------+
+| Notes                                                |
+| +--------------------------------------------------+ |
+| | milk                                     [ x ]   | |
+| +--------------------------------------------------+ |
+| +--------------------------------------------------+ |
+| | Buy milk                                         | |
+| |                                                  | |
+| | [delete]                                         | |
+| +--------------------------------------------------+ |
++------------------------------------------------------+
+```
+
+### Notes screen — query matches nothing
+
+```
++------------------------------------------------------+
+| Notes                                                |
+| +--------------------------------------------------+ |
+| | zzzz                                     [ x ]   | |
+| +--------------------------------------------------+ |
+|                                                      |
+|              ничего не найдено                       |
+|           data-testid="notes-search-empty"           |
+|                                                      |
++------------------------------------------------------+
+```
+
+Interaction notes:
+
+- The `[ x ]` clear control clears the input and restores the full list.
+- The empty state replaces only the list region; the search input and the
+  create form stay usable.
+- The loading and error states of the existing page are unchanged.
+
 ## Acceptance criteria
 
 1. Backend unit tests cover: find, not found, foreign notes invisible, `401`,
@@ -81,6 +147,19 @@ Search semantics:
    isolation; `pngdiff` is OK.
 5. UI graph (`UI-GRAPH.yaml`) is actualized from code at s21.
 6. s22a UI audit, s22b/s22c independent reviews, and s24 owner approval pass.
+
+## Invariants
+
+The machine-readable list is `invariants.json`. Core search invariants:
+
+- `INV-SEARCH-OWNER-SCOPE` — search never returns another user's notes.
+- `INV-SEARCH-CASE-INSENSITIVE` — `q` matches text case-insensitively.
+- `INV-SEARCH-EMPTY-Q` — absent/empty/whitespace `q` returns all own notes.
+- `INV-SEARCH-AUTH-REQUIRED` — no bearer → `401` before any search handling.
+- `INV-SEARCH-ENCODING` — URL-encoded/special characters are safe.
+- `INV-SEARCH-UI-FILTER` — UI filters the loaded list and clears correctly.
+- `INV-SEARCH-UI-EMPTY` — non-empty query with no matches shows the search empty state.
+- Existing auth/isolation/UI invariants remain active and unchanged.
 
 ## Risks
 
