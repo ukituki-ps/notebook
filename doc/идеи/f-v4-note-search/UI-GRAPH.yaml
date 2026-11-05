@@ -50,3 +50,8 @@ testids:
   - notes-search
   - notes-search-clear
   - notes-search-empty
+
+# Search component states (s04 design):
+# idle -> filtering (non-empty q) -> results | notes-search-empty -> clear.
+# notes-search stays visible in every state; create/delete/reload re-render
+# the filtered list through the same filter function.
