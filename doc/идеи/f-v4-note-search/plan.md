@@ -55,3 +55,8 @@
 
 Auth/persistence, pagination/ranking/fuzzy/highlighting, new runtime deps,
 prod/main/stage, canary, s45/s46, f-v3/E4312/E1320 changes.
+
+## Nexus artifact (s13)
+
+Approved plan artifact: `f-v4-note-search/plan.md` (Nexus draft, promoted to
+confirmed). This file is the repository copy referenced by `doc/идеи/f-v4-note-search/plan.md`.
