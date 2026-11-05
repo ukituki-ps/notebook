@@ -129,8 +129,9 @@ Search semantics:
 +------------------------------------------------------+
 ```
 
-Interaction notes:
+Interaction and accessibility notes:
 
+- The search input has a visible `<label>` and an accessible name (s03).
 - The `[ x ]` clear control clears the input and restores the full list.
 - The empty state replaces only the list region; the search input and the
   create form stay usable.
