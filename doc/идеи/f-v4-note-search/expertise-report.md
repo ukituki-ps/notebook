@@ -56,3 +56,9 @@ approval itself.
 - `GET /api/notes` response schema unchanged (`[]Note`, `UserID` not exposed).
 - No new endpoint, no new auth header, no CORS change.
 - No change to `POST /api/notes` or `DELETE /api/notes/{id}`.
+
+## Validation status
+
+Validated against draft brief `a3d99d7`, planned graph `37648cb`, and scope
+report `41ae536`. Design is approved for finalization at s06. No blocking
+finding; OD-1 and OD-2 are closed above.
