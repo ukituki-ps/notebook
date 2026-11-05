@@ -50,3 +50,9 @@ without changing authentication, storage, or note lifecycle behaviour.
 
 Owner approval of this file authorizes the scope above. Any later widening of
 scope requires a new intent review; it is not implied by this approval.
+
+## Status
+
+Prepared for `s08.intent_brief_review`. Items: 45/45 traced. Open questions: 0
+(OD-1 and OD-2 are closed and documented above). Approval is requested from the
+owner via the Nexus approval policy for `subject=brief`.
