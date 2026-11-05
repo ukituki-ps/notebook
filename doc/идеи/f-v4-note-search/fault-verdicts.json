@@ -1,0 +1,127 @@
+{
+  "CONTRACT-WIRE-CASING": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestWireContract ./...; wire keys id/text/token/username/error only, UserID json:\"-\"",
+    "evidence": "invariant:INV-WIRE-CASING/test:TestWireContract",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "CONTRACT-ERROR-ENVELOPE": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestDeleteErrorEnvelope|TestNoSecretLeak|TestNotesMethodNotAllowed' ./...; all errors {\"error\":\"<literal>\"} without stack/details",
+    "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "CONTRACT-STATUS-CODE": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestRegister|TestLogin|TestLoginInvalid|TestAuthRequired|TestNotesSearch|TestAddNote|TestDeleteNote|TestNotesMethodNotAllowed' ./...; full status matrix in spec/contract-matrix.md",
+    "evidence": "spec:doc/идеи/f-v4-note-search/spec/contract-matrix.md"
+  },
+  "CONTRACT-NULL-OMITEMPTY": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchNotFound|TestNotesLifecycle' ./...; empty/no-match search returns [] not null",
+    "evidence": "invariant:INV-SEARCH-EMPTY-Q/test:TestNotesSearchEmptyQuery",
+    "inherited_from": "f-v3-auth-notes/E4312 (list [] semantics), extended by f-v4 search"
+  },
+  "CONTRACT-DATE-BOUNDARY": {
+    "verdict": "na",
+    "check": "manual: spec/core.md §1-§2, spec/contract-matrix.md — no date/time wire fields; Session.ExpiresAt is json:\"-\"",
+    "justification": "No date fields in the API/JSON surface; TTL is internal to Store."
+  },
+  "DATA-ADAPTER-REAL-TRANSPORT": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestHTTPTransport|TestNotesSearchEncoding' ./...; tests use httptest.Server, E2E uses the real stand",
+    "evidence": "invariant:INV-REAL-TRANSPORT/test:TestNotesSearchEncoding",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "DATA-CURSOR-STABLE-KEY": {
+    "verdict": "na",
+    "check": "manual: spec/core.md §1 — GET /api/notes returns the full owner-scoped list in insertion order; no cursor/pagination",
+    "justification": "No pagination or cursor contract in this feature."
+  },
+  "DATA-HASMORE-OVERSCAN": {
+    "verdict": "na",
+    "check": "manual: spec/core.md §1 — response is a full JSON array without hasMore/limit/overscan",
+    "justification": "No pagination/overscan contract in this feature."
+  },
+  "DATA-SCOPE-VALIDATION": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation|TestDeleteForeignNote' ./...; owner only from session, q can only narrow",
+    "evidence": "invariant:INV-SEARCH-OWNER-SCOPE/test:TestNotesSearchIsolation"
+  },
+  "DATA-DESCRIPTION-DERIVATION": {
+    "verdict": "na",
+    "check": "manual: spec/core.md §2 — Note.Text is stored verbatim; no derived/auto-generated descriptions",
+    "justification": "No derived descriptions in the data model."
+  },
+  "SEC-RLS-SCOPE-PREDICATE": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation|TestDeleteForeignNote' ./...; Note.UserID == session.UserID for list/search/delete",
+    "evidence": "invariant:INV-SEARCH-OWNER-SCOPE/test:TestNotesSearchIsolation",
+    "inherited_from": "f-v3-auth-notes/E4312 (base), extended by f-v4 search"
+  },
+  "SEC-SKIP-TAGGED-INVARIANT": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
+    "evidence": "invariant:INV-NO-SKIP-TAGS/test:build-tag-grep",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "SEC-PREFIX-BOUNDARY": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...; abc/empty/overflow id => 400; /api/notes/1/extra is not id 1",
+    "evidence": "invariant:INV-PREFIX-BOUNDARY/test:TestNotesPrefixBoundary",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "SEC-WRITE-VERB-REJECT": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNotesMethodNotAllowed|TestNotesSearchAuthRequired' ./...; wrong method => 405+Allow; auth before method",
+    "evidence": "invariant:INV-VERB-REJECT/test:TestNotesMethodNotAllowed",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "SEC-ERROR-LEAK": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./...; no password/hash/salt/token in error bodies",
+    "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  },
+  "UI-DATE-BOUNDARY": {
+    "verdict": "na",
+    "check": "manual: spec/core.md §3 — no date/time UI fields in notes or search",
+    "justification": "No date fields rendered by the UI."
+  },
+  "UI-E2E-PREVIEW": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "bash deploy/path1/e2e-preview.sh on test2; Playwright notes-search.spec.js 6/6 + pngdiff",
+    "evidence": "s20c:preview-verdict/pass-verified"
+  },
+  "UI-EMPTY-STATE-CONTROLS": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestUISemantics ./...; notes-empty for empty server list, notes-search-empty for non-empty no-match",
+    "evidence": "invariant:INV-SEARCH-UI-EMPTY/test:TestUISemantics"
+  },
+  "UI-FILTER-SERIALIZATION": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestUISemantics ./...; search filters loaded list, clear restores it, create/delete/reload preserved",
+    "evidence": "invariant:INV-SEARCH-UI-FILTER/test:TestUISemantics"
+  },
+  "UI-LOADING-ERROR-STATES": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestUISemantics ./...; existing loading/error/401 UI states unchanged",
+    "evidence": "invariant:INV-UI-TRUTH/test:TestUISemantics",
+    "inherited_from": "f-v3-auth-notes/E4312"
+  }
+}

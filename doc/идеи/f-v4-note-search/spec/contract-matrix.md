@@ -27,12 +27,12 @@ Tests are added at s20; full run: `go test -count=1 ./...` + Playwright.
 
 ## Negative and edge cases
 
-- `q` absent, `q=`, `q=%20%20` → all own notes; no 400 (OD-1).
-- `q=zzz` → 200 `[]`, not `null`, not 404.
-- User B's note text matches `q` → not returned for user A (`TestNotesSearchIsolation`).
-- No/bad/expired bearer + `q` → 401 before query handling (`TestNotesSearchAuthRequired`).
-- `q=a%26b%2Bc`, `q=%E2%9C%93`, `q=%D0%BC%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE` → decoded safely, no panic/500 (`TestNotesSearchEncoding`).
-- `q` with mixed case vs stored text → matches (`TestNotesSearchCaseInsensitive`).
-- `q` longer than the note text / empty stored text → no match, 200 `[]`.
-- After create/delete with an active query, the UI re-applies the filter and does not hide the new/remaining notes (E2E).
-- Search empty state appears only for a non-empty query with no matches; `notes-empty` remains for an empty server list (`TestUISemantics`).
+- `q` absent, `q=`, `q=%20%20` → all own notes; no 400 (OD-1): `go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery' ./...`
+- `q=zzz` → 200 `[]`, not `null`, not 404: `go test -count=1 -run TestNotesSearchNotFound ./...`
+- User B's note text matches `q` → not returned for user A: `go test -count=1 -run TestNotesSearchIsolation ./...`
+- No/bad/expired bearer + `q` → 401 before query handling: `go test -count=1 -run TestNotesSearchAuthRequired ./...`
+- `q=a%26b%2Bc`, `q=%E2%9C%93`, `q=%D0%BC%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE` → decoded safely, no panic/500: `go test -count=1 -run TestNotesSearchEncoding ./...`
+- `q` with mixed case vs stored text → matches: `go test -count=1 -run TestNotesSearchCaseInsensitive ./...`
+- `q` longer than the note text / empty stored text → no match, 200 `[]`: `go test -count=1 -run TestNotesSearchNotFound ./...`
+- After create/delete with an active query, the UI re-applies the filter and does not hide new/remaining notes: `playwright test web/e2e/notes-search.spec.js`
+- Search empty state appears only for a non-empty query with no matches; `notes-empty` remains for an empty server list: `go test -count=1 -run TestUISemantics ./...`
