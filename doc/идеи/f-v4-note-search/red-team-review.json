@@ -81,7 +81,8 @@
     "model": "qwen3.8-fast",
     "provider": "llama-proxy",
     "session_id": "ses_e4d4375e2ffehxTqWnkji4CShe",
-    "substantive_review_session_id": "ses_e4d4a251effeuxr3rfiLT6kFg2"
+    "substantive_review_session_id": "ses_e4d4a251effeuxr3rfiLT6kFg2",
+    "runtime_context_exposed": true
   },
   "test_results": {
     "build": "pass",
