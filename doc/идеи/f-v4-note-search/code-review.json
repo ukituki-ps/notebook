@@ -6,12 +6,56 @@
   "verdict": "pass",
   "summary": "Owner-scoped search with no exploitable defects or regressions: filter runs after ListNotes(session.UserID) so q can only narrow; 401 precedes query handling; [] never null; UserID not serialized; DELETE id parsing strict with correct slice removal; single renderNotes() funnel keeps create/delete/reload filter-consistent; loading/error/401/empty/search-empty states complete. build/vet/full+targeted tests green. Only low/info hygiene notes.",
   "findings": [
-    {"id": "CR-F4-001", "severity": "low", "title": "Stale notebook.search sessionStorage can survive into a later login in the same tab on expiry", "file": "web/app.js", "line": 450, "evidence": "SEARCH_KEY cleared only on logout and 401; restored query applies to new user's own notes (no data leak)."},
-    {"id": "CR-F4-002", "severity": "info", "title": "No retry affordance after non-401 load failure (pre-existing f-v3 behavior)", "file": "web/app.js", "line": 422, "evidence": "setNotesEnabled(false) only re-enabled on 200; core.md §3 says loading/error handling unchanged."},
-    {"id": "CR-F4-003", "severity": "info", "title": "No length cap on q; bounded by owner's note count, no panic/500", "file": "main.go", "line": 538, "evidence": "TrimSpace/ToLower + strings.Contains over own notes; spec allows unbounded UTF-8 q."}
+    {
+      "id": "CR-F4-001",
+      "severity": "low",
+      "title": "Stale notebook.search sessionStorage can survive into a later login in the same tab on expiry",
+      "file": "web/app.js",
+      "line": 450,
+      "evidence": "SEARCH_KEY cleared only on logout and 401; restored query applies to new user's own notes (no data leak)."
+    },
+    {
+      "id": "CR-F4-002",
+      "severity": "info",
+      "title": "No retry affordance after non-401 load failure (pre-existing f-v3 behavior)",
+      "file": "web/app.js",
+      "line": 422,
+      "evidence": "setNotesEnabled(false) only re-enabled on 200; core.md §3 says loading/error handling unchanged."
+    },
+    {
+      "id": "CR-F4-003",
+      "severity": "info",
+      "title": "No length cap on q; bounded by owner's note count, no panic/500",
+      "file": "main.go",
+      "line": 538,
+      "evidence": "TrimSpace/ToLower + strings.Contains over own notes; spec allows unbounded UTF-8 q."
+    }
   ],
-  "author": {"model": "deepseek/deepseek-flash", "provider": "deepseek", "session_id": "ses_e4de2edbeffePR726UuM1uWKKA", "role": "step_author"},
-  "code_author_sessions": ["ses_e4d6a864dffepgOfSV1MMhaRS4", "ses_e4d6a811effewnqV2rpCwg8I1J", "ses_e4d6a7b00ffegxb3upymIEckcX"],
-  "reviewer": {"model": "qwen3.8-fast", "provider": "llama-proxy", "session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth"},
-  "test_results": {"build": "pass", "vet": "pass", "go_test": "go test -count=1 ./... ok; targeted TestNotesSearch|TestUISemantics|TestDeleteNote|TestNotesIsolation 11/11"}
+  "author": {
+    "model": "deepseek/deepseek-flash",
+    "provider": "deepseek",
+    "session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
+    "role": "step_author"
+  },
+  "code_author_sessions": [
+    "ses_e4d6a864dffepgOfSV1MMhaRS4",
+    "ses_e4d6a811effewnqV2rpCwg8I1J",
+    "ses_e4d6a7b00ffegxb3upymIEckcX"
+  ],
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy",
+    "session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth"
+  },
+  "test_results": {
+    "build": "pass",
+    "vet": "pass",
+    "go_test": "go test -count=1 ./... ok; targeted TestNotesSearch|TestUISemantics|TestDeleteNote|TestNotesIsolation 11/11"
+  },
+  "author_model": "deepseek/deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy",
+  "reviewer_session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth"
 }
