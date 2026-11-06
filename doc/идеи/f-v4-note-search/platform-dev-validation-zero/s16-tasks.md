@@ -97,3 +97,9 @@ files were not rewritten.
 - The legacy `T0001`–`T0003` briefs and historical execution IDs elsewhere were
   not re-stamped.
 - No source, spec, graph, path-1, auth, or persistence file was modified at s16.
+
+## Acceptance stamp (s16)
+
+Accepted for E8363 on branch dev/f-v4-note-search-validation-zero.
+Task briefs T0001-T0010 are complete; unit_briefs for U01/U02/U03 are bound
+into the execution context for the s20 fan-out.
