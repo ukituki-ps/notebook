@@ -1,0 +1,66 @@
+# s20b PASS / s20c status — platform ae079e5c, execution E8895
+
+## s20b — deploy via host stand-runner: GREEN
+
+Client invocation (shared queue from ORC; host runner on pr01):
+  STAND_RUNNER_PROJECT_ID=f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 \
+  STAND_RUNNER_TRANSPORT=git \
+  STAND_RUNNER_COMMIT=22102389c6f02e7fc518dc958a32542ec5c3d9f1 \
+  STAND_RUNNER_QUEUE=/app/orc-repos/.deploy-queue \
+  bash tools/stand-runner-client.sh E8895 deploy-preview
+
+Result: client_rc=0, res.json {"rc":0,"reason":"ok","duration_s":25}
+- image: notebook-stand:test2-2210238
+- image_digest: sha256:a5aa4c8947b321e42604fd829a81c2a17ca37efefc86d6d254ec0b4147ead604
+- build_args_hash: sha256:721b209f71e806fc8b7e9f2edbb1fcf8b30be18e7ed023e442bff13f958fe877
+- preview-deploy.json: .orc-eval/E8895/preview-deploy.json (synced by accept)
+
+test2 /healthz:
+  status=ok, build_ref=2210238, commit=22102389c6f02e7fc518dc958a32542ec5c3d9f1,
+  image_digest=sha256:a5aa4c89..., build_args_hash=sha256:721b209f..., gate_bundle_digest=""
+
+Provenance (.orc-eval/E8895/2210238.../deploy/stands/.runtime/test2/):
+- build-provenance.json: commit=2210238, image_digest=a5aa4c89..., built_at=21:00:30Z
+- deploy-provenance.json: commit=2210238, image_digest=a5aa4c89..., deployed_at=21:00:39Z
+- dsn, nginx.conf present.
+
+orc_accept(s20b): gates_passed; run_artifacts synced preview-deploy.json
+(sha256:8b02c3a75f421198112d026ff115c3a765016d05ab82b9eb0a7449fe823789c8).
+Lease used: 79ae80d9-f521-4da0-a430-b611f662d2c5 (active).
+
+## s20c — E2E
+
+### Blocker: host eval worktree removed after s20b accept
+stand-runner e2e-preview invocation:
+  STAND_RUNNER_... bash tools/stand-runner-client.sh E8895 e2e-preview
+-> reject: eval-worktree-missing:
+   /srv/archkit/dev/orc-repos/f41f0adb-.../.orc-eval/E8895/22102389...
+The s20b accept cleaned .orc-eval/E8895/22102389 on the shared repo
+(container view: dir absent; only .orc-eval/E8895/preview-deploy.json remains).
+Per instruction, the worktree was NOT recreated from the ORC container.
+
+The ORC container has no Chromium, so running the UI suite there is not valid:
+  Error: browserType.launch: Executable doesn't exist at
+  /home/app/.cache/ms-playwright/chromium_headless_shell-1248/...
+
+### Stand itself is proven good
+Real UI suite (same specs, deployed build 2210238) run against test2 from the
+validation environment:
+
+  E2E_BASE_URL=https://test2.nexus.ukituki.tech \
+  playwright test
+  -> 13 passed (2.6s): 7 auth-notes + 6 search scenarios
+  (SEARCH-E2E-1..6 all green; screenshots generated)
+
+This confirms the deployed stand and the feature. The host-runner e2e-preview
+would run the same suite with Chromium available on pr01.
+
+### Required host action
+Recreate the host eval worktree after the s20b accept (it is removed by accepts):
+  /srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8895/22102389c6f02e7fc518dc958a32542ec5c3d9f1
+  HEAD=22102389c6f02e7fc518dc958a32542ec5c3d9f1
+  git -C <path> rev-parse --is-inside-work-tree == true
+
+Then run:
+  stand-runner-client.sh E8895 e2e-preview
+and orc_accept(s20c). No E2E re-run is needed from ORC.
