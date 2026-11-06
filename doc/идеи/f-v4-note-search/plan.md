@@ -65,5 +65,9 @@ prod/main/stage, canary, s45/s46, f-v3/E4312/E1320 changes.
 
 ## Nexus artifact (s13)
 
-Approved plan artifact: `f-v4-note-search/plan.md` (Nexus draft, promoted to
-confirmed). This file is the repository copy referenced by `doc/идеи/f-v4-note-search/plan.md`.
+Plan artifact saved for **E8363** at `doc/идеи/f-v4-note-search/plan.md`
+(absolute: `/workspace/projects/notebook-valzero/doc/идеи/f-v4-note-search/plan.md`).
+Branch: `dev/f-v4-note-search-validation-zero`; base: `5935e148`
+(`5935e148584b5fef28bd77ac4e45b800f10da03b`). For this validation run the
+repository file is the **authoritative copy** of the plan; this save makes no
+platform, Nexus, or path-1 change.
