@@ -90,7 +90,7 @@
   `go test -count=1 -run TestDeleteMissing ./...`
 - Unknown `/api/*` path → 404 JSON, no SPA fallthrough:
   `go test -count=1 -run TestUnknownAPINotFound ./...`
-- URL-encoded `%`, space, `&`, `+`, emoji, Cyrillic in `q` → decoded safely, no 500:
+- URL-encoded `%`, space, `&`, `+` and other special characters in `q` → decoded safely, no 500:
   `go test -count=1 -run TestNotesSearchEncoding ./...`
 - No/bad/expired bearer + `q` → 401 before query handling:
   `go test -count=1 -run TestNotesSearchAuthRequired ./...`

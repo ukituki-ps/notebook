@@ -11,7 +11,7 @@
 1. Add/extend `TestNotesSearchNotFound`: a non-matching `q` returns `200` with
    `[]` (never `null`), no error envelope, and no foreign notes.
 2. Add/extend `TestNotesSearchEncoding`: URL-encoded and special characters in
-   `q` (`%20`, `+`, `%2B`, `&`, emoji, Cyrillic) are decoded by `net/http` and
+   `q` (`%20`, `+`, `%2B`, `&` and other special characters) are decoded by `net/http` and
    handled without panic or `500`.
 3. Exercise cases through `httptest.Server` / the real HTTP transport, not
    direct `Store` calls (`INV-REAL-TRANSPORT`).

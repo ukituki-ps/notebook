@@ -78,7 +78,7 @@ Errors and headers are unchanged from the existing endpoint:
 | unknown `/api/*` | `404 {"error":"not found"}` |
 
 Query decoding: `r.URL.Query().Get("q")` (net/http). URL-encoded and special
-characters (`%20`, `+`, `%2B`, `&`, emoji, Cyrillic) must be handled without
+characters (`%20`, `+`, `%2B`, `&` and other special characters) must be handled without
 panic/500.
 
 ### 1.2 Unchanged operations

@@ -222,7 +222,7 @@
     {
       "item_id": "R23",
       "raw_quote": "Tests: URL-encoding and special characters in `q`.",
-      "our_interpretation": "TestNotesSearchEncoding proves that URL-encoded and special characters (%20, +, %2B, &, emoji, Cyrillic) decode via r.URL.Query().Get and do not panic or return 500.",
+      "our_interpretation": "TestNotesSearchEncoding proves that URL-encoded and special characters (%20, +, %2B, & and other special characters) decode via r.URL.Query().Get and do not panic or return 500.",
       "verdict": "match",
       "decision_ref": "INV-SEARCH-ENCODING / B-5",
       "scenario_ref": "TestNotesSearchEncoding",
