@@ -1,56 +1,430 @@
 {
+  "schema": "intent-trace/v1",
   "feature": "f-v4-note-search",
+  "execution_id": "E8363",
   "step": "s07.requirements_reconcile",
-  "execution_id": "E9294",
+  "branch": "validation/platform-dev-20261106-zero",
+  "base_sha": "5935e148584b5fef28bd77ac4e45b800f10da03b",
+  "platform": "web",
+  "pass": "fresh re-validation on platform 730d144a; not a copy of the E9294/E8895 trace",
   "source_file": "doc/идеи/f-v4-note-search/feature-request.md",
-  "source_count_command": "grep -cE '^[[:space:]]*([0-9]+[.)]|[-*])[[:space:]]+[^[:space:]]' doc/идеи/f-v4-note-search/feature-request.md",
   "source_items_total": 45,
-  "open_questions": [],
+  "open_questions": [
+    {
+      "id": "OD-6",
+      "question": "Should the search query persist across a full page reload via sessionStorage `notebook.search`, or is reload-restore a non-contract UI convenience?",
+      "severity": "low",
+      "status": "needs-human",
+      "proposed_resolution": "Do not persist. The raw request (R28) requires only that reload keeps working, not that the query survives it. sessionStorage query persistence stays out of scope unless the owner explicitly asks; if the owner wants it, record it as an added behavior at s08 before implementation freeze.",
+      "decision_ref": "s05 OD-6; s04 open question 2",
+      "blocks": "none (s07 gate unaffected)"
+    }
+  ],
   "items": [
-    {"item_id":"R01","raw_quote":"Feature is a new small feature `f-v4-note-search` in the path-10 contour.","our_interpretation":"Пункт R01 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R02","raw_quote":"Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.","our_interpretation":"Пункт R02 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R03","raw_quote":"Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.","our_interpretation":"Пункт R03 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R04","raw_quote":"Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.","our_interpretation":"Пункт R04 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R05","raw_quote":"Skip `s45.push_primary` and `s46.post_deploy_verify`; do not execute them.","our_interpretation":"Пункт R05 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R06","raw_quote":"Do not roll back or rework `f-v3-auth-notes`.","our_interpretation":"Пункт R06 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R07","raw_quote":"Do not resume/accept `E4312`; do not touch `E1320`.","our_interpretation":"Пункт R07 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R08","raw_quote":"Do not touch prod/main/stage; do not start canary rollout.","our_interpretation":"Пункт R08 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R09","raw_quote":"Mandatory gates: s21 UI graph, s22a UI audit, s22b/s22c independent reviewer (author != reviewer), s24 owner approval via `@nuxus_dev_bot`.","our_interpretation":"Пункт R09 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R10","raw_quote":"No force/skip/waiver, no fake evidence/self-sign, do not commit per-run artifacts.","our_interpretation":"Пункт R10 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R11","raw_quote":"Session fan-out must be verified after s20: 3 child executions, 3 distinct child session_ids, parent session different, parent receives only summary/diff/verdict.","our_interpretation":"Пункт R11 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/process","scenario_ref":"s24/path-10"},
-    {"item_id":"R12","raw_quote":"`GET /api/notes?q=<text>`.","our_interpretation":"Пункт R12 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-1/B-2","scenario_ref":"TestNotesSearchFinds"},
-    {"item_id":"R13","raw_quote":"Without `q` — all notes of the current user.","our_interpretation":"Пункт R13 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-1/B-2","scenario_ref":"TestNotesSearchFinds"},
-    {"item_id":"R14","raw_quote":"With `q` — case-insensitive search over note text.","our_interpretation":"Пункт R14 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-3","scenario_ref":"TestNotesSearchCaseInsensitive"},
-    {"item_id":"R15","raw_quote":"Only notes of the current user are returned.","our_interpretation":"Пункт R15 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-4","scenario_ref":"TestNotesSearchIsolation"},
-    {"item_id":"R16","raw_quote":"Without bearer token — HTTP 401.","our_interpretation":"Пункт R16 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-1/INV-AUTH-REQUIRED","scenario_ref":"TestNotesSearchAuthRequired"},
-    {"item_id":"R17","raw_quote":"Empty `q` — all notes.","our_interpretation":"Пункт R17 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-2/OD-1","scenario_ref":"TestNotesSearchEmptyQuery"},
-    {"item_id":"R18","raw_quote":"Whitespace-only `q` — must be fixed in the spec as either all notes or 400.","our_interpretation":"Пункт R18 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-2/OD-1","scenario_ref":"TestNotesSearchEmptyQuery"},
-    {"item_id":"R19","raw_quote":"Tests: search finds a note.","our_interpretation":"Пункт R19 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-3","scenario_ref":"TestNotesSearchFinds"},
-    {"item_id":"R20","raw_quote":"Tests: search does not find an absent note.","our_interpretation":"Пункт R20 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-3","scenario_ref":"TestNotesSearchNotFound"},
-    {"item_id":"R21","raw_quote":"Tests: a user does not see another user's notes.","our_interpretation":"Пункт R21 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-4","scenario_ref":"TestNotesSearchIsolation"},
-    {"item_id":"R22","raw_quote":"Tests: unauthenticated request returns 401.","our_interpretation":"Пункт R22 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-1","scenario_ref":"TestNotesSearchAuthRequired"},
-    {"item_id":"R23","raw_quote":"Tests: URL-encoding and special characters in `q`.","our_interpretation":"Пункт R23 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-5","scenario_ref":"TestNotesSearchEncoding"},
-    {"item_id":"R24","raw_quote":"Search field in the notes view.","our_interpretation":"Пункт R24 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-6","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R25","raw_quote":"Filtering the notes list by the query.","our_interpretation":"Пункт R25 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-6","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R26","raw_quote":"Clearing the search restores the full list.","our_interpretation":"Пункт R26 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-6","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R27","raw_quote":"Empty state \"ничего не найдено\".","our_interpretation":"Пункт R27 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-7","scenario_ref":"E2E-SEARCH-EMPTY"},
-    {"item_id":"R28","raw_quote":"Do not break create/delete/reload.","our_interpretation":"Пункт R28 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-6","scenario_ref":"E2E-SEARCH-REGRESSION"},
-    {"item_id":"R29","raw_quote":"`data-testid` for the search field and for the empty state.","our_interpretation":"Пункт R29 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-6/INV-SEARCH-UI-TESTIDS","scenario_ref":"TestUISemantics"},
-    {"item_id":"R30","raw_quote":"Actualize the UI graph.","our_interpretation":"Пункт R30 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"s21","scenario_ref":"s21/UI-GRAPH"},
-    {"item_id":"R31","raw_quote":"Preview deploy on `test2`.","our_interpretation":"Пункт R31 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"s20b/preview"},
-    {"item_id":"R32","raw_quote":"E2E scenario: login.","our_interpretation":"Пункт R32 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R33","raw_quote":"E2E scenario: create 2 notes.","our_interpretation":"Пункт R33 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R34","raw_quote":"E2E scenario: search finds one note.","our_interpretation":"Пункт R34 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R35","raw_quote":"E2E scenario: search finds nothing.","our_interpretation":"Пункт R35 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R36","raw_quote":"E2E scenario: clearing search returns both notes.","our_interpretation":"Пункт R36 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R37","raw_quote":"E2E scenario: user B does not see user A's notes.","our_interpretation":"Пункт R37 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"E2E-SEARCH"},
-    {"item_id":"R38","raw_quote":"Use Playwright 1.64.1, not 1.53.","our_interpretation":"Пункт R38 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"s20c/playwright-1.64.1"},
-    {"item_id":"R39","raw_quote":"Do not roll back package/lock files.","our_interpretation":"Пункт R39 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"s20c/package-lock"},
-    {"item_id":"R40","raw_quote":"`pngdiff` must be OK.","our_interpretation":"Пункт R40 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-8","scenario_ref":"s20c/pngdiff"},
-    {"item_id":"R41","raw_quote":"Auth and persistence behaviour must not change.","our_interpretation":"Пункт R41 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-1","scenario_ref":"existing auth/isolation tests"},
-    {"item_id":"R42","raw_quote":"Only search scope is in scope; no unrelated refactors.","our_interpretation":"Пункт R42 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"scope","scenario_ref":"s24/spec"},
-    {"item_id":"R43","raw_quote":"No changes to the old `f-v3-auth-notes` branch or its artifacts.","our_interpretation":"Пункт R43 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"constraints","scenario_ref":"s24/limits"},
-    {"item_id":"R44","raw_quote":"`E4312` and `E1320` are not resumed, accepted, or modified.","our_interpretation":"Пункт R44 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"constraints","scenario_ref":"s24/limits"},
-    {"item_id":"R45","raw_quote":"Preview is allowed only on `test2`; prod/main/stage and canary are out of scope.","our_interpretation":"Пункт R45 выполняется в scope f-v4-note-search как описано в сыром запросе.","verdict":"match","added":false,"decision_ref":"B-9/constraints","scenario_ref":"s20b/s20c/test2"}
+    {
+      "item_id": "R01",
+      "raw_quote": "Feature is a new small feature `f-v4-note-search` in the path-10 contour.",
+      "our_interpretation": "f-v4-note-search remains a small path-10 feature; E8363 re-validates its design and does not widen the feature set.",
+      "verdict": "match",
+      "decision_ref": "scope-report / path-10",
+      "scenario_ref": "s01-s05 validation",
+      "added": false
+    },
+    {
+      "item_id": "R02",
+      "raw_quote": "Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.",
+      "our_interpretation": "Process stays path-1.feature 3.2.2 with entry point default, platform web and feature_profile full; E8363 runs that same process on platform 730d144a.",
+      "verdict": "match",
+      "decision_ref": "process definition (ORC snapshot)",
+      "scenario_ref": "path-1.feature@3.2.2",
+      "added": false
+    },
+    {
+      "item_id": "R03",
+      "raw_quote": "Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.",
+      "our_interpretation": "The original feature branched from dev/f-v3-auth-notes at 406fa965. E8363 re-validates the artifacts on validation/platform-dev-20261106-zero from base 5935e148 and does not rewrite that original history.",
+      "verdict": "match",
+      "decision_ref": "process/base metadata",
+      "scenario_ref": "E8363 base 5935e148",
+      "added": false
+    },
+    {
+      "item_id": "R04",
+      "raw_quote": "Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.",
+      "our_interpretation": "The feature directory is unchanged; the original work branch was dev/f-v4-note-search, while this validation pass uses validation/platform-dev-20261106-zero as instructed.",
+      "verdict": "match",
+      "decision_ref": "process/branch metadata",
+      "scenario_ref": "validation/platform-dev-20261106-zero",
+      "added": false
+    },
+    {
+      "item_id": "R05",
+      "raw_quote": "Skip `s45.push_primary` and `s46.post_deploy_verify`; do not execute them.",
+      "our_interpretation": "s45.push_primary and s46.post_deploy_verify remain skipped in the plan and in E8363; neither is executed.",
+      "verdict": "match",
+      "decision_ref": "B-9",
+      "scenario_ref": "ORC previous_steps: s45/s46 skipped",
+      "added": false
+    },
+    {
+      "item_id": "R06",
+      "raw_quote": "Do not roll back or rework `f-v3-auth-notes`.",
+      "our_interpretation": "f-v3-auth-notes is not rolled back or reworked; only its reference artifacts are read.",
+      "verdict": "match",
+      "decision_ref": "scope-report constraint 7",
+      "scenario_ref": "current tree check",
+      "added": false
+    },
+    {
+      "item_id": "R07",
+      "raw_quote": "Do not resume/accept `E4312`; do not touch `E1320`.",
+      "our_interpretation": "E4312 is not resumed or accepted and E1320 is not modified; E8363 does not reference either as an active execution.",
+      "verdict": "match",
+      "decision_ref": "scope-report constraint 7",
+      "scenario_ref": "current tree check",
+      "added": false
+    },
+    {
+      "item_id": "R08",
+      "raw_quote": "Do not touch prod/main/stage; do not start canary rollout.",
+      "our_interpretation": "No prod/main/stage changes and no canary rollout; the only preview contour is test2.",
+      "verdict": "match",
+      "decision_ref": "B-9",
+      "scenario_ref": "test2 only",
+      "added": false
+    },
+    {
+      "item_id": "R09",
+      "raw_quote": "Mandatory gates: s21 UI graph, s22a UI audit, s22b/s22c independent reviewer (author != reviewer), s24 owner approval via `@nuxus_dev_bot`.",
+      "our_interpretation": "Gates s21 UI graph, s22a UI audit, s22b/s22c independent review with author != reviewer, and s24 owner approval via @nuxus_dev_bot remain mandatory and unwaived.",
+      "verdict": "match",
+      "decision_ref": "process gates / s05 C10",
+      "scenario_ref": "s21, s22a, s22b, s22c, s24",
+      "added": false
+    },
+    {
+      "item_id": "R10",
+      "raw_quote": "No force/skip/waiver, no fake evidence/self-sign, do not commit per-run artifacts.",
+      "our_interpretation": "No force/skip/waiver and no fake or self-signed evidence; per-run artifacts are not committed. s07 writes only the trace, the intent brief and its review.",
+      "verdict": "match",
+      "decision_ref": "s07 hygiene rules",
+      "scenario_ref": "s07 write set (3 files)",
+      "added": false
+    },
+    {
+      "item_id": "R11",
+      "raw_quote": "Session fan-out must be verified after s20: 3 child executions, 3 distinct child session_ids, parent session different, parent receives only summary/diff/verdict.",
+      "our_interpretation": "After s20 the fan-out is verified as 3 child executions with 3 distinct child session_ids, a parent session different from all children, and only summary/diff/verdict returned to the parent. E8363 has not reached s20.",
+      "verdict": "match",
+      "decision_ref": "execution contract (plan)",
+      "scenario_ref": "s20 fan-out (planned, not reached)",
+      "added": false
+    },
+    {
+      "item_id": "R12",
+      "raw_quote": "`GET /api/notes?q=<text>`.",
+      "our_interpretation": "The existing GET /api/notes accepts an optional q parameter; no new endpoint is added.",
+      "verdict": "match",
+      "decision_ref": "B-1",
+      "scenario_ref": "TestNotesSearchFinds",
+      "added": false
+    },
+    {
+      "item_id": "R13",
+      "raw_quote": "Without `q` — all notes of the current user.",
+      "our_interpretation": "A request without q returns all notes of the authenticated user through the existing owner-scoped list path.",
+      "verdict": "match",
+      "decision_ref": "B-2",
+      "scenario_ref": "TestNotesSearchEmptyQuery",
+      "added": false
+    },
+    {
+      "item_id": "R14",
+      "raw_quote": "With `q` — case-insensitive search over note text.",
+      "our_interpretation": "A non-empty q is matched case-insensitively as a substring of note text using strings.ToLower on both sides; no locale-specific collation is promised. This is the s05 B-3 reading of the item.",
+      "verdict": "match",
+      "decision_ref": "B-3 / INV-SEARCH-CASE-INSENSITIVE",
+      "scenario_ref": "TestNotesSearchCaseInsensitive",
+      "added": false
+    },
+    {
+      "item_id": "R15",
+      "raw_quote": "Only notes of the current user are returned.",
+      "our_interpretation": "The owner predicate is applied first via ListNotes(session.UserID); q can only narrow, never widen, the current user's result set.",
+      "verdict": "match",
+      "decision_ref": "B-4 / INV-SEARCH-OWNER-SCOPE",
+      "scenario_ref": "TestNotesSearchIsolation",
+      "added": false
+    },
+    {
+      "item_id": "R16",
+      "raw_quote": "Without bearer token — HTTP 401.",
+      "our_interpretation": "A missing, invalid or expired bearer token returns 401 with WWW-Authenticate: Bearer before method or query handling.",
+      "verdict": "match",
+      "decision_ref": "INV-AUTH-REQUIRED",
+      "scenario_ref": "TestNotesSearchAuthRequired",
+      "added": false
+    },
+    {
+      "item_id": "R17",
+      "raw_quote": "Empty `q` — all notes.",
+      "our_interpretation": "q= (empty) returns all notes of the current user with 200, never 400.",
+      "verdict": "match",
+      "decision_ref": "B-2 / OD-1",
+      "scenario_ref": "TestNotesSearchEmptyQuery",
+      "added": false
+    },
+    {
+      "item_id": "R18",
+      "raw_quote": "Whitespace-only `q` — must be fixed in the spec as either all notes or 400.",
+      "our_interpretation": "The item explicitly allows either option; we choose 'all notes'. Whitespace-only q is trimmed, treated as empty, and returns all notes of the current user (OD-1/B-2), covered by TestNotesSearchWhitespaceQuery.",
+      "verdict": "match",
+      "decision_ref": "OD-1 / B-2",
+      "scenario_ref": "TestNotesSearchWhitespaceQuery",
+      "added": false
+    },
+    {
+      "item_id": "R19",
+      "raw_quote": "Tests: search finds a note.",
+      "our_interpretation": "TestNotesSearchFinds proves that a matching query returns the note.",
+      "verdict": "match",
+      "decision_ref": "INV-SEARCH-CASE-INSENSITIVE",
+      "scenario_ref": "TestNotesSearchFinds",
+      "added": false
+    },
+    {
+      "item_id": "R20",
+      "raw_quote": "Tests: search does not find an absent note.",
+      "our_interpretation": "TestNotesSearchNotFound proves that a non-matching query returns 200 with [] and no error.",
+      "verdict": "match",
+      "decision_ref": "INV-SEARCH-NOT-FOUND",
+      "scenario_ref": "TestNotesSearchNotFound",
+      "added": false
+    },
+    {
+      "item_id": "R21",
+      "raw_quote": "Tests: a user does not see another user's notes.",
+      "our_interpretation": "TestNotesSearchIsolation proves in both directions that user B cannot see user A's notes in search results.",
+      "verdict": "match",
+      "decision_ref": "INV-USER-ISOLATION / INV-SEARCH-OWNER-SCOPE",
+      "scenario_ref": "TestNotesSearchIsolation",
+      "added": false
+    },
+    {
+      "item_id": "R22",
+      "raw_quote": "Tests: unauthenticated request returns 401.",
+      "our_interpretation": "TestNotesSearchAuthRequired (with TestAuthRequired) proves that an unauthenticated search request returns 401.",
+      "verdict": "match",
+      "decision_ref": "INV-AUTH-REQUIRED",
+      "scenario_ref": "TestNotesSearchAuthRequired",
+      "added": false
+    },
+    {
+      "item_id": "R23",
+      "raw_quote": "Tests: URL-encoding and special characters in `q`.",
+      "our_interpretation": "TestNotesSearchEncoding proves that URL-encoded and special characters (%20, +, %2B, &, emoji, Cyrillic) decode via r.URL.Query().Get and do not panic or return 500.",
+      "verdict": "match",
+      "decision_ref": "INV-SEARCH-ENCODING / B-5",
+      "scenario_ref": "TestNotesSearchEncoding",
+      "added": false
+    },
+    {
+      "item_id": "R24",
+      "raw_quote": "Search field in the notes view.",
+      "our_interpretation": "The notes view gains a labelled search input above the list with data-testid=notes-search.",
+      "verdict": "match",
+      "decision_ref": "B-6",
+      "scenario_ref": "TestUISemantics",
+      "added": false
+    },
+    {
+      "item_id": "R25",
+      "raw_quote": "Filtering the notes list by the query.",
+      "our_interpretation": "Typing filters the already loaded owner-scoped list client-side by case-insensitive substring; no request is sent per keystroke.",
+      "verdict": "match",
+      "decision_ref": "B-6",
+      "scenario_ref": "SEARCH-E2E-1 / TestUISemantics",
+      "added": false
+    },
+    {
+      "item_id": "R26",
+      "raw_quote": "Clearing the search restores the full list.",
+      "our_interpretation": "The notes-search-clear control (or clearing the input) empties the query and restores the full loaded list.",
+      "verdict": "match",
+      "decision_ref": "B-6",
+      "scenario_ref": "SEARCH-E2E-4 / TestUISemantics",
+      "added": false
+    },
+    {
+      "item_id": "R27",
+      "raw_quote": "Empty state \"ничего не найдено\".",
+      "our_interpretation": "A non-empty trimmed query with zero matches shows data-testid=notes-search-empty with the exact copy 'Ничего не найдено.'; notes-empty stays reserved for a genuinely empty server list.",
+      "verdict": "match",
+      "decision_ref": "B-7 / INV-SEARCH-UI-EMPTY",
+      "scenario_ref": "SEARCH-E2E-2",
+      "added": false
+    },
+    {
+      "item_id": "R28",
+      "raw_quote": "Do not break create/delete/reload.",
+      "our_interpretation": "Create, delete and reload keep working through the same renderNotes()->filterNotes() path; an active query is re-applied after mutation.",
+      "verdict": "match",
+      "decision_ref": "B-6 / INV-SEARCH-UI-FILTER",
+      "scenario_ref": "SEARCH-E2E-5, SEARCH-E2E-6",
+      "added": false
+    },
+    {
+      "item_id": "R29",
+      "raw_quote": "`data-testid` for the search field and for the empty state.",
+      "our_interpretation": "The testids are exactly notes-search for the input and notes-search-empty for the empty state, asserted by TestUISemantics.",
+      "verdict": "match",
+      "decision_ref": "INV-SEARCH-UI-TESTIDS",
+      "scenario_ref": "TestUISemantics",
+      "added": false
+    },
+    {
+      "item_id": "R30",
+      "raw_quote": "Actualize the UI graph.",
+      "our_interpretation": "UI-GRAPH.yaml is actualized from code at s21; the s04 graph is planned only and is not treated as delivered.",
+      "verdict": "match",
+      "decision_ref": "s21 UI graph gate",
+      "scenario_ref": "s21/UI-GRAPH",
+      "added": false
+    },
+    {
+      "item_id": "R31",
+      "raw_quote": "Preview deploy on `test2`.",
+      "our_interpretation": "The preview deploy runs only on test2 at s20b; no other stand is used.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "s20b/preview",
+      "added": false
+    },
+    {
+      "item_id": "R32",
+      "raw_quote": "E2E scenario: login.",
+      "our_interpretation": "The Playwright suite logs in before the notes flow; login is part of the 13/13 scenario run.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "s20c Playwright suite",
+      "added": false
+    },
+    {
+      "item_id": "R33",
+      "raw_quote": "E2E scenario: create 2 notes.",
+      "our_interpretation": "The E2E fixture creates two notes and uses them for the find-one, find-none and clear scenarios.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "s20c Playwright suite",
+      "added": false
+    },
+    {
+      "item_id": "R34",
+      "raw_quote": "E2E scenario: search finds one note.",
+      "our_interpretation": "SEARCH-E2E-1 asserts that a query matching one of the two notes leaves exactly that row visible.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "SEARCH-E2E-1",
+      "added": false
+    },
+    {
+      "item_id": "R35",
+      "raw_quote": "E2E scenario: search finds nothing.",
+      "our_interpretation": "SEARCH-E2E-2 asserts that a non-matching query shows notes-search-empty and no note rows.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "SEARCH-E2E-2",
+      "added": false
+    },
+    {
+      "item_id": "R36",
+      "raw_quote": "E2E scenario: clearing search returns both notes.",
+      "our_interpretation": "SEARCH-E2E-4 asserts that clearing the query restores both notes.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "SEARCH-E2E-4",
+      "added": false
+    },
+    {
+      "item_id": "R37",
+      "raw_quote": "E2E scenario: user B does not see user A's notes.",
+      "our_interpretation": "The E2E isolation scenario asserts that user B's search never returns user A's notes.",
+      "verdict": "match",
+      "decision_ref": "B-8 / INV-USER-ISOLATION",
+      "scenario_ref": "s20c isolation scenario",
+      "added": false
+    },
+    {
+      "item_id": "R38",
+      "raw_quote": "Use Playwright 1.64.1, not 1.53.",
+      "our_interpretation": "Playwright stays pinned at 1.64.1 (not 1.53) in package.json, the lock file and the runner.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "package.json / package-lock.json",
+      "added": false
+    },
+    {
+      "item_id": "R39",
+      "raw_quote": "Do not roll back package/lock files.",
+      "our_interpretation": "package.json and package-lock.json are not rolled back; the Playwright pin remains the existing 1.64.1.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "package-lock.json",
+      "added": false
+    },
+    {
+      "item_id": "R40",
+      "raw_quote": "`pngdiff` must be OK.",
+      "our_interpretation": "s20c captures element/state screenshots and pngdiff must report no near-duplicates before acceptance.",
+      "verdict": "match",
+      "decision_ref": "B-8",
+      "scenario_ref": "s20c pngdiff",
+      "added": false
+    },
+    {
+      "item_id": "R41",
+      "raw_quote": "Auth and persistence behaviour must not change.",
+      "our_interpretation": "Auth, session, token and persistence semantics are frozen; search is a read-only projection over the existing owner-scoped notes.",
+      "verdict": "match",
+      "decision_ref": "B-1 / INV-AUTH-REQUIRED",
+      "scenario_ref": "existing auth/isolation tests",
+      "added": false
+    },
+    {
+      "item_id": "R42",
+      "raw_quote": "Only search scope is in scope; no unrelated refactors.",
+      "our_interpretation": "Only the notes search surface changes; there is no unrelated refactor, new domain or new endpoint.",
+      "verdict": "match",
+      "decision_ref": "scope-report",
+      "scenario_ref": "scope-report constraint 2",
+      "added": false
+    },
+    {
+      "item_id": "R43",
+      "raw_quote": "No changes to the old `f-v3-auth-notes` branch or its artifacts.",
+      "our_interpretation": "No f-v3-auth-notes branch or artifact is modified; the feature only adds f-v4 search files.",
+      "verdict": "match",
+      "decision_ref": "scope-report constraint 7",
+      "scenario_ref": "s24 limits",
+      "added": false
+    },
+    {
+      "item_id": "R44",
+      "raw_quote": "`E4312` and `E1320` are not resumed, accepted, or modified.",
+      "our_interpretation": "E4312 and E1320 are not resumed, accepted or modified by this feature or by E8363.",
+      "verdict": "match",
+      "decision_ref": "scope-report constraint 7",
+      "scenario_ref": "s24 limits",
+      "added": false
+    },
+    {
+      "item_id": "R45",
+      "raw_quote": "Preview is allowed only on `test2`; prod/main/stage and canary are out of scope.",
+      "our_interpretation": "Preview is limited to test2; prod, main, stage and canary remain out of scope.",
+      "verdict": "match",
+      "decision_ref": "B-9 / scope-report constraint 6",
+      "scenario_ref": "s20b/s20c on test2",
+      "added": false
+    }
   ]
 }
