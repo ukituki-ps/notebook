@@ -1,0 +1,87 @@
+# P5 — s20b host stand-runner (platform ae079e5c)
+
+Date: 2026-11-06T20:37–20:54Z
+Platform: Nexus dev + ORC revision = ae079e5cadd9398d29457d31213757ae67bdd52d
+Project: f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9
+Execution: E8895 (fresh; path-1.feature@3.2.2, entry unit_batch)
+Work branch: dev/f-v4-note-search-ae079e5c (base 326ae62fce7d6513c2b389750b4f5ebed278d861)
+Target repo head: 326ae62fce7d6513c2b389750b4f5ebed278d861
+execution_transport: git
+
+## Environment
+- ssh -T git@github.com -> Hi ukituki-ps/notebook! (working)
+- origin = git@github.com:ukituki-ps/notebook.git
+- unit worktrees: /workspace/projects/notebook-ae079e5c-u01..u03
+- ORC host: docker NOT available (command -v docker -> no-docker)
+
+## Fan-out / sessions
+- 3 child executions created; before linkage session_id empty.
+- linked sessions (all distinct, parent ses_e4de2edbeffePR726UuM1uWKKA):
+  - u01 ses_e4d6a864dffepgOfSV1MMhaRS4
+  - u02 ses_e4d6a811effewnqV2rpCwg8I1J
+  - u03 ses_e4d6a7b00ffegxb3upymIEckcX
+- ORC child branch creation initially failed with HTTPS `could not read Username`;
+  pre-creating the three orc-exec-E8895-* branches over SSH unblocked spawn.
+
+## Unit pipeline (all accepted, no force/skip/waiver)
+Unit | tip commit | steps s10..s18
+notebook-search-api | bc215d97e4185109a5de98f5fd77b495aefe1da1 | all done, s17 gates_passed, s18 gates_passed
+notebook-search-ui | 5765aa6e8b0212474d4df6a436645edb40322fa1 | all done, s17 gates_passed, s18 gates_passed
+notebook-search-deploy-e2e | 722e55ba5bb51829b31a73a6b76500de689e2cca | all done, s17 gates_passed, s18 gates_passed
+
+Unit branch pushes used SSH and succeeded (adccfcc, ebc2c4e, c48c8eb + per-step artifacts).
+Integration merges into dev/f-v4-note-search-ae079e5c:
+- u01+u02 -> 734030dc
+- u03 -> c84bafdb
+- s20a report -> 1398f94f
+- s20b marker -> 22102389
+`go build/vet/test` green at every merge (32 tests).
+
+## s20a (unit integrate)
+- First accept FAILED gate-l2-integration: no stand lease (unit_batch skips s19).
+- Leased test2 for E8895 via Nexus (lease 1ca22427-ed6c-4d8a-82a8-bd594e3aa25c).
+- Retry: 11/11 gates passed, evaluated_sha 1398f94fbc231b8b2fa239b5331216c120fba53a.
+
+## s20b (preview deploy -> host stand-runner)
+- ORC has no docker; official client present in the ORC workspace.
+- Invocation (ORC workspace, via proof_run):
+  STAND_RUNNER_PROJECT_ID=f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 \
+  STAND_RUNNER_TRANSPORT=git \
+  STAND_RUNNER_COMMIT=22102389c6f02e7fc518dc958a32542ec5c3d9f1 \
+  bash tools/stand-runner-client.sh E8895 deploy-preview
+
+- Attempt 1: runner rejected `eval-worktree-missing:
+  /srv/archkit/dev/orc-repos/.../.orc-eval/E8895/22102389...`
+  (eval worktree had been cleaned up by the failed accept).
+- Recreated the eval worktree (`git worktree add -f .orc-eval/E8895/<sha> <sha>`)
+  and retried.
+- Attempt 2: runner reached the hash-pin gate and rejected:
+  `stand-runner: reject: hash-pin: manifest-mismatch: deploy/ci/make-gate-bundle.py`
+
+Queue evidence (/app/orc-repos/.deploy-queue/E8895):
+  status.json -> {"state":"rejected","reason":"eval-worktree-missing: ..."}
+  res.json    -> {"rc":1,"reason":"eval-worktree-missing: ..."}
+(the second rejection is returned by the host runner after the worktree exists;
+it is a host-side manifest check, not path-1 code).
+
+## Host-runner blocker
+- `/home/ukituki/lkfl-runner` is NOT visible from the ORC container
+  (`ls: /home/ukituki: No such file or directory`), so the manifest cannot be
+  rebuilt from here.
+- `/srv/archkit` also does not exist in the container; the shared queue
+  (/app/orc-repos/.deploy-queue) proves the host runner is alive and reading
+  requests. The rejection is CODE_ROOT manifest drift on pr01.
+
+Unblock (on pr01, host runner):
+  cd /home/ukituki/lkfl-runner && \
+  find tools deploy -type f -print0 | sort -z | xargs -0 sha256sum > manifest.sha256
+or atomically redeploy runner code + manifest. Then re-run:
+  STAND_RUNNER_PROJECT_ID=f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 \
+  STAND_RUNNER_TRANSPORT=git STAND_RUNNER_COMMIT=<sha> \
+  tools/stand-runner-client.sh E8895 deploy-preview
+then orc_accept(s20b).
+
+## test2 state
+- /healthz: 200, build_ref=406fa96, commit=406fa96..., image_digest=sha256:300eec...
+- No s20b deploy happened; no preview-deploy.json / deploy provenance produced.
+- s20c E2E not reached.
