@@ -127,3 +127,17 @@ After the platform fix, s22b and s22c were accepted with `gates_passed`:
 E8895 path steps: s20/s20a/s20b/s20c, s21, s22, s22a, s22b, s22c done;
 s23 skipped; s24 final acceptance pending. ORC_REVIEWER_HOOK remains disabled;
 the official registration path is used.
+
+## s24 final acceptance — awaiting owner approval
+
+s24 `gate-acceptance-approval` requires a signed Nexus assertion. Request created:
+
+- request_id: `apr_0632235f9cf1c359b9ee27ddf85b76ad`
+- subject: `s24`, branch `dev/f-v4-note-search-ae079e5c`
+- policy: `notebook/s24` v1, owner approval, expires `2026-11-06T21:51:26Z`
+- digest: `sha256:e7f86a419d25f4a357c95486253fa426f48e4ff4ad322d5f4adc57b66e497719`
+- test2 lease for the accept gate: `080ce1f4-726d-4a9e-8344-e8171223d2aa`
+
+On approval, call `orc_accept(s24.team_lead_accept)` with the assertion
+(`approval_ref` or inline `assertion`). All prior steps are done; s23 is
+optionally skipped (0 critical/high).
