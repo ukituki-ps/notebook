@@ -1,11 +1,11 @@
 {
   "schema": "orc.ui-audit/v1",
   "feature_id": "f-v4-note-search",
-  "execution_id": "E8895",
+  "execution_id": "E8363",
   "platform": "web",
   "stand": {
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "2210238"
+    "sha": "c267619"
   },
   "summary": {
     "open_critical_high": 0,
@@ -20,35 +20,35 @@
       "block": "A",
       "criterion": "Состояния поиска (idle/filtering/results/empty/cleared/after-mutation) согласованы и не противоречат базовому пустому состоянию заметок.",
       "verdict": "ok",
-      "severity": "minor",
-      "oracle": "npx --no-install playwright test web/e2e/notes-search.spec.js",
+      "severity": "major",
+      "oracle": "sh: grep -q 'notesSearchEmpty.hidden' web/app.js && grep -q 'SEARCH-E2E-6' web/e2e/notes-search.spec.js",
       "evidence": {
         "kind": "command",
-        "ref": "Playwright SEARCH-E2E-1..6: 6/6 pass on test2 build 2210238"
+        "ref": "SEARCH-E2E-1..6 pass on test2 build c267619 (scenario-evidence.json); renderNotes() guards notes-empty vs notes-search-empty"
       }
     },
     {
       "id": "UI-B-EMPTY",
       "block": "B",
-      "criterion": "Пустое состояние поиска информативно и не маскирует базовое «нет заметок»: notes-search-empty показывается только для непустого запроса с нулём совпадений.",
+      "criterion": "Пустое состояние поиска информативно и не маскирует базовое «нет заметок»: notes-search-empty показывается только для непустого запроса с нулём совпадений (SEARCH-E2E-2/6).",
       "verdict": "ok",
-      "severity": "minor",
+      "severity": "major",
       "oracle": "dom: [data-testid=notes-search-empty][role=status][aria-live=polite]",
       "evidence": {
-        "kind": "dom",
-        "ref": "web/index.html#notes-search-empty; web/app.js renderNotes() empty-state guard"
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png (search-empty, 608x430) and SEARCH-E2E-6.png (search-empty after delete, 608x430); web/app.js renderNotes() guard hasQuery && !noNotes && visible.length === 0"
       }
     },
     {
       "id": "UI-C-LABEL",
       "block": "C",
-      "criterion": "Поле поиска имеет видимый человеческий label, понятную подпись и плейсхолдер; очистка очевидна.",
+      "criterion": "Поле поиска имеет видимый человеческий label, понятную подпись и плейсхолдер; очистка очевидна (кнопка Clear с accessible name).",
       "verdict": "ok",
-      "severity": "minor",
-      "oracle": "dom: label[for=notes-search] + input#notes-search[type=search] + button[data-testid=notes-search-clear][aria-label]",
+      "severity": "major",
+      "oracle": "dom: label[for=notes-search] + input#notes-search[type=search] + button#notes-search-clear[aria-label]",
       "evidence": {
-        "kind": "dom",
-        "ref": "web/index.html search row"
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png (notes-search element, 566x75); web/index.html search row; label for=notes-search, aria-label=Очистить поиск"
       }
     },
     {
@@ -60,7 +60,7 @@
       "oracle": "sh: grep -q 'notes-search' web/app.css",
       "evidence": {
         "kind": "command",
-        "ref": "web/app.css .search-row / .notes-search-empty styles"
+        "ref": "web/app.css .notes-search / .notes-search-row / .notes-search-clear reuse --border, --bg, --accent tokens"
       }
     },
     {
@@ -68,59 +68,59 @@
       "block": "E",
       "criterion": "Композиция: поиск расположен над списком заметок, контролы не перекрывают список и форму создания.",
       "verdict": "ok",
-      "severity": "minor",
-      "oracle": "dom: notes-search row precedes notes-list; aria-controls=notes-list",
+      "severity": "major",
+      "oracle": "file:web_ui_test.go::TestUISemantics",
       "evidence": {
-        "kind": "dom",
-        "ref": "web/index.html#notes-search + #notes-list ordering"
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png (notes-list below search, 566x68); TestUISemantics asserts notes-search appears above notes-list"
       }
     },
     {
       "id": "UI-F-INTERACTION",
       "block": "F",
-      "criterion": "Взаимодействие: создание и удаление при активном запросе переприменяют фильтр; очистка возвращает полный список.",
+      "criterion": "Взаимодействие: создание и удаление при активном запросе переприменяют фильтр; очистка возвращает полный список (SEARCH-E2E-4 clear, E2E-5 create, E2E-6 delete).",
       "verdict": "ok",
       "severity": "major",
-      "oracle": "npx --no-install playwright test web/e2e/notes-search.spec.js::SEARCH-E2E-5",
+      "oracle": "file:web_ui_test.go::TestUISemantics",
       "evidence": {
-        "kind": "command",
-        "ref": "SEARCH-E2E-4/5/6 pass; single renderNotes() path on load/create/delete"
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png (clear restores list, 566x145), SEARCH-E2E-5.png (create re-applies filter, 566x145), SEARCH-E2E-6.png (delete keeps filter, 608x430); single renderNotes() path"
       }
     },
     {
       "id": "UI-G-A11Y",
       "block": "G",
-      "criterion": "Доступность: label/aria-label/aria-controls, статус-регион role=status + aria-live, кнопка очистки имеет accessible name.",
+      "criterion": "Доступность: label/aria-label/aria-controls, статус-регион role=status + aria-live, кнопка очистки имеет accessible name, focus-visible.",
       "verdict": "ok",
       "severity": "major",
-      "oracle": "dom: label[for=notes-search], aria-controls=notes-list, role=status aria-live=polite, clear aria-label",
+      "oracle": "file:web_ui_test.go::TestUISemantics",
       "evidence": {
-        "kind": "dom",
-        "ref": "web/index.html; asserted by TestUISemantics"
+        "kind": "command",
+        "ref": "TestUISemantics pass; web/index.html label[for=notes-search], aria-controls=notes-list, role=status aria-live=polite, button aria-label; web/app.css :focus-visible"
       }
     },
     {
       "id": "UI-H-ADAPTIVE",
       "block": "H",
-      "criterion": "Адаптив/устройства: на узких экранах поиск и кнопка очистки переносятся без перекрытий.",
+      "criterion": "Адаптив/устройства: на узких экранах поиск и кнопка очистки переносятся без перекрытий (стек на max-width 640px).",
       "verdict": "ok",
       "severity": "minor",
-      "oracle": "sh: grep -q '@media' web/app.css",
+      "oracle": "sh: grep -q '@media (max-width: 640px)' web/app.css",
       "evidence": {
         "kind": "command",
-        "ref": "web/app.css @media (max-width: 640px) search row stacking"
+        "ref": "web/app.css @media (max-width: 640px): .notes-search-row flex-direction column; .notes-search-clear width 100%"
       }
     },
     {
       "id": "UI-I-CONTRACT",
       "block": "I",
-      "criterion": "Данные/контракты: поиск использует owner-scoped API, пустая выдача — [], UserID не сериализуется.",
+      "criterion": "Данные/контракты: поиск owner-scoped, пустая выдача — [], UserID не сериализуется, транскрипт q= и изоляция пользователей.",
       "verdict": "ok",
       "severity": "major",
       "oracle": "cmd:GOWORK=off go test -count=1 -run TestNotesSearch ./...",
       "evidence": {
         "kind": "command",
-        "ref": "8 TestNotesSearch* pass (32 tests total)"
+        "ref": "8 TestNotesSearch* pass on this tree (finds/notfound/case/isolation/auth/empty/whitespace/encoding)"
       }
     },
     {
@@ -129,34 +129,34 @@
       "criterion": "Перф: фильтрация локального загруженного списка без повторных запросов и без множественных DOM-append путей.",
       "verdict": "ok",
       "severity": "minor",
-      "oracle": "sh: grep -q 'renderNotes' web/app.js",
+      "oracle": "file:web_ui_test.go::TestUISemantics",
       "evidence": {
         "kind": "command",
-        "ref": "web/app.js single renderNotes() filter path"
+        "ref": "web/app.js single filterNotes()/renderNotes() path, one appendChild(makeNote(; no per-keystroke fetch"
       }
     },
     {
       "id": "UI-K-COMPLETENESS",
       "block": "K",
-      "criterion": "Завершённость: 6 поисковых и 7 auth/notes сценариев зелёные на выкаченном стенде.",
+      "criterion": "Завершённость: 6 поисковых сценариев зелёные на выкаченном стенде (case/empty/list/clear/after-mutation).",
       "verdict": "ok",
       "severity": "major",
-      "oracle": "npx --no-install playwright test",
+      "oracle": "file:web/e2e/notes-search.spec.js::SEARCH-E2E-6",
       "evidence": {
         "kind": "command",
-        "ref": "13/13 pass on test2 (build 2210238): 7 auth-notes + 6 search"
+        "ref": "scenario-evidence.json: SEARCH-E2E-1..6 status=pass on test2 build c267619; preview-verdict.json result=pass status=verified"
       }
     },
     {
       "id": "UI-L-EVIDENCE",
       "block": "L",
-      "criterion": "Доказательства: скриншоты ключевых состояний и preview-verdict привязаны к SHA стенда.",
+      "criterion": "Доказательства: 6 element/state скриншотов ключевых состояний, >=5KB, не near-duplicate, привязаны к SHA стенда c267619.",
       "verdict": "ok",
       "severity": "major",
-      "oracle": "url: https://test2.nexus.ukituki.tech/healthz",
+      "oracle": "sh: test -s 'doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png' && test -s 'doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png'",
       "evidence": {
         "kind": "screenshot",
-        "ref": ".orc-eval/E8895/22102389c6f02e7fc518dc958a32542ec5c3d9f1/doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+        "ref": "screenshots/SEARCH-E2E-1.png 566x68 7028B (list/results), -2.png 608x430 22882B (search-empty), -3.png 566x75 8192B (case-insensitive), -4.png 566x145 11988B (clear), -5.png 566x145 13692B (create+filter), -6.png 608x430 21156B (delete->search-empty); all distinct sha256 in evidence-manifest.json; preview-verdict evaluated_sha c2676199e5876abbb61a0030c01049bd782248ac"
       }
     }
   ]
