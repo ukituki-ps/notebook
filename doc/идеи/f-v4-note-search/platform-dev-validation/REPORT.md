@@ -103,3 +103,10 @@ honor `orc_register_reviewer` rows for the current step-run session. Then
   worktree is self-contained; this is project audit data referenced by
   `path1.project.json`, not platform code.
 - All results committed/pushed on `dev/f-v4-note-search-ae079e5c`.
+
+## Reviewer-runtime retest (platform 730d144a)
+
+Platform Nexus/ORC = `730d144a1e63837b590f3e95d01f67142ca3a699`.
+Resumed E8895 and retried s22b with the nested-session contract.
+ORC_REVIEWER_HOOK remains disabled; registration for
+`ses_e4d4375e2ffehxTqWnkji4CShe` is used.
