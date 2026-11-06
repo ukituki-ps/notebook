@@ -29,3 +29,18 @@
   resolves on the host (`/srv/archkit/dev/orc-repos/...`). It contains no
   `/app/...` reference in `.git`.
 - Only test2 was touched; test1/prod/preprod were not.
+
+## Authoritative redeploy after s20c screenshot fix
+
+The first s20c run failed `pngdiff` because the spec used `fullPage: true` and
+three scenarios were near-duplicates. The spec was corrected to element/state
+screenshots, committed as `c267619`, and redeployed:
+
+- Deployed commit: `c2676199e5876abbb61a0030c01049bd782248ac`
+- Build ref: `c267619`
+- Image digest: `sha256:b8d61aec77af08a792f00aec5505d8ef0831584ee650651466929e96b992c92e`
+- Build args hash: `sha256:2c2f272750b37db2f34452f0c7a90a9f9ca5874d601a930ba43423f37d51430d`
+- `/healthz`: `status=ok`, `build_ref=c267619`, same commit/image/build_args_hash
+- Host runner: `preview-deploy: GREEN test2 on notebook-stand:test2-c267619`
+
+The s20c E2E ran against this build; the b050e81 deploy above is superseded.
