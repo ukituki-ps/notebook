@@ -218,7 +218,23 @@ The machine-readable list is `invariants.json`. Core search invariants:
 
 ## Finalization note (s06)
 
-Finalized against `expertise-report.md` (`c1cf18c`). Machine-readable
-invariants: 16 active + 2 proposed (`INV-UI-ORACLE`, `INV-UI-E2E-PREVIEW`,
-whose oracles materialize at s22a/s20c). No auth/persistence invariant is
+Finalized at **s06** under execution **E8363** as a fresh re-validation on
+platform `730d144a` (design revalidated in s01–s05; no platform or path-1
+changes). The s03 wireframes are the **10-state** schema — login, register,
+idle/list, filtering, search-results, search-empty, genuinely-empty, loading,
+error, unauthorized — with the auth, loading, error and 401 states explicitly
+unchanged from f-v3.
+
+Machine-readable invariants (`invariants.json`): **16 active + 2 proposed**
+(18 total). All 16 active invariants have an executable `test_ref`; the two
+proposed ones (`INV-UI-ORACLE`, `INV-UI-E2E-PREVIEW`) remain **proposed** until
+their oracles materialize at s22a/s20c. No auth/persistence invariant is
 relaxed by this feature.
+
+Open decision **OD-6** (whether the `sessionStorage` query survives a full page
+reload) is carried to s08 as needs-human (low); this brief does not make query
+persistence part of the contract.
+
+Historical prior finalization: s06/E9294 against `expertise-report.md`
+(`c1cf18c`). This pass re-validates that text unchanged and does not re-stamp
+prior-run artifacts.

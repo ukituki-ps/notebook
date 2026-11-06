@@ -1,9 +1,9 @@
 {
   "feature": "f-v4-note-search",
-  "execution_id": "E9294",
+  "execution_id": "E8363",
   "step": "s06.feature_brief_final",
   "change_class": "plain",
-  "branch": "dev/f-v4-note-search",
+  "branch": "validation/platform-dev-20261106-zero",
   "invariants": [
     {
       "id": "INV-AUTH-REQUIRED",
@@ -11,7 +11,9 @@
       "statement": "Любой запрос к /api/notes* без bearer-заголовка, с битым или истёкшим токеном => 401 (auth проверяется раньше method/id/body).",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestAuthRequired|TestNotesSearchAuthRequired' ./...",
-      "covers": ["SEC-AUTH-REQUIRED"]
+      "covers": [
+        "SEC-AUTH-REQUIRED"
+      ]
     },
     {
       "id": "INV-USER-ISOLATION",
@@ -19,7 +21,11 @@
       "statement": "User A не видит заметки user B, включая поиск: результат поиска ограничен UserID текущей сессии.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation' ./...",
-      "covers": ["SEC-RLS-SCOPE-PREDICATE", "SEC-USER-ISOLATION", "DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "SEC-RLS-SCOPE-PREDICATE",
+        "SEC-USER-ISOLATION",
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-OWNER-SCOPE",
@@ -27,7 +33,10 @@
       "statement": "GET /api/notes?q= возвращает только заметки текущего пользователя; query может сузить, но не расширить выдачу.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchIsolation' ./...",
-      "covers": ["SEC-RLS-SCOPE-PREDICATE", "DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "SEC-RLS-SCOPE-PREDICATE",
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-CASE-INSENSITIVE",
@@ -35,7 +44,9 @@
       "statement": "Поиск по q регистронезависим (strings.ToLower обеих сторон), подстрока, без изменения хранимого текста.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchFinds|TestNotesSearchCaseInsensitive' ./...",
-      "covers": ["DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-EMPTY-Q",
@@ -43,7 +54,9 @@
       "statement": "Отсутствующий, пустой и whitespace-only q возвращают все заметки текущего пользователя; пустая выдача — [] не null.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery' ./...",
-      "covers": ["CONTRACT-NULL-OMITEMPTY"]
+      "covers": [
+        "CONTRACT-NULL-OMITEMPTY"
+      ]
     },
     {
       "id": "INV-SEARCH-NOT-FOUND",
@@ -51,7 +64,9 @@
       "statement": "Несовпадающий q возвращает 200 и пустой массив, без ошибки и без чужих заметок.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchNotFound' ./...",
-      "covers": ["CONTRACT-NULL-OMITEMPTY"]
+      "covers": [
+        "CONTRACT-NULL-OMITEMPTY"
+      ]
     },
     {
       "id": "INV-SEARCH-ENCODING",
@@ -59,7 +74,9 @@
       "statement": "URL-encoded и специальные символы в q декодируются net/http и не вызывают паники/500.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchEncoding' ./...",
-      "covers": ["DATA-ADAPTER-REAL-TRANSPORT"]
+      "covers": [
+        "DATA-ADAPTER-REAL-TRANSPORT"
+      ]
     },
     {
       "id": "INV-WIRE-CASING",
@@ -67,7 +84,9 @@
       "statement": "Wire-поля JSON остаются id/text/token/username/error в нижнем регистре; UserID не сериализуется.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestWireContract' ./...",
-      "covers": ["CONTRACT-WIRE-CASING"]
+      "covers": [
+        "CONTRACT-WIRE-CASING"
+      ]
     },
     {
       "id": "INV-REAL-TRANSPORT",
@@ -75,7 +94,9 @@
       "statement": "Тесты поиска идут через httptest.Server/реальный HTTP-транспорт, а не прямыми вызовами Store.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestHTTPTransport|TestNotesSearchEncoding' ./...",
-      "covers": ["DATA-ADAPTER-REAL-TRANSPORT"]
+      "covers": [
+        "DATA-ADAPTER-REAL-TRANSPORT"
+      ]
     },
     {
       "id": "INV-NO-SKIP-TAGS",
@@ -83,7 +104,9 @@
       "statement": "Тесты не исключены build-тегами integration/e2e/manual; инвариантный набор исполняется штатным go test.",
       "enforcement": "test",
       "test_ref": "cmd:sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
-      "covers": ["SEC-SKIP-TAGGED-INVARIANT"]
+      "covers": [
+        "SEC-SKIP-TAGGED-INVARIANT"
+      ]
     },
     {
       "id": "INV-UI-TRUTH",
@@ -115,7 +138,10 @@
       "statement": "Поле поиска фильтрует загруженный owner-scoped список; очистка возвращает полный список; create/delete/reload не ломаются.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": ["UI-FILTER-SERIALIZATION", "UI-EMPTY-STATE-CONTROLS"]
+      "covers": [
+        "UI-FILTER-SERIALIZATION",
+        "UI-EMPTY-STATE-CONTROLS"
+      ]
     },
     {
       "id": "INV-SEARCH-UI-EMPTY",
@@ -123,7 +149,9 @@
       "statement": "При непустом q без совпадений показывается empty state data-testid=notes-search-empty; при пустом q он не показывается.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": ["UI-EMPTY-STATE-CONTROLS"]
+      "covers": [
+        "UI-EMPTY-STATE-CONTROLS"
+      ]
     },
     {
       "id": "INV-SEARCH-UI-TESTIDS",
@@ -147,7 +175,9 @@
       "statement": "UI-сценарии поиска проходят на стенде и подтверждены e2e-report/screenshot.",
       "enforcement": "s20c: E2E на test2 через deploy/path1/e2e-preview.sh + Playwright web/e2e/notes-search.spec.js",
       "test_ref": "cmd:bash deploy/path1/e2e-preview.sh",
-      "covers": ["UI-E2E-PREVIEW"]
+      "covers": [
+        "UI-E2E-PREVIEW"
+      ]
     }
   ]
 }
