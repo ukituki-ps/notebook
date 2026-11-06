@@ -182,6 +182,36 @@ form button[type="submit"] {
   margin-top: 16px;
 }
 
+.notes-search {
+  margin-top: 16px;
+}
+
+.notes-search-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.notes-search-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notes-search-clear {
+  flex: 0 0 auto;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.notes-search-clear:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.notes-search-empty {
+  margin-top: 16px;
+}
+
 .notes-list {
   list-style: none;
   margin: 16px 0 0;
@@ -238,12 +268,17 @@ form button[type="submit"] {
     width: 100%;
   }
 
+  .notes-search-row {
+    flex-direction: column;
+  }
+
   .note-item {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .delete-note {
+  .delete-note,
+  .notes-search-clear {
     width: 100%;
   }
 
