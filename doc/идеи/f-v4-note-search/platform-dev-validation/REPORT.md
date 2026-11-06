@@ -14,9 +14,9 @@
 
 ## Verdict
 
-**s20b PASS — deployed to test2 through the host stand-runner with matching
-provenance. s20c is blocked only by the host-side eval worktree being removed
-after the s20b accept; the deployed stand itself is verified (UI suite 13/13).**
+**PASS.** All unit work landed through the git transport, `s20a → s20b → s20c`
+passed with real gates, and test2 is deployed on `2210238` with matching
+provenance and a 13/13 Playwright E2E.
 
 ## Results
 
@@ -25,17 +25,17 @@ after the s20b accept; the deployed stand itself is verified (UI suite 13/13).**
 | SSH / origin | `ssh -T git@github.com` → `Hi ukituki-ps/notebook!`; origin = `git@github.com:ukituki-ps/notebook.git` |
 | Fresh execution | **E8895** with `execution_transport=git`, work branch + target head as above |
 | Sessions | 3 distinct (`ses_e4d6a864…`, `ses_e4d6a811…`, `ses_e4d6a7b0…`), parent distinct; linked before steps |
-| Unit push | `bc215d97` (api), `5765aa6e` (ui), `722e55ba` (e2e) — all pushed over SSH |
+| Unit push | `bc215d97` (api), `5765aa6e` (ui), `722e55ba` (e2e) — pushed over SSH |
 | `s11 → s18` | all three units done; `s17`/`s18` gates passed; no force/skip/waiver |
 | `s20a` | 11/11 gates passed after leasing test2 (unit_batch skips s19) |
 | `s20b` | **gates_passed** — host stand-runner deploy GREEN |
-| `s20c` | **blocked**: host eval worktree missing (removed by s20b accept); stand UI suite 13/13 |
+| `s20c` | **gates_passed** — host stand-runner E2E 13/13 |
 
 ## Integration branch
 
 `dev/f-v4-note-search-ae079e5c`:
 `734030dc` (api+ui) → `c84bafd` (e2e) → `1398f94f` (s20a report) →
-`22102389` (s20b marker) → `99d19cf` (validation report) → report updates.
+`22102389` (s20b marker) → validation reports.
 `go build/vet/test` green at each merge (32 tests).
 
 ## s20b deploy evidence
@@ -52,52 +52,30 @@ after the s20b accept; the deployed stand itself is verified (UI suite 13/13).**
 - Provenance at `.orc-eval/E8895/2210238…/deploy/stands/.runtime/test2/`:
   `build-provenance.json` (built_at 21:00:30Z) and `deploy-provenance.json`
   (deployed_at 21:00:39Z), same commit/digest; plus `dsn`, `nginx.conf`.
-- Lease: `79ae80d9-f521-4da0-a430-b611f662d2c5` (test2, E8895).
 
-## s20c blocker (host-side)
+## s20c E2E evidence
 
-`stand-runner-client.sh E8895 e2e-preview` rejects:
+- Host stand-runner `e2e-preview` for E8895: queue `state=done`, `rc=0`,
+  `duration_s=10`.
+- `preview-verdict.json`: `result=pass`, `status=verified`, `mode=ui`,
+  `ref=2210238`, `evaluated_sha=22102389…`, target/url =
+  `https://test2.nexus.ukituki.tech`, image digest / build args hash match the
+  deploy, `evidence_manifest_sha256=f7dbb9ad…`.
+- Playwright: **13/13** (7 auth-notes + 6 search, `SEARCH-E2E-1..6`).
+- Evidence: `.orc-eval/E8895/22102389…/doc/идеи/f-v3-auth-notes/`
+  `scenario-evidence.json` + `evidence-manifest.json` + screenshots.
+- `orc_accept(s20c)` → **gates_passed**; run artifacts `preview-deploy.json`
+  and `preview-verdict.json` synced.
 
-```
-eval-worktree-missing:
-/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8895/22102389c6f02e7fc518dc958a32542ec5c3d9f1
-```
+## State
 
-The s20b accept removed `.orc-eval/E8895/22102389…` (only
-`.orc-eval/E8895/preview-deploy.json` remains). The worktree was **not**
-recreated from the ORC container (per instruction; its `.git` would point to
-`/app/...` and the runner would fail `target-not-git`). The ORC container also
-has no Chromium (`browserType.launch: Executable doesn't exist at
-/home/app/.cache/ms-playwright/...`), so UI E2E must run on pr01.
-
-### Stand verified independently
-
-The same specs against the deployed build pass in a browser-capable
-environment:
-
-```
-E2E_BASE_URL=https://test2.nexus.ukituki.tech playwright test
-→ 13 passed (2.6s): 7 auth-notes + 6 search (SEARCH-E2E-1..6)
-```
-
-This proves the stand/feature are correct; the host runner will pass the same
-suite once the host eval worktree exists.
-
-### Remaining host action
-
-Recreate on pr01 (after the s20b accept):
-
-```
-/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8895/22102389c6f02e7fc518dc958a32542ec5c3d9f1
-HEAD=22102389c6f02e7fc518dc958a32542ec5c3d9f1, is-inside-work-tree=true
-```
-
-then `stand-runner-client.sh E8895 e2e-preview` and `orc_accept(s20c)`.
+- E8895: `s20a`, `s20b`, `s20c` = done; next step `s21` pending.
+- test2 lease `79ae80d9-f521-4da0-a430-b611f662d2c5` released after accept.
+- test2 remains on `2210238` (the deployed feature build).
 
 ## Hygiene
 
 - No platform code, `path-1`, Nexus, or deploy scripts modified.
 - Only dev + test2 touched; prod/preprod/test1 untouched.
-- No force/skip/waiver; the L1 gate for s20b was fixed by the host runner, not
-  bypassed.
-- E8895 is running at `s20c.preview_verify`; test2 lease is active (E8895).
+- No force/skip/waiver; the earlier host-runner hash-pin and eval-worktree
+  issues were fixed on pr01, not bypassed.

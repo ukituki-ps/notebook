@@ -64,3 +64,11 @@ Recreate the host eval worktree after the s20b accept (it is removed by accepts)
 Then run:
   stand-runner-client.sh E8895 e2e-preview
 and orc_accept(s20c). No E2E re-run is needed from ORC.
+
+## Resolution (2026-11-06T21:05Z)
+
+Host stand-runner e2e-preview completed with rc=0 (queue state=done, 10s):
+Playwright 13/13, preview-verdict result=pass/status=verified/mode=ui,
+ref=2210238. Evidence in .orc-eval/E8895/2210238.../doc/идеи/f-v3-auth-notes/
+(scenario-evidence.json, evidence-manifest.json, screenshots).
+orc_accept(s20c) -> gates_passed. Lease released.
