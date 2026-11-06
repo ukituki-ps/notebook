@@ -111,12 +111,15 @@ async function expectSearchEmpty(page, visible) {
   }
 }
 
-// s20c requires one scenario-specific screenshot per E2E id.
-async function shot(page, id, size) {
+// s20c requires one scenario-specific ELEMENT/STATE screenshot per E2E id
+// (never full-page): notes-list, search input, search empty state, clear.
+async function shot(page, id, locator, size) {
   if (size) await page.setViewportSize(size);
   const dir = path.join(process.cwd(), "doc", "идеи", "f-v4-note-search", "screenshots");
   fs.mkdirSync(dir, { recursive: true });
-  await page.screenshot({ path: path.join(dir, `${id}.png`), fullPage: true });
+  const target = locator || page.locator(".card.notes");
+  await expect(target).toBeVisible();
+  await target.screenshot({ path: path.join(dir, `${id}.png`), animations: "disabled" });
 }
 
 test("SEARCH-E2E-1 search finds matching note", async ({ page, request }) => {
@@ -135,7 +138,7 @@ test("SEARCH-E2E-1 search finds matching note", async ({ page, request }) => {
   await expect(visibleItems(page)).toHaveCount(1);
   await expectSearchEmpty(page, false);
   await expect(page.getByTestId("notes-empty")).toBeHidden();
-  await shot(page, "SEARCH-E2E-1");
+  await shot(page, "SEARCH-E2E-1", page.getByTestId("notes-list"), { width: 1000, height: 800 });
 });
 
 test("SEARCH-E2E-2 non-matching query shows the search empty state", async ({ page, request }) => {
@@ -155,7 +158,7 @@ test("SEARCH-E2E-2 non-matching query shows the search empty state", async ({ pa
   await expect(page.getByTestId("notes-search")).toBeVisible();
   await expect(page.getByTestId("notes-search")).toBeEnabled();
   await expect(page.getByTestId("notes-search")).toHaveValue(missing);
-  await shot(page, "SEARCH-E2E-2");
+  await shot(page, "SEARCH-E2E-2", page.locator(".card.notes"), { width: 1000, height: 800 });
 });
 
 test("SEARCH-E2E-3 match is case-insensitive", async ({ page, request }) => {
@@ -174,7 +177,7 @@ test("SEARCH-E2E-3 match is case-insensitive", async ({ page, request }) => {
   await expect(page.getByTestId("note-item").filter({ hasText: other })).toBeHidden();
   await expect(visibleItems(page)).toHaveCount(1);
   await expectSearchEmpty(page, false);
-  await shot(page, "SEARCH-E2E-3");
+  await shot(page, "SEARCH-E2E-3", page.locator(".notes-search"), { width: 1000, height: 800 });
 });
 
 test("SEARCH-E2E-4 clear restores the full list", async ({ page, request }) => {
@@ -198,7 +201,7 @@ test("SEARCH-E2E-4 clear restores the full list", async ({ page, request }) => {
   await expect(visibleItems(page)).toHaveCount(2);
   await expectSearchEmpty(page, false);
   await expect(page.getByTestId("notes-empty")).toBeHidden();
-  await shot(page, "SEARCH-E2E-4", { width: 800, height: 900 });
+  await shot(page, "SEARCH-E2E-4", page.getByTestId("notes-list"), { width: 900, height: 700 });
 });
 
 test("SEARCH-E2E-5 create while query active re-applies the filter", async ({ page, request }) => {
@@ -227,7 +230,7 @@ test("SEARCH-E2E-5 create while query active re-applies the filter", async ({ pa
   await expect(page.getByTestId("note-item").filter({ hasText: extra })).toBeVisible();
   await expect(visibleItems(page)).toHaveCount(2);
   await expectSearchEmpty(page, false);
-  await shot(page, "SEARCH-E2E-5");
+  await shot(page, "SEARCH-E2E-5", page.getByTestId("notes-list"), { width: 1100, height: 900 });
 });
 
 test("SEARCH-E2E-6 delete while query active keeps the filter consistent", async ({ page, request }) => {
@@ -273,10 +276,12 @@ test("SEARCH-E2E-6 delete while query active keeps the filter consistent", async
   await expectSearchEmpty(page, true);
   await expect(page.getByTestId("notes-empty")).toBeHidden();
 
+  // Capture the search-empty state (element/state, not full page) before clear.
+  await shot(page, "SEARCH-E2E-6", page.locator(".card.notes"), { width: 1100, height: 900 });
+
   await clearQuery(page);
   await expect(page.getByTestId("note-item").filter({ hasText: outside })).toBeVisible();
   await expect(visibleItems(page)).toHaveCount(1);
   await expectSearchEmpty(page, false);
   await expect(page.getByTestId("notes-empty")).toBeHidden();
-  await shot(page, "SEARCH-E2E-6");
 });
