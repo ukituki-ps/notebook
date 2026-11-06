@@ -1,62 +1,96 @@
 # s13 independent verification — notebook-search-api
 
-- Execution: `E8895` (unit `notebook-search-api`)
-- Worktree: `/workspace/projects/notebook-ae079e5c-u01`
-- Branch: `orc-exec-E8895-s20.sde_5fexecution-u01`
-- Verified HEAD: `e2e6a84e4b0514d926defaa7fb2eb49f92b6beb6` (matches required HEAD; working tree clean before verification)
-- Verified by: `architect` (independent verifier, main session run `a27ce644-3412-42e9-b253-a2699c19c74d`)
+- Feature: `f-v4-note-search`
+- Execution: `E8363-s20.sde_5fexecution-u01`
+- Unit: `notebook-search-api`
+- Worktree: `/workspace/projects/notebook-e8363-u01`
+- Branch: `orc-exec-E8363-s20.sde_5fexecution-u01`
+- HEAD tested (commands executed at): `f6396ad42f913b4fba70882d2dbba66e03f48515`
+- Branch tip at report time: `94daa77202623290dd7067ab001f7d69102703a9`
+  (`chore(notebook-search-api): s15 independent regression (E8363)`, artifacts
+  only; `git diff f6396ad..94daa77 -- main.go main_test.go web web_ui_test.go`
+  is empty)
+- Evidence HEAD in `s13-verify-input.md`: `9ceafdbd1bede428097d784539093092d0c9156f`
+- Source equivalence: `git diff --stat 9ceafdb..HEAD` contains only
+  `artifacts/units/notebook-search-api/{s10,s11,s12,s15}`; `main.go` and
+  `main_test.go` are byte-identical to the evidence HEAD.
+- Verified by: `architect` (independent verifier; read-only source inspection,
+  fresh local commands, no git write commands)
 - Toolchain: `go1.24.4 linux/amd64`
-- Verification mode: independent re-read of `main.go` / `main_test.go` plus fresh local build/vet/test; no executor claims relied upon.
+- Verdict: **PASS**
 
-## Verdict: PASS
+## Commands reproduced
 
-## Criteria checked
+| # | Command (cwd = worktree) | Exit | Result |
+|---|---|---|---|
+| 1 | `go build ./...` | `0` | no output |
+| 2 | `go vet ./...` | `0` | no output |
+| 3 | `go test -count=1 ./...` | `0` | `ok github.com/ukituki-ps/notebook 2.736s` |
+| 4 | `go test -count=1 -run 'TestNotesSearch' -v ./...` | `0` | 8/8 PASS, `ok ... 0.377s` |
+| 5 | `go test -count=1 -v -run 'TestAuthMethodOrder\|TestAuthRequired\|TestNotesIsolation\|TestNotesMethodNotAllowed\|TestWireContract\|TestHTTPTransport\|TestUISemantics' ./...` | `0` | 7/7 PASS, `ok ... 0.361s` |
 
-1. **`GET /api/notes` search semantics (`main.go`)**
-   - `q` is trimmed: `strings.TrimSpace(r.URL.Query().Get("q"))` (line 538). ✅
-   - Empty/whitespace `q` returns all own notes: filter block only runs when `query != ""`; whitespace trims to empty (lines 538–548). ✅
-   - Case-insensitive substring: both query and note text are lowercased, `strings.Contains` used (lines 538, 543). ✅
-   - Filter applied AFTER the owner predicate: `a.store.ListNotes(session.UserID)` runs first (line 539) and `ListNotes` selects only `note.UserID == userID` (lines 194–205); filtering then operates on that already-scoped slice, so it cannot widen scope (lines 540–548). ✅
-   - `[]` not `null`: `ListNotes` starts with `make([]Note, 0)` (line 197) and the filtered path uses `make([]Note, 0, len(notes))` (line 541). Empty result therefore serializes as `[]`; the test asserts the exact body `[]`. ✅
-   - `UserID` not serialized: `Note.UserID` carries `json:"-"` (line 68); `Session`/`User` secrets also `json:"-"`. No wire leak. ✅
-   - Auth before dispatch: `handleNotes` calls `a.requireAuth(...)` and returns before the method switch (lines 530–534); unauthorized requests get 401 + `WWW-Authenticate: Bearer` before any query/method handling. ✅
+Focused search output:
 
-2. **Search tests (`main_test.go`) — 8/8 present and mapped**
-   - `TestNotesSearchFinds` — matches find
-   - `TestNotesSearchNotFound` — not-found returns `[]`
-   - `TestNotesSearchCaseInsensitive` — mixed-case matches
-   - `TestNotesSearchIsolation` — per-user isolation + no `UserID` leak
-   - `TestNotesSearchAuthRequired` — 401 without/with unknown token + `WWW-Authenticate`
-   - `TestNotesSearchEmptyQuery` — `q=` equals unfiltered output
-   - `TestNotesSearchWhitespaceQuery` — space/tab-only `q` equals unfiltered output
-   - `TestNotesSearchEncoding` — `%25`, `%20`, `%26`, `%2B` decoded correctly
-   - Existing tests intact: feature commit `adccfcc` changed `main_test.go` by `+183 / -0` lines (`git diff --numstat adccfcc^..adccfcc`), i.e. additions only, no existing test modified or removed. Total top-level tests = 32. ✅
+```
+--- PASS: TestNotesSearchFinds
+--- PASS: TestNotesSearchNotFound
+--- PASS: TestNotesSearchCaseInsensitive
+--- PASS: TestNotesSearchIsolation
+--- PASS: TestNotesSearchAuthRequired
+--- PASS: TestNotesSearchEmptyQuery
+--- PASS: TestNotesSearchWhitespaceQuery
+--- PASS: TestNotesSearchEncoding
+PASS
+ok  github.com/ukituki-ps/notebook  0.377s
+```
 
-3. **Build / vet / test (run from worktree with `GOWORK=off`)**
+## Contract checks (independent code read)
 
-   | Command | Result |
-   |---|---|
-   | `GOWORK=off go build ./...` | exit `0`, no output |
-   | `GOWORK=off go vet ./...` | exit `0`, no output |
-   | `GOWORK=off go test -count=1 ./...` | exit `0`, `ok github.com/ukituki-ps/notebook 2.749s` |
-   | `GOWORK=off go test -count=1 -run 'TestNotesSearch' -v ./...` | exit `0`, all 8 `--- PASS`, `ok ... 0.389s` |
+1. **Query parsing/trimming** — `query := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("q")))`
+   in `main.go:538`; `q` is read via `r.URL.Query().Get("q")`.
+2. **Absent / `q=` / whitespace-only** — the filter block is guarded by
+   `if query != ""` (`main.go:540`), so all three return the unfiltered
+   `ListNotes(session.UserID)` result; `TestNotesSearchEmptyQuery` also asserts
+   the body is byte-identical to the no-`q` response, and
+   `TestNotesSearchWhitespaceQuery` covers `%20%20%09` and `%20`.
+3. **Case-insensitive substring** — both query (`main.go:538`) and each note text
+   (`main.go:543`) are lower-cased and compared with `strings.Contains`;
+   `TestNotesSearchCaseInsensitive` (`q=HeLLo` → `Hello World`, `hello there`).
+4. **Owner predicate first** — `notes := a.store.ListNotes(session.UserID)`
+   (`main.go:539`) runs before filtering; `ListNotes` (`main.go:194-205`) selects
+   only `note.UserID == userID`, so `q` can only narrow. `TestNotesSearchIsolation`
+   proves A/B separation with a shared query.
+5. **No match → `200 []`** — `ListNotes` returns `make([]Note, 0)` and the filter
+   returns `make([]Note, 0, len(notes))` (`main.go:540-548`).
+   `TestNotesSearchNotFound` asserts the exact trimmed body `[]`.
+6. **Auth order** — `handleNotes` calls `a.requireAuth(w, r)` before the method
+   switch (`main.go:529-534`); `requireAuth` sets `WWW-Authenticate: Bearer` and
+   `401 {"error":"unauthorized"}`. Covered by `TestNotesSearchAuthRequired`
+   (no token and unknown token) and `TestAuthMethodOrder`.
+7. **Wire/envelope stability** — `Note.UserID` is `json:"-"` (`main.go:66-70`);
+   `TestNotesSearchIsolation` also rejects `user_id` / `UserID` / `"userId"`
+   substrings. Existing status/envelope paths stay green through
+   `TestNotesMethodNotAllowed`, `TestWireContract`, `TestHTTPTransport`.
+8. **Real transport** — all search oracles go through `newTestServer` /
+   `httptest.Server` (`main_test.go:17-37`), not direct `Store` calls.
+9. **Encoding safety** — `TestNotesSearchEncoding` exercises `100%25`,
+   `100%25%20juice`, `%26`, and `a%2Bb`, all returning `200` with the expected
+   note; no panic/500.
 
-   Verbose search run:
-   ```
-   --- PASS: TestNotesSearchFinds (0.05s)
-   --- PASS: TestNotesSearchNotFound (0.05s)
-   --- PASS: TestNotesSearchCaseInsensitive (0.05s)
-   --- PASS: TestNotesSearchIsolation (0.10s)
-   --- PASS: TestNotesSearchAuthRequired (0.00s)
-   --- PASS: TestNotesSearchEmptyQuery (0.05s)
-   --- PASS: TestNotesSearchWhitespaceQuery (0.05s)
-   --- PASS: TestNotesSearchEncoding (0.05s)
-   PASS
-   ok  github.com/ukituki-ps/notebook  0.389s
-   ```
+## Test inventory
+
+- `main_test.go`: 31 top-level tests, of which 8 are `TestNotesSearch*` (exact
+  count `grep -c '^func TestNotesSearch'` = 8).
+- `web_ui_test.go`: 1 test (`TestUISemantics`).
+- No build tags and no `t.Skip` in `main_test.go` / `web_ui_test.go`
+  (`grep -nE '^//go:build|t\.Skip'` = 0 matches).
 
 ## Notes
 
-- No failures observed. No git write commands were executed during verification.
-- `go build` produced no tracked artifact changes (`go build ./...` in module mode leaves no binary in the worktree; pre-existing `./notebook` binary untouched).
-- This file is the only change introduced by the verification step.
+- No source file was modified; only these s13/s14/s16 records were written by
+  the verifier.
+- One non-blocking oracle nuance: `spec/contract-matrix.md` C-08 names raw `+`
+  (space) while `TestNotesSearchEncoding` covers `%20` (space) and `%2B`
+  (literal plus). The decoding path is shared `net/http` behavior and is not a
+  code defect; recorded in `s14-quality.md`.
+- No FAIL and no blocking finding.
