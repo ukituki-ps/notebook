@@ -1,0 +1,86 @@
+Unit: notebook-search-ui (f-v4-note-search)
+Worktree: /workspace/projects/notebook-ae079e5c-u02
+Branch: orc-exec-E8895-s20.sde_5fexecution-u02
+HEAD: 326ae62
+Toolchain: go1.24.4 linux/amd64, node v20.19.2
+Date: 2026-11-06T20:39:04Z
+
+Reviewed files (sha256):
+  4976f733804d030089d6c3e136e456338f139d10fba0349205cce2e6fb50dc1c  web/index.html
+  438a5ba0bd2674c41a0fbe0fcac1107d9ecdbea64b1192705da50194d29a76bf  web/app.js
+  0f7fe03cfa2b76d54c2a75d860f0e812f912aa2c9b3eb6d0bc11b9d308483b4a  web/app.css
+  16d670c6fb871f857ba74346309bf40a515910c2255b16e21cb739acf1d71dbb  web_ui_test.go
+
+Commands run from the worktree root (all with GOWORK=off):
+
+$ node --check web/app.js
+(no output)
+exit=0
+
+$ gofmt -l .
+main.go
+exit=0
+  NOTE: main.go is not part of this unit; `git status --porcelain -- main.go`
+  is empty and `git diff HEAD -- main.go` is empty, so the file is unchanged
+  from HEAD 326ae62. `gofmt -d main.go` shows only import ordering
+  ("embed" after "crypto/subtle"), i.e. a pre-existing repo-wide formatting
+  finding that this unit did not introduce and must not touch (scope = the
+  four web/UI files + this artifact directory).
+
+$ go build ./...
+(no output)
+exit=0
+
+$ go vet ./...
+(no output)
+exit=0
+
+$ go test -count=1 ./...
+ok  	github.com/ukituki-ps/notebook	2.372s
+exit=0
+
+$ go test -count=1 -run TestUISemantics -v ./...
+=== RUN   TestUISemantics
+--- PASS: TestUISemantics (0.00s)
+PASS
+ok  	github.com/ukituki-ps/notebook	0.002s
+exit=0
+
+Static review of the search requirement:
+
+- Contract ids present in web/index.html: notes-search (labeled, type=search,
+  aria-controls="notes-list", above notes-list), notes-search-clear
+  (type=button, aria-label, starts hidden), notes-search-empty
+  (role=status, aria-live=polite, starts hidden).
+- Single render path: web/app.js defines renderNotes() once (line 372) and
+  every mutation path funnels through it:
+    line 427  loadNotes() after GET /api/notes (also covers reload;
+              initNotes restores the query from sessionStorage)
+    line 473  deleteNote() after 204
+    line 529  note submit handler after 201 create
+    line 563  search input event
+    line 572  clear button click
+  `notesList.appendChild(makeNote(...))` occurs exactly once (line 379).
+- Empty-state semantics (line 383 and 387):
+    notesEmpty.hidden       = !noNotes
+    notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0)
+  => notes-search-empty shows only for a non-whitespace query that filters a
+  non-empty collection to zero rows; the base notes-empty state is preserved
+  for an empty collection.
+- Filtering is case-insensitive over title/text (noteSearchText +
+  toLowerCase + indexOf), query trimmed for matching.
+
+Residual risk (low):
+- Whitespace-only query: filterNotes() trims to "no filter", but the clear
+  button visibility uses raw `searchQuery === ""`, so "   " leaves Clear
+  visible. Cosmetic only; no data/API impact.
+- `.notes-search-empty` CSS rule is unused (the status paragraph carries
+  class "muted" only). Dead rule, no behavioral effect.
+- TestUISemantics is a static source oracle; runtime behavior (focus, live
+  region announcements, sessionStorage restore across a real browser reload)
+  is not exercised here and remains covered by web/e2e/auth-notes.spec.js.
+- Repo-wide `gofmt -l .` is not clean because of pre-existing main.go import
+  ordering; unrelated to this unit and left untouched.
+
+Result: PASS for unit scope (JS syntax, build, vet, full test suite, targeted
+TestUISemantics). Only open non-unit issue: pre-existing main.go gofmt finding.

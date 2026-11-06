@@ -73,8 +73,25 @@
         </form>
 
         <p class="muted" data-testid="notes-loading" id="notes-loading">Загрузка...</p>
+
+        <div class="notes-search" role="search" aria-label="Поиск заметок">
+          <label for="notes-search">Поиск заметок</label>
+          <div class="notes-search-row">
+            <input data-testid="notes-search" id="notes-search" name="search"
+                   type="search" autocomplete="off" spellcheck="false"
+                   placeholder="Поиск по тексту..." aria-controls="notes-list">
+            <button data-testid="notes-search-clear" id="notes-search-clear"
+                    class="notes-search-clear" type="button"
+                    aria-label="Очистить поиск" hidden>Clear</button>
+          </div>
+        </div>
+
         <p class="muted" data-testid="notes-empty" id="notes-empty" hidden>
           Пока нет заметок. Добавьте первую выше.
+        </p>
+        <p class="muted" data-testid="notes-search-empty" id="notes-search-empty"
+           role="status" aria-live="polite" hidden>
+          Ничего не найдено.
         </p>
         <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list" hidden></ul>
       </div>

@@ -4,6 +4,7 @@
   var TOKEN_KEY = "notebook.token";
   var USER_KEY = "notebook.user";
   var PREFILL_KEY = "notebook.prefill";
+  var SEARCH_KEY = "notebook.search";
   var SCREENS = ["login", "register", "notes"];
 
   function byTestId(id) {
@@ -304,15 +305,22 @@
   var notesList = byTestId("notes-list");
   var notesEmpty = byTestId("notes-empty");
   var notesLoading = byTestId("notes-loading");
+  var notesSearch = byTestId("notes-search");
+  var notesSearchClear = byTestId("notes-search-clear");
+  var notesSearchEmpty = byTestId("notes-search-empty");
   var userNameEl = byTestId("user-name");
   var logoutButton = byTestId("logout");
   var noteTemplate = document.getElementById("note-item-template");
 
   var notesInitialized = false;
+  var notes = [];
+  var searchQuery = "";
 
   function setNotesEnabled(enabled) {
     notesForm.dataset.enabled = enabled ? "1" : "0";
     noteInput.disabled = !enabled;
+    if (notesSearch) notesSearch.disabled = !enabled;
+    if (notesSearchClear) notesSearchClear.disabled = !enabled;
     if (!enabled) addButton.disabled = true;
     else updateAddState();
   }
@@ -342,23 +350,49 @@
     return item;
   }
 
-  function renderNotes(notes) {
+  // Search matches the note title/body case-insensitively. The API only
+  // exposes text today, but title is included so a future field keeps working.
+  function noteSearchText(note) {
+    var parts = [];
+    if (note && note.title != null) parts.push(String(note.title));
+    if (note && note.text != null) parts.push(String(note.text));
+    return parts.join(" ").toLowerCase();
+  }
+
+  function filterNotes() {
+    var query = searchQuery.trim().toLowerCase();
+    if (!query) return notes.slice();
+    return notes.filter(function (note) {
+      return noteSearchText(note).indexOf(query) !== -1;
+    });
+  }
+
+  // Single render/filter function: load, create, delete and reload all funnel
+  // here so the active query is always re-applied.
+  function renderNotes() {
+    var visible = filterNotes();
+    var hasQuery = searchQuery.trim() !== "";
+    var noNotes = notes.length === 0;
+
     notesList.textContent = "";
-    if (!notes || notes.length === 0) {
-      notesEmpty.hidden = false;
-      notesList.hidden = true;
-      return;
-    }
-    notesEmpty.hidden = true;
-    notesList.hidden = false;
-    notes.forEach(function (note) {
+    visible.forEach(function (note) {
       notesList.appendChild(makeNote(note));
     });
+
+    notesList.hidden = visible.length === 0;
+    notesEmpty.hidden = !noNotes;
+    // notes-search-empty is only for an active query that filters a non-empty
+    // collection down to nothing; the base empty state stays notes-empty.
+    if (notesSearchEmpty) {
+      notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0);
+    }
+    if (notesSearchClear) notesSearchClear.hidden = searchQuery === "";
   }
 
   function handleUnauthorized() {
     removeStorage(localStorage, TOKEN_KEY);
     removeStorage(localStorage, USER_KEY);
+    removeStorage(sessionStorage, SEARCH_KEY);
     setNotesEnabled(false);
     showError("notes", "Сессия истекла. Перенаправление на вход...");
     window.setTimeout(function () {
@@ -375,6 +409,7 @@
     notesLoading.hidden = false;
     notesEmpty.hidden = true;
     notesList.hidden = true;
+    if (notesSearchEmpty) notesSearchEmpty.hidden = true;
     setNotesEnabled(false);
 
     api("/api/notes", { token: token })
@@ -388,7 +423,8 @@
           showError("notes", "Не удалось загрузить заметки.");
           return;
         }
-        renderNotes(Array.isArray(res.data) ? res.data : []);
+        notes = Array.isArray(res.data) ? res.data : [];
+        renderNotes();
         setNotesEnabled(true);
       })
       .catch(function () {
@@ -408,6 +444,12 @@
     }
     var user = readStorage(localStorage, USER_KEY);
     if (user && userNameEl) userNameEl.textContent = user;
+
+    // Restore an active query across a browser reload, then let loadNotes()
+    // re-apply it to the freshly fetched list.
+    searchQuery = readStorage(sessionStorage, SEARCH_KEY) || "";
+    if (notesSearch) notesSearch.value = searchQuery;
+
     loadNotes();
   }
 
@@ -425,11 +467,10 @@
     })
       .then(function (res) {
         if (res.status === 204) {
-          item.parentNode.removeChild(item);
-          if (notesList.children.length === 0) {
-            notesList.hidden = true;
-            notesEmpty.hidden = false;
-          }
+          notes = notes.filter(function (note) {
+            return String(note.id) !== String(id);
+          });
+          renderNotes();
           return;
         }
         if (res.status === 401) {
@@ -484,9 +525,8 @@
     })
       .then(function (res) {
         if (res.status === 201) {
-          notesList.appendChild(makeNote(res.data));
-          notesList.hidden = false;
-          notesEmpty.hidden = true;
+          notes.push(res.data);
+          renderNotes();
           noteInput.value = "";
           noteInput.focus();
           return;
@@ -516,6 +556,24 @@
 
   noteInput.addEventListener("input", updateAddState);
 
+  if (notesSearch) {
+    notesSearch.addEventListener("input", function () {
+      searchQuery = notesSearch.value;
+      writeStorage(sessionStorage, SEARCH_KEY, searchQuery);
+      renderNotes();
+    });
+  }
+
+  if (notesSearchClear) {
+    notesSearchClear.addEventListener("click", function () {
+      searchQuery = "";
+      if (notesSearch) notesSearch.value = "";
+      removeStorage(sessionStorage, SEARCH_KEY);
+      renderNotes();
+      if (notesSearch) notesSearch.focus();
+    });
+  }
+
   // Enter submits the note; Shift+Enter inserts a newline.
   noteInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -531,6 +589,7 @@
   logoutButton.addEventListener("click", function () {
     removeStorage(localStorage, TOKEN_KEY);
     removeStorage(localStorage, USER_KEY);
+    removeStorage(sessionStorage, SEARCH_KEY);
     location.replace("/login");
   });
 

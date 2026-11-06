@@ -50,6 +50,8 @@ func TestUISemantics(t *testing.T) {
 		"notes-header", "user-name", "logout", "note-form", "note-input",
 		"add-note", "notes-list", "note-item", "delete-note", "notes-empty",
 		"notes-loading", "notes-error",
+		// f-v4-note-search
+		"notes-search", "notes-search-clear", "notes-search-empty",
 	}
 	for _, id := range requiredTestIDs {
 		if !strings.Contains(html, `data-testid="`+id+`"`) {
@@ -107,7 +109,7 @@ func TestUISemantics(t *testing.T) {
 	for _, id := range []string{
 		"login-username", "login-password",
 		"register-username", "register-password", "register-confirm",
-		"note-input",
+		"note-input", "notes-search",
 	} {
 		if !strings.Contains(html, `for="`+id+`"`) {
 			t.Errorf("missing <label for=%q>", id)
@@ -152,6 +154,54 @@ func TestUISemantics(t *testing.T) {
 		t.Error("notes-empty must be hidden by default")
 	}
 
+	// Search is labeled, accessible and placed above the notes list.
+	searchTag := elementTag(html, "notes-search")
+	if searchTag == "" {
+		t.Fatal("missing notes-search input")
+	}
+	if !strings.Contains(searchTag, `type="search"`) {
+		t.Error("notes-search must be type=search")
+	}
+	if !strings.Contains(searchTag, `aria-controls="notes-list"`) {
+		t.Error("notes-search must reference notes-list via aria-controls")
+	}
+	if !strings.Contains(html, `for="notes-search"`) {
+		t.Error(`missing <label for="notes-search">`)
+	}
+	searchPos := strings.Index(html, `data-testid="notes-search"`)
+	listPos := strings.Index(html, `data-testid="notes-list"`)
+	if searchPos < 0 || listPos < 0 || searchPos > listPos {
+		t.Error("notes-search must appear above notes-list")
+	}
+
+	clearTag := elementTag(html, "notes-search-clear")
+	if clearTag == "" {
+		t.Fatal("missing notes-search-clear control")
+	}
+	if !strings.Contains(clearTag, `type="button"`) {
+		t.Error("notes-search-clear must be type=button")
+	}
+	if !strings.Contains(clearTag, `aria-label=`) {
+		t.Error("notes-search-clear needs an aria-label")
+	}
+	if !strings.Contains(clearTag, "hidden") {
+		t.Error("notes-search-clear must start hidden with an empty query")
+	}
+
+	searchEmptyTag := elementTag(html, "notes-search-empty")
+	if searchEmptyTag == "" {
+		t.Fatal("missing notes-search-empty state")
+	}
+	if !strings.Contains(searchEmptyTag, "hidden") {
+		t.Error("notes-search-empty must be hidden by default")
+	}
+	if !strings.Contains(searchEmptyTag, `role="status"`) {
+		t.Error("notes-search-empty must be role=status")
+	}
+	if !strings.Contains(searchEmptyTag, `aria-live="polite"`) {
+		t.Error("notes-search-empty must be aria-live=polite")
+	}
+
 	// app.js must drive the UI through the contract ids.
 	for _, id := range []string{
 		"login-error", "register-error", "notes-error",
@@ -161,7 +211,8 @@ func TestUISemantics(t *testing.T) {
 		"register-link", "login-link",
 		"note-form", "note-input", "add-note", "notes-list",
 		"notes-empty", "notes-loading", "user-name", "logout",
-		"delete-note",
+		"delete-note", "notes-search", "notes-search-clear",
+		"notes-search-empty",
 	} {
 		if !strings.Contains(js, `"`+id+`"`) {
 			t.Errorf("app.js does not reference data-testid=%q", id)
@@ -170,6 +221,29 @@ func TestUISemantics(t *testing.T) {
 
 	if !strings.Contains(js, "fetch(") || !strings.Contains(js, `"/api/notes"`) {
 		t.Error("app.js must load notes from /api/notes")
+	}
+	if !strings.Contains(js, "notes = Array.isArray(res.data)") {
+		t.Error("notes list must be rendered from the API response data")
+	}
+
+	// Client-side filtering is case-insensitive over title/body and re-applied
+	// by one render function for load/create/delete/reload.
+	if !strings.Contains(js, "function renderNotes(") {
+		t.Error("app.js must expose a single renderNotes() function")
+	}
+	if strings.Count(js, "renderNotes(") < 4 {
+		t.Error("renderNotes() must be re-applied after load, create and delete")
+	}
+	if strings.Count(js, "appendChild(makeNote(") != 1 {
+		t.Error("only the single render function may append note rows")
+	}
+	for _, need := range []string{"toLowerCase()", "notes.filter(", ".indexOf(", "searchQuery"} {
+		if !strings.Contains(js, need) {
+			t.Errorf("app.js missing client-side search logic (%q)", need)
+		}
+	}
+	if !strings.Contains(js, "notes.length === 0") || !strings.Contains(js, "!noNotes") {
+		t.Error("notes-search-empty must not replace the base notes-empty state")
 	}
 	if !strings.Contains(js, `location.replace("/login")`) {
 		t.Error("app.js must redirect to /login on 401/logout")
