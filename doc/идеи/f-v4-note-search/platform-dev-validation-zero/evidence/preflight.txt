@@ -1,0 +1,17 @@
+=== nexus dev healthz ===
+{"status":"ok","service":"nexus","version":"730d144a1e63837b590f3e95d01f67142ca3a699","database":"up","uptime_sec":3986,"commit":"730d144a1e63837b590f3e95d01f67142ca3a699"}
+
+=== orc /version ===
+orc 730d144a1e63837b590f3e95d01f67142ca3a699
+revision=730d144a1e63837b590f3e95d01f67142ca3a699
+tag=
+gate_bundle_digest=sha256:81505152413847d2f089f264e55f08443f92d0da3de1e556008f7fcb3dd8ed18
+build_time=
+
+=== test2 healthz ===
+{"status":"ok","build_ref":"2210238","commit":"22102389c6f02e7fc518dc958a32542ec5c3d9f1","image_digest":"sha256:a5aa4c8947b321e42604fd829a81c2a17ca37efefc86d6d254ec0b4147ead604","build_args_hash":"sha256:721b209f71e806fc8b7e9f2edbb1fcf8b30be18e7ed023e442bff13f958fe877","gate_bundle_digest":""}
+=== ssh github ===
+Hi ukituki-ps/notebook! You've successfully authenticated, but GitHub does not provide shell access.
+=== head ===
+9ceafdbd1bede428097d784539093092d0c9156f
+dev/f-v4-note-search-validation-zero
