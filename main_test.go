@@ -906,3 +906,186 @@ func TestUnknownAPINotFound(t *testing.T) {
 		t.Fatalf("unknown api content-type: %q", ct)
 	}
 }
+
+// decodeNotes parses a notes collection response into typed notes.
+func decodeNotes(t *testing.T, body string) []Note {
+	t.Helper()
+	var notes []Note
+	if err := json.Unmarshal([]byte(body), &notes); err != nil {
+		t.Fatalf("decode notes %q: %v", body, err)
+	}
+	return notes
+}
+
+// assertNoteTexts checks the filtered result set and its insertion order.
+func assertNoteTexts(t *testing.T, notes []Note, want ...string) {
+	t.Helper()
+	if len(notes) != len(want) {
+		t.Fatalf("notes: got %d %+v, want %d %v", len(notes), notes, len(want), want)
+	}
+	for i, text := range want {
+		if notes[i].Text != text {
+			t.Fatalf("note %d: got %q, want %q", i, notes[i].Text, text)
+		}
+	}
+}
+
+func TestNotesSearchFinds(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchfind")
+	ts.seedNote(token, "buy bread")
+	ts.seedNote(token, "buy milk")
+	ts.seedNote(token, "call mom")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=bread", "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("search: %d %s", res.code, res.body)
+	}
+	assertNoteTexts(t, decodeNotes(t, res.body), "buy bread")
+}
+
+func TestNotesSearchNotFound(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchmiss")
+	ts.seedNote(token, "buy bread")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=absent", "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("search miss: %d %s", res.code, res.body)
+	}
+	if got := strings.TrimSpace(res.body); got != "[]" {
+		t.Fatalf("search miss body: %q (want [])", got)
+	}
+}
+
+func TestNotesSearchCaseInsensitive(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchcase")
+	ts.seedNote(token, "Hello World")
+	ts.seedNote(token, "hello there")
+	ts.seedNote(token, "GO lang")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=HeLLo", "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("case-insensitive search: %d %s", res.code, res.body)
+	}
+	assertNoteTexts(t, decodeNotes(t, res.body), "Hello World", "hello there")
+}
+
+func TestNotesSearchIsolation(t *testing.T) {
+	ts := newTestServer(t)
+	tokenA := ts.seedUser("searchisoa")
+	tokenB := ts.seedUser("searchisob")
+	noteA := ts.seedNote(tokenA, "alpha shared")
+	noteB := ts.seedNote(tokenB, "beta shared")
+
+	resA := ts.authed(http.MethodGet, "/api/notes?q=shared", "", tokenA)
+	if resA.code != http.StatusOK {
+		t.Fatalf("search A: %d %s", resA.code, resA.body)
+	}
+	notesA := decodeNotes(t, resA.body)
+	assertNoteTexts(t, notesA, noteA.Text)
+	for _, note := range notesA {
+		if note.ID == noteB.ID {
+			t.Fatalf("A's search leaked B's note: %+v", note)
+		}
+	}
+
+	resB := ts.authed(http.MethodGet, "/api/notes?q=shared", "", tokenB)
+	if resB.code != http.StatusOK {
+		t.Fatalf("search B: %d %s", resB.code, resB.body)
+	}
+	notesB := decodeNotes(t, resB.body)
+	assertNoteTexts(t, notesB, noteB.Text)
+	for _, note := range notesB {
+		if note.ID == noteA.ID {
+			t.Fatalf("B's search leaked A's note: %+v", note)
+		}
+	}
+
+	// UserID must stay out of the wire payload even when filtering.
+	for _, leak := range []string{"user_id", "UserID", `"userId"`} {
+		if strings.Contains(resA.body, leak) {
+			t.Fatalf("search response leaks %q: %s", leak, resA.body)
+		}
+	}
+}
+
+func TestNotesSearchAuthRequired(t *testing.T) {
+	ts := newTestServer(t)
+	res := ts.do(http.MethodGet, "/api/notes?q=secret", "", nil)
+	if res.code != http.StatusUnauthorized {
+		t.Fatalf("search without auth: %d %s", res.code, res.body)
+	}
+	if www := res.header.Get("WWW-Authenticate"); www != "Bearer" {
+		t.Fatalf("search WWW-Authenticate: %q", www)
+	}
+	if got := strings.TrimSpace(res.body); got != `{"error":"unauthorized"}` {
+		t.Fatalf("search body: %q", got)
+	}
+
+	res = ts.authed(http.MethodGet, "/api/notes?q=secret", "", "not-a-real-token")
+	if res.code != http.StatusUnauthorized {
+		t.Fatalf("search with unknown token: %d %s", res.code, res.body)
+	}
+}
+
+func TestNotesSearchEmptyQuery(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchempty")
+	ts.seedNote(token, "first note")
+	ts.seedNote(token, "second note")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=", "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("empty q: %d %s", res.code, res.body)
+	}
+	assertNoteTexts(t, decodeNotes(t, res.body), "first note", "second note")
+
+	base := ts.authed(http.MethodGet, "/api/notes", "", token)
+	if base.body != res.body {
+		t.Fatalf("empty q changed output: %q vs %q", res.body, base.body)
+	}
+}
+
+func TestNotesSearchWhitespaceQuery(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchspace")
+	ts.seedNote(token, "first note")
+	ts.seedNote(token, "second note")
+
+	for _, path := range []string{
+		"/api/notes?q=%20%20%09",
+		"/api/notes?q=%20",
+	} {
+		res := ts.authed(http.MethodGet, path, "", token)
+		if res.code != http.StatusOK {
+			t.Fatalf("whitespace q %q: %d %s", path, res.code, res.body)
+		}
+		assertNoteTexts(t, decodeNotes(t, res.body), "first note", "second note")
+	}
+}
+
+func TestNotesSearchEncoding(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchenc")
+	ts.seedNote(token, "100% juice & tea")
+	ts.seedNote(token, "a+b test")
+
+	for _, tc := range []struct {
+		name  string
+		query string
+		want  string
+	}{
+		{"percent", "/api/notes?q=100%25", "100% juice & tea"},
+		{"space", "/api/notes?q=100%25%20juice", "100% juice & tea"},
+		{"ampersand", "/api/notes?q=%26", "100% juice & tea"},
+		{"plus", "/api/notes?q=a%2Bb", "a+b test"},
+	} {
+		res := ts.authed(http.MethodGet, tc.query, "", token)
+		if res.code != http.StatusOK {
+			t.Fatalf("%s: %d %s", tc.name, res.code, res.body)
+		}
+		assertNoteTexts(t, decodeNotes(t, res.body), tc.want)
+	}
+}
