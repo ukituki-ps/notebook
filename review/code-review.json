@@ -1,0 +1,73 @@
+{
+ "schema": "orc.code-review/v1",
+ "execution_id": "E8363",
+ "step": "s22c.adversarial_code_review",
+ "feature_id": "f-v4-note-search",
+ "author": {
+  "session_id": "ses_e4cffab3effecevpjqsiAV9qT2"
+ },
+ "reviewer": {
+  "session_id": "ses_e4cdcb1bdffeb0BYuxDKmeRynq",
+  "model": "qwen3.8-fast",
+  "provider": "llama-proxy"
+ },
+ "base_sha": "5935e148584b5fef28bd77ac4e45b800f10da03b",
+ "head_sha": "eeec54c83702a19e0636e1662bc83a33991084d7",
+ "files_reviewed": [
+  "main.go",
+  "main_test.go",
+  "web/index.html",
+  "web/app.js",
+  "web/app.css",
+  "web_ui_test.go",
+  "web/e2e/notes-search.spec.js",
+  "spec/core.md",
+  "spec/contract-matrix.md",
+  "invariants.json"
+ ],
+ "checks": [
+  {
+   "id": "C1",
+   "check": "go build/vet/test",
+   "observed": "go build ./... and go vet ./... exit 0; go test -count=1 ./... ok (2.7s)"
+  },
+  {
+   "id": "C2",
+   "check": "focused search contract",
+   "observed": "8/8 TestNotesSearch* pass (finds/notfound/case/isolation/auth/empty/whitespace/encoding)"
+  },
+  {
+   "id": "C3",
+   "check": "UI semantics",
+   "observed": "TestUISemantics pass; notes-search input/clear/empty guard and create/delete/reload filter re-apply"
+  },
+  {
+   "id": "C4",
+   "check": "diff scope",
+   "observed": "5935e148..eeec54c changes only web/e2e/notes-search.spec.js plus docs/evidence; no app/auth/storage/status/deploy/package changes"
+  },
+  {
+   "id": "C5",
+   "check": "security",
+   "observed": "owner filter first via ListNotes(session.UserID); no SQL/LIKE; textContent rendering (no innerHTML); no secret/log leakage"
+  },
+  {
+   "id": "C6",
+   "check": "method/id/status",
+   "observed": "401 before method/query; 405+Allow on unsupported methods; invalid/foreign/missing delete 400/404; unknown /api 404 JSON"
+  }
+ ],
+ "findings": [],
+ "counts": {
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 0
+ },
+ "verdict": "pass",
+ "author_session_id": "ses_e4cffab3effecevpjqsiAV9qT2",
+ "reviewer_session_id": "ses_e4cdcb1bdffeb0BYuxDKmeRynq",
+ "author_model": "deepseek-flash",
+ "author_provider": "deepseek",
+ "assessment": "All code/test/scope checks pass; 0 critical/high/medium/low findings. Only cosmetic note: unused .notes-search-empty CSS selector (no behavioural effect)."
+}
