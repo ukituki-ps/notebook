@@ -110,3 +110,20 @@ Platform Nexus/ORC = `730d144a1e63837b590f3e95d01f67142ca3a699`.
 Resumed E8895 and retried s22b with the nested-session contract.
 ORC_REVIEWER_HOOK remains disabled; registration for
 `ses_e4d4375e2ffehxTqWnkji4CShe` is used.
+
+## Reviewer-runtime fix — completed (730d144a)
+
+After the platform fix, s22b and s22c were accepted with `gates_passed`:
+
+- **s22b red-team audit — PASS.** Nested `author`/`reviewer` sessions now read by
+  the gate. Reviewer `ses_e4d4375e…` (`qwen3.8-fast`/`llama-proxy`), author
+  `ses_e4de2edbeffe…` (deepseek). 0 critical/high; 3 low/info; canary 3/3.
+- **s22c adversarial code review — PASS.** Reviewer `ses_e4d39ff69ffe…`
+  (`qwen3.8-fast`/`llama-proxy`); `proofs=[PR-e8162b165c14]`; 0 critical/high;
+  3 low/info; build/vet/test and targeted 11/11 green.
+- **s23 refinement — SKIPPED (optional).** No critical/high findings; a code
+  change would invalidate s20a and require a new deploy/E2E.
+
+E8895 path steps: s20/s20a/s20b/s20c, s21, s22, s22a, s22b, s22c done;
+s23 skipped; s24 final acceptance pending. ORC_REVIEWER_HOOK remains disabled;
+the official registration path is used.
