@@ -57,5 +57,11 @@
   "author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy",
-  "reviewer_session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth"
+  "reviewer_session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth",
+  "proofs": [
+    "PR-e8162b165c14"
+  ],
+  "proof_run_ids": [
+    "PR-e8162b165c14"
+  ]
 }
