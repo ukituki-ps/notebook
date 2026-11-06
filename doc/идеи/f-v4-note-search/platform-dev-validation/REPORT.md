@@ -168,3 +168,23 @@ from the execution root without cleaning. No bypass was used.
 
 All other s24 gates pass (deliverable, approval, preview-verified, fault
 catalog, detectors/proof, identity=deployed 2210238, docs-only descendant).
+
+## s24 — PASS (platform 730d144a)
+
+s24 `gates_passed` on commit `37b79b94dde915c73a461cb9a800b57cdd4005d1`:
+
+- Owner approval `apr_0632235f9cf1c359b9ee27ddf85b76ad` verified (ed25519).
+- s20c evidence re-captured for **f-v4-note-search**: 6 search scenarios with
+  element/state screenshots (notes-list, search empty, query input, clear row —
+  not full-page), all >=5KB and distinct (pngdiff: no near-duplicates).
+- `scenario-evidence.json` + `evidence-manifest.json` for f-v4;
+  `preview-verdict.evidence_manifest_sha256 =
+  5dbe8770fd08ddc97e0b6ca2b2fcdbc046abd728b9aeb518c033efe0ae2e51a1`.
+- All 11 s24 gates passed, including identity (deployed build 2210238,
+  docs-only descendant), approval, scenario coverage, evidence authenticity,
+  detector proof (20), graph, fault catalog, stand lease.
+
+**E8895 = completed.** s20/s20a/s20b/s20c, s21, s22, s22a, s22b, s22c, s24 done;
+s23 optional skipped (0 critical/high). test2 remains on `2210238`
+(digest `sha256:a5aa4c89…`, build_args_hash `sha256:721b209f…`); test2 lease
+released. P0–P6 PASS.
