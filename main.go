@@ -2,10 +2,10 @@ package main
 
 import (
 	"crypto/hmac"
-	"embed"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
+	"embed"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
@@ -533,7 +533,20 @@ func (a *api) handleNotes(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodGet:
-		writeJSON(w, http.StatusOK, a.store.ListNotes(session.UserID))
+		// Optional case-insensitive substring filter. The owner predicate is
+		// applied by ListNotes first, so a query can never widen the scope.
+		query := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("q")))
+		notes := a.store.ListNotes(session.UserID)
+		if query != "" {
+			filtered := make([]Note, 0, len(notes))
+			for _, note := range notes {
+				if strings.Contains(strings.ToLower(note.Text), query) {
+					filtered = append(filtered, note)
+				}
+			}
+			notes = filtered
+		}
+		writeJSON(w, http.StatusOK, notes)
 	case http.MethodPost:
 		var req noteRequest
 		if err := decodeJSON(w, r, &req); err != nil {
