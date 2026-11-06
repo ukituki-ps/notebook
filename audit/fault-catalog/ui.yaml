@@ -1,0 +1,33 @@
+# Fault catalog — ui (поведение экрана/состояния)
+- id: UI-EMPTY-STATE-CONTROLS
+  domain: ui
+  title: "Пустой результат размонтирует фильтры/контролы — нет сброса/перезагрузки"
+  detect: "cd nexus-ui && npx vitest run src/__tests__/bugs-log-empty.test.tsx"
+  severity: high
+  canary_ref: "audit/canaries/seeds/ui-empty-state"
+  source: "F186 E8473: BugsLog.tsx:206-215 vs фильтры внутри ядра :137-143"
+- id: UI-DATE-BOUNDARY
+  domain: ui
+  title: "Фильтр дат включает/теряет пограничный день"
+  detect: "cd nexus-ui && npx vitest run src/__tests__/bugs-log-dates.test.tsx"
+  severity: high
+  canary_ref: "audit/canaries/seeds/ui-until-offbyone"
+  source: "F186 (обе ветки)"
+- id: UI-LOADING-ERROR-STATES
+  domain: ui
+  title: "Нет loading/empty/error-состояний или они недостижимы"
+  detect: "cd nexus-ui && npx vitest run src/__tests__/bugs-log-states.test.tsx"
+  severity: medium
+  source: "path-1 s03 proto (4 состояния), AUDIT-KIT паттерн"
+- id: UI-FILTER-SERIALIZATION
+  domain: ui
+  title: "Фильтры UI не сериализуются в реальный запрос (search/даты no-op)"
+  detect: "cd nexus-ui && npx vitest run src/__tests__/bugs-log-filters.test.tsx"
+  severity: medium
+  source: "F186 E8473: search-box no-op (адаптер не читает params.search)"
+- id: UI-E2E-PREVIEW
+  domain: ui
+  title: "Экран не проверен на реальном превью-стенде (browser/E2E)"
+  detect: "python3 -c \"import json;d=json.load(open('preview-verdict.json'));raise SystemExit(0 if (d.get('status')=='verified' and d.get('target')) else 1)\""
+  severity: high
+  source: "ADR-KIT-077 stand_contour (не запускался), ADR-KIT-090 pre-accept preview"

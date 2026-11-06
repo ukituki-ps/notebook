@@ -1,0 +1,35 @@
+# Fault catalog — security
+# Каждый пункт = класс дефекта, который ОБЯЗАН получить вердикт в аудите (s17/s22/red-team).
+# id | domain | title | detect | severity | canary_ref | source
+- id: SEC-RLS-SCOPE-PREDICATE
+  domain: security
+  title: "RLS/скоуп-предикат отсутствует или обходится (чтение вне проекта)"
+  detect: "go test -count=1 -v -tags integration ./nexus/findings/ -run TestQuery_RLSProjectIsolation"
+  severity: critical
+  canary_ref: "audit/canaries/seeds/sec-rls-predicate-drop"
+  source: "F186 (обе ветки): RLS-инвариант не прогонялся (build-tag/skip) — false-pass"
+- id: SEC-SKIP-TAGGED-INVARIANT
+  domain: security
+  title: "Инвариант 'прошёл', но тест не выполнялся (skip/build-tag/[no tests to run])"
+  detect: "python3 tools/audit-canary-check.py --mode verify --run {run_id}"
+  severity: critical
+  canary_ref: "audit/canaries/seeds/sec-skip-tagged"
+  source: "F186 E8473 + E8181: invariant-enforced считает exit 0 успехом"
+- id: SEC-PREFIX-BOUNDARY
+  domain: security
+  title: "RBAC global-prefix захватывает sibling-путь (segment-boundary нарушен)"
+  detect: "go test -count=1 ./nexus/auth/ -run TestCan_FindingsPrefix"
+  severity: high
+  source: "ADR-KIT-073; проверка sibling /api/v1/findingsx"
+- id: SEC-WRITE-VERB-REJECT
+  domain: security
+  title: "Под read-only префиксом не отклонены write-методы (POST/PUT/PATCH/DELETE)"
+  detect: "go test -count=1 ./nexus/findings/ -run TestFindings_ReadOnly"
+  severity: high
+  source: "ADR-KIT-073"
+- id: SEC-ERROR-LEAK
+  domain: security
+  title: "Ошибка 500 отдаёт сырой err.Error()/SQL/стек"
+  detect: "go test -count=1 ./nexus/findings/ -run TestErrorEnvelope"
+  severity: medium
+  source: "F186 E8473: api.go:130"
