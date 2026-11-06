@@ -188,3 +188,20 @@ s24 `gates_passed` on commit `37b79b94dde915c73a461cb9a800b57cdd4005d1`:
 s23 optional skipped (0 critical/high). test2 remains on `2210238`
 (digest `sha256:a5aa4c89…`, build_args_hash `sha256:721b209f…`); test2 lease
 released. P0–P6 PASS.
+
+## Residual platform hardening (not path-1 blockers)
+
+1. **Stand-runner manifest auto-regen:** after platform code changes,
+   `/home/ukituki/lkfl-runner/manifest.sha256` must be rebuilt from
+   `/srv/archkit/deploy-dev` (hash-pin drift broke s20b once).
+2. **`gate_bundle_digest`:** test2 `/healthz` returns an empty value; bind it in
+   the stand build so provenance carries the gate bundle digest.
+3. **Eval-worktree guard:** host/ORC path split (`/srv/archkit/dev/orc-repos`
+   vs `/app/orc-repos`) and per-step cleanup caused `eval-worktree-missing` /
+   `target-not-git`; add a guard/auto-heal that never recreates from the ORC
+   container.
+4. **PAT/credential rotation:** unit-agent SSH is provisioned; ORC-side child
+   branch creation still uses HTTPS without credentials (pre-created branches
+   were required once). Rotate/scope the GitHub credential for ORC.
+
+None of these block path-1; P0–P6 and s20–s24 are PASS.
