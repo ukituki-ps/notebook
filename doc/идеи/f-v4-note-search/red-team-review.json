@@ -26,17 +26,66 @@
     }
   ],
   "probes": [
-    {"id": "P1-OWNER-SCOPE", "expectation": "filter after ListNotes(session.UserID), cannot widen", "result": "PASS (TestNotesSearchIsolation, TestDeleteForeignNote)"},
-    {"id": "P2-AUTH-ORDER", "expectation": "requireAuth first; unauth search 401", "result": "PASS (TestAuthMethodOrder, TestNotesSearchAuthRequired)"},
-    {"id": "P3-SEARCH-SEMANTICS", "expectation": "trim, empty no-op, case-insensitive, [] not null, UserID hidden", "result": "PASS (8/8 TestNotesSearch*)"},
-    {"id": "P4-ERROR-ENVELOPES", "expectation": "400/404/405, no leaks", "result": "PASS (TestDeleteInvalidID/DeleteMissing/NotesMethodNotAllowed/NoSecretLeak)"},
-    {"id": "P5-UI-STATE-MACHINE", "expectation": "search testids, empty-state semantics, single render path", "result": "PASS (TestUISemantics; SEARCH-E2E-1..6 on 2210238)"},
-    {"id": "P6-CANARY-3/3", "expectation": "3 seeded mutations detected", "result": "PASS (independently reproduced; detector_exit=1 each)"},
-    {"id": "P7-BUILD-VET-TEST", "expectation": "build/vet/test green", "result": "PASS (32/32; targeted 8/8)"},
-    {"id": "P8-DEFECT-SCAN", "expectation": "no real critical/high defects", "result": "PASS; deployed ref 2210238..HEAD is docs-only"}
+    {
+      "id": "P1-OWNER-SCOPE",
+      "expectation": "filter after ListNotes(session.UserID), cannot widen",
+      "result": "PASS (TestNotesSearchIsolation, TestDeleteForeignNote)"
+    },
+    {
+      "id": "P2-AUTH-ORDER",
+      "expectation": "requireAuth first; unauth search 401",
+      "result": "PASS (TestAuthMethodOrder, TestNotesSearchAuthRequired)"
+    },
+    {
+      "id": "P3-SEARCH-SEMANTICS",
+      "expectation": "trim, empty no-op, case-insensitive, [] not null, UserID hidden",
+      "result": "PASS (8/8 TestNotesSearch*)"
+    },
+    {
+      "id": "P4-ERROR-ENVELOPES",
+      "expectation": "400/404/405, no leaks",
+      "result": "PASS (TestDeleteInvalidID/DeleteMissing/NotesMethodNotAllowed/NoSecretLeak)"
+    },
+    {
+      "id": "P5-UI-STATE-MACHINE",
+      "expectation": "search testids, empty-state semantics, single render path",
+      "result": "PASS (TestUISemantics; SEARCH-E2E-1..6 on 2210238)"
+    },
+    {
+      "id": "P6-CANARY-3/3",
+      "expectation": "3 seeded mutations detected",
+      "result": "PASS (independently reproduced; detector_exit=1 each)"
+    },
+    {
+      "id": "P7-BUILD-VET-TEST",
+      "expectation": "build/vet/test green",
+      "result": "PASS (32/32; targeted 8/8)"
+    },
+    {
+      "id": "P8-DEFECT-SCAN",
+      "expectation": "no real critical/high defects",
+      "result": "PASS; deployed ref 2210238..HEAD is docs-only"
+    }
   ],
-  "canary": {"detected": 3, "total": 3, "ref": "data/audit/runs/E8895/canary.json"},
-  "author": {"model": "deepseek/deepseek-flash", "provider": "deepseek", "session_id": "ses_e4d6a864dffepgOfSV1MMhaRS4"},
-  "reviewer": {"model": "qwen3.8-fast", "provider": "llama-proxy", "session_id": "ses_e4d4a251effeuxr3rfiLT6kFg2"},
-  "test_results": {"build": "pass", "vet": "pass", "go_test": "32 passed / 0 failed; targeted TestNotesSearch* 8/8"}
+  "canary": {
+    "detected": 3,
+    "total": 3,
+    "ref": "data/audit/runs/E8895/canary.json"
+  },
+  "author": {
+    "model": "deepseek/deepseek-flash",
+    "provider": "deepseek",
+    "session_id": "ses_e4d6a864dffepgOfSV1MMhaRS4"
+  },
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy",
+    "session_id": "ses_e4d4a251effeuxr3rfiLT6kFg2"
+  },
+  "test_results": {
+    "build": "pass",
+    "vet": "pass",
+    "go_test": "32 passed / 0 failed; targeted TestNotesSearch* 8/8"
+  },
+  "step_author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA"
 }
