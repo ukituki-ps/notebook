@@ -199,8 +199,18 @@ passed; full Go suite and contract parity (41/41, drift 0) passed.
 - Remaining s24 gates: tools-untouched, findings-seed, deliverable (report
   non-empty), process-meta-lint, ctx-manifest, findings-dod (project),
   findings-dod-process, oracle-cited, and report-nonempty.
-- At acceptance the execution has 0 open critical/high findings; 5 inherited
-  medium/low findings remain open (CR-1/CR-2/CR-3/RT-1/RT-2), none blocking.
+- **Outcome: blocked on owner approval.** Request `apr_bf3c1da2417bd2a37e77829707db1515`
+  was created at 23:16:22Z with blob digest `sha256:544cfc70…`, exact report
+  bytes, and expired at 23:31:22Z unanswered (`state=pending`, assertion
+  endpoint 409). A retry returned the same expired request (`created:false`),
+  so no replacement card was minted. The execution therefore remains at
+  `s24.team_lead_accept`; **s24 is not accepted** and no force/skip/waiver was
+  used. All prior steps s01–s23 are accepted/green.
+- At the stop point the execution has 0 open critical/high findings; 5
+  inherited medium/low findings remain open (CR-1/CR-2/CR-3/RT-1/RT-2), none
+  blocking. The extended independent reviews additionally report 2 low
+  hardening items (invalid percent-escape degrades to empty q; unbounded
+  notes-per-user) and 3 low code-review notes, all non-blocking.
 
 ## 9. Sessions, units, evidence
 
