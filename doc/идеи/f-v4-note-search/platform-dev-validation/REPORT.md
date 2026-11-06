@@ -143,3 +143,28 @@ On approval, call `orc_accept(s24.team_lead_accept)` with the assertion
 optionally skipped (0 critical/high).
 
 Owner approved s24 via Nexus request `apr_0632235f9cf1c359b9ee27ddf85b76ad` (decision=approved, ed25519, expires 2026-11-06T21:51:26Z).
+
+## s24 — blocked at evidence-authentic (platform)
+
+Owner approval `apr_0632235f9cf1c359b9ee27ddf85b76ad` was verified and the
+approval gate passed. The remaining L1 gates are:
+
+1. `gate-scenario-coverage` / `gate-evidence-authentic`: the canonical s20c
+   `evidence-manifest.json` (sha256 f7dbb9ad…) and `scenario-evidence.json`
+   cover the **7 f-v3 auth scenarios** and reference
+   `doc/идеи/f-v3-auth-notes/screenshots/E2E-1..7.png`. Those screenshots are
+   gitignored per-run artifacts; the ORC accept cleans them from the eval
+   worktree, so the gates cannot find them.
+2. The feature-owned f-v4 search evidence (6 scenarios, screenshots committed)
+   fails the near-duplicate check: the full-page frames differ by <0.5 0.000000or
+   several pairs, and its manifest hash does not match the s20c
+   `preview-verdict` (f7dbb9ad… = the auth-only manifest).
+
+Root cause is s20c feature-dir/evidence resolution: the host E2E run wrote
+f-v3 evidence while the deployed feature is f-v4, and s24 binds to that
+manifest. Fix: run s20c for f-v4 (producing f-v4 scenario-evidence/manifest and
+updating preview-verdict), or permit the canonical per-run evidence to be read
+from the execution root without cleaning. No bypass was used.
+
+All other s24 gates pass (deliverable, approval, preview-verified, fault
+catalog, detectors/proof, identity=deployed 2210238, docs-only descendant).
