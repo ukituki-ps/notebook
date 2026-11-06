@@ -192,10 +192,11 @@ passed; full Go suite and contract parity (41/41, drift 0) passed.
 ## 8. s24 final acceptance
 
 - `gate-acceptance-approval` uses `context.report_path` and a Nexus **s24**
-  owner approval with `profile=blob`; the approval binds the exact bytes of
-  this report (`payload_b64`, no `payload_json`). The request id and signed
-  assertion are stored in
-  `doc/идеи/f-v4-note-search/platform-dev-validation-zero/evidence/s24-approval.json`.
+  owner approval with `profile=blob`. The request bound the report blob at
+  `sha256:544cfc70…` (the pre-outcome version of this file; the outcome section
+  below was added after the request expired). No `payload_json` was used. The
+  request id and status are stored in
+  `doc/идеи/f-v4-note-search/platform-dev-validation-zero/evidence/s24-approval-request.json`.
 - Remaining s24 gates: tools-untouched, findings-seed, deliverable (report
   non-empty), process-meta-lint, ctx-manifest, findings-dod (project),
   findings-dod-process, oracle-cited, and report-nonempty.
