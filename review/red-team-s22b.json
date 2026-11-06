@@ -1,0 +1,211 @@
+{
+ "schema": "orc.red-team/v1",
+ "execution_id": "E8363",
+ "step": "s22b.red_team_audit",
+ "feature_id": "f-v4-note-search",
+ "stand": {
+  "url": "https://test2.nexus.ukituki.tech",
+  "sha": "c267619"
+ },
+ "author": {
+  "session_id": "ses_e4cffab3effecevpjqsiAV9qT2"
+ },
+ "reviewer": {
+  "session_id": "ses_e4ce0fbfbffeipFcUHF5hacXaf"
+ },
+ "attempts": [
+  {
+   "id": "A-REG",
+   "request": "POST /api/register rt3k7hml9ojh",
+   "expected": "200/201",
+   "observed": "201 {'id': 22, 'username': 'rt3k7hml9ojh'}",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-LOGIN",
+   "request": "POST /api/login rt3k7hml9ojh",
+   "expected": "200 token",
+   "observed": "200 token=yes",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "B-LOGIN",
+   "request": "POST /api/login rti4apphnath",
+   "expected": "200 token",
+   "observed": "200 token=yes",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-CREATE",
+   "request": "POST /api/notes 'Buy milk'",
+   "expected": "200/201",
+   "observed": "201",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-CREATE",
+   "request": "POST /api/notes 'Project plan'",
+   "expected": "200/201",
+   "observed": "201",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-CREATE",
+   "request": "POST /api/notes 'milk chocolate'",
+   "expected": "200/201",
+   "observed": "201",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "NOAUTH-LIST",
+   "request": "GET /api/notes",
+   "expected": "401",
+   "observed": "401",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "BADTOKEN-LIST",
+   "request": "GET /api/notes Bearer bad",
+   "expected": "401",
+   "observed": "401",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-ALL",
+   "request": "GET /api/notes (A)",
+   "expected": "200 own notes",
+   "observed": "200 n=3",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-MILK",
+   "request": "GET /api/notes?q=milk (A)",
+   "expected": "200 only matching",
+   "observed": "200 texts=['Buy milk', 'milk chocolate']",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "B-Q-MILK",
+   "request": "GET /api/notes?q=milk (B)",
+   "expected": "200 [] (no A notes)",
+   "observed": "200 n=0",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-EMPTY",
+   "request": "GET /api/notes?q= (A)",
+   "expected": "200 all own",
+   "observed": "200 n=3",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-WS",
+   "request": "GET /api/notes?q=%20%20%09 (A)",
+   "expected": "200 all own (whitespace no-op)",
+   "observed": "200 n=3",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-PCT",
+   "request": "GET /api/notes?q=%25 (A)",
+   "expected": "200 no wildcard broadening",
+   "observed": "200 n=0",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-UNDER",
+   "request": "GET /api/notes?q=_ (A)",
+   "expected": "200 no wildcard broadening",
+   "observed": "200 n=0",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-LONG",
+   "request": "GET /api/notes?q=<5000 a> (A)",
+   "expected": "200, no 500",
+   "observed": "200",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-Q-NUL",
+   "request": "GET /api/notes?q=%00 (A)",
+   "expected": "200/400, no 500",
+   "observed": "200",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "PUT-NOTES",
+   "request": "PUT /api/notes (A)",
+   "expected": "405 + Allow",
+   "observed": "405 allow=GET, POST",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "DEL-BAD-ID",
+   "request": "DELETE /api/notes/abc (A)",
+   "expected": "400",
+   "observed": "400",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "DEL-MISSING",
+   "request": "DELETE /api/notes/999999999 (A)",
+   "expected": "404",
+   "observed": "404",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "UNKNOWN-API",
+   "request": "GET /api/nope (A)",
+   "expected": "404 JSON",
+   "observed": "404",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "B-DEL-A",
+   "request": "DELETE A note as B",
+   "expected": "404 (not deleted)",
+   "observed": "404",
+   "verdict": "safe",
+   "note": ""
+  },
+  {
+   "id": "A-SECRET-STILL",
+   "request": "GET ?q=secret (A)",
+   "expected": "A note still present",
+   "observed": "200 n=1",
+   "verdict": "safe",
+   "note": ""
+  }
+ ],
+ "findings": [],
+ "counts": {
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 0
+ },
+ "verdict": "pass",
+ "assessment": "All 23 adversarial attempts against test2 build c267619 are safe: no auth bypass, no cross-owner read/delete, no wildcard broadening, no 5xx/panic, method/id/status contract intact. 0 critical/high/medium/low findings."
+}
