@@ -75,7 +75,8 @@
   "author": {
     "model": "deepseek/deepseek-flash",
     "provider": "deepseek",
-    "session_id": "ses_e4d6a864dffepgOfSV1MMhaRS4"
+    "session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
+    "role": "step_author"
   },
   "reviewer": {
     "model": "qwen3.8-fast",
@@ -89,5 +90,10 @@
     "vet": "pass",
     "go_test": "32 passed / 0 failed; targeted TestNotesSearch* 8/8"
   },
-  "step_author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA"
+  "step_author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
+  "code_author_sessions": [
+    "ses_e4d6a864dffepgOfSV1MMhaRS4",
+    "ses_e4d6a811effewnqV2rpCwg8I1J",
+    "ses_e4d6a7b00ffegxb3upymIEckcX"
+  ]
 }
