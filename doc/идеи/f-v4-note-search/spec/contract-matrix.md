@@ -14,7 +14,7 @@
 
 ## API rows
 
-| id | endpoint | method | status | envelope / contract | oracle |
+| id | endpoint | method | status | envelope | test |
 |---|---|---|---|---|---|
 | C-01 | /api/notes | GET | 200 | all own notes when `q` absent; `[]` not `null` | `go test -count=1 -run TestNotesSearchEmptyQuery ./...` |
 | C-02 | /api/notes?q=milk | GET | 200 | case-insensitive substring; only matching own notes | `go test -count=1 -run TestNotesSearchFinds ./...` |
@@ -78,6 +78,20 @@
   `go test -count=1 -run TestNotesSearchNotFound ./...`
 - User B's note text matches `q` → not returned for user A:
   `go test -count=1 -run TestNotesSearchIsolation ./...`
+- No/bad bearer on `GET /api/notes?q=` → 401 before query handling:
+  `go test -count=1 -run TestNotesSearchAuthRequired ./...`
+- `PUT/PATCH/DELETE /api/notes` with a valid token → 405 + `Allow: GET, POST`:
+  `go test -count=1 -run TestNotesMethodNotAllowed ./...`
+- DELETE non-numeric/empty/overflow id → 400 `{"error":"invalid id"}`:
+  `go test -count=1 -run TestDeleteInvalidID ./...`
+- DELETE foreign or missing note → 404 `{"error":"not found"}`:
+  `go test -count=1 -run 'TestDeleteForeignNote|TestDeleteMissing' ./...`
+- Re-delete after 204 → 404, no panic:
+  `go test -count=1 -run TestDeleteMissing ./...`
+- Unknown `/api/*` path → 404 JSON, no SPA fallthrough:
+  `go test -count=1 -run TestUnknownAPINotFound ./...`
+- URL-encoded `%`, space, `&`, `+`, emoji, Cyrillic in `q` → decoded safely, no 500:
+  `go test -count=1 -run TestNotesSearchEncoding ./...`
 - No/bad/expired bearer + `q` → 401 before query handling:
   `go test -count=1 -run TestNotesSearchAuthRequired ./...`
 - No bearer + non-GET methods → 401 before 405/id validation:
