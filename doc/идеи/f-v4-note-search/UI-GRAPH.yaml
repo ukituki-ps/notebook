@@ -1,9 +1,26 @@
-# Planned UI graph (s04, from-design). s21 replaces this with the actualized
-# from-code graph, keeping the same artifact path.
+# Actualized UI graph (s21, from-code) — f-v4-note-search.
+# Base: s04 planned graph (37648cb). The notes screen is actualized with the
+# search controls delivered by unit notebook-search-ui (T0002) and integrated
+# at s20a; auth/register/notes components are unchanged from f-v3.
 schema: ui-graph/v1
 feature_id: f-v4-note-search
-status: planned
+status: actualized
 platform: web
+execution_id: E9294
+actualized_from:
+  branch: validation/platform-dev-20261106
+  base_commit: 7cfcd9d
+  working_tree: true
+  source_files:
+    - web/index.html
+    - web/app.js
+    - web/app.css
+  note: >-
+    Actualized from the f-v4 search UI in this worktree: web/index.html adds
+    notes-search, notes-search-clear and notes-search-empty; web/app.js keeps
+    the loaded list in `notes` and re-renders through one filter (load, create,
+    delete, reload). The base commit predates the unit diff; the coordinator
+    binds the final integrated commit when merging.
 source_roots:
   - web
 source_files:
@@ -13,12 +30,15 @@ source_files:
 pages:
   - id: login
     route: /login
+    screen_attr: login
     components: [login-card, login-form, login-error, login-link]
   - id: register
     route: /register
+    screen_attr: register
     components: [register-card, register-form, register-error, register-link]
   - id: notes
     route: /notes
+    screen_attr: notes
     components:
       - notes-header
       - notes-search
@@ -30,28 +50,151 @@ pages:
       - notes-search-empty
       - notes-loading
       - notes-error
+    selectors:
+      - testid: notes-search
+        kind: input
+        role: searchbox
+        label: "Поиск заметок"
+        purpose: >-
+          Live search over the already loaded owner-scoped notes list;
+          type="search", aria-controls="notes-list", data-testid is part of the
+          feature contract.
+      - testid: notes-search-clear
+        kind: button
+        role: button
+        label: "Очистить поиск (clear)"
+        purpose: >-
+          Clears the query and restores the full loaded list; hidden while the
+          query is empty, visible when a query is active.
+      - testid: notes-search-empty
+        kind: text
+        role: status
+        label: "Ничего не найдено."
+        purpose: >-
+          role=status/aria-live=polite; shown only when the trimmed query is
+          non-empty and the filtered list is empty; never replaces notes-empty
+          for a genuinely empty server list.
+    states:
+      - id: search-idle
+        detail: >-
+          Query empty/whitespace: all loaded notes are rendered (list or
+          notes-empty); notes-search-empty hidden; notes-search-clear hidden.
+      - id: search-filtering
+        detail: >-
+          Trimmed query non-empty: the loaded owner-scoped list is filtered
+          client-side (case-insensitive substring); no per-keystroke request.
+      - id: search-results
+        detail: >-
+          Non-empty query with >=1 match: matching note-item rows visible,
+          non-matching rows hidden/removed, notes-search-empty hidden.
+      - id: search-empty
+        detail: >-
+          Non-empty query with 0 matches: notes-search-empty visible, no
+          note-item visible, notes-empty hidden, search input remains usable.
+      - id: search-cleared
+        detail: >-
+          notes-search-clear (or clearing the input) returns to search-idle and
+          restores the full loaded list.
+      - id: search-after-mutation
+        detail: >-
+          POST 201 / DELETE 204 while a query is active re-applies the same
+          filter; a non-matching new note stays hidden, a matching one appears,
+          and deleting the last match shows notes-search-empty.
+      - id: loading
+        detail: >-
+          Notes load in progress: notes-loading visible, list/empty hidden,
+          note-form disabled; search controls are not usable until loaded.
+      - id: empty
+        detail: >-
+          Server returned GET 200 [] with an empty query: notes-empty visible,
+          notes-list hidden.
+      - id: list
+        detail: >-
+          GET 200 [..]: notes-list visible with one note-item per returned note;
+          no phantom/hardcoded rows.
+      - id: error
+        detail: >-
+          notes-error visible for GET !=200 / network errors and POST/DELETE
+          failures; existing f-v3 error semantics unchanged.
+      - id: unauthorized
+        detail: >-
+          401 or missing token: clear notebook.token/user, notes-error
+          "Сессия истекла...", redirect to /login; unchanged from f-v3.
 edges:
   - from: register
     to: login
+    kind: navigation
     trigger: register-success
   - from: login
     to: notes
+    kind: navigation
     trigger: login-success
   - from: notes
     to: login
+    kind: navigation
     trigger: 401-or-logout
   - from: notes
     to: notes
+    kind: self-update
     trigger: add-or-delete
   - from: notes
     to: notes
-    trigger: search-input-or-clear
+    kind: self-update
+    trigger: "search-input: non-empty trimmed q filters the loaded list (no request)"
+  - from: notes
+    to: notes
+    kind: self-update
+    trigger: "search-clear: empty query restores the full loaded list"
+  - from: notes
+    to: notes
+    kind: self-update
+    trigger: "POST 201 / DELETE 204 with an active query re-applies the filter"
 testids:
   - notes-search
   - notes-search-clear
   - notes-search-empty
+  - notes-header
+  - user-name
+  - logout
+  - note-form
+  - note-input
+  - add-note
+  - notes-error
+  - notes-loading
+  - notes-empty
+  - notes-list
+  - note-item
+  - delete-note
+testids_source: web/index.html
+testids_count: 15
+evidence:
+  - id: SEARCH-E2E-1
+    page: notes
+    title: "search finds matching note"
+    file: web/e2e/notes-search.spec.js
+  - id: SEARCH-E2E-2
+    page: notes
+    title: "non-matching query shows the search empty state"
+    file: web/e2e/notes-search.spec.js
+  - id: SEARCH-E2E-3
+    page: notes
+    title: "match is case-insensitive"
+    file: web/e2e/notes-search.spec.js
+  - id: SEARCH-E2E-4
+    page: notes
+    title: "clear restores the full list"
+    file: web/e2e/notes-search.spec.js
+  - id: SEARCH-E2E-5
+    page: notes
+    title: "create while query active re-applies the filter"
+    file: web/e2e/notes-search.spec.js
+  - id: SEARCH-E2E-6
+    page: notes
+    title: "delete while query active keeps the filter consistent"
+    file: web/e2e/notes-search.spec.js
 
-# Search component states (s04 design):
-# idle -> filtering (non-empty q) -> results | notes-search-empty -> clear.
-# notes-search stays visible in every state; create/delete/reload re-render
-# the filtered list through the same filter function.
+# Search state machine (s21, from-code contract):
+# idle -> filtering (trimmed q non-empty) -> results | search-empty -> clear.
+# notes-search stays visible and usable in every search state; create/delete
+# re-render through the same filter function. notes-empty remains reserved for
+# a genuinely empty server list.

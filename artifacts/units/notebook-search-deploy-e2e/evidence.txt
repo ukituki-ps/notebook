@@ -1,0 +1,170 @@
+Unit: notebook-search-deploy-e2e
+Feature: f-v4-note-search (T0003)
+ORC execution: E8895 (s20 fan-out, unit u03)
+Date: 2026-11-06 (UTC)
+Worktree: /workspace/projects/notebook-ae079e5c-u03
+Branch: orc-exec-E8895-s20.sde_5fexecution-u03
+HEAD: 326ae62fce7d6513c2b389750b4f5ebed278d861 (s20 fan-out STOP report)
+Playwright: 1.64.1
+
+Files staged for this unit
+--------------------------
+- web/e2e/notes-search.spec.js (new, 6 scenarios, 282 lines)
+- doc/идеи/f-v4-note-search/UI-GRAPH.yaml (modified: status actualized, search UI)
+- artifacts/units/notebook-search-deploy-e2e/unit-plan.md (new)
+- artifacts/units/notebook-search-deploy-e2e/evidence.txt (new)
+
+Not modified by this unit
+-------------------------
+- package.json / package-lock.json
+- deploy/path1/e2e-preview.sh / deploy/path1/preview-deploy.sh
+- main.go / main_test.go / web/index.html / web/app.js / web/app.css /
+  web_ui_test.go (application sources; this unit did not edit them)
+
+All commands below were run from the worktree unless the command shows a
+different cwd. Nothing was committed or pushed.
+
+1) JavaScript syntax
+--------------------
+$ node --check web/e2e/notes-search.spec.js
+(no output)
+exit=0
+
+2) Playwright discovery and version
+-----------------------------------
+The worktree has no node_modules (test-only deps; "node_modules/" is
+gitignored). Deps were taken from the project repo without adding or changing
+any dependency. Exact command:
+
+$ cd /workspace/projects/notebook && \
+  NODE_PATH=/workspace/projects/notebook/node_modules \
+  npx --no-install playwright test \
+    --config /workspace/projects/notebook-ae079e5c-u03/playwright.config.js \
+    --list
+Listing tests:
+  [chromium] › auth-notes.spec.js:67:1 › E2E-1 register: valid account redirects to /login with username prefilled
+  [chromium] › auth-notes.spec.js:82:1 › E2E-2 login and token: 200 stores notebook.token and opens /notes
+  [chromium] › auth-notes.spec.js:96:1 › E2E-3 create note: Add renders #id text in notes-list
+  [chromium] › auth-notes.spec.js:108:1 › E2E-4 reload: note stays visible after page.reload()
+  [chromium] › auth-notes.spec.js:121:1 › E2E-5 delete note: 204 removes the row and empty state appears
+  [chromium] › auth-notes.spec.js:135:1 › E2E-6 isolation: user B cannot see or delete user A's note
+  [chromium] › auth-notes.spec.js:168:1 › E2E-7 unauthenticated GET /api/notes returns 401 with WWW-Authenticate
+  [chromium] › notes-search.spec.js:122:1 › SEARCH-E2E-1 search finds matching note
+  [chromium] › notes-search.spec.js:141:1 › SEARCH-E2E-2 non-matching query shows the search empty state
+  [chromium] › notes-search.spec.js:161:1 › SEARCH-E2E-3 match is case-insensitive
+  [chromium] › notes-search.spec.js:180:1 › SEARCH-E2E-4 clear restores the full list
+  [chromium] › notes-search.spec.js:204:1 › SEARCH-E2E-5 create while query active re-applies the filter
+  [chromium] › notes-search.spec.js:233:1 › SEARCH-E2E-6 delete while query active keeps the filter consistent
+Total: 13 tests in 2 files
+exit=0
+
+$ cd /workspace/projects/notebook && npx --no-install playwright --version
+Version 1.64.1
+exit=0
+
+Which tree was listed: the config's testDir "web/e2e" resolves against the
+config directory, so the files come from this worktree. Confirmed: the project
+repo /workspace/projects/notebook has no web/e2e/notes-search.spec.js, yet the
+listing contains the six SEARCH-E2E tests at the worktree's line numbers
+(122/141/161/180/204/233). A second in-worktree listing with a temporary
+node_modules symlink to the same test-only deps produced the identical 13-test
+listing; the symlink was removed and `git status` has no untracked entries.
+
+3) UI-GRAPH.yaml structural check
+---------------------------------
+js-yaml 4.1.0 was available on the system (NODE_PATH=/usr/share/nodejs); no
+package was installed and no dependency was added.
+
+$ NODE_PATH=/usr/share/nodejs node -e 'const fs=require("fs"),y=require("js-yaml");const g=y.load(fs.readFileSync("doc/идеи/f-v4-note-search/UI-GRAPH.yaml","utf8"));const n=g.pages.find(p=>p.id==="notes");const sel=n.selectors.map(s=>s.testid).filter(t=>t.startsWith("notes-search"));const st=n.states.map(s=>s.id).filter(t=>t.startsWith("search-"));const need=["notes-search","notes-search-clear","notes-search-empty"],ns=["search-idle","search-filtering","search-results","search-empty","search-cleared","search-after-mutation"];const ok=need.every(t=>sel.includes(t)&&g.testids.includes(t))&&ns.every(s=>st.includes(s))&&st.length===6;console.log("js-yaml="+require("js-yaml/package.json").version+" schema="+g.schema+" status="+g.status);console.log("search testids="+sel.join(","));console.log("search states="+st.join(",")+" ("+st.length+")");console.log(ok?"YAML STRUCTURE: OK":"YAML STRUCTURE: FAIL");process.exit(ok?0:1)'
+js-yaml=4.1.0 schema=ui-graph/v1 status=actualized
+search testids=notes-search,notes-search-clear,notes-search-empty
+search states=search-idle,search-filtering,search-results,search-empty,search-cleared,search-after-mutation (6)
+YAML STRUCTURE: OK
+exit=0
+
+Additional assertions run in the same session (all passed): selector kinds/roles
+(notes-search input/searchbox, notes-search-clear button, notes-search-empty
+role=status), components list, testids[] membership, testids_count=15 matching
+the array, exactly 6 evidence entries mapping to web/e2e/notes-search.spec.js,
+and the three search edges (input filter, clear restore, mutation re-applies
+filter).
+
+4) Protected files unchanged
+----------------------------
+$ git diff --stat -- package.json package-lock.json \
+    deploy/path1/e2e-preview.sh deploy/path1/preview-deploy.sh
+(no output)
+exit=0
+$ git diff --numstat -- package.json package-lock.json \
+    deploy/path1/e2e-preview.sh deploy/path1/preview-deploy.sh
+(no output)
+
+5) Spec review (static)
+-----------------------
+- 6 scenarios SEARCH-E2E-1..6, unique ids, no skip/fixme, no waitForTimeout,
+  one screenshot call per scenario (doc/идеи/f-v4-note-search/screenshots/).
+- Each test registers a unique user, logs in through the existing UI helpers,
+  creates its own notes, and uses testids from the feature contract.
+- Scenario/state mapping: E2E-1 search-results; E2E-2 search-empty; E2E-3
+  case-insensitive filtering; E2E-4 search-cleared; E2E-5 search-after-mutation
+  (create); E2E-6 search-after-mutation (delete) + search-empty after the last
+  match is removed + search-cleared.
+- The clear helper prefers notes-search-clear and falls back to the button's
+  accessible name (clear|очист|сброс|×), so a renamed testid still exercises
+  the clear behavior.
+
+6) UI contract cross-check (important limitation)
+-------------------------------------------------
+The search UI is NOT present at this worktree's HEAD. Exact checks:
+
+$ git grep -n 'data-testid="notes-search' HEAD -- web/
+(no output)
+exit=1
+
+$ git grep -n 'data-testid="notes-search' validation/platform-dev-20261106 -- web/
+validation/platform-dev-20261106:web/index.html:80:  <input data-testid="notes-search" ...>
+validation/platform-dev-20261106:web/index.html:83:  <button data-testid="notes-search-clear" ...>
+validation/platform-dev-20261106:web/index.html:92:  <p ... data-testid="notes-search-empty" ...>
+
+On validation/platform-dev-20261106 (tip 3bbd98b, where the T0002 search UI
+lives) web/app.js matches the spec assumptions:
+- filterNotes(): query trimmed+lowercased and substring-matched against note
+  text, so matching is case-insensitive;
+- one renderNotes() is called by load, POST 201 (notes.push) and DELETE 204
+  (notes.filter), so an active query is re-applied after mutations;
+- notes-search-empty is shown only when hasQuery && notes.length > 0 &&
+  visible.length === 0; notes-empty stays reserved for an empty collection;
+- notes-search-clear is hidden when searchQuery === "" and shown otherwise;
+- the search input is enabled by setNotesEnabled(true) after a successful load.
+
+7) Live run (not performed here)
+--------------------------------
+No deploy and no live stand run was attempted in this unit. The 6 search
+scenarios need an integrated preview stand that contains the T0002 search UI.
+s20c command (unchanged):
+  E2E_BASE_URL=http://127.0.0.1:9082 npx --no-install playwright test web/e2e/notes-search.spec.js
+or the full suite:
+  E2E_BASE_URL=http://127.0.0.1:9082 npx --no-install playwright test
+
+Residual risk
+-------------
+- Integration dependency (highest): this unit worktree is the f-v3 baseline and
+  does not contain notes-search / notes-search-clear / notes-search-empty. The
+  graph was actualized against validation/platform-dev-20261106 (search UI
+  commit a2ea01a, tip 3bbd98b). The coordinator must build/merge the s20c stand
+  from an integrated tree that includes T0002, otherwise all six scenarios fail
+  on missing testids. Re-run the git-grep cross-check on the integration tree.
+- Provenance metadata mismatch: UI-GRAPH.yaml says execution_id E9294, branch
+  validation/platform-dev-20261106, base_commit 7cfcd9d, working_tree true,
+  while this unit runs as E8895 from 326ae62. 7cfcd9d predates the committed
+  search UI; the coordinator should bind the final integrated commit (and
+  re-actualize if the merge changes markup).
+- Dependencies are not installed in the worktree; `npx --no-install` there
+  fails ("npm ERR! canceled"). The e2e-preview.sh runner npm-installs the
+  test-only deps fail-close, which covers the s20c path.
+- Screenshots are not gitignored for f-v4 (only f-v3 screenshots and
+  test-results/ are). s20c artifacts under
+  doc/идеи/f-v4-note-search/screenshots/ must not be committed.
+- No runtime verification was possible here: --check, --list and the YAML
+  checks validate syntax, config, discovery and the graph contract, not live
+  browser behavior. Playwright retries=0 and fail-close behavior are unchanged.
