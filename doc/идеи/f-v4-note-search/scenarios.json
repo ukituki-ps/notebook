@@ -4,52 +4,60 @@
   "ui_surface": "web",
   "scenarios": [
     {
-      "id": "SEARCH-E2E-1",
-      "title": "search finds matching note",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-1",
-      "then": "search finds matching note",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-1 search finds matching note"
+      "id": "E2E-1",
+      "title": "register: valid account redirects to /login with username prefilled",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-1",
+      "then": "register: valid account redirects to /login with username prefilled",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-1"
     },
     {
-      "id": "SEARCH-E2E-2",
-      "title": "non-matching query shows the search empty state",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-2",
-      "then": "non-matching query shows the search empty state",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-2 non-matching query shows the search empty state"
+      "id": "E2E-2",
+      "title": "login and token: 200 stores notebook.token and opens /notes",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-2",
+      "then": "login and token: 200 stores notebook.token and opens /notes",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-2"
     },
     {
-      "id": "SEARCH-E2E-3",
-      "title": "match is case-insensitive",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-3",
-      "then": "match is case-insensitive",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-3 match is case-insensitive"
+      "id": "E2E-3",
+      "title": "create note: Add renders #id text in notes-list",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-3",
+      "then": "create note: Add renders #id text in notes-list",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-3"
     },
     {
-      "id": "SEARCH-E2E-4",
-      "title": "clear restores the full list",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-4",
-      "then": "clear restores the full list",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-4 clear restores the full list"
+      "id": "E2E-4",
+      "title": "reload: note stays visible after page.reload()",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-4",
+      "then": "reload: note stays visible after page.reload()",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-4"
     },
     {
-      "id": "SEARCH-E2E-5",
-      "title": "create while query active re-applies the filter",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-5",
-      "then": "create while query active re-applies the filter",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-5 create while query active re-applies the filter"
+      "id": "E2E-5",
+      "title": "delete note: 204 removes the row and empty state appears",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-5",
+      "then": "delete note: 204 removes the row and empty state appears",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-5"
     },
     {
-      "id": "SEARCH-E2E-6",
-      "title": "delete while query active keeps the filter consistent",
-      "given": "пользователь на /notes с загруженными заметками",
-      "when": "выполняется сценарий SEARCH-E2E-6",
-      "then": "delete while query active keeps the filter consistent",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-6 delete while query active keeps the filter consistent"
+      "id": "E2E-6",
+      "title": "isolation: user B cannot see or delete user A's note",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-6",
+      "then": "isolation: user B cannot see or delete user A's note",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-6"
+    },
+    {
+      "id": "E2E-7",
+      "title": "unauthenticated GET /api/notes returns 401 with WWW-Authenticate",
+      "given": "пользователь/гость на стенде test2",
+      "when": "сценарий E2E-7",
+      "then": "unauthenticated GET /api/notes returns 401 with WWW-Authenticate",
+      "e2e_ref": "web/e2e/auth-notes.spec.js::E2E-7"
     }
   ]
 }
