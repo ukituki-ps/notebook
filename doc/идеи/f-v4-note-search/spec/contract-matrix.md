@@ -54,12 +54,12 @@
 | U-01 | Notes screen has labelled `data-testid="notes-search"`, `type="search"`, `aria-controls="notes-list"`, above the list | `go test -count=1 -run TestUISemantics ./...` |
 | U-02 | `data-testid="notes-search-clear"` is a `type=button` with accessible name, hidden while the raw query is empty | `go test -count=1 -run TestUISemantics ./...` |
 | U-03 | Typing filters the already loaded owner-scoped list client-side; no request per keystroke | `go test -count=1 -run TestUISemantics ./...` + `SEARCH-E2E-1` |
-| U-04 | UI match is case-insensitive (lower-case query vs upper-case stored text) | `SEARCH-E2E-3` (`web/e2e/notes-search.spec.js`) |
+| U-04 | UI match is case-insensitive (lower-case query vs upper-case stored text) | `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-3` |
 | U-05 | `notes-search-empty` shown only when (trimmed query non-empty) AND (loaded collection non-empty) AND (zero matches); `role=status`, `aria-live=polite`, copy `Ничего не найдено.` | `go test -count=1 -run TestUISemantics ./...` + `SEARCH-E2E-2`; delete-to-empty covered by `SEARCH-E2E-6` |
 | U-06 | Genuinely empty server list shows `notes-empty`; `notes-search-empty` stays hidden | `go test -count=1 -run TestUISemantics ./...` + auth `E2E-5` |
-| U-07 | Clear restores the full list and hides the search empty state | `SEARCH-E2E-4` |
-| U-08 | Create while a query is active re-applies the filter: matching new note appears, non-matching stays hidden | `SEARCH-E2E-5` |
-| U-09 | Delete while a query is active re-applies the filter; last match removal shows search-empty, not notes-empty | `SEARCH-E2E-6` |
+| U-07 | Clear restores the full list and hides the search empty state | `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-4` |
+| U-08 | Create while a query is active re-applies the filter: matching new note appears, non-matching stays hidden | `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-5` |
+| U-09 | Delete while a query is active re-applies the filter; last match removal shows search-empty, not notes-empty | `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-6` |
 | U-10 | Login precedes the notes/search flow; user-B isolation remains auth E2E-6, not a search-spec scenario | auth `E2E-6` + `go test -count=1 -run TestNotesSearchIsolation ./...` |
 | U-11 | Loading/error/401 regions and redirect handling remain the f-v3 behaviour; search controls disable while loading and stay usable when loaded | `go test -count=1 -run TestUISemantics ./...` + auth `E2E-7` |
 
@@ -72,41 +72,17 @@
 
 ## Negative and edge cases
 
-- `q` absent, `q=`, `q=%20%20%09` → all own notes; no 400 (OD-1):
-  `go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery' ./...`
-- `q=absent` → 200 `[]`, not `null`, not 404:
-  `go test -count=1 -run TestNotesSearchNotFound ./...`
-- User B's note text matches `q` → not returned for user A:
-  `go test -count=1 -run TestNotesSearchIsolation ./...`
-- No/bad bearer on `GET /api/notes?q=` → 401 before query handling:
-  `go test -count=1 -run TestNotesSearchAuthRequired ./...`
-- `PUT/PATCH/DELETE /api/notes` with a valid token → 405 + `Allow: GET, POST`:
-  `go test -count=1 -run TestNotesMethodNotAllowed ./...`
-- DELETE non-numeric/empty/overflow id → 400 `{"error":"invalid id"}`:
-  `go test -count=1 -run TestDeleteInvalidID ./...`
-- DELETE foreign or missing note → 404 `{"error":"not found"}`:
-  `go test -count=1 -run 'TestDeleteForeignNote|TestDeleteMissing' ./...`
-- Re-delete after 204 → 404, no panic:
-  `go test -count=1 -run TestDeleteMissing ./...`
-- Unknown `/api/*` path → 404 JSON, no SPA fallthrough:
-  `go test -count=1 -run TestUnknownAPINotFound ./...`
-- URL-encoded `%`, space, `&`, `+` and other special characters in `q` → decoded safely, no 500:
-  `go test -count=1 -run TestNotesSearchEncoding ./...`
-- No/bad/expired bearer + `q` → 401 before query handling:
-  `go test -count=1 -run TestNotesSearchAuthRequired ./...`
-- No bearer + non-GET methods → 401 before 405/id validation:
-  `go test -count=1 -run 'TestAuthRequired|TestAuthMethodOrder' ./...`
-- `q=100%25`, `q=%26`, `q=a%2Bb`, `q=%20` → decoded safely, no panic/500:
-  `go test -count=1 -run TestNotesSearchEncoding ./...`
-- Mixed case query vs stored text → matches:
-  `go test -count=1 -run TestNotesSearchCaseInsensitive ./...`
-- Query longer than the note text / empty stored text → no match, 200 `[]`:
-  `go test -count=1 -run TestNotesSearchNotFound ./...`
-- Create/delete with an active query → filter re-applied:
-  `SEARCH-E2E-5`, `SEARCH-E2E-6`.
-- Search empty state guard and separation from `notes-empty`:
-  `go test -count=1 -run TestUISemantics ./...` + `SEARCH-E2E-2`, `SEARCH-E2E-6`.
-- Integration smoke is auth/notes API only (no search `q=`):
-  `E2E_API_ONLY=1 bash deploy/path1/e2e-preview.sh`.
-- Search E2E is Playwright at s20c:
-  `E2E_BASE_URL=<test2> npx --no-install playwright test`.
+- `q` absent / `q=` / `q=%20%20%09` → all own notes, no 400 (OD-1): `go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery' ./...`
+- `q=absent` → 200 `[]`, not `null`, not 404: `go test -count=1 -run TestNotesSearchNotFound ./...`
+- User B's note text matches `q` → not returned for user A: `go test -count=1 -run TestNotesSearchIsolation ./...`
+- No/bad/expired bearer + `q` → 401 before query handling: `go test -count=1 -run TestNotesSearchAuthRequired ./...`
+- No bearer + non-GET notes methods → 401 before 405/id validation: `go test -count=1 -run 'TestAuthMethodOrder|TestAuthRequired' ./...`
+- `q=100%25`, `q=%26`, `q=a%2Bb`, `q=%20` → decoded safely, no panic/500: `go test -count=1 -run TestNotesSearchEncoding ./...`
+- Mixed-case query vs stored text → matches: `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-3`
+- Query longer than the note text / empty stored text → no match, 200 `[]`: `go test -count=1 -run 'TestNotesSearchNotFound|TestNotesSearchEmptyQuery' ./...`
+- Create/delete with an active query → filter re-applied: `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-5` and `::SEARCH-E2E-6`
+- Search empty state guard and separation from `notes-empty`: `playwright web/e2e/notes-search.spec.js::SEARCH-E2E-2` and `go test -count=1 -run TestUISemantics ./...`
+- Integration smoke is auth/notes API only (no search `q=`): `cmd:bash deploy/path1/e2e-preview.sh` (E2E_API_ONLY=1)
+- Re-delete after 204 → 404, no panic: `go test -count=1 -run TestDeleteMissing ./...`
+- Unknown `/api/*` path → 404 JSON, no SPA fallthrough: `go test -count=1 -run TestUnknownAPINotFound ./...`
+
