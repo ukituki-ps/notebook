@@ -2,53 +2,46 @@
   "execution": "E8895",
   "scenarios": [
     {
-      "id": "E2E-1",
+      "id": "SEARCH-E2E-1",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png",
-      "sha256": "db8e7fea6e7224736f2bc593018035635af2b9a51d6f9d803d0489f6890845fe",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png",
+      "sha256": "66cc48266adc5f231892b7470f0b5c89039da1379df4972a60c1adda9bfc89a1",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     },
     {
-      "id": "E2E-2",
+      "id": "SEARCH-E2E-2",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-2.png",
-      "sha256": "c1d6ec13f95686914d02bc8d5a2e72f40e08b77d9533179f98a3f1ba95f636d5",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png",
+      "sha256": "6c8cae87b759486af97384b0f05904a40a497d19f561a5a39cc72f943640904b",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     },
     {
-      "id": "E2E-3",
+      "id": "SEARCH-E2E-3",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-3.png",
-      "sha256": "1a8758e33075f144f07db3b79caec2a875b14fe690abd591958d39dd9179dfa4",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png",
+      "sha256": "8bd470e3d0df01a05fffcc93140db1e2ec63082d00b111826bd756cabb398c03",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     },
     {
-      "id": "E2E-4",
+      "id": "SEARCH-E2E-4",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-4.png",
-      "sha256": "3140a9d343172ef9266d9b561eba42a51ca760e16256e301169723cf7a8e6bfc",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png",
+      "sha256": "deaa245f926b30833f8fdc0b5cb04cf10e0a0f561070729bb1c0eafaee12ea39",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     },
     {
-      "id": "E2E-5",
+      "id": "SEARCH-E2E-5",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-5.png",
-      "sha256": "17f259eaed198cdcb2d8520e6b7865238f4680e14e909b60a38439df028d1e6c",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png",
+      "sha256": "66f953bc73ccfae468986f951ed11f0da6376d2934e45bdfe0d0fa7fdb9f5543",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     },
     {
-      "id": "E2E-6",
+      "id": "SEARCH-E2E-6",
       "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-6.png",
-      "sha256": "4ec5e5d8cb2302837fe3e0374ae57b46615ada403b735dfddd22a56bfcab452e",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
-    },
-    {
-      "id": "E2E-7",
-      "status": "pass",
-      "screenshot": "doc/идеи/f-v3-auth-notes/screenshots/E2E-7.png",
-      "sha256": "1648d94b2c67feae0c5dd1f6b49dc0733043de7df2847b8759fd22d6fbb10017",
-      "e2e_ref": "web/e2e/auth-notes.spec.js"
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png",
+      "sha256": "408a14bfc1a0f34f52c3b192f9935f784a8a5ad407cd2c1293339232254a1cf7",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
     }
   ]
 }

@@ -1,12 +1,11 @@
 {
+  "schema": "orc.evidence-manifest/v1",
   "files": {
-    "doc/идеи/f-v3-auth-notes/scenario-evidence.json": "6d62d386504d4753e7133c53b7bcd5e7486a2681e246d173c9879adb1191c83d",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png": "db8e7fea6e7224736f2bc593018035635af2b9a51d6f9d803d0489f6890845fe",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-2.png": "c1d6ec13f95686914d02bc8d5a2e72f40e08b77d9533179f98a3f1ba95f636d5",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-3.png": "1a8758e33075f144f07db3b79caec2a875b14fe690abd591958d39dd9179dfa4",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-4.png": "3140a9d343172ef9266d9b561eba42a51ca760e16256e301169723cf7a8e6bfc",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-5.png": "17f259eaed198cdcb2d8520e6b7865238f4680e14e909b60a38439df028d1e6c",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-6.png": "4ec5e5d8cb2302837fe3e0374ae57b46615ada403b735dfddd22a56bfcab452e",
-    "doc/идеи/f-v3-auth-notes/screenshots/E2E-7.png": "1648d94b2c67feae0c5dd1f6b49dc0733043de7df2847b8759fd22d6fbb10017"
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png": "66cc48266adc5f231892b7470f0b5c89039da1379df4972a60c1adda9bfc89a1",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png": "6c8cae87b759486af97384b0f05904a40a497d19f561a5a39cc72f943640904b",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png": "8bd470e3d0df01a05fffcc93140db1e2ec63082d00b111826bd756cabb398c03",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png": "deaa245f926b30833f8fdc0b5cb04cf10e0a0f561070729bb1c0eafaee12ea39",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png": "66f953bc73ccfae468986f951ed11f0da6376d2934e45bdfe0d0fa7fdb9f5543",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png": "408a14bfc1a0f34f52c3b192f9935f784a8a5ad407cd2c1293339232254a1cf7"
   }
 }
