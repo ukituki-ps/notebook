@@ -141,3 +141,5 @@ s24 `gate-acceptance-approval` requires a signed Nexus assertion. Request create
 On approval, call `orc_accept(s24.team_lead_accept)` with the assertion
 (`approval_ref` or inline `assertion`). All prior steps are done; s23 is
 optionally skipped (0 critical/high).
+
+Owner approved s24 via Nexus request `apr_0632235f9cf1c359b9ee27ddf85b76ad` (decision=approved, ed25519, expires 2026-11-06T21:51:26Z).
