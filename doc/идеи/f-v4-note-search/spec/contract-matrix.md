@@ -49,7 +49,7 @@
 
 ## UI rows
 
-| id | state / contract | oracle |
+| id | state / contract | test (playwright) |
 |---|---|---|
 | U-01 | Notes screen has labelled `data-testid="notes-search"`, `type="search"`, `aria-controls="notes-list"`, above the list | `go test -count=1 -run TestUISemantics ./...` |
 | U-02 | `data-testid="notes-search-clear"` is a `type=button` with accessible name, hidden while the raw query is empty | `go test -count=1 -run TestUISemantics ./...` |
