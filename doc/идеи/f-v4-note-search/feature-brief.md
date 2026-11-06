@@ -70,72 +70,116 @@ Search semantics:
 - Create, delete, and reload flows keep working; after create/delete the active
   query is re-applied to the updated list.
 
-## Wireframes (s03, ASCII)
+## Wireframes (s03, ASCII, revalidated for E8363)
 
-### Notes screen — default
+All states below are implemented by `web/index.html` + `web/app.js`; testids are
+quoted exactly. The notes page is reached from `login`/`register`; a 401 from any
+notes call returns the user to `login`.
 
-```
-+------------------------------------------------------+
-| Notebook                                  [logout]   |
-+------------------------------------------------------+
-| Notes                                                |
-| +--------------------------------------------------+ |
-| | Search notes                          [ x ]      | |
-| +--------------------------------------------------+ |
-| +--------------------------------------------------+ |
-| | Buy milk                                         | |
-| |                                                  | |
-| | [delete]                                         | |
-| +--------------------------------------------------+ |
-| +--------------------------------------------------+ |
-| | Project plan                                     | |
-| |                                                  | |
-| | [delete]                                         | |
-| +--------------------------------------------------+ |
-| +--------------------------------------------------+ |
-| | New note text...                     [add note]  | |
-| +--------------------------------------------------+ |
-+------------------------------------------------------+
-```
-
-### Notes screen — query matches one note
+### Auth screens — login / register (unchanged from f-v3)
 
 ```
 +------------------------------------------------------+
-| Notes                                                |
-| +--------------------------------------------------+ |
-| | milk                                     [ x ]   | |
-| +--------------------------------------------------+ |
-| +--------------------------------------------------+ |
-| | Buy milk                                         | |
-| |                                                  | |
-| | [delete]                                         | |
-| +--------------------------------------------------+ |
+| Notebook                                             |
 +------------------------------------------------------+
+|  login card / register card                          |
+|  [data-testid="login-form"|"register-form"]          |
+|  error line: [data-testid="login-error"|...]         |
+|  link: login-link <-> register-link                  |
++------------------------------------------------------+
+        login-success -> notes      register-success -> login
 ```
 
-### Notes screen — query matches nothing
+### Notes screen — idle / list (query empty or whitespace)
 
 ```
 +------------------------------------------------------+
-| Notes                                                |
+| Notebook                    user: [user-name] [logout]|
 | +--------------------------------------------------+ |
-| | zzzz                                     [ x ]   | |
+| | [data-testid="note-input"]          [add-note]   | |
 | +--------------------------------------------------+ |
-|                                                      |
-|              ничего не найдено                       |
-|           data-testid="notes-search-empty"           |
-|                                                      |
+| +--------------------------------------------------+ |
+| | label: Поиск заметок                             | |
+| | [data-testid="notes-search"]                     | |
+| | [data-testid="notes-search-clear"] Clear          | |
+| | (clear hidden while query is empty)              | |
+| +--------------------------------------------------+ |
+| [note-item id=1] #1 Buy milk            [delete-note]|
+| [note-item id=2] #2 Project plan        [delete-note]|
 +------------------------------------------------------+
+```
+
+### Notes screen — filtering (trimmed query non-empty)
+
+```
++------------------------------------------------------+
+| [notes-search] value="milk"   [notes-search-clear]   |
+| matching note-item rows stay visible;                    |
+| non-matching rows are hidden; no per-keystroke request   |
++------------------------------------------------------+
+```
+
+### Notes screen — search results / search-empty
+
+```
+query matches >=1:   notes-list visible with the matching note-item rows
+                     notes-search-empty hidden
+query matches 0:     [data-testid="notes-search-empty"]
+                     role=status aria-live=polite
+                     "Ничего не найдено."
+                     no note-item visible; notes-empty hidden
+```
+
+### Notes screen — genuinely empty server list
+
+```
+GET /api/notes -> 200 [] with an empty query
+[data-testid="notes-empty"] visible; notes-list hidden;
+notes-search-empty hidden (reserved for a non-empty query)
+```
+
+### Notes screen — loading
+
+```
+notes-loading visible; notes-list / notes-empty / notes-search-empty hidden;
+note-form and search controls disabled until the list is loaded
+```
+
+### Notes screen — error
+
+```
+GET != 200 or network error:
+[data-testid="notes-error"] visible with the existing f-v3 message;
+POST/DELETE failures use the same error region and keep search usable;
+after a failed initial GET the list/search controls stay disabled (existing
+f-v3 behaviour) until a successful reload
+```
+
+### Notes screen — unauthorized / session expired
+
+```
+401 or missing token:
+clear notebook.token/user; [data-testid="notes-error"]
+"Сессия истекла..." then navigate to /login (unchanged from f-v3)
+```
+
+### Search state machine
+
+```
+idle --(trimmed q non-empty)--> filtering --> results | search-empty
+  ^                                              |
+  +----------- clear / empty query --------------+
+create/delete/reload while filtering -> re-apply the same filter
 ```
 
 Interaction and accessibility notes:
 
-- The search input has a visible `<label>` and an accessible name (s03).
-- The `[ x ]` clear control clears the input and restores the full list.
+- The search input has a visible `<label>` and an accessible name.
+- `notes-search-clear` is a separate button, hidden while the query is empty.
 - The empty state replaces only the list region; the search input and the
   create form stay usable.
-- The loading and error states of the existing page are unchanged.
+- The loading, error and 401 states of the existing page are unchanged; the
+  search controls are disabled while loading and usable in every loaded state.
 
 ## Acceptance criteria
 
