@@ -12,3 +12,17 @@ the platform (`730d144a`); this file closes the remaining four.
 
 Owner scope, auth-first behavior and the `[]` (not `null`) response contract are
 unchanged.
+
+## Verification (2026-11-07)
+
+- test2 rebuilt from `e0d41a0` (the commit above):
+  - commit `e0d41a0efe7d22f414ca2105ecf828cd3e5068a7`;
+  - image digest `sha256:d897553eef6ff0b5ef843a5e984e4115f13fcb27261506d984691da71201f4a1`;
+  - `build_args_hash` `sha256:b0c911794e2a22a8b2079b10d64eced6c6861393a3d75d64727e601e0e36035c`;
+  - `gate_bundle_digest` `sha256:b7c32a4f11f2623cb809b0d1ad16eb25da88f0e75cbad315b5e951f8866b267c`
+    (non-empty in `/healthz` and both provenance files).
+- Live API: `GET /api/notes?q=<513 bytes>` → `400 {"error":"query too long"}`;
+  `GET /api/notes?q=ok` → `200 []`.
+- Playwright on test2: **15/15 passed**, including `SEARCH-E2E-7`
+  (whitespace-only clear control hidden) and `SEARCH-E2E-8`
+  (no-token path clears the leftover query).
