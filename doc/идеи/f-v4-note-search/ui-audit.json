@@ -1,11 +1,11 @@
 {
   "schema": "orc.ui-audit/v1",
   "feature_id": "f-v4-note-search",
-  "execution_id": "E1488",
+  "execution_id": "E1688",
   "platform": "web",
   "stand": {
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "a579a38"
+    "sha": "872acd2"
   },
   "summary": {
     "open_critical_high": 0,
@@ -24,7 +24,7 @@
       "oracle": "npx --no-install playwright test web/e2e/notes-search.spec.js",
       "evidence": {
         "kind": "command",
-        "ref": "Playwright SEARCH-E2E-1..8: 8/8 pass on test2 build a579a38"
+        "ref": "Playwright SEARCH-E2E-1..8: 8/8 pass on test2 build 872acd2"
       }
     },
     {
@@ -144,7 +144,7 @@
       "oracle": "npx --no-install playwright test",
       "evidence": {
         "kind": "command",
-        "ref": "15/15 pass on test2 (build a579a38): 7 auth-notes + 6 search"
+        "ref": "15/15 pass on test2 (build 872acd2): 7 auth-notes + 6 search"
       }
     },
     {
@@ -156,7 +156,7 @@
       "oracle": "url: https://test2.nexus.ukituki.tech/healthz",
       "evidence": {
         "kind": "screenshot",
-        "ref": ".orc-eval/E8895/a579a389c6f02e7fc518dc958a32542ec5c3d9f1/doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+        "ref": ".orc-eval/E8895/872acd29c6f02e7fc518dc958a32542ec5c3d9f1/doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
       }
     }
   ]
