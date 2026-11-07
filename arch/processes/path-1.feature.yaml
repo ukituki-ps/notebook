@@ -1,15 +1,47 @@
 id: path-1.feature
 name: Path 1 — Feature Development
-version: 3.2.2
+version: 4.0.0
 path_type: feature
 enabled: true
 max_parallel: 3
-description: 'Версия 3.1.14 (PATCH; 2026-10-29; E2478): s24a.branch_fresh зависит от s22b.red_team_audit + s22c.adversarial_code_review — branch guard не может идти впереди обязательных ревью. • Версия 3.1.9 (PATCH; 2026-10-26; base absorbs stands-lease@1.2.0 + verification-hardening@1.11.0; D-1/D-2/D-3 fixed): • s19.stand_lease, s20b.preview_deploy, s20c.preview_verify, s22b.red_team_audit, s22c.adversarial_code_review теперь в базе (не оверлеями). • D-1: s20.sde_execution зависит от s17.coverage_audit + s19.stand_lease. • D-2: s22a.ui_audit и s22d.mobile_probe зависят от s20a.unit_integrate + s20c.preview_verify. • D-3: s22.result_audit зависит от s22a.ui_audit + s22d.mobile_probe + s20c.preview_verify (backend больше не обходит preview). • s22b ← s22.result_audit; s22c ← s22b + s20c; s23 ← s22.result_audit (не разорвано); s24 ← s23 + s24a + s22c. • Гейты stands-lease (s19/s20/s24), verification-hardening (s14/s17/s20/s20b/s20c/s22b/s22c/s24) и testing-stands (s20a/s24) смержены в базу без ослабления: s24 — 15 гейтов, s22b — 4, s22c — 1, s20c — 1. • Prompt-патчи verification-hardening (s11/s20/s22b/s22c) перенесены в шаги базы. • Для проектов, где stands-lease/verification-hardening были оверлеями, оверлеи подлежат deprecation (миграция: оставить только testing-stands; иначе дубли шагов). • Entry points, sub_processes feature-unit, branches и escalations — без изменений. 3.1.10 (PATCH): s05.architect_validation depends on s02.architect_scope_analysis (skip-chain s02→s03/s04→s05 fixed).
+description: 'Версия 3.1.14 (PATCH; 2026-10-29; E2478): s24a.branch_fresh зависит от s22b.red_team_audit + s22c.adversarial_code_review
+  — branch guard не может идти впереди обязательных ревью. • Версия 3.1.9 (PATCH; 2026-10-26; base absorbs stands-lease@1.2.0
+  + verification-hardening@1.11.0; D-1/D-2/D-3 fixed): • s19.stand_lease, s20b.preview_deploy, s20c.preview_verify, s22b.red_team_audit,
+  s22c.adversarial_code_review теперь в базе (не оверлеями). • D-1: s20.sde_execution зависит от s17.coverage_audit + s19.stand_lease.
+  • D-2: s22a.ui_audit и s22d.mobile_probe зависят от s20a.unit_integrate + s20c.preview_verify. • D-3: s22.result_audit зависит
+  от s22a.ui_audit + s22d.mobile_probe + s20c.preview_verify (backend больше не обходит preview). • s22b ← s22.result_audit;
+  s22c ← s22b + s20c; s23 ← s22.result_audit (не разорвано); s24 ← s23 + s24a + s22c. • Гейты stands-lease (s19/s20/s24),
+  verification-hardening (s14/s17/s20/s20b/s20c/s22b/s22c/s24) и testing-stands (s20a/s24) смержены в базу без ослабления:
+  s24 — 15 гейтов, s22b — 4, s22c — 1, s20c — 1. • Prompt-патчи verification-hardening (s11/s20/s22b/s22c) перенесены в шаги
+  базы. • Для проектов, где stands-lease/verification-hardening были оверлеями, оверлеи подлежат deprecation (миграция: оставить
+  только testing-stands; иначе дубли шагов). • Entry points, sub_processes feature-unit, branches и escalations — без изменений.
+  3.1.10 (PATCH): s05.architect_validation depends on s02.architect_scope_analysis (skip-chain s02→s03/s04→s05 fixed).
 
-  3.1.12 (PATCH): portable gate tooling for app-repo layout — gate-l1-unit и check-integration-on-stand определяют module root по path1.project.json (detectors.go_roots), выполняют go из backend с GOWORK=off; шаги/гейты/семантика не изменены.'
+  3.1.12 (PATCH): portable gate tooling for app-repo layout — gate-l1-unit и check-integration-on-stand определяют module
+  root по path1.project.json (detectors.go_roots), выполняют go из backend с GOWORK=off; шаги/гейты/семантика не изменены.
+
+
+  4.0.0 (MAJOR): design-system pin/fan-out, s03a/s03b/s03c, UI/UX split, prototype human gate. Дизайн-система становится версионируемым
+  артефактом: s02a.ds_pin фиксирует
+
+  approved design_system_version/ds_digest и нормализует screens[] до fan-out;
+
+  s03.proto_visualize превращается в fan-out-контейнер design-unit по экранам; внутри unit
+
+  добавляется НОВЫЙ шаг s04a.unit_ds_resolve (в path-1 3.2.2 шага s04a нет —
+
+  это ADD, не merge); добавляется s03a.design_integrate; UI- и UX-аудит
+
+  разделяются на s22a.ui_audit и s22e.ux_audit; s04 зависит от s03a;
+
+  s22.result_audit зависит от обоих аудитов; s24 получает gate-ds-drift.
+
+  Версия MAJOR: меняются семантика/выходы s03 и s22a, добавляются обязательные
+
+  s03a/s22e, новые гейты на s20a/s21/s24. Требуется human_checkpoint.'
 owner: architect
 created_at: '2026-08-18T00:00:00Z'
-updated_at: '2026-10-28T10:31:40Z'
+updated_at: '2026-11-08T00:00:00Z'
 entry_points:
 - id: accept
   description: Финальная приёмка (s24) без исполнения/превью
@@ -26,6 +58,7 @@ entry_points:
   - s24a.branch_fresh
   - s45.push_primary
   - s46.post_deploy_verify
+  - s22e.ux_audit
 - id: integrate
   description: Интеграция уже смерженных юнитов (s20a) без fan-out
   start_from: s20a.unit_integrate
@@ -80,7 +113,8 @@ entry_points:
   - feature_brief_path
   - work_branch
 - id: after_s01_snapshot
-  description: 'Готовый бриф + reality snapshot (C-1…C-5 исполняются): старт со s02, s06a–s06e НЕ в skip — сверка «код vs модель» до проектирования (s10.change_definition).'
+  description: 'Готовый бриф + reality snapshot (C-1…C-5 исполняются): старт со s02, s06a–s06e НЕ в skip — сверка «код vs
+    модель» до проектирования (s10.change_definition).'
   start_from: s02.architect_scope_analysis
   required_context:
   - feature_brief_path
@@ -91,7 +125,9 @@ entry_points:
   - s45.push_primary
   - s46.post_deploy_verify
 - id: after_s16
-  description: 'Старт после s16.brief_tasks (F98): планирование не перезапускается; s17.coverage_audit проверяет брифы/спеки и открывает s20 fan-out. required_context — producer-данные (unit_briefs/task_briefs), отсутствие — отказ резолва ДО старта; обход через orc_set_context запрещён.'
+  description: 'Старт после s16.brief_tasks (F98): планирование не перезапускается; s17.coverage_audit проверяет брифы/спеки
+    и открывает s20 fan-out. required_context — producer-данные (unit_briefs/task_briefs), отсутствие — отказ резолва ДО старта;
+    обход через orc_set_context запрещён.'
   start_from: s17.coverage_audit
   required_context:
   - work_branch
@@ -120,6 +156,10 @@ entry_points:
   - s24a.branch_fresh
   - s45.push_primary
   - s46.post_deploy_verify
+  - s02a.ds_pin
+  - s03a.design_integrate
+  - s03b.prototype_accept
+  - s03c.prototype_rework
 - id: unit_batch
   description: 'Юнит-ветка: старт на fan-out контейнере s20.sde_execution (нужен context.unit_briefs)'
   start_from: s20.sde_execution
@@ -147,6 +187,10 @@ entry_points:
   - s24a.branch_fresh
   - s45.push_primary
   - s46.post_deploy_verify
+  - s02a.ds_pin
+  - s03a.design_integrate
+  - s03b.prototype_accept
+  - s03c.prototype_rework
   required_context:
   - unit_briefs
   - work_branch
@@ -165,7 +209,8 @@ entry_points:
   - work_branch
   - target_repo_head
 - id: stand_contour
-  description: 'Opt-in пост-merge контур стенда (C-18/C-19): push primary → CI+образ+golden path; активация проектом через orc_start(entry_point=stand_contour, context={...})'
+  description: 'Opt-in пост-merge контур стенда (C-18/C-19): push primary → CI+образ+golden path; активация проектом через
+    orc_start(entry_point=stand_contour, context={...})'
   start_from: s45.push_primary
   required_context:
   - push_target
@@ -176,7 +221,10 @@ entry_points:
 steps:
 - id: s01.product_discuss
   name: Обсуждение идеи с product
-  description: 'Обсуждение идеи с product: результат — черновик feature-brief.md. Опирается на: idea. ОБЯЗАТЕЛЬНО: сразу после создания каталога фичи задай в контекст исполнения feature_id=<F<NN>-<slug>> и feature_dir=doc/идеи/<F<NN>-<slug>> (orc_set_context) — иначе плейсхолдер {feature_id} в artifact-гейтах (s10/s13/s14) не отрендерится и приёмка упадёт «artifact not found» (инцидент E3061, s10).
+  description: 'Обсуждение идеи с product: результат — черновик feature-brief.md. Опирается на: idea. ОБЯЗАТЕЛЬНО: сразу после
+    создания каталога фичи задай в контекст исполнения feature_id=<F<NN>-<slug>> и feature_dir=doc/идеи/<F<NN>-<slug>> (orc_set_context)
+    — иначе плейсхолдер {feature_id} в artifact-гейтах (s10/s13/s14) не отрендерится и приёмка упадёт «artifact not found»
+    (инцидент E3061, s10).
 
     '
   phase: ideation
@@ -208,7 +256,8 @@ steps:
   - scope-report
   depends_on:
   - s01.product_discuss
-  description: 'Архитектор определяет затронутые домены, ограничения архитектуры, потенциальные конфликты и даёт рекомендации для дизайна.
+  description: 'Архитектор определяет затронутые домены, ограничения архитектуры, потенциальные конфликты и даёт рекомендации
+    для дизайна.
 
     '
   arch_reads:
@@ -216,32 +265,320 @@ steps:
     target: домены из draft-feature-brief
   - type: gaps
     filter: open violations in affected domains
-- id: s03.proto_visualize
-  name: Визуализация UI (proto)
-  description: 'Визуализация UI (proto): результат — ASCII-схема в feature-brief.md. Опирается на: draft-feature-brief, scope-report.
+- id: s02a.ds_pin
+  name: 'DS pin: версия, digest и нормализованные screens'
+  description: 'Pre-fan-out pin для UI-профиля: выбирает approved DS-релиз, фиксирует
+
+    design_system_version/ds_digest и нормализует context.screens[] в форму,
+
+    которую ожидает fan-out design-unit. Каждый item содержит ровно
+
+    screen_id, screen_brief, platform, feature_profile,
+
+    design_system_version, ds_digest. Если screens отсутствует/пуст, создаётся
+
+    один item screen_id=feature, screen_brief=<feature brief>. Без approved
+
+    версии/digest шаг fail-close: latest/main/dev не допускаются.
+
+    Для backend-only шаг не активируется.
 
     '
   phase: ideation
-  stage: design
-  agent: proto
-  track: B
-  mode: subagent
+  agent: architect
+  track: infra
+  mode: all
   when:
     param: feature_profile
     in:
     - full
     - frontend
-  artifact: ASCII-схема в feature-brief.md
+  artifact: ds-pin.json
+  inputs:
+  - scope-report
+  - draft-feature-brief
+  - approved-ds-release
+  outputs:
+  - ds-pin
+  - screens
+  context_updates:
+    design_system_version: '{result.design_system_version}'
+    ds_digest: '{result.ds_digest}'
+    screens: '{result.screens}'
+  depends_on:
+  - s02.architect_scope_analysis
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - design_system_version
+    - ds_digest
+    - screens
+    properties:
+      artifact_path:
+        type: string
+      design_system_version:
+        type: string
+      ds_digest:
+        type: string
+      screens:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - screen_id
+          - screen_brief
+          - platform
+          - feature_profile
+          - design_system_version
+          - ds_digest
+          properties:
+            screen_id:
+              type: string
+            screen_brief:
+              type: string
+            platform:
+              type: string
+              enum:
+              - web
+              - mobile
+              - both
+            feature_profile:
+              type: string
+              enum:
+              - full
+              - frontend
+            design_system_version:
+              type: string
+            ds_digest:
+              type: string
+- id: s03.proto_visualize
+  name: Визуализация UI по экранам (proto, fan-out)
+  description: 'Fan-out-контейнер дизайна: по каждому экрану из context.screens запускает
+
+    sub-process design-unit. Внутри unit: proto, резолв точной версии DS,
+
+    UI-ревью и UX-ревью. Выход s03 — visualized-brief-units; фичевый
+
+    visualized-brief собирает s03a.design_integrate. Для backend-only шаг
+
+    не активируется. context.screens уже нормализован s02a.ds_pin; fallback
+
+    screen_id=feature создаётся там же (см. context_contract ниже).
+
+    '
+  phase: ideation
+  stage: design
+  agent: orc
+  track: B
+  mode: all
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  invoke:
+    sub_process: design-unit
+    for_each: context.screens
+    max_parallel: 3
+    unit_key: screen_id
+    block_on_quarantine: true
   inputs:
   - draft-feature-brief
   - scope-report
+  - ds-pin
+  outputs:
+  - visualized-brief-units
+  depends_on:
+  - s02a.ds_pin
+- id: s03a.design_integrate
+  name: Интеграция дизайн-юнитов и DS-контракта
+  description: 'Агрегирует unit''ы в единый дизайн-контракт фичи: visualized-brief,
+
+    design-impact.md, ds.lock.json, component-refs.json, component-map.yaml,
+
+    design-review.fragment.json, design-gaps.json. Проверяет полноту экранов,
+
+    совпадение design_system_version/ds_digest у всех unit''ов, единственность
+
+    ds.lock.json, отсутствие конфликтов component-map и согласованность
+
+    design-gaps с component-refs.path6_required. s04 зависит от этого шага.
+
+    '
+  phase: ideation
+  stage: design
+  agent: architect
+  track: B
+  mode: all
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: design-impact.md + ds.lock.json + component-refs.json + component-map.yaml + design-gaps.json + design-review.fragment.json
+  inputs:
+  - visualized-brief-units
+  - unit-design-gaps
+  - scope-report
+  - design/tokens.json
+  - design/registry.json
   outputs:
   - visualized-brief
+  - design-impact
+  - ds-lock
+  - component-refs
+  - component-map
+  - design-gaps
+  - design-review
   depends_on:
-  - s02.architect_scope_analysis
+  - s03.proto_visualize
+  result_schema:
+    type: object
+    required:
+    - visualized_brief
+    - design_impact
+    - ds_lock
+    - component_refs
+    - component_map
+    - design_gaps
+    - design_review
+    properties:
+      visualized_brief:
+        type: string
+      design_impact:
+        type: string
+      ds_lock:
+        type: string
+      component_refs:
+        type: string
+      component_map:
+        type: string
+      design_gaps:
+        type: string
+      design_review:
+        type: string
+- id: s03b.prototype_accept
+  name: Приёмка прототипа человеком (OpenPencil/S3)
+  description: 'Human-гейт качества прототипа ДО реализации. Человек открывает
+
+    интегральный прототип в OpenPencil (S3 workspace), правит/комментирует,
+
+    затем approve или changes_requested. При approve фиксируется снимок
+
+    prototypes/vN: manifest.json + prototype-review.json + exports; digest
+
+    снимка привязан к Nexus approval (subject=prototype).
+
+    При reject — ветка на s03c.prototype_rework (affected units), затем
+
+    s03a → s03b. s04 не стартует без approved.
+
+    '
+  phase: ideation
+  stage: validation
+  agent: human
+  track: B
+  mode: all
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: prototypes/vN/manifest.json + prototype-review.json + exports/*.png
+  inputs:
+  - visualized-brief
+  - design-impact
+  - ds-lock
+  - component-refs
+  - design-gaps
+  - design-review
+  outputs:
+  - prototype-approved
+  depends_on:
+  - s03a.design_integrate
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - verdict
+    - prototype_sha256
+    - summary
+    - context
+    properties:
+      artifact_path:
+        type: string
+      verdict:
+        type: string
+        enum:
+        - approved
+        - changes_requested
+      prototype_sha256:
+        type: string
+        pattern: ^sha256:[0-9a-f]{64}$
+      summary:
+        type: object
+        required:
+        - blockers_open
+        - majors_open
+        - minors_open
+        properties:
+          blockers_open:
+            type: integer
+            minimum: 0
+          majors_open:
+            type: integer
+            minimum: 0
+          minors_open:
+            type: integer
+            minimum: 0
+      context:
+        type: object
+- id: s03c.prototype_rework
+  name: Переделка прототипа по замечаниям s03b
+  description: 'Переисполняет design-unit для затронутых экранов после
+
+    changes_requested. Правки человека не теряются: unit берёт последний
+
+    S3 .fig, а не перезаписывает его сгенерированной версией. По завершении
+
+    invalidates сбрасывает s03a/s03b, чтобы интеграция и приёмка прошли
+
+    заново. Версия снимка — vN+1; старый vN уходит в archive/.
+
+    '
+  phase: ideation
+  stage: design
+  agent: orc
+  track: B
+  mode: all
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  invoke:
+    sub_process: design-unit
+    for_each: context.screens
+    max_parallel: 3
+    unit_key: screen_id
+    block_on_quarantine: true
+  inputs:
+  - prototype-review
+  - design-impact
+  outputs:
+  - visualized-brief-units
+  depends_on:
+  - s03b.prototype_accept
+  goto_only: true
+  invalidates:
+  - s03a.design_integrate
+  - s03b.prototype_accept
 - id: s04.graph_builder_design
   name: UI-граф из дизайна (graph-builder from-design)
-  description: 'UI-граф из дизайна (graph-builder from-design): результат — UI-GRAPH.yaml (planned-graph). Опирается на: visualized-brief, scope-report. Остаётся опциональным (дизайн-граф спекулятивен); обязательна только актуализация по коду — s21.'
+  description: 'UI-граф из дизайна (graph-builder from-design): результат — UI-GRAPH.yaml (planned-graph). Опирается на: visualized-brief,
+    scope-report. Остаётся опциональным (дизайн-граф спекулятивен); обязательна только актуализация по коду — s21.'
   phase: ideation
   stage: design
   agent: graph-builder
@@ -256,10 +593,17 @@ steps:
   inputs:
   - visualized-brief
   - scope-report
+  - design-impact
+  - ds-lock
+  - component-refs
+  - component-map
+  - design-gaps
+  - prototype-approved
+  - prototype-review
   outputs:
   - planned-ui-graph
   depends_on:
-  - s03.proto_visualize
+  - s03b.prototype_accept
   arch_writes:
   - type: create_or_update
     target: arch/frontend/pages/*.yaml
@@ -276,17 +620,34 @@ steps:
   - visualized-brief
   - planned-ui-graph
   - scope-report
+  - design-impact
+  - ds-lock
+  - component-refs
+  - design-gaps
+  - design-review
   outputs:
   - expertise-report
   depends_on:
   - s04.graph_builder_design
   - s02.architect_scope_analysis
-  description: 'Проверка соответствия дизайна архитектурным ограничениям. ОБЯЗАТЕЛЬНО публикуй open_decisions[] — развилки, где сырой запрос человека допускает ≥2 прочтения (напр. неоднозначная формулировка): архитектор формулирует варианты и рекомендацию, но НЕ решает двусмысленность молча — она уходит на s07.requirements_reconcile как вопрос человеку. Решения B* давай явно и трассируемо к пункту запроса (decision_ref), чтобы переинтерпретация не спряталась.
+  description: 'Проверка соответствия дизайна архитектурным ограничениям. ОБЯЗАТЕЛЬНО публикуй open_decisions[] — развилки,
+    где сырой запрос человека допускает ≥2 прочтения (напр. неоднозначная формулировка): архитектор формулирует варианты и
+    рекомендацию, но НЕ решает двусмысленность молча — она уходит на s07.requirements_reconcile как вопрос человеку. Решения
+    B* давай явно и трассируемо к пункту запроса (decision_ref), чтобы переинтерпретация не спряталась.
 
     '
 - id: s06.feature_brief_final
   name: Финализация feature-brief.md
-  description: 'Финализация feature-brief.md: результат — feature-brief.md (финал). Опирается на: expertise-report. Дополнительно сохраняет doc/идеи/<F>/invariants.json с теми же invariants[] (id/statement/test_ref/enforcement) — файл-артефакт machine-гейтов (test-ref-runnable, catalog-invariants, ui-audit). Если path1.ui.json.platform ∈ {web,mobile,both} — добавь в invariants.json core INV-UI-TRUTH, INV-UI-LABEL, INV-UI-A11Y-NAME, INV-UI-ORACLE (формат — doc/процесс/ui-invariants.md). Статусы ядра: INV-UI-TRUTH/LABEL/A11Y-NAME — active с исполнимым test_ref. INV-UI-ORACLE публикуй со status `proposed`: его enforcement — гейты s22a (gate-ui-audit-machine) и oracle-cited s22/s24, а ui-audit.json появляется только на s22a, поэтому active-инвариант с test_ref на s20a недопустим (gate-invariant-enforced). Общее правило: если оракул инварианта материализуется ПОЗЖЕ (стендовый E2E на s20c, ui-audit.json на s22a), публикуй его со status `proposed` до этого шага — иначе active-инвариант с test_ref на s20a недопустим (gate-invariant-enforced). Так же публикуй INV-UI-E2E-PREVIEW (его оракул — E2E на стенде со скриншотом, s20c).
+  description: 'Финализация feature-brief.md: результат — feature-brief.md (финал). Опирается на: expertise-report. Дополнительно
+    сохраняет doc/идеи/<F>/invariants.json с теми же invariants[] (id/statement/test_ref/enforcement) — файл-артефакт machine-гейтов
+    (test-ref-runnable, catalog-invariants, ui-audit). Если path1.ui.json.platform ∈ {web,mobile,both} — добавь в invariants.json
+    core INV-UI-TRUTH, INV-UI-LABEL, INV-UI-A11Y-NAME, INV-UI-ORACLE (формат — doc/процесс/ui-invariants.md). Статусы ядра:
+    INV-UI-TRUTH/LABEL/A11Y-NAME — active с исполнимым test_ref. INV-UI-ORACLE публикуй со status `proposed`: его enforcement
+    — гейты s22a (gate-ui-audit-machine) и oracle-cited s22/s24, а ui-audit.json появляется только на s22a, поэтому active-инвариант
+    с test_ref на s20a недопустим (gate-invariant-enforced). Общее правило: если оракул инварианта материализуется ПОЗЖЕ (стендовый
+    E2E на s20c, ui-audit.json на s22a), публикуй его со status `proposed` до этого шага — иначе active-инвариант с test_ref
+    на s20a недопустим (gate-invariant-enforced). Так же публикуй INV-UI-E2E-PREVIEW (его оракул — E2E на стенде со скриншотом,
+    s20c).
 
     '
   phase: ideation
@@ -359,7 +720,15 @@ steps:
         - arch
 - id: s07.requirements_reconcile
   name: Сверка требований «просил человек ↔ делаем» (product)
-  description: 'Обязательная сверка ДО планирования (закрывает дефект E2669: гейты проверяли согласованность с самими собой, а не с запросом человека). product читает НЕИЗМЕНЯЕМЫЙ сырой запрос человека (context.feature_request_path или doc/идеи/<F>/feature-request.md) и артефакты проектирования (feature-brief, scope-report, expertise-report, visualized-brief, planned-ui-graph) и публикует два артефакта: (1) doc/идеи/<F>/intent-trace.json — машинный манифест items[{item_id, raw_quote, our_interpretation, verdict∈{match,reinterpreted,missing,dropped}, decision_ref, scenario_ref, added, confirmed_by_human}] + open_questions[]; (2) doc/идеи/<F>/intent-brief.md — КОРОТКИЙ (1–2 экрана, НЕ спека и не план) человекочитаемый документ: цель, таблица «просил→делаем», отдельный раздел «где домыслили / что добавили от себя», ссылки на прототипы (s03/s04). Правила: каждый пункт сырого запроса обязан иметь запись (silent drop запрещён); verdict=reinterpreted или added требует явного подтверждения человеком (s08); двусмысленности из s05.open_decisions[] выносятся вопросами к человеку, а не решаются молча. Источник сверки — СЫРОЙ запрос, не бриф (иначе самопроверка тавтологична).
+  description: 'Обязательная сверка ДО планирования (закрывает дефект E2669: гейты проверяли согласованность с самими собой,
+    а не с запросом человека). product читает НЕИЗМЕНЯЕМЫЙ сырой запрос человека (context.feature_request_path или doc/идеи/<F>/feature-request.md)
+    и артефакты проектирования (feature-brief, scope-report, expertise-report, visualized-brief, planned-ui-graph) и публикует
+    два артефакта: (1) doc/идеи/<F>/intent-trace.json — машинный манифест items[{item_id, raw_quote, our_interpretation, verdict∈{match,reinterpreted,missing,dropped},
+    decision_ref, scenario_ref, added, confirmed_by_human}] + open_questions[]; (2) doc/идеи/<F>/intent-brief.md — КОРОТКИЙ
+    (1–2 экрана, НЕ спека и не план) человекочитаемый документ: цель, таблица «просил→делаем», отдельный раздел «где домыслили
+    / что добавили от себя», ссылки на прототипы (s03/s04). Правила: каждый пункт сырого запроса обязан иметь запись (silent
+    drop запрещён); verdict=reinterpreted или added требует явного подтверждения человеком (s08); двусмысленности из s05.open_decisions[]
+    выносятся вопросами к человеку, а не решаются молча. Источник сверки — СЫРОЙ запрос, не бриф (иначе самопроверка тавтологична).
 
     '
   phase: ideation
@@ -438,7 +807,12 @@ steps:
         type: object
 - id: s08.intent_brief_review
   name: Человек утверждает «что делаем» (intent-brief)
-  description: 'Обязательный человеческий чекпойнт перед планированием (возврат human-in-the-loop, снятого в 2.3.0). Человек получает КОРОТКИЙ intent-brief.md, а не 1000 страниц брифа/плана: цель, таблица «просил→делаем», список домыслов/добавлений, прототипы. Решение: approved=true + signature (policy(<process>@<version> <YYYY-MM-DD>) или свободная) и/или edits[] + disposition. Правки человека обязаны быть внесены в intent-trace.json (confirmed_by_human=edited) и при необходимости в feature-brief.md ДО перехода к s10. Без человеческого решения подтверждение не фиксируется (событие l5_unsigned) — планирование стартовать не должно.'
+  description: 'Обязательный человеческий чекпойнт перед планированием (возврат human-in-the-loop, снятого в 2.3.0). Человек
+    получает КОРОТКИЙ intent-brief.md, а не 1000 страниц брифа/плана: цель, таблица «просил→делаем», список домыслов/добавлений,
+    прототипы. Решение: approved=true + signature (policy(<process>@<version> <YYYY-MM-DD>) или свободная) и/или edits[] +
+    disposition. Правки человека обязаны быть внесены в intent-trace.json (confirmed_by_human=edited) и при необходимости
+    в feature-brief.md ДО перехода к s10. Без человеческого решения подтверждение не фиксируется (событие l5_unsigned) — планирование
+    стартовать не должно.'
   phase: ideation
   stage: validation
   agent: human
@@ -455,7 +829,8 @@ steps:
   max_retries: 5
 - id: s06a.reality_snapshot
   name: Reality-snapshot (auditor; C-1)
-  description: 'Снимок реального состояния кода: scope, узлы nodes[].{id,kind,ref[,run_result]}, commit, actual_behavior. Заземляет планирование фактом, а не текстом брифа.
+  description: 'Снимок реального состояния кода: scope, узлы nodes[].{id,kind,ref[,run_result]}, commit, actual_behavior.
+    Заземляет планирование фактом, а не текстом брифа.
 
     '
   phase: planning
@@ -590,7 +965,8 @@ steps:
               type: string
 - id: s06c.reconcile_verify
   name: Независимая верификация reconcile (architect ≠ auditor; C-3)
-  description: 'Правило 4: кто снимал реальность (auditor), не проверяет сам себя; верификацию ведёт architect. Машинной проверки «разные личности» в движке нет (2.0.0) — здесь независимость обеспечивается разными агентами.
+  description: 'Правило 4: кто снимал реальность (auditor), не проверяет сам себя; верификацию ведёт architect. Машинной проверки
+    «разные личности» в движке нет (2.0.0) — здесь независимость обеспечивается разными агентами.
 
     '
   phase: planning
@@ -637,7 +1013,8 @@ steps:
               type: string
 - id: s06d.canonize
   name: Канонизация понятий (architect; C-4)
-  description: 'Одно понятие = одно определение (term/definition/storage/version). Публикует {context.canon} — путь к артефакту-канону для гейта поведения (C-5).
+  description: 'Одно понятие = одно определение (term/definition/storage/version). Публикует {context.canon} — путь к артефакту-канону
+    для гейта поведения (C-5).
 
     '
   phase: planning
@@ -686,7 +1063,8 @@ steps:
       terms: '{result.canon}'
 - id: s06e.reproduce
   name: Прогон сценария (auditor; C-4/C-5)
-  description: 'Воспроизводит сценарий из канона и публикует {context.run_result}. Command-гейт expected==actual сравнивает canon и run_result (C-5); без runner''а гейт активируется только overlay''ем ({context.drift_gate}).
+  description: 'Воспроизводит сценарий из канона и публикует {context.run_result}. Command-гейт expected==actual сравнивает
+    canon и run_result (C-5); без runner''а гейт активируется только overlay''ем ({context.drift_gate}).
 
     '
   phase: planning
@@ -752,7 +1130,8 @@ steps:
       result: '{result.run_result}'
 - id: s10.change_definition
   name: Change-definition по доменам (architect)
-  description: 'Change-definition по доменам (architect): результат — change-definition.md для каждого домена. Опирается на: approved-feature-brief, scope-report.
+  description: 'Change-definition по доменам (architect): результат — change-definition.md для каждого домена. Опирается на:
+    approved-feature-brief, scope-report.
 
     '
   phase: planning
@@ -763,6 +1142,10 @@ steps:
   inputs:
   - approved-feature-brief
   - scope-report
+  - design-impact
+  - ds-lock
+  - component-refs
+  - design-gaps
   outputs:
   - change-definitions
   depends_on:
@@ -773,7 +1156,8 @@ steps:
     target: change-definition artifacts
 - id: s11.planner_high_level
   name: Верхнеуровневый план фичи (planner mode:all)
-  description: 'Верхнеуровневый план фичи (planner mode:all): результат — план в чате + plan.md. Опирается на: change-definitions, planned-ui-graph.
+  description: 'Верхнеуровневый план фичи (planner mode:all): результат — план в чате + plan.md. Опирается на: change-definitions,
+    planned-ui-graph.
 
     '
   phase: planning
@@ -794,7 +1178,8 @@ steps:
   arch_writes:
   - type: create
     target: plan artifact, task relationships
-  prompt_patch: 'ДЕКОМПОЗИЦИЯ (ОБЯЗАТЕЛЬНО): один unit = ОДИН endpoint ЛИБО ОДИН экран/компонент + ЕГО тесты; запрещены «мега-юниты»; в каждом unit_brief — конкретные файлы, явные acceptance-оракулы, ≤ ~8 файлов.'
+  prompt_patch: 'ДЕКОМПОЗИЦИЯ (ОБЯЗАТЕЛЬНО): один unit = ОДИН endpoint ЛИБО ОДИН экран/компонент + ЕГО тесты; запрещены «мега-юниты»;
+    в каждом unit_brief — конкретные файлы, явные acceptance-оракулы, ≤ ~8 файлов.'
 - id: s13.plan_save
   name: Сохранение плана в файл (planner)
   description: 'Сохранение плана в файл (planner): результат — doc/идеи/F{NN}-{slug}/plan.md. Опирается на: approved-plan.
@@ -824,6 +1209,10 @@ steps:
   inputs:
   - saved-plan
   - change-definitions
+  - ds-lock
+  - component-refs
+  - component-map
+  - design-gaps
   outputs:
   - specs
   depends_on:
@@ -932,7 +1321,8 @@ steps:
     target: contract artifacts
 - id: s15.brief_milestone
   name: Бриф вехи (planner subagent)
-  description: 'Бриф вехи (planner subagent): результат — M{NN}/brief.md. Опирается на: saved-plan, specs. ОБЯЗАТЕЛЕН (ревизия 2.11.11): экономия на подготовке не оправдывает риск «сделали не то»; бриф вехи фиксирует границы вехи до кода.'
+  description: 'Бриф вехи (planner subagent): результат — M{NN}/brief.md. Опирается на: saved-plan, specs. ОБЯЗАТЕЛЕН (ревизия
+    2.11.11): экономия на подготовке не оправдывает риск «сделали не то»; бриф вехи фиксирует границы вехи до кода.'
   phase: planning
   agent: planner
   track: docs
@@ -950,7 +1340,10 @@ steps:
     target: milestone artifact
 - id: s16.brief_tasks
   name: Детальные брифы задач (planner subagent)
-  description: 'Детальные брифы задач (planner subagent): результат — T{NNNN}/brief.md × N. Опирается на: milestone-brief, specs. Для change_class=plain допускается СЛИЯНИЕ брифов: один brief на unit (без отдельного milestone-брифа), Каждый unit_brief задаёт `sde` (роль исполнителя): frontend/* → sde-frontend, backend/* → sde-backend, infra → sde-infra, mobile/* → sde-mobile.
+  description: 'Детальные брифы задач (planner subagent): результат — T{NNNN}/brief.md × N. Опирается на: milestone-brief,
+    specs. Для change_class=plain допускается СЛИЯНИЕ брифов: один brief на unit (без отдельного milestone-брифа), Каждый
+    unit_brief задаёт `sde` (роль исполнителя): frontend/* → sde-frontend, backend/* → sde-backend, infra → sde-infra, mobile/*
+    → sde-mobile.
 
     '
   phase: planning
@@ -1108,7 +1501,18 @@ steps:
               type: string
       coverage:
         type: object
-  description: 'КРИТИЧЕСКИЙ ГЕЙТ перед переходом к исполнению. Проверяет что spec полностью готова ко всем аспектам. Плюс вердикты по КАТАЛОГУ ОТКАЗОВ: сохрани doc/идеи/<F>/fault-verdicts.json — {"<catalog_id>": {"verdict":"covered|gap|na", "check":"…", "proof_run_id|detector_exit|evidence":"…"(covered), "justification":"…"(na/gap)}} по каждому id из audit/fault-catalog/*. covered без proof недопустим (вердикт на суждении); na — только с обоснованием (наследование базового инварианта и т.п.). Если proof унаследован из другого прогона/фичи (proof_run_id чужого прогона) — добавь inherited_from: "<feature>/<run>" (иначе вердикт считается недоказанным). Гейт gate-catalog-invariants (s20a) принимает na+justification вместо активного инварианта. ВЕРДИКТ (3.1.1): публикуй verdict ∈ {pass,pass_with_gaps,fail} и gaps[].{severity ∈ info|minor|major|critical, owner}; ОБЯЗАТЕЛЬНО сохрани машинное зеркало doc/идеи/<F>/coverage-audit.json {verdict, coverage{total,resolved}, gaps[{id,severity,owner,description,check}]} — его читает gate-coverage-verdict. Правило: verdict=fail или любой gap major/critical → гейт FAIL (в т.ч. pass_with_gaps); pass_with_gaps только с info/minor проходит и открывает s20; при FAIL работает ветка s17→s16 (max_cycles 2 → quarantine). Флаг gaps_has_blocking = true при любом gap severity major|critical — на него опирается условие ветки (правила условий не ищут по массиву gaps).
+  description: 'КРИТИЧЕСКИЙ ГЕЙТ перед переходом к исполнению. Проверяет что spec полностью готова ко всем аспектам. Плюс
+    вердикты по КАТАЛОГУ ОТКАЗОВ: сохрани doc/идеи/<F>/fault-verdicts.json — {"<catalog_id>": {"verdict":"covered|gap|na",
+    "check":"…", "proof_run_id|detector_exit|evidence":"…"(covered), "justification":"…"(na/gap)}} по каждому id из audit/fault-catalog/*.
+    covered без proof недопустим (вердикт на суждении); na — только с обоснованием (наследование базового инварианта и т.п.).
+    Если proof унаследован из другого прогона/фичи (proof_run_id чужого прогона) — добавь inherited_from: "<feature>/<run>"
+    (иначе вердикт считается недоказанным). Гейт gate-catalog-invariants (s20a) принимает na+justification вместо активного
+    инварианта. ВЕРДИКТ (3.1.1): публикуй verdict ∈ {pass,pass_with_gaps,fail} и gaps[].{severity ∈ info|minor|major|critical,
+    owner}; ОБЯЗАТЕЛЬНО сохрани машинное зеркало doc/идеи/<F>/coverage-audit.json {verdict, coverage{total,resolved}, gaps[{id,severity,owner,description,check}]}
+    — его читает gate-coverage-verdict. Правило: verdict=fail или любой gap major/critical → гейт FAIL (в т.ч. pass_with_gaps);
+    pass_with_gaps только с info/minor проходит и открывает s20; при FAIL работает ветка s17→s16 (max_cycles 2 → quarantine).
+    Флаг gaps_has_blocking = true при любом gap severity major|critical — на него опирается условие ветки (правила условий
+    не ищут по массиву gaps).
 
     '
 - agent: team-lead
@@ -1141,12 +1545,25 @@ steps:
   inputs:
   - task-briefs
   - specs
+  - ds-lock
+  - component-refs
+  - design-gaps
   outputs:
   - implementation
   depends_on:
   - s17.coverage_audit
   - s19.stand_lease
-  prompt_patch: 'DoD КАЖДОГО юнита: валидация всех входов (400); статус-коды по spec/contract-matrix.md (вкл. 405/403/envelope auth-слоя); envelope во ВСЕХ слоях = common.yaml#APIError; тест на каждый негатив; без мёртвых веток/двойных источников.'
+  prompt_patch: 'DoD КАЖДОГО юнита: валидация всех входов (400); статус-коды по spec/contract-matrix.md (вкл. 405/403/envelope
+    auth-слоя); envelope во ВСЕХ слоях = common.yaml#APIError; тест на каждый негатив; без мёртвых веток/двойных источников.'
+  prompt_patch_append: 'DS-КОНТРАКТ: feature-unit''ы используют компоненты только из
+
+    component-refs.json/ds.lock.json. Запрещено редактировать design/**,
+
+    frontend/src/ui/** и добавлять локальные UI-компоненты; gap оформляется
+
+    как path6-required, а не локальной реализацией.
+
+    '
 - id: s20a.unit_integrate
   name: Интеграция юнитов + сводный отчёт (C-10)
   phase: execution
@@ -1266,7 +1683,8 @@ steps:
               type: string
   context_updates:
     report_path: '{result.artifact_path}'
-  description: 'Агрегирует результаты юнитов в сводный отчёт, проверяет совместность и публикует report_path для downstream-гейтов. Универсальный агент определяет режим автоматически; полный контекст — через arch_ctx.
+  description: 'Агрегирует результаты юнитов в сводный отчёт, проверяет совместность и публикует report_path для downstream-гейтов.
+    Универсальный агент определяет режим автоматически; полный контекст — через arch_ctx.
 
     '
   arch_reads:
@@ -1299,7 +1717,9 @@ steps:
   track: B
 - id: s21.graph_actualize
   name: Актуализация UI-графа (graph-builder from-code)
-  description: 'Актуализация UI-графа (graph-builder from-code): результат — UI-GRAPH.yaml (актуализированный). Опирается на: implementation. ОБЯЗАТЕЛЕН для UI-фич (platform web|mobile|both): гейт gate-graph-actualized на s21 и на s24 не даёт принять UI-фичу без актуализированного графа. Для backend-only фич не требуется (гейт PASS-NA).'
+  description: 'Актуализация UI-графа (graph-builder from-code): результат — UI-GRAPH.yaml (актуализированный). Опирается
+    на: implementation. ОБЯЗАТЕЛЕН для UI-фич (platform web|mobile|both): гейт gate-graph-actualized на s21 и на s24 не даёт
+    принять UI-фичу без актуализированного графа. Для backend-only фич не требуется (гейт PASS-NA).'
   phase: execution
   agent: graph-builder
   track: B
@@ -1316,13 +1736,31 @@ steps:
   - actualized-ui-graph
   depends_on:
   - s20a.unit_integrate
+  - s20b.preview_deploy
+  - s20c.preview_verify
   arch_writes:
   - type: update
     target: arch/frontend/pages/*.yaml
     status: implemented
 - id: s22a.ui_audit
-  name: UI/UX-аудит (designer; чек-лист A–L / M)
-  description: 'Независимый аудит интерфейса: состояния/честность, информативность, человеческий слой, визуальная система, композиция, взаимодействие, a11y, адаптив/устройства, данные/контракты, перф, завершённость, доказательства; для mobile — блок M (safe-area, тач-цели, нативные паттерны, dynamic type, permissions, offline, VoiceOver/TalkBack, golden path). Каждый пункт — criterion + oracle. Публикует ui-audit.{md,json}, привязанный к SHA стенда. ВАЖНО: stand.sha ОБЯЗАН равняться выкаченному ref из preview-deploy.json (корень репо; gate-ui-audit сверяет и падает «аудит не на том билде»). Не записывай sha локального HEAD. Файлы (ровно один doc/идеи/<F>/ui-audit.json): platform; stand{url,sha=билд стенда}; summary{open_critical_high:0,blockers:0}; items[{id,block,verdict(ok|violation|na),severity,criterion,oracle(исполнимый cmd:/sh:/<file>::<Test>/url/dom),evidence{kind,ref}}]. Обязательные блоки: web A–L, mobile A,C,D,F,G,I,K,L,M, both A–M. Также требуется doc/идеи/<F>/invariants.json с core INV-UI-*. Точный контракт — doc/процесс/ui-invariants.md §Форматы; проверяет bash tools/path1-gate.sh ui-audit {execution_id}. Зависит от s20a.unit_integrate и s20c.preview_verify (base 3.1.9): порядок «аудит после превью» гарантирован базовым DAG (gate-preview-before-ui).'
+  name: UI-аудит (UI designer; визуальная система, DS-usage, a11y)
+  description: 'Независимый UI-аудит: визуальная система, токены, состояния и варианты
+
+    компонентов, композиция, адаптив 390/1200, a11y-механика, DS-usage.
+
+    UX-аудит вынесен в s22e.ux_audit и здесь не выполняется.
+
+    Публикует ui-audit.{md,json}, привязанный к SHA стенда; в ui-audit.json
+
+    добавляется блок design_system {release, manifest_sha256,
+
+    component_refs_sha256, ds_usage_violations}. Существующий контракт
+
+    (A-L/M, oracle-cited, gate-ui-audit-*) сохраняется.
+
+    Зависит от s20a.unit_integrate и s20c.preview_verify.
+
+    '
   phase: acceptance
   agent: designer
   track: B
@@ -1338,6 +1776,8 @@ steps:
   - actualized-ui-graph
   - specs
   - preview-verdict
+  - design-impact
+  - component-refs
   outputs:
   - ui-audit
   depends_on:
@@ -1457,7 +1897,10 @@ steps:
             type: integer
 - id: s22d.mobile_probe
   name: Mobile-проба (tester-run-mobile; устройства + golden path)
-  description: 'Снимает доказательства для блока M на устройствах/эмуляторах: матрица (iPhone + Android), safe-area, тач-цели, dynamic type, тёмная тема, permissions, offline/плохая сеть, VoiceOver/TalkBack, golden path как Maestro-флоу. Публикует mobile-evidence.json (stand.sha, devices[], flows[], screenshots[]). Опционально; активируется для platform mobile/both. Base 3.1.9 зависит от s20a.unit_integrate и s20c.preview_verify; превью-гейт gate-preview-before-mobile — в базе.
+  description: 'Снимает доказательства для блока M на устройствах/эмуляторах: матрица (iPhone + Android), safe-area, тач-цели,
+    dynamic type, тёмная тема, permissions, offline/плохая сеть, VoiceOver/TalkBack, golden path как Maestro-флоу. Публикует
+    mobile-evidence.json (stand.sha, devices[], flows[], screenshots[]). Опционально; активируется для platform mobile/both.
+    Base 3.1.9 зависит от s20a.unit_integrate и s20c.preview_verify; превью-гейт gate-preview-before-mobile — в базе.
 
     '
   phase: acceptance
@@ -1479,9 +1922,167 @@ steps:
   - s20a.unit_integrate
   - s20c.preview_verify
   max_retries: 2
+- id: s22e.ux_audit
+  name: UX-аудит (product/UX; задача, IA, тексты, flow)
+  description: 'Независимый UX-аудит: достижимость задачи, первый шаг, IA/навигация,
+
+    смысл и тон текстов, когнитивная нагрузка, восстановление после ошибок,
+
+    доменная честность (unknown != 0, blocked, over-budget, offline).
+
+    Публикует ux-audit.{md,json}, привязанный к SHA стенда. Независим от
+
+    автора кода/текстов: auditor_session_id != author_session_id.
+
+    Для backend-only не активируется.
+
+    '
+  phase: acceptance
+  agent: product
+  track: docs
+  mode: subagent
+  when:
+    param: feature_profile
+    in:
+    - full
+    - frontend
+  artifact: ux-audit.md + ux-audit.json
+  inputs:
+  - implementation
+  - actualized-ui-graph
+  - specs
+  - preview-verdict
+  - design-impact
+  - design-review
+  outputs:
+  - ux-audit
+  depends_on:
+  - s20a.unit_integrate
+  - s20c.preview_verify
+  max_retries: 2
+  result_schema:
+    type: object
+    required:
+    - artifact_path
+    - platform
+    - stand
+    - summary
+    - items
+    - independence
+    - context
+    properties:
+      artifact_path:
+        type: string
+      platform:
+        type: string
+        enum:
+        - web
+        - mobile
+        - both
+        - none
+      stand:
+        type: object
+        required:
+        - url
+        - sha
+        properties:
+          url:
+            type: string
+          sha:
+            type: string
+      summary:
+        type: object
+        required:
+        - verdict
+        - blockers
+        - open_critical_high
+        properties:
+          verdict:
+            type: string
+            enum:
+            - pass
+            - fail
+          blockers:
+            type: integer
+          majors:
+            type: integer
+          open_critical_high:
+            type: integer
+      items:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - id
+          - screen_id
+          - block
+          - criterion
+          - verdict
+          - severity
+          - oracle
+          - evidence
+          properties:
+            id:
+              type: string
+            screen_id:
+              type: string
+            block:
+              type: string
+            criterion:
+              type: string
+            verdict:
+              type: string
+              enum:
+              - ok
+              - violation
+              - na
+            severity:
+              type: string
+              enum:
+              - blocker
+              - major
+              - minor
+              - cosmetic
+            oracle:
+              type: string
+            evidence:
+              type: object
+              required:
+              - kind
+              - ref
+              properties:
+                kind:
+                  type: string
+                ref:
+                  type: string
+      independence:
+        type: object
+        required:
+        - auditor_session_id
+        - author_session_id
+        - distinct
+        properties:
+          auditor_session_id:
+            type: string
+          author_session_id:
+            type: string
+          distinct:
+            type: boolean
+      context:
+        type: object
+        required:
+        - source
+        - tokens
+        properties:
+          source:
+            type: string
+          tokens:
+            type: integer
 - id: s22.result_audit
   name: Аудит результата (architect)
-  description: 'Аудит результата (architect): результат — результат аудита. Опирается на: implementation, actualized-ui-graph, change-definitions.
+  description: 'Аудит результата (architect): результат — результат аудита. Опирается на: implementation, actualized-ui-graph,
+    change-definitions.
 
     '
   phase: acceptance
@@ -1493,11 +2094,15 @@ steps:
   - implementation
   - actualized-ui-graph
   - change-definitions
+  - ui-audit
+  - ux-audit
+  - design-review
   outputs:
   - result-audit
   depends_on:
   - s22a.ui_audit
   - s22d.mobile_probe
+  - s22e.ux_audit
   - s20c.preview_verify
   max_retries: 2
   result_schema:
@@ -1594,7 +2199,16 @@ steps:
   outputs:
   - red-team-verdict
   phase: acceptance
-  prompt_patch: 'RED-TEAM АУДИТ (adversarial, attack-log). Идёт на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090 model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) → проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`. В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy) или provider deepseek; V4 Pro не использовать по умолчанию. Атакуй реализацию: реальные вызовы эндпоинтов/RLS/скоупов, канарейки (машинное доказательство), битые состояния, код-статусы. Артефакт doc/идеи/<F>/fault-verdicts.json + attack-log.  НЕЗАВИСИМОСТЬ (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ team-lead, НЕ автор). В артефакт пиши author_session_id (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться (gate-code-review fail-close при совпадении/отсутствии). Модель — по кросс-паре tools/model-policy.json. Самопроверка запрещена.'
+  prompt_patch: 'RED-TEAM АУДИТ (adversarial, attack-log). Идёт на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090
+    model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) →
+    проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`.
+    В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару
+    по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy)
+    или provider deepseek; V4 Pro не использовать по умолчанию. Атакуй реализацию: реальные вызовы эндпоинтов/RLS/скоупов,
+    канарейки (машинное доказательство), битые состояния, код-статусы. Артефакт doc/идеи/<F>/fault-verdicts.json + attack-log.  НЕЗАВИСИМОСТЬ
+    (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ team-lead, НЕ автор). В артефакт пиши author_session_id
+    (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться (gate-code-review fail-close при совпадении/отсутствии).
+    Модель — по кросс-паре tools/model-policy.json. Самопроверка запрещена.'
   track: B
 - agent: reviewer
   depends_on:
@@ -1608,7 +2222,18 @@ steps:
   outputs:
   - code-review
   phase: acceptance
-  prompt_patch: 'АДВЕРСАРИАЛЬНОЕ КОД-РЕВЬЮ (не отчётов). Обязан идти на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090 model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) → проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`. В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy) или provider deepseek; V4 Pro не использовать по умолчанию. Читай `git diff <base>...HEAD` и САМ КОД; локально запускай go build/vet/test, tsc/vitest; сверяй spec/openapi/common.yaml с фактическим поведением; форензика evidence. Ищи реальные дефекты: off-by-one, dead-end состояния, scope/RLS mismatch, дрейф контракта, утечки, мёртвый код. Read-only. Артефакт doc/идеи/<F>/code-review.json.  НЕЗАВИСИМОСТЬ (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ team-lead, НЕ автор). В артефакт пиши author_session_id (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться (gate-code-review fail-close при совпадении/отсутствии). Модель — по кросс-паре tools/model-policy.json. Самопроверка запрещена.'
+  prompt_patch: 'АДВЕРСАРИАЛЬНОЕ КОД-РЕВЬЮ (не отчётов). Обязан идти на ДРУГОЙ модели, чем автор. МОДЕЛЬ-ПОЛИТИКА (ADR-KIT-090
+    model-distinct, дешёвая кросс-пара — БЕЗ DeepSeek V4 Pro): если автор кода = `deepseek/deepseek-flash` (V4.1 Flash) →
+    проверяющий = `llama-proxy/qwen3.8-fast`; если автор кода = `llama-proxy/qwen3.8-fast` → проверяющий = `deepseek/deepseek-flash`.
+    В артефакте укажи `reviewer{model,provider}`, `author_model`, `author_provider` — гейт `gate-code-review` сверит кросс-пару
+    по `tools/model-policy.json` и упадёт при одном провайдере/модели. Запускай reviewer только на localhost:8090 (llama-proxy)
+    или provider deepseek; V4 Pro не использовать по умолчанию. Читай `git diff <base>...HEAD` и САМ КОД; локально запускай
+    go build/vet/test, tsc/vitest; сверяй spec/openapi/common.yaml с фактическим поведением; форензика evidence. Ищи реальные
+    дефекты: off-by-one, dead-end состояния, scope/RLS mismatch, дрейф контракта, утечки, мёртвый код. Read-only. Артефакт
+    doc/идеи/<F>/code-review.json.  НЕЗАВИСИМОСТЬ (ADR-KIT-090, E9236): шаг исполняет РАЗОВЫЙ независимый агент-ревьюер (НЕ
+    team-lead, НЕ автор). В артефакт пиши author_session_id (или session_id) и reviewer_session_id — они ДОЛЖНЫ различаться
+    (gate-code-review fail-close при совпадении/отсутствии). Модель — по кросс-паре tools/model-policy.json. Самопроверка
+    запрещена.'
   track: B
 - id: s23.refinement
   name: Доработка по замечаниям (sde-backend/sde-frontend)
@@ -1635,13 +2260,18 @@ steps:
   skip_satisfied_deps: true
 - id: s24a.branch_fresh
   name: BRANCH-FRESH — head рабочей ветки = target_repo_head (C-17; opt-in)
-  description: 'Machine-guard свежести рабочей ветки до финальной приёмки: head(work_branch) обязан совпасть с доставляемым target_repo_head. Активация — entry point branch_guard + required_context [work_branch, target_repo_head].
+  description: 'Machine-guard свежести рабочей ветки до финальной приёмки: head(work_branch) обязан совпасть с доставляемым
+    target_repo_head. Активация — entry point branch_guard + required_context [work_branch, target_repo_head].
 
     '
   phase: acceptance
   agent: orc
   track: infra
   mode: all
+  when:
+    param: orc_entry_point
+    in:
+    - branch_guard
   inputs: []
   outputs: []
   depends_on:
@@ -1661,12 +2291,15 @@ steps:
   inputs:
   - refined-implementation
   - result-audit
+  - ux-audit
+  - design-impact
   outputs:
   - committed
   depends_on:
   - s23.refinement
   - s24a.branch_fresh
   - s22c.adversarial_code_review
+  - s22e.ux_audit
   result_schema:
     type: object
     required:
@@ -1698,7 +2331,8 @@ steps:
 - id: s45.push_primary
   name: PUSH-PRIMARY — push уже влитой ветки в primary для старта CI (C-19; opt-in)
   skippable: true
-  description: 'Явный push ДО post-deploy verify: терминальная финализация срабатывает только на завершении прогона (после s46), поэтому без явного push CI/деплой не стартуют. Пушит в {context.push_target} (свойство проекта).
+  description: 'Явный push ДО post-deploy verify: терминальная финализация срабатывает только на завершении прогона (после
+    s46), поэтому без явного push CI/деплой не стартуют. Пушит в {context.push_target} (свойство проекта).
 
     '
   phase: acceptance
@@ -2206,6 +2840,178 @@ sub_processes:
       target_step: s10.unit_plan
       max_cycles: 2
       on_exhausted: quarantine
+  design-unit:
+    id: design-unit
+    params:
+    - screen_id
+    - screen_brief
+    - platform
+    - feature_profile
+    - design_system_version
+    - ds_digest
+    steps:
+    - id: s03.unit_proto
+      name: Прототип экрана + state matrix
+      description: 'Рисует экран (ASCII/прототип) и публикует state matrix: normal,
+
+        loading, empty, error + доменные состояния из screen_brief.
+
+        Каждый узел помечается node_id для component-map.
+
+        '
+      phase: ideation
+      stage: design
+      agent: proto
+      track: B
+      mode: subagent
+      artifact: unit-proto (ASCII/прототип + state matrix)
+      inputs:
+      - draft-feature-brief
+      - scope-report
+      - screen_brief
+      outputs:
+      - unit-proto
+      depends_on: []
+    - id: s04a.unit_ds_resolve
+      name: Резолв DS-релиза и component-map экрана
+      description: 'Резолвит точную версию DS (design/releases/<v>/manifest.json),
+
+        проверяет design_system_version/ds_digest и tokens/registry hashes,
+
+        строит component-map: proto-node → registry_id, публикует
+
+        unit-предложение ds.lock и unit-design-gaps. Не редактирует DS.
+
+        '
+      phase: ideation
+      stage: design
+      agent: designer
+      track: B
+      mode: subagent
+      artifact: unit-ds-lock + component-map + component-refs (unit)
+      inputs:
+      - unit-proto
+      - design_system_version
+      - ds_digest
+      - design/tokens.json
+      - design/registry.json
+      outputs:
+      - unit-ds-lock
+      - component-map
+      - component-refs-unit
+      - unit-design-gaps
+      depends_on:
+      - s03.unit_proto
+    - id: s03.unit_ui_review
+      name: UI-ревью unit'а (designer, независимый)
+      description: 'Проверяет визуальную систему, токены, состояния компонентов,
+
+        композицию, адаптив и a11y-механику. Автор proto не может быть
+
+        ревьюером: reviewer_session_id != author_session_id.
+
+        '
+      phase: ideation
+      stage: validation
+      agent: designer
+      track: B
+      mode: subagent
+      artifact: design-review.fragment.json (ui)
+      inputs:
+      - unit-proto
+      - unit-ds-lock
+      - component-map
+      outputs:
+      - unit-ui-review
+      depends_on:
+      - s03.unit_proto
+      - s04a.unit_ds_resolve
+    - id: s03.unit_ux_review
+      name: UX-ревью unit'а (product/UX, независимый)
+      description: 'Проверяет задачу пользователя, IA, тексты, flow, восстановление после
+
+        ошибок и доменную честность (unknown != 0, blocked, over-budget).
+
+        Автор proto не может быть ревьюером.
+
+        '
+      phase: ideation
+      stage: validation
+      agent: product
+      track: docs
+      mode: subagent
+      artifact: design-review.fragment.json (ux)
+      inputs:
+      - unit-proto
+      - component-map
+      - draft-feature-brief
+      outputs:
+      - unit-ux-review
+      depends_on:
+      - s03.unit_proto
+    gates:
+      s03.unit_proto:
+      - id: gate-unit-proto-coverage
+        kind: command
+        layer: 1
+        command: bash tools/path1-gate.sh unit-proto-coverage {execution_id} --screen {screen_id}
+        criteria:
+        - every state from screen_brief is covered by proto/state matrix
+        - no unlabeled/unknown state; domain states (blocked/over-budget/offline) are explicit
+        - each proto node has a component-map entry or a path6-required entry
+        on_fail:
+          action: retry
+          max_attempts: 2
+          disposition: quarantine
+          reason: proto не покрывает состояния экрана или оставляет узлы без component-map
+        x-status: proposed
+      s04a.unit_ds_resolve:
+      - id: gate-unit-ds-lock
+        kind: command
+        layer: 1
+        command: bash tools/path1-gate.sh unit-ds-lock {execution_id} --screen {screen_id}
+        criteria:
+        - ds.lock proposal resolves to design/releases/<v>/manifest.json
+        - constraint is exact (=X.Y.Z); ranges/latest/main/dev are rejected
+        - design_system_version and ds_digest match the manifest and unit params
+        - tokens_sha256/registry_sha256/kit_sha256 match the manifest
+        - feature branch does not modify design/** or frontend/src/ui/**
+        on_fail:
+          action: retry
+          max_attempts: 2
+          disposition: quarantine
+          reason: 'DS lock не доказан: версия не точная, manifest/hash не совпал или DS отредактирован в feature-ветке'
+        x-status: proposed
+      s03.unit_ui_review:
+      - id: gate-unit-ui-review
+        kind: command
+        layer: 4
+        command: bash tools/path1-gate.sh design-review {execution_id} --kind ui
+        criteria:
+        - UI review artifact verdict = accept
+        - reviewer_session_id != author_session_id
+        - blockers = 0
+        on_fail:
+          action: retry
+          max_attempts: 2
+          disposition: escalate
+          reason: UI-ревью unit'а не принято или выполнено автором
+        x-status: proposed
+      s03.unit_ux_review:
+      - id: gate-unit-ux-review
+        kind: command
+        layer: 4
+        command: bash tools/path1-gate.sh design-review {execution_id} --kind ux
+        criteria:
+        - UX review artifact verdict = accept
+        - reviewer_session_id != author_session_id
+        - blockers = 0
+        on_fail:
+          action: retry
+          max_attempts: 2
+          disposition: escalate
+          reason: UX-ревью unit'а не принято или выполнено автором
+        x-status: proposed
 gates:
   s06a.reality_snapshot:
   - id: gate-snapshot-freshness
@@ -2322,7 +3128,8 @@ gates:
     layer: 1
     command: bash tools/path1-gate.sh requirement-trace {execution_id}
     criteria:
-    - каждый пункт сырого запроса покрыт записью items[]; verdict=reinterpreted/added без confirmed_by_human → fail-close (F190 C-22)
+    - каждый пункт сырого запроса покрыт записью items[]; verdict=reinterpreted/added без confirmed_by_human → fail-close
+      (F190 C-22)
     on_fail: retry
   s08.intent_brief_review:
   - id: gate-intent-review-approval
@@ -2453,7 +3260,9 @@ gates:
     command: '[ ! -d tools ] || bash tools/check-tools-untouched.sh'
     require_exit_zero: true
     on_fail: escalate
-  - command: if [ -d orc ]; then for m in orc archd arch-validate nexus; do (cd "$m" && go build ./...) || exit 1; done; elif [ -f backend/go.mod ]; then (cd backend && go build ./...) || exit 1; elif [ -f go.mod ]; then go build ./... || exit 1; else echo skip; fi
+  - command: if [ -d orc ]; then for m in orc archd arch-validate nexus; do (cd "$m" && go build ./...) || exit 1; done; elif
+      [ -f backend/go.mod ]; then (cd backend && go build ./...) || exit 1; elif [ -f go.mod ]; then go build ./... || exit
+      1; else echo skip; fi
     criteria:
     - 'Contract-тесты проходят (archkit-монорепо: мультимодульная сборка orc/archd/arch-validate/nexus; app-репо — no-op)'
     id: gate-l0-contract
@@ -2468,14 +3277,17 @@ gates:
     kind: auto
     layer: 1
     on_fail: retry
-  - command: if [ -f .golangci.yml ] || [ -f .golangci.yaml ]; then golangci-lint run --timeout=3m; elif [ -f backend/.golangci.yml ] || [ -f backend/.golangci.yaml ]; then (cd backend && golangci-lint run --timeout=3m); else echo skip; fi
+  - command: if [ -f .golangci.yml ] || [ -f .golangci.yaml ]; then golangci-lint run --timeout=3m; elif [ -f backend/.golangci.yml
+      ] || [ -f backend/.golangci.yaml ]; then (cd backend && golangci-lint run --timeout=3m); else echo skip; fi
     criteria:
     - 'golangci-lint проходит (CI: e2e-boot/lint-typecheck)'
     id: gate-l1-lint
     kind: auto
     layer: 1
     on_fail: retry
-  - command: if [ -f nexus-ui/tsconfig.json ]; then (cd nexus-ui && npm ci --no-audit --no-fund && npx tsc --noEmit --strict) || exit 1; elif [ -f frontend/tsconfig.json ]; then (cd frontend && npm ci --no-audit --no-fund && npx tsc --noEmit) || exit 1; else echo skip; fi
+  - command: if [ -f nexus-ui/tsconfig.json ]; then (cd nexus-ui && npm ci --no-audit --no-fund && npx tsc --noEmit --strict)
+      || exit 1; elif [ -f frontend/tsconfig.json ]; then (cd frontend && npm ci --no-audit --no-fund && npx tsc --noEmit)
+      || exit 1; else echo skip; fi
     criteria:
     - 'nexus-ui TypeScript strict проходит (F157: локально зелёно = CI зелёно)'
     id: gate-l1-typecheck
@@ -2578,13 +3390,29 @@ gates:
       disposition: quarantine
       max_attempts: 2
       reason: 's20 без манифеста контекста и evidence-trail: orc_ctx + context{source,tokens,artifacts} + evidence[{id,command,...}]'
-  - command: if [ ! -f openapi/common.yaml ]; then echo "gate-shared-contract N/A - canon at doc/спецификация/lead-domain/openapi.yaml"; exit 0; fi; python3 tools/check-shared-contract.py --common openapi/common.yaml --modules 'openapi/modules/*.yaml'
+  - command: if [ ! -f openapi/common.yaml ]; then echo "gate-shared-contract N/A - canon at doc/спецификация/lead-domain/openapi.yaml";
+      exit 0; fi; python3 tools/check-shared-contract.py --common openapi/common.yaml --modules 'openapi/modules/*.yaml'
     criteria:
     - модули не подменяют общий контракт; error-envelope через $ref common.yaml#APIError (ADR-KIT-090 A4)
     id: gate-shared-contract
     kind: command
     layer: 2
     on_fail: retry
+  - id: gate-ds-usage
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-usage {execution_id}
+    criteria:
+    - all component-refs resolve in design/registry.json of the locked release
+    - local_instances = 0 (or an explicit ADR exception is present)
+    - no raw hex/rgb/hsl in feature CSS; no new selectors in features.css
+    - no edits under design/** or frontend/src/ui/** in a feature PR
+    on_fail:
+      action: retry
+      max_attempts: 2
+      disposition: escalate
+      reason: 'feature обходит DS: локальный компонент, неразрешённый registry_id или правка DS'
+    x-status: proposed
   s22a.ui_audit:
   - command: bash tools/path1-gate.sh ui-audit {execution_id}
     id: gate-ui-audit-machine
@@ -2788,7 +3616,8 @@ gates:
       reason: финальная приёмка без оракулов аудита s22 (F165 D7)
   - command: bash tools/path1-gate.sh graph-actualized {execution_id}
     criteria:
-    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном (E3877)
+    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном
+      (E3877)
     id: gate-graph-actualized
     kind: command
     layer: 1
@@ -2843,6 +3672,19 @@ gates:
       disposition: quarantine
       max_attempts: 2
       reason: доказательства не прошли проверку
+  - id: gate-ds-drift
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-drift {execution_id} --base {context.target_repo_head}
+    criteria:
+    - ds.lock.json still resolves to the same immutable manifest/hashes
+    - frontend/src/ui matches the released code tree (no feature edits)
+    - no drift between component-refs and actual imports in UI code
+    - backend-only feature without ds.lock -> PASS-NA
+    on_fail:
+      action: escalate
+      reason: DS дрейфует от ds.lock или feature меняет DS
+    x-status: proposed
   s24a.branch_fresh:
   - id: gate-branch-fresh
     kind: command
@@ -2892,12 +3734,26 @@ gates:
     layer: 1
     command: bash tools/path1-gate.sh graph-actualized {execution_id}
     criteria:
-    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном (E3877)
+    - UI-фича представлена в UI-графе (arch/structure/ui-pages/*.yaml или UI-GRAPH.yaml), актуализированном этим прогоном
+      (E3877)
     on_fail:
       action: retry
       max_attempts: 2
       reason: 'UI-фича не актуализирована в UI-графе: модель разъезжается с кодом (выполни s21.graph_actualize)'
       disposition: quarantine
+  - id: gate-ds-drift
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-drift {execution_id} --base {context.target_repo_head}
+    criteria:
+    - ds.lock.json still resolves to the same immutable manifest/hashes
+    - frontend/src/ui matches the released code tree (no feature edits)
+    - no drift between component-refs and actual imports in UI code
+    - backend-only feature without ds.lock -> PASS-NA
+    on_fail:
+      action: escalate
+      reason: DS дрейфует от ds.lock или feature меняет DS
+    x-status: proposed
   s19.stand_lease:
   - command: bash tools/check-stand-leased.sh {execution_id}
     id: gate-stand-leased
@@ -3006,9 +3862,80 @@ gates:
       disposition: quarantine
       max_attempts: 2
       reason: high/critical каталога не покрыты инвариантами
+  s02a.ds_pin:
+  - id: gate-ds-pin
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-pin {execution_id}
+    criteria:
+    - an approved DS version and digest are present (not empty/latest/main/dev)
+    - design_system_version and ds_digest match design/releases/<v>/manifest.json
+    - context.screens is non-empty, or the documented fallback has screen_id=feature and screen_brief=<feature brief>
+    - every screen item has exactly screen_id, screen_brief, platform, feature_profile, design_system_version, ds_digest
+    - no duplicate screen_id
+    on_fail:
+      action: retry
+      max_attempts: 1
+      disposition: quarantine
+      reason: 'DS pin не доказан: нет approved версии/digest, screens пуст без fallback или дубли screen_id'
+    x-status: proposed
+  s03b.prototype_accept:
+  - id: gate-prototype-accept
+    kind: command
+    layer: 5
+    command: bash tools/path1-gate.sh prototype-accept {execution_id}
+    criteria:
+    - prototypes/vN/manifest.json and prototype-review.json exist and match their schemas
+    - review.prototype.manifest_sha256 equals sha256(manifest.json)
+    - every manifest.document sha256 equals .fig-cache/<document_id>.fig (approved S3 object materialized)
+    - review.verdict.status = approved
+    - review.summary.blockers_open = 0 and majors_open = 0; no open blocker/major items
+    - Nexus approval subject=prototype binds the reviewed fig/manifest digest
+    - UI/UX unit reviews have reviewer_session_id != author_session_id
+    on_fail:
+      action: retry
+      max_attempts: 3
+      disposition: escalate
+      reason: прототип не принят человеком или digest/blockers не совпадают
+    x-status: proposed
+  s22e.ux_audit:
+  - id: gate-ux-audit
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ux-audit {execution_id}
+    criteria:
+    - ux-audit.json matches its schema
+    - stand.sha equals the deployed ref from preview-deploy.json
+    - independence.distinct = true and auditor_session_id != author_session_id
+    - summary.open_critical_high = 0
+    - every item has a runnable oracle and evidence
+    on_fail:
+      action: retry
+      max_attempts: 2
+      disposition: quarantine
+      reason: 'UX-аудит не доказан: схема/независимость/оракул/привязка к стенду'
+    x-status: proposed
+  s03a.design_integrate:
+  - id: gate-design-integrate
+    kind: command
+    layer: 2
+    command: bash tools/path1-gate.sh design-integrate {execution_id}
+    criteria:
+    - every screen from context.screens produced a design-unit result
+    - all units share the same design_system_version and ds_digest
+    - exactly one feature ds.lock.json is emitted; conflicting unit versions fail
+    - component-refs.json and component-map.yaml agree on node_id/registry_id
+    - design-review.fragment.json contains both UI and UX verdicts for every screen
+    - design-impact.md front matter matches ds.lock and component-refs
+    - design-gaps.json matches component-refs.path6_required and design-impact.path6_requests
+    on_fail:
+      action: escalate
+      reason: дизайн-юниты не агрегируются в единый DS-контракт фичи
+    x-status: proposed
 branches:
 - from: s17.coverage_audit
-  condition: s17.coverage_audit.verdict == 'fail' OR (s17.coverage_audit.verdict == 'pass_with_gaps' AND s17.coverage_audit.gaps_has_blocking == 'true')
+  condition: s17.coverage_audit.verdict == 'fail' OR (s17.coverage_audit.verdict == 'pass_with_gaps' AND s17.coverage_audit.gaps_has_blocking
+    == 'true')
   target_step: s16.brief_tasks
   priority: 2
   max_cycles: 2
@@ -3021,6 +3948,12 @@ branches:
 - condition: retry_count >= 2
   target_step: escalation
   priority: 0
+- from: s03b.prototype_accept
+  condition: s03b.prototype_accept.verdict == 'changes_requested'
+  target_step: s03c.prototype_rework
+  priority: 2
+  max_cycles: 3
+  on_exhausted: quarantine
 escalations:
 - problem_type: architectural
   trigger_after_retries: 2
@@ -3059,7 +3992,8 @@ monitoring:
       action: log_and_monitor
   NO_AUTO_ESCALATION:
     policy: monitor_and_log_only
-    rationale: 'Агенты могут легитимно ждать доступ к GPU/CPU ресурсам. Автоматическая эскалация по времени приведёт к false positives. Время — это контекст для человека принимающего решение, но НЕ триггер для автоматических действий.
+    rationale: 'Агенты могут легитимно ждать доступ к GPU/CPU ресурсам. Автоматическая эскалация по времени приведёт к false
+      positives. Время — это контекст для человека принимающего решение, но НЕ триггер для автоматических действий.
 
       '
 conflict_policy:
@@ -3068,3 +4002,4 @@ conflict_policy:
   on_timeout:
     action: notify_team_lead
     message: Resource conflict resolution timeout exceeded
+runtime_branches: true
