@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "screen_id": "note-search",
+  "states": [
+    "normal",
+    "loading",
+    "empty",
+    "error",
+    "blocked",
+    "offline"
+  ],
+  "nodes": [
+    {
+      "node_id": "page.header",
+      "component": "patterns/PageHeader"
+    },
+    {
+      "node_id": "search.field",
+      "component": "primitives/Search"
+    },
+    {
+      "node_id": "search.clear",
+      "component": "primitives/IconButton"
+    },
+    {
+      "node_id": "notes.list",
+      "component": "patterns/InboxList"
+    },
+    {
+      "node_id": "notes.item",
+      "component": "patterns/InboxItem"
+    },
+    {
+      "node_id": "states.empty",
+      "component": "patterns/EmptyState"
+    },
+    {
+      "node_id": "states.loading",
+      "component": "primitives/Skeleton"
+    },
+    {
+      "node_id": "states.error",
+      "component": "patterns/ErrorState"
+    },
+    {
+      "node_id": "states.offline",
+      "component": "patterns/SafetyBand"
+    }
+  ],
+  "source": {
+    "fig": "s3://openpencil/open_pencil_storage/canvases/f-v4-note-search--note-search.fig",
+    "status": "pending"
+  }
+}
