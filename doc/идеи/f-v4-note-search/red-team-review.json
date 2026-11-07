@@ -47,5 +47,8 @@
   },
   "step_author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
   "step_author_model": "deepseek/deepseek-flash",
-  "step_author_provider": "deepseek"
+  "step_author_provider": "deepseek",
+  "reviewer_session_id": "ses_e49f840b6ffe8BjY4BCr0tX3aV",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy"
 }
