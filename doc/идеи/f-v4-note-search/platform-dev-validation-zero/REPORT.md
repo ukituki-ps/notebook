@@ -6,7 +6,7 @@
   (Nexus `/healthz` commit and ORC `/version` revision match).
 - Project: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
 - Process: approved `path-1.feature@3.2.2`, entry point `default` (s01 → s24).
-- Execution: `E8363` (new, independent of E8895).
+- Execution: `E8363` (new, independent of E8895); final status: **completed**.
 - Work branch: `dev/f-v4-note-search-validation-zero`
   (policy-compatible `dev/*`; the initial `validation/*` name was repaired
   before the s08 approval because Nexus `notebook/brief` allows only `dev/*`).
@@ -191,16 +191,23 @@ passed; full Go suite and contract parity (41/41, drift 0) passed.
 
 ## 8. s24 final acceptance
 
-- `gate-acceptance-approval` uses `context.report_path` and a Nexus **s24**
-  owner approval with `profile=blob`; the approval binds the exact bytes of
-  this report (`payload_b64`, no `payload_json`). The request id and signed
-  assertion are stored in
+- `gate-acceptance-approval` used `context.report_path` and a Nexus **s24**
+  owner approval with `profile=blob`. The request bound the report blob at
+  `sha256:544cfc70ed7bf099f637c8a8ac3a1be14f90bff514563e0270253ef58de0ff88`
+  (the s24-accepted version; this completed section was added after acceptance
+  and does not alter the accepted blob). No `payload_json` was used.
+- Approval request: **`apr_4e180e9cbe8a97b5c677ce5eb3d69607`**
+  (owner approved `2026-11-07T09:18:56Z`; the first card
+  `apr_bf3c1da2417bd2a37e77829707db1515` expired at `2026-11-06T23:31:22Z`
+  unanswered, so a fresh card was issued). Signed assertion:
   `doc/идеи/f-v4-note-search/platform-dev-validation-zero/evidence/s24-approval.json`.
-- Remaining s24 gates: tools-untouched, findings-seed, deliverable (report
-  non-empty), process-meta-lint, ctx-manifest, findings-dod (project),
-  findings-dod-process, oracle-cited, and report-nonempty.
-- At acceptance the execution has 0 open critical/high findings; 5 inherited
-  medium/low findings remain open (CR-1/CR-2/CR-3/RT-1/RT-2), none blocking.
+- s24 gates: **11/11 passed** (tools-untouched, acceptance-approval,
+  findings-seed, deliverable, report-nonempty, process-meta-lint, ctx-manifest,
+  findings-dod, findings-dod-process, oracle-cited, stand-leased). Evaluated
+  commit `42673ddb4eea238142803e2ef8e2e21dd7970764`.
+- Execution **E8363 is completed**. At acceptance: 0 open critical/high
+  findings; 5 inherited medium/low findings remain open
+  (CR-1/CR-2/CR-3/RT-1/RT-2), none blocking.
 
 ## 9. Sessions, units, evidence
 
