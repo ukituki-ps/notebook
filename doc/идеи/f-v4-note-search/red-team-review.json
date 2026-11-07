@@ -1,57 +1,46 @@
 {
   "schema": "orc.red-team-review/v1",
   "step": "s22b.red_team_audit",
-  "execution_id": "E1488",
+  "execution_id": "E1688",
   "feature_id": "f-v4-note-search",
   "author_model": "deepseek/deepseek-flash",
   "author_provider": "deepseek",
   "author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
   "verdict": "pass",
-  "summary": "Independent RED-TEAM pass on E1488 (stand test2, build a579a38). Owner-scoped search verified: q can only narrow after ListNotes(session.UserID); auth-before-method; [] not null; UserID hidden; 400/404/405 envelopes clean. All 3 canary seeds re-executed and detected (3/3, clean_untouched). fault-catalog 20 items / 0 gaps; catalog-invariants OK. No critical/high defects.",
+  "summary": "Independent RED-TEAM on E1688 (stand test2, build 872acd2). Go suite green; healthz 200 build_ref 872acd2. Owner scoping cannot widen under search; cross-user search [] and cross-delete 404 with foreign note intact. Auth precedes method/body (401+WWW-Authenticate, no side effects). Query semantics (trim/empty no-op/case-insensitive/[]/UserID hidden) and 512-byte cap verified live. Errors static, no leaks. UI state machine sound, no XSS sinks. Canary 3/3; fault-catalog 20/0; fault-catalog-exec 20/20; catalog-invariants OK. Only low/info residuals.",
   "findings": [
-    {
-      "id": "RT-NEW-1",
-      "severity": "low",
-      "title": "Stale notebook.search sessionStorage could carry a previous user's query into a later login in the same tab",
-      "evidence": "web/app.js clears SEARCH_KEY on no-token path and 401/logout; residual risk is client-side filter text only, notes stay owner-scoped. Covered by SEARCH-E2E-8."
-    },
-    {
-      "id": "RT-NEW-2",
-      "severity": "info",
-      "title": "No length cap semantics documented; q > 512 bytes returns 400 'query too long'",
-      "evidence": "main.go maxQueryBytes=512 checked before TrimSpace; API-consumer-only (web UI never sends q). Documented in CR-F4-01/02."
-    },
-    {
-      "id": "RT-NEW-3",
-      "severity": "low",
-      "title": "canary.json is a runner-side gitignored artifact, not in the branch",
-      "evidence": "data/ is gitignored; red-team re-executed all 3 seed+detector pairs, detector_exit=1 (3/3)."
-    }
+    {"id": "RT-01", "severity": "high", "verdict": "refuted", "title": "Search never widens owner scope; A cannot read/delete B's note", "evidence": "ListNotes(UserID) then q-filter; live cross-user search [] and cross-delete 404."},
+    {"id": "RT-02", "severity": "high", "verdict": "refuted", "title": "Unauth /api/notes* 401+WWW-Authenticate before method/body", "evidence": "requireAuth precedes method switch; live unauth GET/POST/DELETE -> 401, no side effects."},
+    {"id": "RT-03", "severity": "medium", "verdict": "refuted", "title": "Query semantics conform", "evidence": "trim/ToLower, empty no-op byte-identical, case-insensitive, [] not null, UserID json:-; live + unit."},
+    {"id": "RT-04", "severity": "medium", "verdict": "refuted", "title": "Error envelopes static, no leaks", "evidence": "fixed strings; live 400/404/405 Allow; TestDeleteErrorEnvelope leak scan."},
+    {"id": "RT-05", "severity": "high", "verdict": "refuted", "title": "No XSS/DOM-sink in search/notes UI", "evidence": "textContent/setAttribute only; no innerHTML/eval sinks."},
+    {"id": "RT-06", "severity": "medium", "verdict": "refuted", "title": "Oversized query capped", "evidence": "512-byte q -> 200, 513 -> 400 query too long before scan."},
+    {"id": "RT-07", "severity": "medium", "verdict": "refuted", "title": "No data race on search path", "evidence": "single-mutex store, filter over value copies; -race unavailable (no cgo)."},
+    {"id": "RT-08", "severity": "low", "verdict": "confirmed", "title": "DELETE id accepts Atoi alternate forms (0027,+27) as same note", "evidence": "strconv.Atoi; owner-scoped re-check, no escalation; wire-contract quirk."},
+    {"id": "RT-09", "severity": "info", "verdict": "confirmed", "title": "Unbounded per-user note count (self-DoS, pre-existing)", "evidence": "AddNote no per-user cap; self-inflicted only."},
+    {"id": "RT-10", "severity": "info", "verdict": "confirmed", "title": "Case-insensitivity uses per-rune ToLower (no full Unicode folding)", "evidence": "consistent; live dotted-I probe no asymmetry."},
+    {"id": "RT-11", "severity": "info", "verdict": "confirmed", "title": "UI search filters cached notes loaded at page load", "evidence": "filterNotes over notes[]; delete-404 reloads; stale-query handled (SEARCH-E2E-8)."}
   ],
   "probes": [
-    {"id": "P1-OWNER-SCOPE", "expectation": "filter after ListNotes(session.UserID), cannot widen", "result": "PASS (TestNotesSearchIsolation, TestDeleteForeignNote)"},
-    {"id": "P2-AUTH-ORDER", "expectation": "requireAuth first; unauth search 401", "result": "PASS (TestAuthMethodOrder, TestNotesSearchAuthRequired)"},
-    {"id": "P3-SEARCH-SEMANTICS", "expectation": "trim, empty no-op, case-insensitive, [] not null, UserID hidden", "result": "PASS (8/8 TestNotesSearch*)"},
-    {"id": "P4-ERROR-ENVELOPES", "expectation": "400/404/405, no leaks", "result": "PASS (TestDeleteInvalidID/DeleteMissing/NotesMethodNotAllowed/NoSecretLeak)"},
-    {"id": "P5-UI-STATE-MACHINE", "expectation": "single renderNotes() path; create/delete/reload re-apply filter", "result": "PASS (SEARCH-E2E-4/5/6/7/8)"}
+    {"id": "P1-healthz", "result": "PASS", "detail": "healthz 200 build_ref 872acd2"},
+    {"id": "P2-unauth-401", "result": "PASS"},
+    {"id": "P3-owner-scope-search", "result": "PASS"},
+    {"id": "P4-cross-delete", "result": "PASS"},
+    {"id": "P5-query-semantics", "result": "PASS"},
+    {"id": "P6-error-envelopes", "result": "PASS"},
+    {"id": "P7-query-cap", "result": "PASS"},
+    {"id": "P8-no-userid-leak", "result": "PASS"},
+    {"id": "P9-go-tests", "result": "PASS"},
+    {"id": "P10-race-detector", "result": "PASS (unavailable; reviewed)"},
+    {"id": "P11-unicode-folding", "result": "PASS"},
+    {"id": "P12-alternate-id-forms", "result": "FAIL", "detail": "0027/+27 delete same note (RT-08, low, no escalation)"}
   ],
-  "canary": {
-    "run_id": "E1488",
-    "canaries_total": 3,
-    "canaries_found": 3,
-    "clean_untouched": true,
-    "status": "verified"
-  },
-  "gates": {
-    "canary": "PASS (run=E1488, 3/3, clean_untouched=True, run_valid=True)",
-    "fault-catalog": "PASS (items=20, covered=15, gaps=0)",
-    "fault-catalog-exec": "PASS (executed=20)",
-    "catalog-invariants": "OK (high/critical=11, covered=10)"
-  },
+  "canary": {"run_id": "E1688", "canaries_total": 3, "canaries_found": 3, "clean_untouched": true, "status": "verified"},
+  "gates": {"canary": "PASS (3/3)", "fault-catalog": "PASS (20/0 gaps)", "fault-catalog-exec": "PASS (20 executed)", "catalog-invariants": "OK (high/critical=11, covered=10)"},
   "step_author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
   "step_author_model": "deepseek/deepseek-flash",
   "step_author_provider": "deepseek",
-  "reviewer_session_id": "ses_e49f840b6ffe8BjY4BCr0tX3aV",
+  "reviewer_session_id": "ses_e49b98653ffewKItPwCiTjrJwE",
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy"
 }
