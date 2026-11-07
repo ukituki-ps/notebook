@@ -6,20 +6,21 @@ schema: ui-graph/v1
 feature_id: f-v4-note-search
 status: actualized
 platform: web
-execution_id: E8895
+execution_id: E1488
 actualized_from:
   branch: dev/f-v4-note-search-ae079e5c
-  base_commit: 22102389c6f02e7fc518dc958a32542ec5c3d9f1
+  base_commit: a579a38983dbe70946b51a1bc1ce19dddcfeda95
   working_tree: false
   source_files:
     - web/index.html
     - web/app.js
     - web/app.css
   note: >-
-    Actualized at s21 from the integrated and deployed build 2210238:
+    Actualized at s21 from the integrated and deployed build a579a38:
     web/index.html adds notes-search, notes-search-clear and
     notes-search-empty; web/app.js keeps the loaded list in `notes` and
-    re-renders through one filter (load, create, delete, reload). E2E 13/13.
+    re-renders through one filter (load, create, delete, reload). E2E 15/15
+    on test2 (SEARCH-E2E-1..8 incl 7/8).
 source_roots:
   - web
 source_files:
