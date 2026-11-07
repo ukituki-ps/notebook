@@ -3,6 +3,9 @@
   "step": "s22b.red_team_audit",
   "execution_id": "E1488",
   "feature_id": "f-v4-note-search",
+  "author_model": "deepseek/deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
   "verdict": "pass",
   "summary": "Independent RED-TEAM pass on E1488 (stand test2, build a579a38). Owner-scoped search verified: q can only narrow after ListNotes(session.UserID); auth-before-method; [] not null; UserID hidden; 400/404/405 envelopes clean. All 3 canary seeds re-executed and detected (3/3, clean_untouched). fault-catalog 20 items / 0 gaps; catalog-invariants OK. No critical/high defects.",
   "findings": [
