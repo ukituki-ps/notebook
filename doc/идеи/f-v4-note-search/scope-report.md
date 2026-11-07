@@ -62,3 +62,7 @@ OD-1 is closed in `expertise-report.md` (B-decision) and must be reflected in
 Proceed with a single backend unit (`notebook-search-api`), a single web unit
 (`notebook-search-ui`), and a deploy/E2E unit (`notebook-search-deploy-e2e`).
 No auth/persistence unit, no schema migration.
+
+
+## Pilot s02 accept
+Existing scope report reused for path-1 4.0.0 DS pilot (no scope change).
