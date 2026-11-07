@@ -25,3 +25,6 @@ query + client filter) are closed.
 
 No remaining open decision requires a human answer beyond the s08 intent
 approval itself. Proceed to s06 finalization.
+
+---
+Recorded for E1546 at s05 accept (commit artifact).
