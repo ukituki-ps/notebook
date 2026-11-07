@@ -19,3 +19,6 @@ prior pass); it is a superset of the planned graph and is valid for design.
 - The s04 planned graph is effectively the actualized graph; s21 will
   re-actualize from the integrated code of this execution.
 - No page/route is added or removed versus the base layout.
+
+---
+Recorded for E1546 at s04 accept (commit artifact).
