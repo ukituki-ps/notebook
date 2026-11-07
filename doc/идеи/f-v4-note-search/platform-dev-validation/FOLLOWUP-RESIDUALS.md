@@ -17,9 +17,9 @@ unchanged.
 
 - test2 rebuilt from `e0d41a0` (the commit above):
   - commit `e0d41a0efe7d22f414ca2105ecf828cd3e5068a7`;
-  - image digest `sha256:0c6e3b29465cffa8e4a78e0cd9fa2a0cf38e46a944ccec64e7a35c6d44b931b3`;
-  - `build_args_hash` `sha256:bd78244b9836221dd8de66ff5806d580ce4b4ff79d675060f16fb3ece6045088`;
-  - `gate_bundle_digest` `sha256:9a794119a62426e9e6f3d5eac63a772f999ec7d7ff279d81915c9b143afaaf48`
+  - image digest `sha256:51ad01ad53f48612d93e5464310430eabda3dd0ec62d2aa6ff4f512cd022f05a`;
+  - `build_args_hash` `sha256:a1b878f1e4433bf41968ff35c6a38f2d5aa015eae1ab9544ccb3204e19eebce3`;
+  - `gate_bundle_digest` `sha256:a5b74e21002e87c2899374deb312eeb890b0fe44cb295a8c7d002e4a0b64f2f4`
     (non-empty in `/healthz` and both provenance files).
 - Live API: `GET /api/notes?q=<513 bytes>` → `400 {"error":"query too long"}`;
   `GET /api/notes?q=ok` → `200 []`.
