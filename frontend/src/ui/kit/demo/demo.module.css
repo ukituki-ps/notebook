@@ -1,0 +1,119 @@
+/* Demo gallery — token-only CSS, light theme. */
+
+.page {
+  min-height: 100vh;
+  padding: var(--space-4) var(--layout-gutter) var(--space-6);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--layout-content-desktop);
+  margin: 0 auto var(--space-4);
+}
+
+.toolbarTitle {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: var(--fw-h2);
+}
+
+.toolbarNote {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.viewportButtons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.frame {
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-4);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  transition: max-width var(--motion-base) var(--ease-standard);
+}
+
+.frameMobile {
+  max-width: var(--breakpoint-390);
+}
+
+.frameDesktop {
+  max-width: var(--layout-content-desktop);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.grid > * {
+  min-width: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  font-weight: var(--fw-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.spanTwo {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 48em) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page {
+    padding: var(--space-5) var(--space-5) var(--space-6);
+  }
+}
+
+@media (min-width: 75em) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,734 @@
+/* P2 patterns — token-only CSS. */
+
+/* ---------- Tile ---------- */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  min-height: var(--control-height);
+  padding: var(--space-4);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tile:hover {
+  background: var(--color-sunken);
+}
+
+.tile:focus-visible {
+  outline: var(--border-focus) solid var(--state-focus);
+  outline-offset: var(--space-1);
+}
+
+.tile:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+.tileDark {
+  background: var(--color-dark-surface);
+  color: var(--color-text-on-dark);
+  border-color: var(--color-dark-surface);
+}
+
+.tileDark:hover {
+  background: var(--color-dark-surface);
+}
+
+.tileMetric {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--fs-metric);
+  line-height: var(--lh-metric);
+  font-weight: var(--fw-metric);
+  letter-spacing: var(--ls-metric);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileIcon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-20);
+  height: var(--icon-20);
+}
+
+.tileChevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--color-text-muted);
+}
+
+.tileMetricSmall {
+  font-size: var(--fs-metric-sm);
+  line-height: var(--lh-metric-sm);
+  font-weight: var(--fw-metric-sm);
+}
+
+.tileDense .tileMetric {
+  font-size: var(--fs-metric-dense);
+  line-height: var(--lh-metric-dense);
+  font-weight: var(--fw-metric-dense);
+}
+
+.tileWide {
+  flex-direction: row;
+  align-items: center;
+  grid-column: 1 / -1;
+  min-width: 0;
+  min-height: var(--control-height);
+}
+
+.tileWide > * {
+  min-width: 0;
+}
+
+.tileWide .tileMetric {
+  flex: 0 0 auto;
+}
+
+.tileWide .tileTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileWide .tileMeta {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileWide .tileChevron {
+  flex: 0 0 auto;
+}
+
+.tileSoon,
+.tilePlaceholder {
+  cursor: default;
+}
+
+.tileSoon:hover,
+.tilePlaceholder:hover {
+  background: var(--color-surface);
+}
+
+.tileMicro {
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.tileTitle {
+  font-size: var(--fs-body-medium);
+  line-height: var(--lh-body-medium);
+  font-weight: var(--fw-body-medium);
+}
+
+.tileMeta {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.tileDark .tileMeta {
+  color: var(--color-text-on-dark-muted);
+}
+
+.tileGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.tileGrid > * {
+  min-width: 0;
+}
+
+@media (min-width: 48em) {
+  .tileGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 75em) {
+  .tileGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- ChartBar ---------- */
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  margin: 0;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  font-weight: var(--fw-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  height: calc(var(--space-6) * 3);
+}
+
+.chartBar {
+  position: relative;
+  flex: 1 1 0;
+  min-width: var(--space-1);
+  max-width: var(--chart-col-max);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--chart-bar);
+}
+
+.chartBarCarbs {
+  background: var(--color-mint-carbs);
+}
+
+.chartBarMuted {
+  background: var(--chart-grid);
+}
+
+.chartLabels {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.chartLabel {
+  flex: 1 1 0;
+  overflow: hidden;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- StatsChart ---------- */
+.statsChart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  margin: 0;
+}
+
+.statsChartCaption {
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  font-weight: var(--fw-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.statsChartBody {
+  display: grid;
+  grid-template-columns: var(--chart-axis) minmax(0, 1fr);
+  gap: var(--chart-gap);
+  width: 100%;
+}
+
+.statsYAxis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: var(--chart-h);
+  font-size: var(--fs-chart-label);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.statsPlot {
+  position: relative;
+  min-height: var(--chart-h);
+}
+
+.statsGrid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.statsGridLine {
+  border-top: var(--border-hairline) solid var(--chart-grid);
+}
+
+.statsBars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: var(--chart-gap);
+}
+
+.statsCol {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+  max-width: var(--chart-col-max);
+}
+
+.statsRange {
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  max-width: var(--chart-bar-max);
+  border-radius: var(--chart-bar-radius);
+  background: var(--chart-grid);
+  transform: translateX(-50%);
+}
+
+.statsBar {
+  position: relative;
+  width: 100%;
+  max-width: var(--chart-bar-max);
+  min-height: var(--chart-bar-min-h);
+  border-radius: var(--chart-bar-radius) var(--chart-bar-radius) 0 0;
+  background: var(--chart-bar);
+}
+
+.statsLabels {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--chart-gap);
+  margin-inline-start: calc(var(--chart-axis) + var(--chart-gap));
+}
+
+.statsLabel {
+  flex: 1 1 0;
+  overflow: hidden;
+  font-size: var(--fs-chart-label);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statsEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--chart-h);
+  margin: 0;
+  border: var(--border-hairline) dashed var(--chart-grid);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-secondary);
+  line-height: var(--lh-secondary);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ---------- Ring ---------- */
+.ring {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.ringSvg {
+  width: var(--layout-tap);
+  height: var(--layout-tap);
+}
+
+.ringTrack {
+  stroke: var(--chart-grid);
+}
+
+.ringValue {
+  stroke: var(--chart-bar);
+}
+
+.ringLabel {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+/* ---------- PIN pad ---------- */
+.pinPad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.pinPad:focus-visible {
+  outline: var(--border-focus) solid var(--state-focus);
+  outline-offset: var(--space-1);
+}
+
+.pinDots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--space-5);
+}
+
+.pinDot {
+  width: var(--space-3);
+  height: var(--space-3);
+  border: var(--border-hairline) solid var(--color-text-tertiary);
+  border-radius: var(--radius-pill);
+  background: transparent;
+}
+
+.pinDotFilled {
+  border-color: var(--color-accent-cta);
+  background: var(--color-accent-cta);
+}
+
+.pinGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.pinKey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--pin-key);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-chip);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--fs-body-medium);
+  font-weight: var(--fw-body-medium);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.pinKey:hover {
+  background: var(--color-sunken);
+}
+
+.pinKey:active {
+  background: var(--color-ring);
+}
+
+.pinKey:focus-visible {
+  outline: var(--border-focus) solid var(--state-focus);
+  outline-offset: var(--space-1);
+}
+
+.pinKey:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+.pinKeyAction {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-caption);
+}
+
+/* ---------- Chat ---------- */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-height: calc(100vh - var(--space-6));
+}
+
+.chatMessages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.chatMessage {
+  max-width: 85%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-sunken);
+  font-size: var(--fs-secondary);
+  line-height: var(--lh-secondary);
+}
+
+.chatMessageUser {
+  align-self: flex-end;
+  background: var(--color-accent-soft);
+  color: var(--color-success-strong);
+}
+
+.chatComposer {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.chatInput {
+  flex: 1 1 auto;
+  min-height: var(--layout-tap);
+}
+
+/* ---------- Consent / connection rows ---------- */
+.rowCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--control-height);
+  padding: var(--space-3);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.rowCardText {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.rowCardTitle {
+  font-size: var(--fs-body-medium);
+  line-height: var(--lh-body-medium);
+  font-weight: var(--fw-body-medium);
+}
+
+.rowCardDescription {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.rowCardAction {
+  flex: 0 0 auto;
+}
+
+.statusDot {
+  display: inline-block;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-text-tertiary);
+}
+
+.statusOk {
+  background: var(--color-accent-cta);
+}
+
+.statusWarning {
+  background: var(--color-warning-strong);
+}
+
+.statusDanger {
+  background: var(--color-danger);
+}
+
+.statusText {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Notification preview ---------- */
+.notification {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  max-width: var(--layout-content);
+  padding: var(--space-3);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--elevation-ring);
+}
+
+.notificationHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.notificationApp {
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  font-weight: var(--fw-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.notificationTime {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.notificationTitle {
+  font-size: var(--fs-body-medium);
+  line-height: var(--lh-body-medium);
+  font-weight: var(--fw-body-medium);
+}
+
+.notificationBody {
+  font-size: var(--fs-secondary);
+  line-height: var(--lh-secondary);
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Commerce footer ---------- */
+.commerceFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-4);
+  border: var(--border-hairline) dashed var(--color-ring);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.commerceNote {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.commerceActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- EVOI card ---------- */
+.evoi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4);
+  border: var(--border-hairline) solid var(--color-ring);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.evoiHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.evoiTitle {
+  margin: 0;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--fw-h3);
+}
+
+.evoiRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.evoiRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--fs-secondary);
+  line-height: var(--lh-secondary);
+}
+
+.evoiTerm {
+  color: var(--color-text-muted);
+}
+
+.evoiValue {
+  margin: 0;
+  font-weight: var(--fw-body-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.evoiNote {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--color-text-muted);
+}
+
+.evoiActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- Responsive grid for demo ---------- */
+.split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (min-width: 48em) {
+  .split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 75em) {
+  .split {
+    grid-template-columns: minmax(0, var(--layout-content)) minmax(0, 1fr);
+  }
+}

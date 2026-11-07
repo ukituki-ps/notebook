@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "release": "1.0.0",
+  "tag": "ds/v1.0.0",
+  "commit": "1cfcca8fa869d7aa191c213220fd0630fce38d28",
+  "created_at": "2026-11-07T21:45:27Z",
+  "tokens": {
+    "path": "design/tokens.json",
+    "sha256": "sha256:191c46f80322a7100cb39bd227de4ff436c1fdcdab18b4e5721601b93565a5ff"
+  },
+  "registry": {
+    "path": "design/registry.json",
+    "sha256": "sha256:f2a3b08e409e2ceccb17c7ac73178f92f180362bc68f38a81887f12ca363cd33"
+  },
+  "kit": {
+    "s3_uri": "s3://openpencil/open_pencil_storage/canvases/ds--kit-1.0.0.fig",
+    "sha256": "sha256:4b0147e1d373139203d5e796bafb9831e024698445b095daa326848a1a460787",
+    "size": 208790
+  },
+  "code": {
+    "path": "frontend/src/ui/kit",
+    "sha256": "sha256:17d138c8625955e087c7e6b8cc7f49be14613e9c2c4fd922fb2ba61635ca41dc"
+  },
+  "quality": {
+    "tests": 144,
+    "tsc": "pass",
+    "build": "pass",
+    "axe": "not-run",
+    "contrast": "AA",
+    "lint_errors": 0,
+    "waiver": "axe/visual-regression CI is nice-to-have per P2.6-STATUS; manual a11y evidence in p26-final2-audit.md"
+  },
+  "digest": "sha256:96213f0f57cd23d4f0fd718f57b750f38da088861f68f864c10be6854e1f9fb5"
+}
