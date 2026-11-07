@@ -62,3 +62,9 @@ On the real E1688 s24 worktree it now passes: `pngdiff OK`, `scenario-evidence O
 The prior approval `apr_a1fb457b…` expired by TTL (15 min, at 14:14:49Z), so a fresh s24
 approval request is issued for the retry. Report blob is unchanged (`sha256:ee0bf4b6…`).
 
+## Retry note
+
+Stand `test2` re-leased for E1688 (`94b80367-65f7-4437-9b52-875ccbb0a4c7`) before the s24
+accept retry: `gate-stand-leased-accept` requires an active lease, and the earlier lease had
+been released.
+
