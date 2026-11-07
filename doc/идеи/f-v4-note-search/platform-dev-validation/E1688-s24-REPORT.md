@@ -14,7 +14,7 @@
 | build_ref | `872acd2` |
 | commit (evaluated SHA) | `872acd2a954840ff7baa9433b8e185aee45247b4` |
 | image_digest | `sha256:30535c1f73fea542175c2fa437b34709bb499dbf561b31d819a12838a2149897` |
-| build_args_hash | `sha256:5a2ddc183282b84bf68264c8750673063e67892b42bbbce58c8db1f72022d43e` |
+| build_args_hash | `sha256:a7cd9f501c56ee85e11c57261d08500103cbe60c79ffe89ca996ce6b78b516bf` |
 | gate_bundle_digest | `sha256:263c48a44e1abaaedb7378066cfe7fc831faade7bb5dc3418756a4eed15bf1e8` (non-empty, matches preview-deploy.json/verdict//healthz) |
 
 ## Gate results
