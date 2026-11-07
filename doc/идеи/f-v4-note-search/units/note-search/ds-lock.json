@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "screen_id": "note-search",
+  "design_system_version": "1.0.0",
+  "ds_digest": "sha256:96213f0f57cd23d4f0fd718f57b750f38da088861f68f864c10be6854e1f9fb5",
+  "components": [
+    {
+      "node_id": "page.header",
+      "registry_id": "patterns/PageHeader"
+    },
+    {
+      "node_id": "search.field",
+      "registry_id": "primitives/Search"
+    },
+    {
+      "node_id": "search.clear",
+      "registry_id": "primitives/IconButton"
+    },
+    {
+      "node_id": "notes.list",
+      "registry_id": "patterns/InboxList"
+    },
+    {
+      "node_id": "notes.item",
+      "registry_id": "patterns/InboxItem"
+    },
+    {
+      "node_id": "states.empty",
+      "registry_id": "patterns/EmptyState"
+    },
+    {
+      "node_id": "states.loading",
+      "registry_id": "primitives/Skeleton"
+    },
+    {
+      "node_id": "states.error",
+      "registry_id": "patterns/ErrorState"
+    },
+    {
+      "node_id": "states.offline",
+      "registry_id": "patterns/SafetyBand"
+    }
+  ]
+}
