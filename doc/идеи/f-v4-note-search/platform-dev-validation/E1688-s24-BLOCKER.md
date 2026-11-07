@@ -52,3 +52,13 @@ MCP (only text windows). So the evidence cannot be committed to the branch from 
 
 The human approval is genuine and remains valid for the unchanged report blob; the s24 gate
 will pass once the evidence is present in the evaluated tree.
+
+## Resolution (platform `de7727ea`, bundle `96490ad5…`)
+
+The gate was fixed to read the canonical execution-root evidence first (git copy as fallback).
+On the real E1688 s24 worktree it now passes: `pngdiff OK`, `scenario-evidence OK`,
+`evidence-manifest OK (9 файлов)`, `proof OK`, `gate-evidence-authentic: OK`.
+
+The prior approval `apr_a1fb457b…` expired by TTL (15 min, at 14:14:49Z), so a fresh s24
+approval request is issued for the retry. Report blob is unchanged (`sha256:ee0bf4b6…`).
+
