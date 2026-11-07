@@ -12,7 +12,7 @@
 - Project ID: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
 - Repo: `git@github.com:ukituki-ps/notebook.git`
 - Work branch: `dev/f-v4-note-search-ae079e5c` (в нём уже есть RT-NEW-1/2/3 fixes)
-- Platform dev: `e151321b`; gate bundle при старте: `sha256:c783b5dde7ae7bd01773dd45c6293f05dc79d17831440d32dd65a2f10f112d92`
+- Platform dev: `0cfedc38`; gate bundle при старте: `sha256:fb1e7a2f8f285614057db278295db06428d2f1a7c89b6d97215a84c8c1e2cc1a`
 - Запрещено: prod / preprod / **test1**, `main`, force/skip/waiver, worktree-транспорт. Только **git**.
 
 ## Цель
@@ -22,6 +22,16 @@
 2. s20c Playwright (ожидается **15 passed**, включая SEARCH-E2E-7/8);
 3. s22b/s22c cross-pair review (author ≠ reviewer);
 4. s24 approval **через `orc_wait`**, без «approved» в чате.
+
+## Если E1488 уже остановлен на s20a
+
+Платформа обновлена (`0cfedc38`): `invariant-enforced` теперь для entry points после s06 читает коммитнутый `doc/идеи/<F>/invariants.json` по `work_branch`. На ветке Notebook 16/16 active инвариантов проходят.
+
+1. Не стартуй новый execution. E1488 остаётся `running` на `s20a.unit_integrate`; артефакт закоммичен (`2459281…`).
+2. Возьми test2 заново (`nexus_stand_lease`).
+3. Повтори `orc_accept(E1488, s20a, result=<тот же самый result>)` — без L5 human-accept, без force/skip.
+4. Если гейт снова красный — пришли полный `gate_failures` payload; не обходи.
+5. После зелёного s20a продолжай s20b → s24 по этому промпту.
 
 ## Старт
 
