@@ -133,8 +133,9 @@ async function shot(page, id, size) {
       const c = ch.charCodeAt(0);
       if (c >= 48 && c <= 57) n = n * 10 + (c - 48);
     }
-    b.style.background = `hsl(${(n * 47) % 360}, 88%, 32%)`;
-    b.textContent = "SCENARIO " + scenarioId;
+    const hue = (n * 47) % 360;
+    b.style.background = `repeating-linear-gradient(45deg, hsl(${hue}, 88%, 32%) 0 18px, hsl(${(hue + 180) % 360}, 88%, 62%) 18px 36px)`;
+    b.textContent = ("SCENARIO " + scenarioId + "   ").repeat(6);
   }, id);
   const dir = path.join(process.cwd(), "doc", "идеи", "f-v4-note-search", "screenshots");
   fs.mkdirSync(dir, { recursive: true });
