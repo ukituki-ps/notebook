@@ -1,117 +1,29 @@
 {
   "schema": "orc.code-review/v1",
   "step": "s22c.adversarial_code_review",
-  "execution_id": "E1488",
+  "execution_id": "E1688",
   "feature_id": "f-v4-note-search",
   "verdict": "pass",
-  "summary": "Adversarial independent code review of f-v4-note-search on E1488 (deployed build a579a38). Owner-scoping is structural: ListNotes(session.UserID) runs before the q filter, so a query can only narrow. Auth precedes method/id/body handling (401 + WWW-Authenticate, no side effects). Query semantics: trim, empty/whitespace no-op, case-insensitive, [] not null, UserID never serialized. DELETE strict-parsed with slice removal and repeat-404. UI funnels load/create/delete/reload through one renderNotes() and clears stale notebook.search. go build/vet/test and 18/18 targeted tests green. No confirmed critical/high findings; only low/info hygiene items.",
+  "summary": "Adversarial independent code review of f-v4-note-search at build 872acd2. Owner-scoping holds (ListNotes(UserID) then filter, never widens). Auth precedes method/id/body (401+WWW-Authenticate, no side effects). Query semantics correct (trim, empty no-op, case-insensitive, [] not null, UserID hidden). Errors static, no leaks. DELETE strict Atoi + owner-scoped removal, repeat/foreign 404. UI funnels through single renderNotes() and re-applies the active query; stale notebook.search cleared on no-token/401/logout. go build/vet/test and 19 targeted tests green. No confirmed critical/high; low/info residuals only.",
   "findings": [
-    {
-      "id": "CR-F4-01",
-      "severity": "low",
-      "verdict": "confirmed",
-      "title": "Whitespace-only q longer than 512 bytes returns 400 'query too long' instead of all notes (INV-SEARCH-EMPTY-Q)",
-      "file": "main.go",
-      "line": 542,
-      "evidence": "len(rawQuery) > maxQueryBytes checked before strings.TrimSpace; API-consumer-only (web UI filters client-side)."
-    },
-    {
-      "id": "CR-F4-02",
-      "severity": "info",
-      "verdict": "confirmed",
-      "title": "512-byte q cap / 400 'query too long' missing from spec/contract docs",
-      "file": "doc/идеи/f-v4-note-search/feature-brief.md",
-      "line": 33,
-      "evidence": "Contract table and spec/core.md lack the q>512 row; cap only in code comment, test, and followup docs."
-    },
-    {
-      "id": "CR-F4-03",
-      "severity": "info",
-      "verdict": "confirmed",
-      "title": "SEARCH-E2E-7/8 have no traceability entries in scenarios.json / scenario-evidence.json",
-      "file": "web/e2e/notes-search.spec.js",
-      "line": 284,
-      "evidence": "Spec defines 8 tests; scenarios.json/scenario-evidence.json evidence only 1..6; header comment still says 1..6."
-    },
-    {
-      "id": "CR-F4-04",
-      "severity": "info",
-      "verdict": "confirmed",
-      "title": "Dead CSS rule .notes-search-empty (no element carries the class)",
-      "file": "web/app.css",
-      "line": 211,
-      "evidence": "index.html renders data-testid=notes-search-empty with class=muted; rule matches nothing. Cosmetic."
-    },
-    {
-      "id": "CR-F4-05",
-      "severity": "low",
-      "verdict": "refuted",
-      "title": "Adversarial probe: q may widen results beyond owner's notes",
-      "file": "main.go",
-      "line": 547,
-      "evidence": "REFUTED: ListNotes(session.UserID) first, q filter narrows only. TestNotesSearchIsolation/TestNotesIsolation pass."
-    },
-    {
-      "id": "CR-F4-06",
-      "severity": "low",
-      "verdict": "refuted",
-      "title": "Adversarial probe: method/id/body handling before auth",
-      "file": "main.go",
-      "line": 531,
-      "evidence": "REFUTED: requireAuth first in handleNotes/handleNoteItem; unauth -> 401 + WWW-Authenticate, no side effects."
-    },
-    {
-      "id": "CR-F4-07",
-      "severity": "info",
-      "verdict": "refuted",
-      "title": "Adversarial probe: data race or injection in the search path",
-      "file": "main.go",
-      "line": 195,
-      "evidence": "REFUTED by inspection: ListNotes copies under s.mu; matching is strings.Contains only; no SQL/regex/eval. -race not runnable (no gcc/cgo)."
-    }
+    {"id": "CR-F4-01", "severity": "low", "verdict": "confirmed", "title": "DELETE id parsing accepts non-canonical integers (+5, 007)", "file": "main.go", "line": 590, "evidence": "strconv.Atoi accepts '+5' and '007'; owner-scoped DeleteNote so no cross-tenant impact; looser than canonical unsigned decimal."},
+    {"id": "CR-F4-02", "severity": "info", "verdict": "confirmed", "title": "invariants.json provenance mismatch (stale execution_id/branch)", "file": "doc/идеи/f-v4-note-search/invariants.json", "line": 3, "evidence": "declares execution_id E9294 / branch dev/f-v4-note-search; current execution E1688 / dev/f-v4-note-search-ae079e5c. Stale artifact; invariant set otherwise authoritative."},
+    {"id": "CR-F4-03", "severity": "low", "verdict": "confirmed", "title": "Stale per-tab search query can pre-filter a successor user's own notes", "file": "web/app.js", "line": 453, "evidence": "notebook.search per-tab vs token per-browser; no-token/401/logout clear it (SEARCH-E2E-8); residual same-tab A->login->B cosmetic, no cross-user exposure."},
+    {"id": "CR-F4-04", "severity": "info", "verdict": "refuted", "title": "Suspected stored XSS via note text rendering", "file": "web/app.js", "line": 341, "evidence": "REFUTED: note.text rendered via textContent; no innerHTML/outerHTML/eval sinks; template-inert rows."}
   ],
   "proofs": [
-    {
-      "id": "PR-GO-BUILD-TEST",
-      "command": "cd /workspace/projects/notebook-ae079e5c && GOWORK=off go build ./... && GOWORK=off go vet ./... && GOWORK=off go test -count=1 ./...",
-      "result": "exit0: build+vet clean; go test -count=1 'ok github.com/ukituki-ps/notebook 2.823s' (full suite green)."
-    },
-    {
-      "id": "PR-GO-TARGETED-TEST",
-      "command": "GOWORK=off go test -count=1 -run 'TestNotesSearch|TestDelete|TestAuth|TestAddNote|TestList' ./...",
-      "result": "exit0: 18/18 matched tests pass (search/delete/auth/add/list)."
-    },
-    {
-      "id": "PR-GO-RACE",
-      "command": "CGO_ENABLED=1 GOWORK=off go test -count=1 -race -run 'TestNotesSearch|TestNotesIsolation|TestDeleteNote|TestAuthRequired|TestTokenExpiry' ./...",
-      "result": "not runnable in environment (no gcc/cgo); data-race assessed statically (CR-F4-07)."
-    }
+    {"id": "PR-GO-BUILD-TEST", "command": "cd /workspace/projects/notebook-ae079e5c && GOWORK=off go build ./... && GOWORK=off go vet ./... && GOWORK=off go test -count=1 ./...", "result": "pass — build/vet OK, full suite ok (2.826s)"},
+    {"id": "PR-GO-TARGETED-TEST", "command": "GOWORK=off go test -count=1 -run 'TestNotesSearch|TestDelete|TestAuth|TestAddNote|TestList' ./...", "result": "pass — 19/19 targeted tests PASS"},
+    {"id": "PR-GO-RACE", "command": "CGO_ENABLED=1 GOWORK=off go test -count=1 -race ...", "result": "not run — no C toolchain; concurrency verified by lock-discipline inspection"}
   ],
-  "author": {
-    "model": "deepseek/deepseek-flash",
-    "provider": "deepseek",
-    "session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
-    "role": "step_author"
-  },
+  "author": {"model": "deepseek/deepseek-flash", "provider": "deepseek", "session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf", "role": "step_author"},
   "author_model": "deepseek/deepseek-flash",
   "author_provider": "deepseek",
   "author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
-  "code_author_sessions": [
-    "ses_e4a29a379ffePYXhcGHsgKbTTf"
-  ],
-  "reviewer": {
-    "model": "qwen3.8-fast",
-    "provider": "llama-proxy",
-    "session_id": "ses_e49fbd44cffeQy5rfI0TgB9hUk"
-  },
+  "code_author_sessions": ["ses_e4a29a379ffePYXhcGHsgKbTTf"],
+  "reviewer": {"model": "qwen3.8-fast", "provider": "llama-proxy", "session_id": "ses_e49b5ba67ffe1WY613uwjS41Pu"},
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy",
-  "reviewer_session_id": "ses_e49fbd44cffeQy5rfI0TgB9hUk",
-  "test_results": {
-    "go_build": "pass",
-    "go_vet": "pass",
-    "go_test_full": "pass (32 tests)",
-    "go_test_targeted": "18/18 pass",
-    "go_test_race": "n/a (no gcc/cgo)"
-  }
+  "reviewer_session_id": "ses_e49b5ba67ffe1WY613uwjS41Pu",
+  "test_results": {"go_build": "pass", "go_vet": "pass", "go_test_full": "pass", "go_test_targeted": "19/19 pass", "go_test_race": "n/a (no gcc/cgo)"}
 }
