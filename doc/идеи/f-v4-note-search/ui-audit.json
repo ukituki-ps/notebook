@@ -155,8 +155,8 @@
       "severity": "major",
       "oracle": "url: https://test2.nexus.ukituki.tech/healthz",
       "evidence": {
-        "kind": "screenshot",
-        "ref": ".orc-eval/E8895/872acd29c6f02e7fc518dc958a32542ec5c3d9f1/doc/идеи/f-v3-auth-notes/screenshots/E2E-1.png"
+        "kind": "command",
+        "ref": "Playwright + test2 /healthz; screenshots doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1..8.png on build 872acd2"
       }
     }
   ]
