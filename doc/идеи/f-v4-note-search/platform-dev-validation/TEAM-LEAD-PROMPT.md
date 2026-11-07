@@ -23,22 +23,30 @@
 3. s22b/s22c cross-pair review (author ≠ reviewer);
 4. s24 approval **через `orc_wait`**, без «approved» в чате.
 
-## E1488: реворк с s20b (после platform fix)
+## E1488 не воскрешаем — новый execution
 
-Платформа обновлена (`f6a5fcf1`): api-verdict теперь якорится на `e2e-report.json`, а `ORC_FEATURE_DIR` пробрасывается в host-runner (UI-режим достижим). Но s24 **нельзя** принимать на старом evidence:
+- Платформа: `f6a5fcf1`, gate bundle `sha256:263c48a4…`.
+- Host stand-runner перезапущен и принимает `feature_dir`/`feature_id` (проверено: тестовый request дошёл до `eval-worktree-missing`, а не `request-fields-invalid`). После следующих деплоев его перезапускает cron.
+- E1488 **не реопеним**: downstream s21/s22 уже done, guard «no silent invalidation» блокирует s20b, и это правильно. Force/cascade не применяем.
+- В ветке уже есть evidence-фикс (различимые скриншоты, `033886b`/`aa32731`).
 
-- `pngdiff`: `SEARCH-E2E-1 ≈ 3 ≈ 6` (near-dup);
-- `evidence-manifest.json` не совпадает с текущими скриншотами (переписаны после s20c).
+Запусти **новый execution**:
 
-Это не платформа, а целостность доказательств. Действия:
+1. `orc_start`:
+   - `process_id`: `path-1.feature`
+   - `entry_point`: `integrate`
+   - `project_id`: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
+   - `session_id`: твой реальный `ses_...`
+   - `context`: `{ "work_branch": "dev/f-v4-note-search-ae079e5c" }`
+2. Сразу возьми test2: `nexus_stand_lease(stand="test2", execution_id=<E>, ttl_minutes=180, project_id=...)`.
+3. Прогони `s20a → s24` строго через `orc_next`/`orc_accept`.
+   - `s20a`: invariant-enforced теперь читает `doc/идеи/f-v4-note-search/invariants.json` (16/16 active).
+   - `s20c`: должен быть **UI mode** (feature-scope доходит); свежие screenshots + manifest + verdict одним прогоном.
+   - `s24`: **новый** `orc_human_request` (старый `apr_645…` не использовать) + `orc_wait`; Approve в Telegram, в чат писать не нужно.
+4. В конце `nexus_stand_release`.
+5. Без force/skip/waiver. Если `gate-evidence-authentic` снова красный — полный payload.
 
-1. Исправь evidence в ветке: для сценариев с неразличимым UI либо сделай кадры различимыми (разные данные/состояния), либо помечай `oracle=unit` + существующий `test_ref` в `scenarios.json`/`scenario-evidence`. Локально прогони `bash tools/check-evidence-authentic.sh <exec>` (через gate bundle) и `pngdiff.py`.
-2. Пере-пин execution на новый bundle: `orc_set_context(E1488, {gate_bundle_digest:"sha256:263c48a44e1abaaedb7378066cfe7fc831faade7bb5dc3418756a4eed15bf1e8"})`.
-3. `orc_step_reopen(E1488, step_id="s20b.preview_deploy", expected_last_seq=<last_seq>, idempotency_key="<unique>", reason="platform fix f6a5fcf1 + evidence integrity")` — это сбросит s20b→s24; s20a остаётся.
-4. Возьми test2, прогони s20b → s24. s20c обязан быть **UI mode** (`ORC_FEATURE_DIR` теперь доходит); в s24 — новый `orc_human_request` (байты артефакта изменились) и `orc_wait`; старый `apr_645…` не переиспользуй.
-5. Никаких force/skip/waiver. Если `gate-evidence-authentic` снова красный — пришли полный payload.
-
-Альтернатива: новый execution `integrate` с текущим bundle (тогда s20a тоже переисполнится). E1488 не завершать на старом evidence.
+E1488 оставь как есть (running, не завершён); его не принимать и не реопенить.
 
 ## Старт
 
