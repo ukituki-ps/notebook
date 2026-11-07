@@ -1,7 +1,7 @@
-# UI/UX audit — f-v4-note-search (E8895)
+# UI/UX audit — f-v4-note-search (E1546)
 
 - Platform: web
-- Stand: https://test2.nexus.ukituki.tech, build **2210238** (commit `22102389…`)
+- Stand: https://test2.nexus.ukituki.tech, build **a95876d** (commit `a95876da…`)
 - Scope: notes screen search controls delivered by unit `notebook-search-ui`,
   deployed via s20b and verified by s20c.
 - Result: **accept** — 0 blockers, 0 open critical/high, 0 majors, 1 cosmetic
@@ -11,7 +11,7 @@
 
 | Block | Check | Verdict | Oracle / evidence |
 |---|---|---|---|
-| A | Search states coherent (idle, filtering, results, empty, cleared, after-mutation) | ok | `npx playwright test web/e2e/notes-search.spec.js` — 6/6 |
+| A | Search states coherent (idle, filtering, results, empty, cleared, after-mutation) | ok | `npx playwright test web/e2e/notes-search.spec.js` — 8/8 |
 | B | Empty state informative; `notes-search-empty` only for non-empty query with 0 matches | ok | DOM `web/index.html#notes-search-empty`, `renderNotes()` guard |
 | C | Visible label/placeholder; clear control obvious | ok | DOM `label[for=notes-search]`, `notes-search-clear` |
 | D | Fits the existing visual system | ok | `web/app.css` search styles |
@@ -21,7 +21,7 @@
 | H | Responsive stacking on narrow screens | ok | `@media (max-width: 640px)` in `web/app.css` |
 | I | Owner-scoped API, `[]` on empty, `UserID` hidden | ok | 8 `TestNotesSearch*` pass |
 | J | Filter is local, one render path, no extra requests | ok | single `renderNotes()` in `web/app.js` |
-| K | Complete suite green on the stand | ok | 13/13 Playwright on build 2210238 |
+| K | Complete suite green on the stand | ok | 15/15 Playwright on build a95876d (7 auth + 8 search) |
 | L | Evidence tied to stand SHA | ok | screenshots + `preview-verdict.json` (verified) |
 
 ## Notes

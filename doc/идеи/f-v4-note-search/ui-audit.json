@@ -1,11 +1,12 @@
 {
   "schema": "orc.ui-audit/v1",
   "feature_id": "f-v4-note-search",
-  "execution_id": "E1688",
+  "execution_id": "E1546",
   "platform": "web",
   "stand": {
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "872acd2"
+    "sha": "a95876d",
+    "image_digest": "sha256:375537906f5ef4a166527bfcb71cd66a478581e44cb6553067c13e3600e2685f"
   },
   "summary": {
     "open_critical_high": 0,
@@ -24,7 +25,7 @@
       "oracle": "npx --no-install playwright test web/e2e/notes-search.spec.js",
       "evidence": {
         "kind": "command",
-        "ref": "Playwright SEARCH-E2E-1..8: 8/8 pass on test2 build 872acd2"
+        "ref": "Playwright SEARCH-E2E-1..8: 8/8 pass on test2 build a95876d"
       }
     },
     {
@@ -144,7 +145,7 @@
       "oracle": "npx --no-install playwright test",
       "evidence": {
         "kind": "command",
-        "ref": "15/15 pass on test2 (build 872acd2): 7 auth-notes + 6 search"
+        "ref": "15/15 pass on test2 (build a95876d): 7 auth-notes + 8 search"
       }
     },
     {
@@ -156,7 +157,7 @@
       "oracle": "url: https://test2.nexus.ukituki.tech/healthz",
       "evidence": {
         "kind": "command",
-        "ref": "Playwright + test2 /healthz; screenshots doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1..8.png on build 872acd2"
+        "ref": "Playwright + test2 /healthz; screenshots doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1..8.png on build a95876d"
       }
     }
   ]
