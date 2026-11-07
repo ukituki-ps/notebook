@@ -123,8 +123,9 @@ async function shot(page, id, size) {
       b.id = "__e2e_scenario_banner";
       b.style.cssText =
         "position:fixed;top:0;left:0;right:0;z-index:2147483647;" +
-        "padding:12px 14px;font:bold 22px/1.2 monospace;color:#fff;" +
-        "text-align:center;letter-spacing:2px;box-sizing:border-box;";
+        "height:240px;display:flex;align-items:center;justify-content:center;" +
+        "font:bold 64px/1.1 monospace;color:#fff;text-align:center;" +
+        "letter-spacing:3px;box-sizing:border-box;";
       document.body.prepend(b);
     }
     let h = 0;
