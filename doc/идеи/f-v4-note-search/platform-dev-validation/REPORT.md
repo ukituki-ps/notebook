@@ -85,6 +85,10 @@ honor `orc_register_reviewer` rows for the current step-run session. Then
 
 ## Residual risks
 
+> **Status 2026-11-07:** items 2–5 are addressed; see
+> [`FOLLOWUP-RESIDUALS.md`](FOLLOWUP-RESIDUALS.md). The reviewer-runtime item was
+> fixed on the platform in `730d144a`.
+
 1. **Reviewer runtime (above):** blocks s22b and therefore s22c/s23/s24.
 2. **`gate_bundle_digest` empty on test2:** not a P5 blocker; recorded as a
    residual risk for the stand build.

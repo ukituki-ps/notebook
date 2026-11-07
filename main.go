@@ -25,11 +25,12 @@ import (
 var webFS embed.FS
 
 const (
-	maxBodyBytes = 1 << 20
-	saltLen      = 16
-	keyLen       = 32
-	sessionTTL   = 24 * time.Hour
-	maxTextBytes = 4096
+	maxBodyBytes  = 1 << 20
+	saltLen       = 16
+	keyLen        = 32
+	sessionTTL    = 24 * time.Hour
+	maxTextBytes  = 4096
+	maxQueryBytes = 512
 )
 
 // pbkdf2Iterations is the PBKDF2 work factor. Tests may lower it temporarily.
@@ -535,7 +536,14 @@ func (a *api) handleNotes(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		// Optional case-insensitive substring filter. The owner predicate is
 		// applied by ListNotes first, so a query can never widen the scope.
-		query := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("q")))
+		// Cap the query length: a multi-megabyte q would scan every note for
+		// every request for no product benefit (RT-NEW-2).
+		rawQuery := r.URL.Query().Get("q")
+		if len(rawQuery) > maxQueryBytes {
+			writeErr(w, http.StatusBadRequest, "query too long")
+			return
+		}
+		query := strings.ToLower(strings.TrimSpace(rawQuery))
 		notes := a.store.ListNotes(session.UserID)
 		if query != "" {
 			filtered := make([]Note, 0, len(notes))

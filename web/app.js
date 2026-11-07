@@ -386,7 +386,7 @@
     if (notesSearchEmpty) {
       notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0);
     }
-    if (notesSearchClear) notesSearchClear.hidden = searchQuery === "";
+    if (notesSearchClear) notesSearchClear.hidden = searchQuery.trim() === "";
   }
 
   function handleUnauthorized() {
@@ -439,6 +439,9 @@
 
     var token = readStorage(localStorage, TOKEN_KEY);
     if (!token) {
+      // No token means a different user may log in in this tab. Never leave
+      // the previous user's query in sessionStorage (RT-NEW-1).
+      removeStorage(sessionStorage, SEARCH_KEY);
       location.replace("/login");
       return;
     }

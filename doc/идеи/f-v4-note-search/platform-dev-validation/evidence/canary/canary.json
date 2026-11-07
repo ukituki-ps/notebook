@@ -1,0 +1,18 @@
+{
+  "run_id": "E8895",
+  "canaries": [
+    {
+      "id": "CANARY-DELETE-STATUS",
+      "seed": "canary:CANARY-DELETE-STATUS"
+    },
+    {
+      "id": "sec-rls-predicate-drop",
+      "seed": "canary:sec-rls-predicate-drop"
+    },
+    {
+      "id": "sec-skip-tagged",
+      "seed": "canary:sec-skip-tagged"
+    }
+  ],
+  "clean_units": []
+}

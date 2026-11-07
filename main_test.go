@@ -1089,3 +1089,17 @@ func TestNotesSearchEncoding(t *testing.T) {
 		assertNoteTexts(t, decodeNotes(t, res.body), tc.want)
 	}
 }
+
+func TestNotesSearchQueryTooLong(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchlong")
+	ts.seedNote(token, "buy bread")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q="+strings.Repeat("a", maxQueryBytes+1), "", token)
+	if res.code != http.StatusBadRequest {
+		t.Fatalf("long query: %d %s", res.code, res.body)
+	}
+	if !strings.Contains(res.body, "query too long") {
+		t.Fatalf("long query body: %q", res.body)
+	}
+}

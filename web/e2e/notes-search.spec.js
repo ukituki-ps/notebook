@@ -280,3 +280,26 @@ test("SEARCH-E2E-6 delete while query active keeps the filter consistent", async
   await expect(page.getByTestId("notes-empty")).toBeHidden();
   await shot(page, "SEARCH-E2E-6");
 });
+
+test("SEARCH-E2E-7 whitespace-only query keeps the clear control hidden", async ({ page, request }) => {
+  await createUserAndLogin(page, request, "s7");
+  await addNote(page, "one note");
+
+  await setQuery(page, "   ");
+  // Whitespace is not an active query: the list stays complete and the clear
+  // control must not appear (RT-NEW-1, cosmetic).
+  await expect(visibleItems(page)).toHaveCount(1);
+  await expect(clearControl(page).first()).toBeHidden();
+  await expectSearchEmpty(page, false);
+  await shot(page, "SEARCH-E2E-7");
+});
+
+test("SEARCH-E2E-8 no-token path clears a leftover query", async ({ page }) => {
+  await page.goto("/login");
+  await page.evaluate(() => sessionStorage.setItem("notebook.search", "leftover-query"));
+  await page.goto("/notes");
+  await page.waitForURL(/\/login$/);
+  const stored = await page.evaluate(() => sessionStorage.getItem("notebook.search"));
+  expect(stored).toBeNull();
+  await shot(page, "SEARCH-E2E-8");
+});
