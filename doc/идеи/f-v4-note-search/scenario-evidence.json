@@ -1,47 +1,47 @@
 {
- "execution": "E8363",
- "scenarios": [
-  {
-   "id": "SEARCH-E2E-1",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png",
-   "sha256": "99bb5a5cfc578a0da314d11320da2782c00b732b269e04d9e9302b2610201369",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  },
-  {
-   "id": "SEARCH-E2E-2",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png",
-   "sha256": "6760dcca4f3a1403d05df6b24c69eb46e4bf336536b7d21cd796f04294b47d39",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  },
-  {
-   "id": "SEARCH-E2E-3",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png",
-   "sha256": "910d079b69edc60859e950f271f2e3fd21822e2e046ab2240be91be62c7c1381",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  },
-  {
-   "id": "SEARCH-E2E-4",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png",
-   "sha256": "fc50a75eb8297fd40cc3efafcd014c8951af6d11a1b9488bf42d1818dad607d5",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  },
-  {
-   "id": "SEARCH-E2E-5",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png",
-   "sha256": "458643619325061a75bad449abf8a42645c660c49c7caa444cfc83bf939d3ff2",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  },
-  {
-   "id": "SEARCH-E2E-6",
-   "status": "pass",
-   "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png",
-   "sha256": "ceb8db5afb1db07c7f446a2fe14be32e0ac9744d0d2de7a420653c1fb9596269",
-   "e2e_ref": "/srv/archkit/dev/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9/.orc-eval/E8363/.e2e-artifacts/E8363-225404"
-  }
- ]
+  "execution": "E8895",
+  "scenarios": [
+    {
+      "id": "SEARCH-E2E-1",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png",
+      "sha256": "259c057f8c0227643c6ee88283131f3e2ecee766ab6e5af28a7b018c070784ea",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    },
+    {
+      "id": "SEARCH-E2E-2",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png",
+      "sha256": "3950d9f13e5ca0b931e3ef38d73669b196ae62fe8d90dea1395f961f612d3121",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    },
+    {
+      "id": "SEARCH-E2E-3",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png",
+      "sha256": "5d3a34d95c5331bd86e8130e49e052098af95d678ad3f3456262b0c4285aae7f",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    },
+    {
+      "id": "SEARCH-E2E-4",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png",
+      "sha256": "af93fbee1ef98e2c10243dc7fa927fa8f81f41e01fab54e2148d71937e48628c",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    },
+    {
+      "id": "SEARCH-E2E-5",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png",
+      "sha256": "3b822a87260fba47bc87a03cd00bb5cd3cd87bd825448f8717612560f03aabd4",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    },
+    {
+      "id": "SEARCH-E2E-6",
+      "status": "pass",
+      "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png",
+      "sha256": "c80e184b65a5f1f745abab0d6ee5cf64d4297e128c013a786f7c666f3f8384de",
+      "e2e_ref": "web/e2e/notes-search.spec.js"
+    }
+  ]
 }
