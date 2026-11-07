@@ -68,3 +68,18 @@ Stand `test2` re-leased for E1688 (`94b80367-65f7-4437-9b52-875ccbb0a4c7`) befor
 accept retry: `gate-stand-leased-accept` requires an active lease, and the earlier lease had
 been released.
 
+## gate_bundle_evidence_missing (de7727ea)
+
+With all 11 step gates green, the post-accept check `RequireGateBundleEvidenceFor` failed
+(`gate_bundle_evidence_missing`). It is triggered only because the execution context carried
+`gate_bundle_digest` (`pinned != ""`); it then requires the acceptance engine to have attached
+`details["gate_bundle_digest"]`, which it did not — E1688 started before the bundle wiring, so
+the engine manifest had no gate-bundle digest (`ORC_GATE_BUNDLE_ENFORCE=0`, and
+`ORC_GATE_BUNDLE`/`ORC_GATE_REQUIRE_BUNDLE` are unset; `ORC_GATE_BUNDLE_DIGEST` alone is not fed
+into the engine manifest). For path-1 without a pinned bundle the contract is non-strict, so the
+mid-flight context pin was cleared; the bundle remains attested in
+`verification-manifest.gate_tools_digest=sha256:96490ad5…` and in the deploy/E2E
+`gate_bundle_digest`. Platform fix: feed `ORC_GATE_BUNDLE_DIGEST` into the engine manifest so a
+pinned execution carries the digest in gate `details`.
+
+
