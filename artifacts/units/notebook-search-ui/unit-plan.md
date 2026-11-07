@@ -1,23 +1,20 @@
-# Unit plan — notebook-search-ui (f-v4-note-search)
+# Unit plan — notebook-search-ui (E1546 s20, u02)
 
-Scope: `web/index.html`, `web/app.js`, `web/app.css`, `web_ui_test.go`.
-No API/backend/deploy/e2e changes, no new dependencies.
+- **Unit:** notebook-search-ui (domain notebook-web, sde-frontend, change_class plain)
+- **Base:** 11b752cd32ba34e15ffd7f1a4d93a6d612614528
+- **Files:** web/index.html, web/app.js, web/app.css, web_ui_test.go
 
-1. **HTML** — add a labeled search field (`data-testid="notes-search"`,
-   `type="search"`, `aria-controls="notes-list"`) above the notes list, a
-   `notes-search-clear` button (aria-label, starts hidden), and a
-   `notes-search-empty` status region (`role="status"`, `aria-live="polite"`,
-   hidden by default).
-2. **JS** — keep the loaded collection in `notes` and the active query in
-   `searchQuery`. One `renderNotes()` filters case-insensitively over
-   title/text, rebuilds the list, and toggles `notes-empty` (collection empty)
-   vs `notes-search-empty` (non-empty query filtered everything out).
-   Load, create, delete and reload all call `renderNotes()`; the query is
-   persisted in sessionStorage so a browser reload restores it.
-3. **CSS** — search row and clear button styling consistent with existing
-   controls; stack full-width at the existing 640px breakpoint.
-4. **Tests** — extend `TestUISemantics` with testids, label/aria, DOM ordering,
-   empty-state semantics, single-render, and API-data assertions; keep every
-   pre-existing assertion.
-5. **Verification** — `go build ./...`, `go vet ./...`,
-   `go test -count=1 ./...` from the worktree root.
+## Scope
+
+Labelled search input `data-testid=notes-search`; live client-side filtering of
+the loaded owner-scoped list; clear control restores the full list;
+`notes-search-empty` for a non-empty query with no matches; create/delete/reload
+re-apply the active query. No auth/persistence change.
+
+## Tasks / oracles
+
+| # | Task | Oracle |
+|---|---|---|
+| 1 | search markup + testids | TestUISemantics |
+| 2 | filter/clear/empty logic | TestUISemantics, E2E |
+| 3 | UI semantics tests | TestUISemantics |
