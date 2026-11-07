@@ -128,9 +128,12 @@ async function shot(page, id, size) {
         "letter-spacing:3px;box-sizing:border-box;";
       document.body.prepend(b);
     }
-    let h = 0;
-    for (const ch of scenarioId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-    b.style.background = `hsl(${h % 360}, 88%, 32%)`;
+    let n = 0;
+    for (const ch of scenarioId) {
+      const c = ch.charCodeAt(0);
+      if (c >= 48 && c <= 57) n = n * 10 + (c - 48);
+    }
+    b.style.background = `hsl(${(n * 47) % 360}, 88%, 32%)`;
     b.textContent = "SCENARIO " + scenarioId;
   }, id);
   const dir = path.join(process.cwd(), "doc", "идеи", "f-v4-note-search", "screenshots");
