@@ -1,46 +1,72 @@
 {
   "schema": "orc.red-team-review/v1",
   "step": "s22b.red_team_audit",
-  "execution_id": "E1688",
+  "execution_id": "E1546",
   "feature_id": "f-v4-note-search",
+  "author_session_id": "ses_e492b197fffeN08PUKpdAXLjP8",
+  "reviewer_session_id": "ses_e490d94deffeJuiQqcukc6oHQS",
   "author_model": "deepseek/deepseek-flash",
   "author_provider": "deepseek",
-  "author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  },
   "verdict": "pass",
-  "summary": "Independent RED-TEAM on E1688 (stand test2, build 872acd2). Go suite green; healthz 200 build_ref 872acd2. Owner scoping cannot widen under search; cross-user search [] and cross-delete 404 with foreign note intact. Auth precedes method/body (401+WWW-Authenticate, no side effects). Query semantics (trim/empty no-op/case-insensitive/[]/UserID hidden) and 512-byte cap verified live. Errors static, no leaks. UI state machine sound, no XSS sinks. Canary 3/3; fault-catalog 20/0; fault-catalog-exec 20/20; catalog-invariants OK. Only low/info residuals.",
+  "summary": "Independent adversarial review of E1546 (build a95876d) on stand test2. healthz confirmed build_ref/commit a95876da78b26233045cd4d54df8b712756675af and gate_bundle_digest sha256:ff34ca00...; served /app.js, /app.css and /login|/register|/notes HTML are byte-identical (sha256) to the a95876d worktree. Auth: unauth GET/POST/DELETE /api/notes* -> 401 + WWW-Authenticate: Bearer, checked before method/query. Owner scope: q only narrows (ListNotes(UserID) first); cross-user q=alpha/gamma -> [] for the other user; cross-user DELETE -> 404 indistinguishable from missing. Query semantics live-verified: empty/whitespace/+ -> all notes; no-match and zero-note users -> [] (never null); 512-byte q -> 200, 513 -> 400 'query too long'; encoding classes (%2B, %20, +, Cyrillic, emoji, HTML, quotes, invalid %%, NUL, control bytes, ampersand) all -> 200, no panic/500. POST text limit 4096 bytes and 2MB body cap enforced (400). Method handling 405/404 envelopes consistent. UI: no XSS sinks (textContent/setAttribute only; no innerHTML/eval/document.write); no new dead-end states (load-error no-retry nuance is pre-existing f-v3). 0 critical/high confirmed. 1 new low (RT-E1546-1: sessionStorage search query survives a re-login without Logout and leaks the previous account's query text to the next account in the same tab) and 2 new info (RT-E1546-2 NUL-in-URI answered by nginx with an HTML 400 instead of the JSON envelope; RT-E1546-3 /api 301-redirected by nginx). E1688's RT-08 reconfirmed live (0021/+21 reach the owner-scoped store layer; no oracle impact); RT-09/RT-10/RT-11 remain info/design-accepted.",
   "findings": [
-    {"id": "RT-01", "severity": "high", "verdict": "refuted", "title": "Search never widens owner scope; A cannot read/delete B's note", "evidence": "ListNotes(UserID) then q-filter; live cross-user search [] and cross-delete 404."},
-    {"id": "RT-02", "severity": "high", "verdict": "refuted", "title": "Unauth /api/notes* 401+WWW-Authenticate before method/body", "evidence": "requireAuth precedes method switch; live unauth GET/POST/DELETE -> 401, no side effects."},
-    {"id": "RT-03", "severity": "medium", "verdict": "refuted", "title": "Query semantics conform", "evidence": "trim/ToLower, empty no-op byte-identical, case-insensitive, [] not null, UserID json:-; live + unit."},
-    {"id": "RT-04", "severity": "medium", "verdict": "refuted", "title": "Error envelopes static, no leaks", "evidence": "fixed strings; live 400/404/405 Allow; TestDeleteErrorEnvelope leak scan."},
-    {"id": "RT-05", "severity": "high", "verdict": "refuted", "title": "No XSS/DOM-sink in search/notes UI", "evidence": "textContent/setAttribute only; no innerHTML/eval sinks."},
-    {"id": "RT-06", "severity": "medium", "verdict": "refuted", "title": "Oversized query capped", "evidence": "512-byte q -> 200, 513 -> 400 query too long before scan."},
-    {"id": "RT-07", "severity": "medium", "verdict": "refuted", "title": "No data race on search path", "evidence": "single-mutex store, filter over value copies; -race unavailable (no cgo)."},
-    {"id": "RT-08", "severity": "low", "verdict": "confirmed", "title": "DELETE id accepts Atoi alternate forms (0027,+27) as same note", "evidence": "strconv.Atoi; owner-scoped re-check, no escalation; wire-contract quirk."},
-    {"id": "RT-09", "severity": "info", "verdict": "confirmed", "title": "Unbounded per-user note count (self-DoS, pre-existing)", "evidence": "AddNote no per-user cap; self-inflicted only."},
-    {"id": "RT-10", "severity": "info", "verdict": "confirmed", "title": "Case-insensitivity uses per-rune ToLower (no full Unicode folding)", "evidence": "consistent; live dotted-I probe no asymmetry."},
-    {"id": "RT-11", "severity": "info", "verdict": "confirmed", "title": "UI search filters cached notes loaded at page load", "evidence": "filterNotes over notes[]; delete-404 reloads; stale-query handled (SEARCH-E2E-8)."}
+    {
+      "id": "RT-E1546-1",
+      "severity": "low",
+      "title": "Search query persists across account switches when re-authenticating without Logout (sessionStorage not cleared on login overwrite)",
+      "evidence": "web/app.js: initNotes() restores SEARCH_KEY only when a token is present; removal happens on no-token, 401 and logout paths, but not when /api/login overwrites TOKEN_KEY with a new account's token. Repro: A on /notes types query 'confidential topic' -> input event writes sessionStorage['notebook.search']; user navigates manually to /login (no Logout click); logs in as B; /notes restores and pre-fills 'confidential topic' in B's session. SEARCH-E2E-8 covers only the no-token path. No note data leaks (filter applies to B's own notes only); the exposed value is the query string. Non-blocking; recommend clearing SEARCH_KEY on successful login or keying it per user.",
+      "status": "open"
+    },
+    {
+      "id": "RT-E1546-2",
+      "severity": "info",
+      "title": "NUL byte in URI is rejected at the nginx edge with an HTML 400 instead of the app's JSON envelope",
+      "evidence": "DELETE /api/notes/21%00 -> nginx '400 Bad Request' HTML page (app never reached; Go's net/http and RFC 3986 both reject NUL in paths). Edge-layer guard, no security impact, cosmetic envelope deviation on RFC-invalid input.",
+      "status": "confirmed"
+    },
+    {
+      "id": "RT-E1546-3",
+      "severity": "info",
+      "title": "GET /api is 301-redirected by nginx to /api/ (then 404 JSON)",
+      "evidence": "curl /api -> 301 Moved Permanently (nginx HTML) -> /api/ -> 404 {\"error\":\"not found\"}. Edge cosmetic deviation from 'unknown /api/* -> 404 JSON'; no traversal or leak (traversal probe /api/notes/%2e%2e -> cleaned -> 404 JSON).",
+      "status": "confirmed"
+    },
+    {
+      "id": "RT-08",
+      "severity": "low",
+      "title": "DELETE id accepts Atoi alternate forms (0027, +27) as the same note",
+      "evidence": "Live on a95876d: DELETE /api/notes/0021 -> 404 (parsed as 21, owner-scoped store lookup ran), /api/notes/+21 -> 404, /api/notes/-21 -> 404, vs /api/notes/21abc -> 400 invalid id. Owner-scoped re-check keeps it non-escalating: canonical/foreign probes gave identical 204/404 answers, so no oracle beyond what the canonical form already reveals. Reconfirmed from E1688, unchanged.",
+      "status": "confirmed"
+    },
+    {
+      "id": "RT-09",
+      "severity": "info",
+      "title": "Unbounded per-user note count (self-DoS, pre-existing, in-memory)",
+      "evidence": "AddNote has no per-user cap; ListNotes is O(all notes) per request. In-memory app, no persistence, no external victim. Known since E1688, unchanged by this feature (search adds per-note ToLower work, see RT-10).",
+      "status": "accepted"
+    },
+    {
+      "id": "RT-10",
+      "severity": "info",
+      "title": "Case-insensitivity uses per-rune strings.ToLower on q and every note text per request",
+      "evidence": "handleNotes: strings.ToLower(strings.TrimSpace(q)) + ToLower per note per request; allocation cost proportional to note count. Consistent ASCII behaviour verified live (BETA -> beta match); no full Unicode folding (by design). Performance nuance only.",
+      "status": "accepted"
+    },
+    {
+      "id": "RT-11",
+      "severity": "info",
+      "title": "UI search filters the cached notes array loaded at page load",
+      "evidence": "filterNotes() runs client-side over notes[] with no request per keystroke (spec core.md §3: 'client-side, no request per keystroke'); notes created elsewhere are not reflected until reload. By design; delete-404 triggers loadNotes() reload; stale-query path covered by SEARCH-E2E-8.",
+      "status": "accepted"
+    }
   ],
-  "probes": [
-    {"id": "P1-healthz", "result": "PASS", "detail": "healthz 200 build_ref 872acd2"},
-    {"id": "P2-unauth-401", "result": "PASS"},
-    {"id": "P3-owner-scope-search", "result": "PASS"},
-    {"id": "P4-cross-delete", "result": "PASS"},
-    {"id": "P5-query-semantics", "result": "PASS"},
-    {"id": "P6-error-envelopes", "result": "PASS"},
-    {"id": "P7-query-cap", "result": "PASS"},
-    {"id": "P8-no-userid-leak", "result": "PASS"},
-    {"id": "P9-go-tests", "result": "PASS"},
-    {"id": "P10-race-detector", "result": "PASS (unavailable; reviewed)"},
-    {"id": "P11-unicode-folding", "result": "PASS"},
-    {"id": "P12-alternate-id-forms", "result": "FAIL", "detail": "0027/+27 delete same note (RT-08, low, no escalation)"}
-  ],
-  "canary": {"run_id": "E1688", "canaries_total": 3, "canaries_found": 3, "clean_untouched": true, "status": "verified"},
-  "gates": {"canary": "PASS (3/3)", "fault-catalog": "PASS (20/0 gaps)", "fault-catalog-exec": "PASS (20 executed)", "catalog-invariants": "OK (high/critical=11, covered=10)"},
-  "step_author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
-  "step_author_model": "deepseek/deepseek-flash",
-  "step_author_provider": "deepseek",
-  "reviewer_session_id": "ses_e49b98653ffewKItPwCiTjrJwE",
-  "reviewer_model": "qwen3.8-fast",
-  "reviewer_provider": "llama-proxy"
+  "stand": {
+    "url": "https://test2.nexus.ukituki.tech",
+    "sha": "a95876da78b26233045cd4d54df8b712756675af"
+  },
+  "checked_at": "2026-11-07T17:01:48Z"
 }
