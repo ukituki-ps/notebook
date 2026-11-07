@@ -1,25 +1,27 @@
-# Planned UI graph (s04, from-design) — f-v4-note-search.
-# Design source of truth: feature-brief.md (s03 wireframes, revalidated for
-# E8363), scope-report.md, path1.ui.json. web/index.html and web/app.js were
-# read to keep testids/state transitions consistent with the DOM; they are not
-# the source of this planned graph. The from-code actualized graph is produced
-# later at s21.
+# Actualized UI graph (s21, from-code) — f-v4-note-search.
+# Source of truth: the shipped web sources at evaluated_sha. The s04 planned
+# graph was used only as a structural baseline; every selector/testid below was
+# verified to exist in web/index.html (30/30, no phantom nodes).
 schema: ui-graph/v1
 feature_id: f-v4-note-search
-status: planned
-source: design
+status: actualized
+source: code
 source_note: >-
-  Planned from design artifacts, not actualized from code. DOM and app.js were
-  cross-checked only for testid names and state-transition consistency.
+  Actualized from the shipped web/ sources at the evaluated SHA, not from the
+  design brief. The planned graph (s04) was used only as a structural baseline;
+  status/source/execution metadata was replaced with real code-verification
+  metadata.
 platform: web
 execution_id: E8363
-design_inputs:
-  - doc/идеи/f-v4-note-search/feature-brief.md
-  - doc/идеи/f-v4-note-search/scope-report.md
-  - path1.ui.json
-cross_check_inputs:
-  - web/index.html
-  - web/app.js
+evaluated_sha: eeacf65f2b5913cc9ab28cfbf9e5426a4b67ec77
+branch: dev/f-v4-note-search-validation-zero
+actualized_from:
+  step: s21.graph_actualize
+  execution_id: E8363
+  evaluated_sha: eeacf65f2b5913cc9ab28cfbf9e5426a4b67ec77
+  branch: dev/f-v4-note-search-validation-zero
+  baseline: doc/идеи/f-v4-note-search/UI-GRAPH.yaml
+  baseline_status: planned
 source_roots:
   - web
 source_files:
@@ -28,6 +30,15 @@ source_files:
   - web/app.css
 expected_test_files:
   - web/e2e/notes-search.spec.js
+verification_inputs:
+  - web/index.html
+  - web/app.js
+  - web/app.css
+  - web_ui_test.go
+  - web/e2e/notes-search.spec.js
+  - doc/идеи/f-v4-note-search/scenarios.json
+  - doc/идеи/f-v4-note-search/scenario-evidence.json
+  - doc/идеи/f-v4-note-search/evidence-manifest.json
 pages:
   - id: login
     route: /login
@@ -43,29 +54,35 @@ pages:
       - testid: login-card
         kind: container
         purpose: Login card wrapper.
+        verified: true
       - testid: login-form
         kind: form
         purpose: Username/password form; submit posts /api/login.
+        verified: true
       - testid: login-username
         kind: input
         role: textbox
-        purpose: Username field.
+        purpose: Username field (input type=text, required).
+        verified: true
       - testid: login-password
         kind: input
-        role: textbox
-        purpose: Password field.
+        purpose: Password field (input type=password); password inputs expose no ARIA textbox role.
+        verified: true
       - testid: login-submit
         kind: button
         role: button
         purpose: Login submit; disabled while the request is in flight.
+        verified: true
       - testid: login-error
         kind: text
         role: alert
-        purpose: Inline login error line (aria-live=polite).
+        purpose: Inline login error line (role=alert, aria-live=polite, starts hidden).
+        verified: true
       - testid: register-link
         kind: link
         role: link
         purpose: Navigates from /login to /register.
+        verified: true
   - id: register
     route: /register
     screen_attr: register
@@ -80,33 +97,39 @@ pages:
       - testid: register-card
         kind: container
         purpose: Register card wrapper.
+        verified: true
       - testid: register-form
         kind: form
         purpose: Username/password/confirm form; submit posts /api/register.
+        verified: true
       - testid: register-username
         kind: input
         role: textbox
-        purpose: Username field.
+        purpose: Username field (input type=text, required).
+        verified: true
       - testid: register-password
         kind: input
-        role: textbox
-        purpose: Password field.
+        purpose: Password field (input type=password); password inputs expose no ARIA textbox role.
+        verified: true
       - testid: register-confirm
         kind: input
-        role: textbox
-        purpose: Password confirmation field.
+        purpose: Password confirmation field (input type=password); password inputs expose no ARIA textbox role.
+        verified: true
       - testid: register-submit
         kind: button
         role: button
         purpose: Register submit; disabled while the request is in flight.
+        verified: true
       - testid: register-error
         kind: text
         role: alert
-        purpose: Inline register error line (aria-live=polite).
+        purpose: Inline register error line (role=alert, aria-live=polite, starts hidden).
+        verified: true
       - testid: login-link
         kind: link
         role: link
         purpose: Navigates from /register to /login.
+        verified: true
   - id: notes
     route: /notes
     screen_attr: notes
@@ -140,52 +163,63 @@ pages:
       - testid: notes-header
         kind: container
         purpose: Notes header with brand, user-name and logout.
+        verified: true
       - testid: user-name
         kind: text
         purpose: Signed-in username; rendered without a literal "user:" prefix.
+        verified: true
       - testid: logout
         kind: button
         role: button
-        purpose: Clears session keys and navigates to /login.
+        purpose: Clears session keys and the saved search, then navigates to /login.
+        verified: true
       - testid: notes-error
         kind: text
         role: alert
         purpose: >-
           Shared notes error region for GET/POST/DELETE/network failures and
-          the session-expired message.
+          the session-expired message (role=alert, aria-live=polite, starts hidden).
+        verified: true
       - testid: note-form
         kind: form
         purpose: Create-note form; disabled until the initial list load succeeds.
+        verified: true
       - testid: note-input
         kind: input
         role: textbox
-        purpose: Note text input; Enter submits, Shift+Enter inserts a newline.
+        purpose: Note text input (textarea); Enter submits, Shift+Enter inserts a newline.
+        verified: true
       - testid: add-note
         kind: button
         role: button
-        purpose: Adds the note; disabled while empty/busy or before load.
+        purpose: Adds the note; disabled while empty/busy or before the list loads.
+        verified: true
       - testid: notes-loading
         kind: text
         purpose: Loading indicator for the initial GET /api/notes.
+        verified: true
       - testid: notes-search
         kind: input
         role: searchbox
         label: "Поиск заметок"
         purpose: >-
           Live search over the already loaded owner-scoped notes list;
-          type="search", aria-controls="notes-list", visible label present.
+          input type=search, aria-controls="notes-list", visible label present.
+        verified: true
       - testid: notes-search-clear
         kind: button
         role: button
         label: "Очистить поиск"
         purpose: >-
           Clears the query and restores the full loaded list; separate button,
-          hidden while the raw query is empty.
+          hidden while the raw searchQuery === "".
+        verified: true
       - testid: notes-empty
         kind: text
         purpose: >-
           Genuinely empty server list (GET 200 [] with no active query);
           reserved, never used for a non-empty query with zero matches.
+        verified: true
       - testid: notes-search-empty
         kind: text
         role: status
@@ -194,40 +228,51 @@ pages:
           role=status/aria-live=polite; shown only when the trimmed query is
           non-empty, the loaded collection is non-empty, and the filtered list
           has zero matches.
+        verified: true
       - testid: notes-list
         kind: list
         role: list
         purpose: Rendered list of note-item rows after client-side filtering.
+        verified: true
       - testid: note-item
         kind: listitem
         role: listitem
-        purpose: One row per note; text is "#<id> <text>".
+        purpose: One row per note, cloned from #note-item-template; text is "#<id> <text>".
+        verified: true
       - testid: delete-note
         kind: button
         role: button
         purpose: Deletes the row's note via DELETE /api/notes/{id}.
+        verified: true
 states:
   - id: idle-list
     label: "idle / list"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js renderNotes(): notesList.hidden = visible.length === 0; notesEmpty.hidden = !noNotes; notesSearchClear.hidden = searchQuery === ''"
     detail: >-
       Trimmed query empty: all loaded notes are rendered (notes-list), or
       notes-empty when the loaded collection is genuinely empty.
       notes-search-empty hidden; notes-search-clear hidden while the raw query
-      is empty. Create form and search remain usable.
+      is empty (a whitespace-only raw query leaves Clear visible). Create form
+      and search remain usable once the list has loaded.
   - id: filtering
     label: "filtering"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js filterNotes()/renderNotes(); notesSearch 'input' handler"
     detail: >-
       Trimmed query non-empty: the loaded owner-scoped list is filtered
-      client-side by case-insensitive substring; non-matching rows are not
-      rendered; no per-keystroke request is made.
+      client-side by case-insensitive substring over title+text; non-matching
+      rows are not rendered; no per-keystroke request is made.
   - id: results
     label: "results"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js renderNotes(): visible.length > 0"
     detail: >-
       Filtering yields >= 1 match: notes-list visible with the matching
       note-item rows; notes-search-empty hidden; notes-empty hidden.
@@ -235,6 +280,8 @@ states:
     label: "search-empty"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js renderNotes(): notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0)"
     detail: >-
       Filtering yields 0 matches while the loaded collection is non-empty:
       notes-search-empty visible with "Ничего не найдено.", no note-item
@@ -244,6 +291,8 @@ states:
     label: "genuinely empty"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js renderNotes(): notesEmpty.hidden = !noNotes; loadNotes() sets notes from the GET 200 array"
     detail: >-
       GET /api/notes returns 200 [] with an empty query: notes-empty visible,
       notes-list hidden, notes-search-empty hidden (reserved for a non-empty
@@ -252,6 +301,8 @@ states:
     label: "loading"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js loadNotes(): notesLoading.hidden = false; notesEmpty/notesList/searchEmpty hidden; setNotesEnabled(false)"
     detail: >-
       Initial list load in progress: notes-loading visible;
       notes-list/notes-empty/notes-search-empty hidden; note-form and search
@@ -260,6 +311,8 @@ states:
     label: "error"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js loadNotes() non-200/network path; POST/DELETE error paths reuse notes-error"
     detail: >-
       GET != 200 or network error: notes-error visible with the existing f-v3
       message; after a failed initial GET the list/search controls remain
@@ -269,6 +322,8 @@ states:
     label: "unauthorized / session expired"
     page: notes
     required: true
+    verified: true
+    implementation: "web/app.js handleUnauthorized()/logout handler"
     detail: >-
       401 or missing token: clear notebook.token/user (and the saved search);
       notes-error shows "Сессия истекла...", controls are disabled, then the
@@ -279,6 +334,8 @@ states:
       - login
       - register
     required: true
+    verified: true
+    implementation: "web/app.js activate()/wireLink(); login and register submit handlers"
     detail: >-
       login/register cards, forms, error lines and cross-links:
       login has register-link -> /register; register has login-link -> /login.
@@ -288,11 +345,13 @@ states:
     page: notes
     required: true
     kind: transition
+    verified: true
+    implementation: "web/app.js renderNotes() is the single re-render/filter path for load/create/delete; sessionStorage notebook.search restores the query"
     detail: >-
       idle-list --(trimmed q non-empty)--> filtering --> results | search-empty
       --> clear/empty query --> idle-list. create/delete/reload while filtering
-      re-applies the same filter; reload restores the saved query and re-applies
-      it to the freshly loaded list.
+      re-applies the same filter; reload restores the saved query from
+      sessionStorage and re-applies it to the freshly loaded list.
 state_machine:
   page: notes
   initial: idle-list
@@ -319,7 +378,7 @@ state_machine:
       on: "notes-search-clear click or input cleared/whitespace"
     - from: "filtering|results|search-empty"
       to: "same state after re-render"
-      on: "POST 201 / DELETE 204 / reload -> one render/filter function re-applies the active query"
+      on: "POST 201 / DELETE 204 / reload -> renderNotes() re-applies the active query"
   orthogonal_fetch_states:
     - loading
     - genuinely-empty
@@ -329,7 +388,7 @@ edges:
   - from: register
     to: login
     kind: navigation
-    trigger: "register-success (201 -> notebook.prefill -> /login)"
+    trigger: "register-success (201 -> sessionStorage notebook.prefill -> /login)"
   - from: login
     to: register
     kind: navigation
@@ -337,7 +396,7 @@ edges:
   - from: login
     to: notes
     kind: navigation
-    trigger: "login-success (200 token -> localStorage -> /notes)"
+    trigger: "login-success (200 token -> localStorage notebook.token/user -> /notes)"
   - from: notes
     to: login
     kind: navigation
@@ -357,7 +416,7 @@ edges:
   - from: notes
     to: notes
     kind: self-update
-    trigger: "reload: saved query is restored and re-applied to the fresh list"
+    trigger: "reload: saved notebook.search query is restored and re-applied to the fresh list"
 testids:
   # login
   - login-card
@@ -395,42 +454,98 @@ testids:
 testids_source: web/index.html
 testids_scope: "login, register, notes (full DOM at this head)"
 testids_count: 30
+testids_verified: 30
+selectors_verified_in_code: true
+counts:
+  pages: 3
+  components: 23
+  selectors_testids: 30
+  states: 10
+  state_machine_render_states: 4
+  orthogonal_fetch_states: 4
+  edges: 8
+  evidence_scenarios: 6
 evidence:
   - id: SEARCH-E2E-1
     page: notes
     title: "search finds matching note"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-1 search finds matching note"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-1"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png
+    sha256: 99bb5a5cfc578a0da314d11320da2782c00b732b269e04d9e9302b2610201369
+    status: pass
     covers: [filtering, results]
   - id: SEARCH-E2E-2
     page: notes
     title: "non-matching query shows the search empty state"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-2 non-matching query shows the search empty state"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-2"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png
+    sha256: 6760dcca4f3a1403d05df6b24c69eb46e4bf336536b7d21cd796f04294b47d39
+    status: pass
     covers: [search-empty]
   - id: SEARCH-E2E-3
     page: notes
     title: "match is case-insensitive"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-3 match is case-insensitive"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-3"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png
+    sha256: 910d079b69edc60859e950f271f2e3fd21822e2e046ab2240be91be62c7c1381
+    status: pass
     covers: [filtering, results]
   - id: SEARCH-E2E-4
     page: notes
     title: "clear restores the full list"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-4 clear restores the full list"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-4"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png
+    sha256: fc50a75eb8297fd40cc3efafcd014c8951af6d11a1b9488bf42d1818dad607d5
+    status: pass
     covers: [idle-list, results]
   - id: SEARCH-E2E-5
     page: notes
     title: "create while query active re-applies the filter"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-5 create while query active re-applies the filter"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-5"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png
+    sha256: 458643619325061a75bad449abf8a42645c660c49c7caa444cfc83bf939d3ff2
+    status: pass
     covers: [search-state-machine, results]
   - id: SEARCH-E2E-6
     page: notes
     title: "delete while query active keeps the filter consistent"
     file: web/e2e/notes-search.spec.js
+    scenario_ref: "web/e2e/notes-search.spec.js::SEARCH-E2E-6 delete while query active keeps the filter consistent"
+    evidence_ref: "doc/идеи/f-v4-note-search/scenario-evidence.json#SEARCH-E2E-6"
+    screenshot: doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png
+    sha256: ceb8db5afb1db07c7f446a2fe14be32e0ac9744d0d2de7a420653c1fb9596269
+    status: pass
     covers: [search-state-machine, search-empty]
+scenarios_file: doc/идеи/f-v4-note-search/scenarios.json
+scenario_evidence_file: doc/идеи/f-v4-note-search/scenario-evidence.json
+evidence_manifest_file: doc/идеи/f-v4-note-search/evidence-manifest.json
+scenario_ids:
+  - SEARCH-E2E-1
+  - SEARCH-E2E-2
+  - SEARCH-E2E-3
+  - SEARCH-E2E-4
+  - SEARCH-E2E-5
+  - SEARCH-E2E-6
 
-# Design contract summary:
+# From-code actualization notes:
 # - Auth is unchanged: login/register cards and links, login-success -> notes,
 #   register-success -> login, 401/logout -> login.
 # - notes-empty is reserved for a genuinely empty server list;
 #   notes-search-empty is reserved for a non-empty query over a non-empty list.
 # - Search is client-side over the loaded owner-scoped list; create/delete/
-#   reload re-render through the same filter.
+#   reload re-render through the single renderNotes()/filterNotes() path.
+# - All 30 data-testid values are present in web/index.html exactly once; no
+#   legacy ids (username, password, confirm-password, notes-form, note-text,
+#   error, notes-card) remain.
+# - note-item/delete-note live in <template id="note-item-template"> and are
+#   cloned per note; notes-list is an empty container with no phantom rows.
