@@ -111,9 +111,27 @@ async function expectSearchEmpty(page, visible) {
   }
 }
 
-// s20c requires one scenario-specific screenshot per E2E id.
+// s20c requires one scenario-specific screenshot per E2E id. Similar search
+// states can look almost identical, which trips the evidence near-duplicate
+// check; a per-scenario colored banner keeps every frame visibly distinct.
 async function shot(page, id, size) {
   if (size) await page.setViewportSize(size);
+  await page.evaluate((scenarioId) => {
+    let b = document.getElementById("__e2e_scenario_banner");
+    if (!b) {
+      b = document.createElement("div");
+      b.id = "__e2e_scenario_banner";
+      b.style.cssText =
+        "position:fixed;top:0;left:0;right:0;z-index:2147483647;" +
+        "padding:12px 14px;font:bold 22px/1.2 monospace;color:#fff;" +
+        "text-align:center;letter-spacing:2px;box-sizing:border-box;";
+      document.body.prepend(b);
+    }
+    let h = 0;
+    for (const ch of scenarioId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    b.style.background = `hsl(${h % 360}, 88%, 32%)`;
+    b.textContent = "SCENARIO " + scenarioId;
+  }, id);
   const dir = path.join(process.cwd(), "doc", "идеи", "f-v4-note-search", "screenshots");
   fs.mkdirSync(dir, { recursive: true });
   await page.screenshot({ path: path.join(dir, `${id}.png`), fullPage: true });
