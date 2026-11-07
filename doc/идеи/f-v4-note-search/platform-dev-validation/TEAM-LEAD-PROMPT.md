@@ -12,7 +12,7 @@
 - Project ID: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
 - Repo: `git@github.com:ukituki-ps/notebook.git`
 - Work branch: `dev/f-v4-note-search-ae079e5c` (в нём уже есть RT-NEW-1/2/3 fixes)
-- Platform dev: `f6a5fcf1`; gate bundle при старте: `sha256:263c48a44e1abaaedb7378066cfe7fc831faade7bb5dc3418756a4eed15bf1e8`
+- Platform dev: `de7727ea`; gate bundle при старте: `sha256:96490ad5bfe75364b8529dcb561ab27c61db208c9d2ac2fa8d50efe7c3e25e15`
 - Запрещено: prod / preprod / **test1**, `main`, force/skip/waiver, worktree-транспорт. Только **git**.
 
 ## Цель
@@ -23,30 +23,21 @@
 3. s22b/s22c cross-pair review (author ≠ reviewer);
 4. s24 approval **через `orc_wait`**, без «approved» в чате.
 
-## E1488 не воскрешаем — новый execution
+## E1688: принять s24 (без реворка)
 
-- Платформа: `f6a5fcf1`, gate bundle `sha256:263c48a4…`.
-- Host stand-runner перезапущен и принимает `feature_dir`/`feature_id` (проверено: тестовый request дошёл до `eval-worktree-missing`, а не `request-fields-invalid`). После следующих деплоев его перезапускает cron.
-- E1488 **не реопеним**: downstream s21/s22 уже done, guard «no silent invalidation» блокирует s20b, и это правильно. Force/cascade не применяем.
-- В ветке уже есть evidence-фикс (различимые скриншоты, `033886b`/`aa32731`).
+Платформа `de7727ea` исправила чтение evidence: s24-worktree пересоздаётся из git и видит старый коммитнутый manifest, а канонический evidence прогона лежит в execution root (F-RUN-02b). Теперь гейт читает exec-root первым.
 
-Запусти **новый execution**:
+Проверка на реальном E1688 s24-worktree:
+`gate-evidence-authentic: OK` (evidence-manifest 9 файлов, pngdiff OK, proof 20/20).
 
-1. `orc_start`:
-   - `process_id`: `path-1.feature`
-   - `entry_point`: `integrate`
-   - `project_id`: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
-   - `session_id`: твой реальный `ses_...`
-   - `context`: `{ "work_branch": "dev/f-v4-note-search-ae079e5c" }`
-2. Сразу возьми test2: `nexus_stand_lease(stand="test2", execution_id=<E>, ttl_minutes=180, project_id=...)`.
-3. Прогони `s20a → s24` строго через `orc_next`/`orc_accept`.
-   - `s20a`: invariant-enforced теперь читает `doc/идеи/f-v4-note-search/invariants.json` (16/16 active).
-   - `s20c`: должен быть **UI mode** (feature-scope доходит); свежие screenshots + manifest + verdict одним прогоном.
-   - `s24`: **новый** `orc_human_request` (старый `apr_645…` не использовать) + `orc_wait`; Approve в Telegram, в чат писать не нужно.
-4. В конце `nexus_stand_release`.
-5. Без force/skip/waiver. Если `gate-evidence-authentic` снова красный — полный payload.
+Действия:
 
-E1488 оставь как есть (running, не завершён); его не принимать и не реопенить.
+1. Пере-пин E1688 на текущий bundle:
+   `orc_set_context(E1688, {gate_bundle_digest:"sha256:96490ad5bfe75364b8529dcb561ab27c61db208c9d2ac2fa8d50efe7c3e25e15"})`.
+2. Повтори `orc_accept(E1688, step_id="s24.team_lead_accept", result=<тот же самый result>, human={approved:true, approval_ref:"/app/orc-repos/…/.orc-approvals/apr_a1fb457b77a085091c0ac99a0cf037be.json"})`.
+   Новый `orc_human_request` не нужен: approval подписан для неизменённого блоба отчёта.
+3. S20c/s21/s22 не перезапускай — evidence уже канонический.
+4. Если accept снова красный — полный payload; без force/skip.
 
 ## Старт
 
