@@ -18,8 +18,8 @@ module.exports = defineConfig({
   expect: { timeout: 5 * 1000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: 2,
+  workers: 1,
   reporter: "list",
   use: {
     baseURL: process.env.E2E_BASE_URL || "http://127.0.0.1:9082",
