@@ -6,6 +6,8 @@
 
 - ORC MCP: `http://192.168.1.20:8390/mcp` (dev). **Проверь, что в твоём списке инструментов есть `orc_wait`.**
   Если `orc_wait` нет — ты подключён к production `8290`; остановись и доложи: нужен dev-ORC.
+- Nexus MCP должен быть dev: `nexus_stand_status(project_id=...)` показывает стенд `test2`.
+  Если список пуст — это не dev-Nexus; остановись и доложи.
 - Nexus: `https://dev.nexus.ukituki.tech`
 - Project ID: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
 - Repo: `git@github.com:ukituki-ps/notebook.git`
