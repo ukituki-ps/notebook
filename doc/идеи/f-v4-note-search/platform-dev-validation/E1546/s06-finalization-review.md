@@ -25,3 +25,6 @@ semantics, UX, 10 wireframe states, AC 1–6, invariants summary) and
 - `test_ref` entries are runnable commands (`go test -run …`).
 - No active invariant points at an oracle that does not yet exist.
 - Proceed to s07 requirements reconcile.
+
+---
+Recorded for E1546 at s06 accept (commit artifact).
