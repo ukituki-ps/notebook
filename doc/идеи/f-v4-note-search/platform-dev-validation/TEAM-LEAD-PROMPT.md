@@ -12,7 +12,7 @@
 - Project ID: `f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9`
 - Repo: `git@github.com:ukituki-ps/notebook.git`
 - Work branch: `dev/f-v4-note-search-ae079e5c` (в нём уже есть RT-NEW-1/2/3 fixes)
-- Platform dev: `0cfedc38`; gate bundle при старте: `sha256:fb1e7a2f8f285614057db278295db06428d2f1a7c89b6d97215a84c8c1e2cc1a`
+- Platform dev: `f6a5fcf1`; gate bundle при старте: `sha256:263c48a44e1abaaedb7378066cfe7fc831faade7bb5dc3418756a4eed15bf1e8`
 - Запрещено: prod / preprod / **test1**, `main`, force/skip/waiver, worktree-транспорт. Только **git**.
 
 ## Цель
@@ -23,15 +23,22 @@
 3. s22b/s22c cross-pair review (author ≠ reviewer);
 4. s24 approval **через `orc_wait`**, без «approved» в чате.
 
-## Если E1488 уже остановлен на s20a
+## E1488: реворк с s20b (после platform fix)
 
-Платформа обновлена (`0cfedc38`): `invariant-enforced` теперь для entry points после s06 читает коммитнутый `doc/идеи/<F>/invariants.json` по `work_branch`. На ветке Notebook 16/16 active инвариантов проходят.
+Платформа обновлена (`f6a5fcf1`): api-verdict теперь якорится на `e2e-report.json`, а `ORC_FEATURE_DIR` пробрасывается в host-runner (UI-режим достижим). Но s24 **нельзя** принимать на старом evidence:
 
-1. Не стартуй новый execution. E1488 остаётся `running` на `s20a.unit_integrate`; артефакт закоммичен (`2459281…`).
-2. Возьми test2 заново (`nexus_stand_lease`).
-3. Повтори `orc_accept(E1488, s20a, result=<тот же самый result>)` — без L5 human-accept, без force/skip.
-4. Если гейт снова красный — пришли полный `gate_failures` payload; не обходи.
-5. После зелёного s20a продолжай s20b → s24 по этому промпту.
+- `pngdiff`: `SEARCH-E2E-1 ≈ 3 ≈ 6` (near-dup);
+- `evidence-manifest.json` не совпадает с текущими скриншотами (переписаны после s20c).
+
+Это не платформа, а целостность доказательств. Действия:
+
+1. Исправь evidence в ветке: для сценариев с неразличимым UI либо сделай кадры различимыми (разные данные/состояния), либо помечай `oracle=unit` + существующий `test_ref` в `scenarios.json`/`scenario-evidence`. Локально прогони `bash tools/check-evidence-authentic.sh <exec>` (через gate bundle) и `pngdiff.py`.
+2. Пере-пин execution на новый bundle: `orc_set_context(E1488, {gate_bundle_digest:"sha256:263c48a44e1abaaedb7378066cfe7fc831faade7bb5dc3418756a4eed15bf1e8"})`.
+3. `orc_step_reopen(E1488, step_id="s20b.preview_deploy", expected_last_seq=<last_seq>, idempotency_key="<unique>", reason="platform fix f6a5fcf1 + evidence integrity")` — это сбросит s20b→s24; s20a остаётся.
+4. Возьми test2, прогони s20b → s24. s20c обязан быть **UI mode** (`ORC_FEATURE_DIR` теперь доходит); в s24 — новый `orc_human_request` (байты артефакта изменились) и `orc_wait`; старый `apr_645…` не переиспользуй.
+5. Никаких force/skip/waiver. Если `gate-evidence-authentic` снова красный — пришли полный payload.
+
+Альтернатива: новый execution `integrate` с текущим bundle (тогда s20a тоже переисполнится). E1488 не завершать на старом evidence.
 
 ## Старт
 
