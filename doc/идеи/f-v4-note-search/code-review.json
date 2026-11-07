@@ -1,67 +1,117 @@
 {
   "schema": "orc.code-review/v1",
   "step": "s22c.adversarial_code_review",
-  "execution_id": "E8895",
+  "execution_id": "E1488",
   "feature_id": "f-v4-note-search",
   "verdict": "pass",
-  "summary": "Owner-scoped search with no exploitable defects or regressions: filter runs after ListNotes(session.UserID) so q can only narrow; 401 precedes query handling; [] never null; UserID not serialized; DELETE id parsing strict with correct slice removal; single renderNotes() funnel keeps create/delete/reload filter-consistent; loading/error/401/empty/search-empty states complete. build/vet/full+targeted tests green. Only low/info hygiene notes.",
+  "summary": "Adversarial independent code review of f-v4-note-search on E1488 (deployed build a579a38). Owner-scoping is structural: ListNotes(session.UserID) runs before the q filter, so a query can only narrow. Auth precedes method/id/body handling (401 + WWW-Authenticate, no side effects). Query semantics: trim, empty/whitespace no-op, case-insensitive, [] not null, UserID never serialized. DELETE strict-parsed with slice removal and repeat-404. UI funnels load/create/delete/reload through one renderNotes() and clears stale notebook.search. go build/vet/test and 18/18 targeted tests green. No confirmed critical/high findings; only low/info hygiene items.",
   "findings": [
     {
-      "id": "CR-F4-001",
+      "id": "CR-F4-01",
       "severity": "low",
-      "title": "Stale notebook.search sessionStorage can survive into a later login in the same tab on expiry",
-      "file": "web/app.js",
-      "line": 450,
-      "evidence": "SEARCH_KEY cleared only on logout and 401; restored query applies to new user's own notes (no data leak)."
-    },
-    {
-      "id": "CR-F4-002",
-      "severity": "info",
-      "title": "No retry affordance after non-401 load failure (pre-existing f-v3 behavior)",
-      "file": "web/app.js",
-      "line": 422,
-      "evidence": "setNotesEnabled(false) only re-enabled on 200; core.md §3 says loading/error handling unchanged."
-    },
-    {
-      "id": "CR-F4-003",
-      "severity": "info",
-      "title": "No length cap on q; bounded by owner's note count, no panic/500",
+      "verdict": "confirmed",
+      "title": "Whitespace-only q longer than 512 bytes returns 400 'query too long' instead of all notes (INV-SEARCH-EMPTY-Q)",
       "file": "main.go",
-      "line": 538,
-      "evidence": "TrimSpace/ToLower + strings.Contains over own notes; spec allows unbounded UTF-8 q."
+      "line": 542,
+      "evidence": "len(rawQuery) > maxQueryBytes checked before strings.TrimSpace; API-consumer-only (web UI filters client-side)."
+    },
+    {
+      "id": "CR-F4-02",
+      "severity": "info",
+      "verdict": "confirmed",
+      "title": "512-byte q cap / 400 'query too long' missing from spec/contract docs",
+      "file": "doc/идеи/f-v4-note-search/feature-brief.md",
+      "line": 33,
+      "evidence": "Contract table and spec/core.md lack the q>512 row; cap only in code comment, test, and followup docs."
+    },
+    {
+      "id": "CR-F4-03",
+      "severity": "info",
+      "verdict": "confirmed",
+      "title": "SEARCH-E2E-7/8 have no traceability entries in scenarios.json / scenario-evidence.json",
+      "file": "web/e2e/notes-search.spec.js",
+      "line": 284,
+      "evidence": "Spec defines 8 tests; scenarios.json/scenario-evidence.json evidence only 1..6; header comment still says 1..6."
+    },
+    {
+      "id": "CR-F4-04",
+      "severity": "info",
+      "verdict": "confirmed",
+      "title": "Dead CSS rule .notes-search-empty (no element carries the class)",
+      "file": "web/app.css",
+      "line": 211,
+      "evidence": "index.html renders data-testid=notes-search-empty with class=muted; rule matches nothing. Cosmetic."
+    },
+    {
+      "id": "CR-F4-05",
+      "severity": "low",
+      "verdict": "refuted",
+      "title": "Adversarial probe: q may widen results beyond owner's notes",
+      "file": "main.go",
+      "line": 547,
+      "evidence": "REFUTED: ListNotes(session.UserID) first, q filter narrows only. TestNotesSearchIsolation/TestNotesIsolation pass."
+    },
+    {
+      "id": "CR-F4-06",
+      "severity": "low",
+      "verdict": "refuted",
+      "title": "Adversarial probe: method/id/body handling before auth",
+      "file": "main.go",
+      "line": 531,
+      "evidence": "REFUTED: requireAuth first in handleNotes/handleNoteItem; unauth -> 401 + WWW-Authenticate, no side effects."
+    },
+    {
+      "id": "CR-F4-07",
+      "severity": "info",
+      "verdict": "refuted",
+      "title": "Adversarial probe: data race or injection in the search path",
+      "file": "main.go",
+      "line": 195,
+      "evidence": "REFUTED by inspection: ListNotes copies under s.mu; matching is strings.Contains only; no SQL/regex/eval. -race not runnable (no gcc/cgo)."
+    }
+  ],
+  "proofs": [
+    {
+      "id": "PR-GO-BUILD-TEST",
+      "command": "cd /workspace/projects/notebook-ae079e5c && GOWORK=off go build ./... && GOWORK=off go vet ./... && GOWORK=off go test -count=1 ./...",
+      "result": "exit0: build+vet clean; go test -count=1 'ok github.com/ukituki-ps/notebook 2.823s' (full suite green)."
+    },
+    {
+      "id": "PR-GO-TARGETED-TEST",
+      "command": "GOWORK=off go test -count=1 -run 'TestNotesSearch|TestDelete|TestAuth|TestAddNote|TestList' ./...",
+      "result": "exit0: 18/18 matched tests pass (search/delete/auth/add/list)."
+    },
+    {
+      "id": "PR-GO-RACE",
+      "command": "CGO_ENABLED=1 GOWORK=off go test -count=1 -race -run 'TestNotesSearch|TestNotesIsolation|TestDeleteNote|TestAuthRequired|TestTokenExpiry' ./...",
+      "result": "not runnable in environment (no gcc/cgo); data-race assessed statically (CR-F4-07)."
     }
   ],
   "author": {
     "model": "deepseek/deepseek-flash",
     "provider": "deepseek",
-    "session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
+    "session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
     "role": "step_author"
   },
+  "author_model": "deepseek/deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e4a29a379ffePYXhcGHsgKbTTf",
   "code_author_sessions": [
-    "ses_e4d6a864dffepgOfSV1MMhaRS4",
-    "ses_e4d6a811effewnqV2rpCwg8I1J",
-    "ses_e4d6a7b00ffegxb3upymIEckcX"
+    "ses_e4a29a379ffePYXhcGHsgKbTTf"
   ],
   "reviewer": {
     "model": "qwen3.8-fast",
     "provider": "llama-proxy",
-    "session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth"
+    "session_id": "ses_e49fbd44cffeQy5rfI0TgB9hUk"
   },
-  "test_results": {
-    "build": "pass",
-    "vet": "pass",
-    "go_test": "go test -count=1 ./... ok; targeted TestNotesSearch|TestUISemantics|TestDeleteNote|TestNotesIsolation 11/11"
-  },
-  "author_model": "deepseek/deepseek-flash",
-  "author_provider": "deepseek",
-  "author_session_id": "ses_e4de2edbeffePR726UuM1uWKKA",
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy",
-  "reviewer_session_id": "ses_e4d39ff69ffeD5RDMRJewVrnth",
-  "proofs": [
-    "PR-e8162b165c14"
-  ],
-  "proof_run_ids": [
-    "PR-e8162b165c14"
-  ]
+  "reviewer_session_id": "ses_e49fbd44cffeQy5rfI0TgB9hUk",
+  "test_results": {
+    "go_build": "pass",
+    "go_vet": "pass",
+    "go_test_full": "pass (32 tests)",
+    "go_test_targeted": "18/18 pass",
+    "go_test_race": "n/a (no gcc/cgo)"
+  }
 }
