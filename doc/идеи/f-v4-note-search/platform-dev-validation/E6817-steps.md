@@ -16,3 +16,5 @@
 | s06a.reality_snapshot | reality-snapshot.json | 8 nodes, no drift |
 | s06a.reality_snapshot | reality-snapshot.json | accepted (8 nodes) |
 | s06b.reconcile | reconcile-verdict.json | coverage 8/8, no drift |
+| s06b.reconcile | reconcile-verdict.json | accepted 8/8 |
+| s06c.reconcile_verify | reconcile-verify.json | independent pass |
