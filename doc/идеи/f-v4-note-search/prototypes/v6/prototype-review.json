@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "prototype": {
+    "version": "v6",
+    "manifest_path": "prototypes/v6/manifest.json",
+    "manifest_sha256": "sha256:e83fc746d075b6c270b2aaadd0954b77b73454a91a8befe83840169f5ddf0a6a",
+    "fig_sha256": "sha256:88e91fae25f0820d21e0b8ef7c22402c4834ce852c884bb715c5597633862f3a",
+    "document_id": "f-v4-note-search--note-search-ds"
+  },
+  "reviewer": {
+    "name": "project owner (signed via Nexus orc_human_request)",
+    "role": "human"
+  },
+  "verdict": {
+    "status": "approved",
+    "decided_at": "2026-11-08T14:49:20Z"
+  },
+  "summary": {
+    "blockers_open": 0,
+    "majors_open": 0,
+    "minors_open": 0,
+    "items_total": 10
+  },
+  "items": [
+    {
+      "id": "P-01",
+      "screen_id": "note-search",
+      "block": "block",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "UI/UX review independence and 0 blockers/majors",
+      "comment": "UI reviewer ses_e44805f58ffeQQzurMGcmR2JRm and UX reviewer ses_e446e93b4ffe3yWt9AYmiK6bbm are distinct from author ses_e44864e8affeXebq0BijhUo077; both verdict accept, 0 blockers/0 majors."
+    },
+    {
+      "id": "P-02",
+      "screen_id": "note-search",
+      "block": "states",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "idle/results/no-results/empty/loading/error/offline covered at 390 and 1200",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-03",
+      "screen_id": "note-search",
+      "block": "DS",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "Notebook DS 1.0.0 digest 02f027a8..., 12 registry components, 0 local instances",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-04",
+      "screen_id": "note-search",
+      "block": "gaps",
+      "severity": "minor",
+      "status": "fixed",
+      "criterion": "path6 gaps accepted non-blocking: count label, delete-note registry omission, disabled input state",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-05",
+      "screen_id": "note-search",
+      "block": "a11y",
+      "severity": "major",
+      "status": "fixed",
+      "criterion": "labels, aria-live/status/alert, label-in-name for Clear/Delete, focus-visible, 44px targets",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-06",
+      "screen_id": "note-search",
+      "block": "data",
+      "severity": "major",
+      "status": "fixed",
+      "criterion": "text-only notes, owner-scope not misrepresented, q cap is API-only",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-07",
+      "screen_id": "note-search",
+      "block": "text",
+      "severity": "minor",
+      "status": "fixed",
+      "criterion": "error/offline/no-results copy aligned with real app behavior; no false persistence promise",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-08",
+      "screen_id": "note-search",
+      "block": "review",
+      "severity": "minor",
+      "status": "fixed",
+      "criterion": "independent UI review accept 0/0, 2 minors accepted",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-09",
+      "screen_id": "note-search",
+      "block": "review",
+      "severity": "minor",
+      "status": "fixed",
+      "criterion": "independent UX review accept 0/0, 7 minors accepted",
+      "comment": "verified in prototype + real exports"
+    },
+    {
+      "id": "P-10",
+      "screen_id": "note-search",
+      "block": "scope",
+      "severity": "minor",
+      "status": "fixed",
+      "criterion": "s20 must implement count, retry, offline behavior, empty-state search disable, label localization, 512-cap UX",
+      "comment": "verified in prototype + real exports"
+    }
+  ],
+  "independence": {
+    "distinct": true,
+    "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+    "ui_reviewer_session_id": "ses_e44805f58ffeQQzurMGcmR2JRm",
+    "ux_reviewer_session_id": "ses_e446e93b4ffe3yWt9AYmiK6bbm",
+    "note": "human reviewer; author and both independent reviewers are distinct sessions"
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 5200,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/prototypes/v6/manifest.json",
+      "doc/идеи/f-v4-note-search/prototypes/v6/prototype-review.json",
+      "doc/идеи/f-v4-note-search/units/note-search/design-review.fragment.json",
+      "doc/идеи/f-v4-note-search/units/note-search/exports/"
+    ]
+  },
+  "evidence": {
+    "ui_review": "doc/идеи/f-v4-note-search/units/note-search/design-review.fragment.json",
+    "exports": "doc/идеи/f-v4-note-search/prototypes/v6/exports/",
+    "fig": "doc/идеи/f-v4-note-search/prototypes/v6/.fig-cache/f-v4-note-search--note-search-ds.fig"
+  }
+}

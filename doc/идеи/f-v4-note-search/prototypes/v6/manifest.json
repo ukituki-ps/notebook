@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "version": "v6",
+  "created_at": "2026-11-08T14:49:11Z",
+  "design_system": {
+    "version": "1.0.0",
+    "digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+    "tokens": "design/tokens.json",
+    "registry": "design/registry.json"
+  },
+  "s3": {
+    "bucket": "openpencil",
+    "prefix": "open_pencil_storage/canvases/"
+  },
+  "documents": [
+    {
+      "screen_id": "note-search",
+      "document_id": "f-v4-note-search--note-search-ds",
+      "s3_key": "open_pencil_storage/canvases/f-v4-note-search--note-search-ds.fig",
+      "sha256": "sha256:88e91fae25f0820d21e0b8ef7c22402c4834ce852c884bb715c5597633862f3a",
+      "size": 57099,
+      "exports": [
+        "prototypes/v6/exports/export-1200-empty.png",
+        "prototypes/v6/exports/export-1200-error.png",
+        "prototypes/v6/exports/export-1200-idle.png",
+        "prototypes/v6/exports/export-1200-loading.png",
+        "prototypes/v6/exports/export-1200-no-results.png",
+        "prototypes/v6/exports/export-1200-offline.png",
+        "prototypes/v6/exports/export-1200-results.png",
+        "prototypes/v6/exports/export-390-empty.png",
+        "prototypes/v6/exports/export-390-error.png",
+        "prototypes/v6/exports/export-390-idle.png",
+        "prototypes/v6/exports/export-390-loading.png",
+        "prototypes/v6/exports/export-390-no-results.png",
+        "prototypes/v6/exports/export-390-offline.png",
+        "prototypes/v6/exports/export-390-results.png"
+      ]
+    }
+  ],
+  "review": {
+    "path": "prototype-review.json",
+    "verdict": "approved"
+  }
+}
