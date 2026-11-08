@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "scope": "backend/core + web/notes",
+  "commit": "74d6cec9db4990fb94f3fbf4a021acbeb6a32615",
+  "generated_at": "2026-11-08T21:14:01Z",
+  "actual_behavior": "Owner-scoped note search works on the current branch: 30/30 Playwright tests and go test ./... pass locally; no drift found in endpoints, auth, notes flow or DS 1.0.1 tokens.",
+  "nodes": [
+    {
+      "id": "GET /api/notes",
+      "kind": "endpoint",
+      "ref": "main.go#handleNotes",
+      "run_result": {
+        "status": 200,
+        "test": "go test ./..."
+      }
+    },
+    {
+      "id": "GET /api/notes?q=",
+      "kind": "endpoint",
+      "ref": "main.go#handleNotes",
+      "run_result": {
+        "status": 200,
+        "test": "TestNotesSearchFinds"
+      }
+    },
+    {
+      "id": "POST /api/notes",
+      "kind": "endpoint",
+      "ref": "main.go#handleNotes",
+      "run_result": {
+        "status": 201,
+        "test": "TestAddNote"
+      }
+    },
+    {
+      "id": "DELETE /api/notes/{id}",
+      "kind": "endpoint",
+      "ref": "main.go#handleNoteByID",
+      "run_result": {
+        "status": 204,
+        "test": "TestDeleteExisting"
+      }
+    },
+    {
+      "id": "POST /api/auth/register|login",
+      "kind": "endpoint",
+      "ref": "main.go#handleRegister/handleLogin",
+      "run_result": {
+        "status": 200,
+        "test": "auth E2E"
+      }
+    },
+    {
+      "id": "flow note-search",
+      "kind": "flow",
+      "ref": "web/e2e/notes-search.spec.js",
+      "run_result": {
+        "passed": true,
+        "tests": 30
+      }
+    },
+    {
+      "id": "ui note-search",
+      "kind": "ui",
+      "ref": "web/index.html#notes-search",
+      "run_result": {
+        "states": 8,
+        "exports": 16
+      }
+    },
+    {
+      "id": "ui auth",
+      "kind": "ui",
+      "ref": "web/index.html#auth",
+      "run_result": {
+        "tests": 7
+      }
+    }
+  ]
+}
