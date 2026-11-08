@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "release": "1.0.1",
+  "tag": "ds/v1.0.1",
+  "commit": "41a1141f1d0649ae4ae272d9cd7fa7974c17d634",
+  "created_at": "2026-11-08T18:25:42Z",
+  "tokens": {
+    "path": "design/tokens.json",
+    "sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb"
+  },
+  "registry": {
+    "path": "design/registry.json",
+    "sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
+  },
+  "kit": {
+    "s3_uri": "s3://openpencil/open_pencil_storage/canvases/notebook-ds-kit-1.0.1.fig",
+    "sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+    "size": 54743
+  },
+  "code": {
+    "path": "web/app.css",
+    "sha256": "sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced"
+  },
+  "quality": {
+    "tests": 15,
+    "tsc": "n/a (vanilla)",
+    "build": "n/a (static)",
+    "axe": "not-run",
+    "contrast": "AA",
+    "lint_errors": 0,
+    "waiver": "axe/visual-regression CI not run; manual contrast/touch/focus verified"
+  },
+  "digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+}

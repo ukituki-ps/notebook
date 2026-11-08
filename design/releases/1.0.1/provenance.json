@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "source": "web/app.css",
+  "fork_of": "1.0.0",
+  "created_at": "2026-11-08T18:25:42Z",
+  "notes": [
+    "Token/code alignment only; no visual change (body was already 16px default)."
+  ]
+}

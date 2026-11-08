@@ -323,6 +323,10 @@
   var OFFLINE_EMPTY = "Нет сети — нет загруженных заметок.";
 
   var notesInitialized = false;
+  // CR-01: a load response that started before a successful delete must not
+  // resurrect the deleted note. Every delete bumps the generation; stale
+  // load continuations are ignored.
+  var loadGeneration = 0;
   var notes = [];
   var searchQuery = "";
   var notesBusy = false;
@@ -347,13 +351,20 @@
       notesSearch.disabled = blocked;
       if (blocked) {
         notesSearch.setAttribute("aria-disabled", "true");
-        notesSearch.setAttribute(
-          "aria-describedby",
-          notesOfflineState ? "notes-offline"
-            : notesBusy ? "notes-loading"
-              : notesFailed ? "notes-error"
-                : "notes-empty"
-        );
+        // CR-02: notes-empty is hidden in the 401/locked window; never point
+        // aria-describedby at a hidden node. The lock itself is announced by
+        // the error/redirect state.
+        if (notesLocked) {
+          notesSearch.removeAttribute("aria-describedby");
+        } else {
+          notesSearch.setAttribute(
+            "aria-describedby",
+            notesOfflineState ? "notes-offline"
+              : notesBusy ? "notes-loading"
+                : notesFailed ? "notes-error"
+                  : "notes-empty"
+          );
+        }
         notesSearch.placeholder = notesOfflineState
           ? "Поиск недоступен без сети"
           : "Поиск по тексту...";
@@ -366,7 +377,9 @@
 
     if (notesSearchClear) {
       notesSearchClear.hidden = searchQuery.trim() === "";
-      notesSearchClear.disabled = blocked;
+      // CR-03: clearing the local query must remain possible while offline;
+      // only a locked (401) session disables it.
+      notesSearchClear.disabled = notesLocked;
     }
 
     if (notesList) notesList.setAttribute("aria-busy", notesBusy ? "true" : "false");
@@ -484,6 +497,7 @@
   }
 
   function loadNotes() {
+    var generation = ++loadGeneration;
     var token = readStorage(localStorage, TOKEN_KEY);
     if (!token) {
       handleUnauthorized();
@@ -503,6 +517,7 @@
 
     api("/api/notes", { token: token })
       .then(function (res) {
+        if (generation !== loadGeneration) return;
         notesBusy = false;
         if (res.status === 401) {
           handleUnauthorized();
@@ -526,6 +541,7 @@
         renderNotes();
       })
       .catch(function () {
+        if (generation !== loadGeneration) return;
         notesBusy = false;
         notesOfflineState = isOffline();
         if (notesOfflineState) {
@@ -584,6 +600,8 @@
     showError("notes", "");
     if (item.dataset.pending === "1") return;
 
+    // Invalidate any in-flight load before the DELETE starts (CR-01).
+    loadGeneration++;
     item.dataset.pending = "1";
     item.classList.add("pending");
     button.disabled = true;
@@ -594,6 +612,7 @@
     })
       .then(function (res) {
         if (res.status === 204) {
+          loadGeneration++;
           notes = notes.filter(function (note) {
             return String(note.id) !== String(id);
           });
@@ -694,7 +713,7 @@
     notesSearchClear.addEventListener("click", function () {
       removeStorage(sessionStorage, SEARCH_KEY);
       renderNotes("");
-      if (notesSearch) notesSearch.focus();
+      if (notesSearch && !notesSearch.disabled) notesSearch.focus();
     });
   }
 
