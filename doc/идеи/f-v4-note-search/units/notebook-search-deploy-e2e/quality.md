@@ -46,3 +46,5 @@ failure is the pre-existing base oracle R-1 documented in `verify.md` §4 and is
 fixed by U02, not by this unit.
 
 **Verdict: pass — crutch density did not grow; no synthetic or fabricated evidence.**
+
+- accepted: s14.unit_quality (E0809-u03)
