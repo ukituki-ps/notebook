@@ -1,0 +1,9 @@
+# CR-01 on fixed HEAD (server :9082)
+# date: 2026-11-08T21:16:32Z
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › web/e2e/notes-search.spec.js:787:1 › CR-01 a stale GET /api/notes cannot resurrect a deleted note (371ms)
+
+  1 passed (763ms)
+EXIT=0

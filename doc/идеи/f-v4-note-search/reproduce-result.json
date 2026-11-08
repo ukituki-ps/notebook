@@ -2,19 +2,20 @@
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
   "run_result": {
-    "command": "E2E_BASE_URL=http://127.0.0.1:9082 npx playwright test --workers=1 --retries=0; go test ./...",
-    "exit_code": 0,
-    "tests_passed": 30,
-    "tests_failed": 0,
-    "go_test": "ok",
-    "log": "doc/идеи/f-v4-note-search/platform-dev-validation/pre-run-local-evidence.txt",
-    "log_sha256": "sha256:03b57899e0218076d8fd68981597d8d9c0d6d83f59b0d401d00dd16c62e1f2a9"
+    "before_log": "doc/идеи/f-v4-note-search/platform-dev-validation/repro-cr01-before.txt",
+    "before_sha256": "sha256:a0e980c65ca822ecc5eb91451e8c08a4ee80b3358cfefbf34e4db77636ab7ae8",
+    "after_log": "doc/идеи/f-v4-note-search/platform-dev-validation/repro-cr01-after.txt",
+    "after_sha256": "sha256:5df2298b5c503ba9a5c9804bdce582cb820bfadf0cb80063eb1f62d0f28823f2",
+    "before_exit_code": 1,
+    "after_exit_code": 0,
+    "before_commit": "773acb1",
+    "after_commit": "f17a5a4"
   },
   "repro": {
-    "test_ref": "cmd:go test ./... && npx playwright test web/e2e/notes-search.spec.js",
-    "pre_exit_code": 0,
+    "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --grep 'CR-01'",
+    "pre_exit_code": 1,
     "post_exit_code": 0,
-    "fails_before": false,
+    "fails_before": true,
     "passes_after": true
   },
   "artifact_path": "doc/идеи/f-v4-note-search/reproduce-result.json"

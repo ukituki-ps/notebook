@@ -1,0 +1,50 @@
+# CR-01 on pre-fix 773acb1 (server :9084)
+# date: 2026-11-08T21:16:20Z
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › web/e2e/notes-search.spec.js:787:1 › CR-01 a stale GET /api/notes cannot resurrect a deleted note (5.4s)
+
+
+  1) [chromium] › web/e2e/notes-search.spec.js:787:1 › CR-01 a stale GET /api/notes cannot resurrect a deleted note 
+
+    Error: expect(locator).toBeHidden() failed
+
+    Locator:  getByTestId('notes-loading')
+    Expected: hidden
+    Received: visible
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeHidden" getByTestId('notes-loading') with timeout 5000ms
+      - waiting for getByTestId('notes-loading')
+        14 × locator resolved to <p class="muted" role="status" id="notes-loading" aria-live="polite" data-testid="notes-loading">Загрузка...</p>
+           - unexpected value "visible"
+
+
+      852 |   // Releasing the stale response must not bring the deleted note back.
+      853 |   releaseLoad();
+    > 854 |   await expect(page.getByTestId("notes-loading")).toBeHidden();
+          |                                                   ^
+      855 |   await expect(page.getByTestId("note-item").filter({ hasText: text })).toHaveCount(0);
+      856 |   await shot(page, "CR-01");
+      857 | });
+        at /workspace/projects/notebook/web/e2e/notes-search.spec.js:854:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/notes-search-CR-01-a-stale-d3ae0-ot-resurrect-a-deleted-note-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/notes-search-CR-01-a-stale-d3ae0-ot-resurrect-a-deleted-note-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/notes-search-CR-01-a-stale-d3ae0-ot-resurrect-a-deleted-note-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/notes-search-CR-01-a-stale-d3ae0-ot-resurrect-a-deleted-note-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › web/e2e/notes-search.spec.js:787:1 › CR-01 a stale GET /api/notes cannot resurrect a deleted note 
+EXIT=1
