@@ -1,72 +1,25 @@
 {
-  "schema": "orc.red-team-review/v1",
-  "step": "s22b.red_team_audit",
-  "execution_id": "E1546",
+  "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
-  "author_session_id": "ses_e492b197fffeN08PUKpdAXLjP8",
-  "reviewer_session_id": "ses_e490d94deffeJuiQqcukc6oHQS",
-  "author_model": "deepseek/deepseek-flash",
-  "author_provider": "deepseek",
-  "reviewer": {
-    "model": "qwen3.8-fast",
-    "provider": "llama-proxy"
-  },
+  "step": "s22b.red_team_audit",
   "verdict": "pass",
-  "summary": "Independent adversarial review of E1546 (build a95876d) on stand test2. healthz confirmed build_ref/commit a95876da78b26233045cd4d54df8b712756675af and gate_bundle_digest sha256:ff34ca00...; served /app.js, /app.css and /login|/register|/notes HTML are byte-identical (sha256) to the a95876d worktree. Auth: unauth GET/POST/DELETE /api/notes* -> 401 + WWW-Authenticate: Bearer, checked before method/query. Owner scope: q only narrows (ListNotes(UserID) first); cross-user q=alpha/gamma -> [] for the other user; cross-user DELETE -> 404 indistinguishable from missing. Query semantics live-verified: empty/whitespace/+ -> all notes; no-match and zero-note users -> [] (never null); 512-byte q -> 200, 513 -> 400 'query too long'; encoding classes (%2B, %20, +, Cyrillic, emoji, HTML, quotes, invalid %%, NUL, control bytes, ampersand) all -> 200, no panic/500. POST text limit 4096 bytes and 2MB body cap enforced (400). Method handling 405/404 envelopes consistent. UI: no XSS sinks (textContent/setAttribute only; no innerHTML/eval/document.write); no new dead-end states (load-error no-retry nuance is pre-existing f-v3). 0 critical/high confirmed. 1 new low (RT-E1546-1: sessionStorage search query survives a re-login without Logout and leaks the previous account's query text to the next account in the same tab) and 2 new info (RT-E1546-2 NUL-in-URI answered by nginx with an HTML 400 instead of the JSON envelope; RT-E1546-3 /api 301-redirected by nginx). E1688's RT-08 reconfirmed live (0021/+21 reach the owner-scoped store layer; no oracle impact); RT-09/RT-10/RT-11 remain info/design-accepted.",
+  "attack_log": "doc/идеи/f-v4-note-search/attack-log.md",
+  "reviewer": {"model": "qwen3.8-fast", "provider": "llama-proxy", "session_id": "ses_e43ffd54effeHrVF3ImMEt3vkf"},
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8",
+  "reviewer_session_id": "ses_e43ffd54effeHrVF3ImMEt3vkf",
+  "proofs": [{"evidence_id": "PR-0f0052e9d56c", "command": "CANARY_FORCE=1 bash tools/canary-run.sh E0809"}],
+  "canary": {"total": 3, "detected": 3, "fault_catalog_execute_ok": true, "catalog_items": 16},
   "findings": [
-    {
-      "id": "RT-E1546-1",
-      "severity": "low",
-      "title": "Search query persists across account switches when re-authenticating without Logout (sessionStorage not cleared on login overwrite)",
-      "evidence": "web/app.js: initNotes() restores SEARCH_KEY only when a token is present; removal happens on no-token, 401 and logout paths, but not when /api/login overwrites TOKEN_KEY with a new account's token. Repro: A on /notes types query 'confidential topic' -> input event writes sessionStorage['notebook.search']; user navigates manually to /login (no Logout click); logs in as B; /notes restores and pre-fills 'confidential topic' in B's session. SEARCH-E2E-8 covers only the no-token path. No note data leaks (filter applies to B's own notes only); the exposed value is the query string. Non-blocking; recommend clearing SEARCH_KEY on successful login or keying it per user.",
-      "status": "open"
-    },
-    {
-      "id": "RT-E1546-2",
-      "severity": "info",
-      "title": "NUL byte in URI is rejected at the nginx edge with an HTML 400 instead of the app's JSON envelope",
-      "evidence": "DELETE /api/notes/21%00 -> nginx '400 Bad Request' HTML page (app never reached; Go's net/http and RFC 3986 both reject NUL in paths). Edge-layer guard, no security impact, cosmetic envelope deviation on RFC-invalid input.",
-      "status": "confirmed"
-    },
-    {
-      "id": "RT-E1546-3",
-      "severity": "info",
-      "title": "GET /api is 301-redirected by nginx to /api/ (then 404 JSON)",
-      "evidence": "curl /api -> 301 Moved Permanently (nginx HTML) -> /api/ -> 404 {\"error\":\"not found\"}. Edge cosmetic deviation from 'unknown /api/* -> 404 JSON'; no traversal or leak (traversal probe /api/notes/%2e%2e -> cleaned -> 404 JSON).",
-      "status": "confirmed"
-    },
-    {
-      "id": "RT-08",
-      "severity": "low",
-      "title": "DELETE id accepts Atoi alternate forms (0027, +27) as the same note",
-      "evidence": "Live on a95876d: DELETE /api/notes/0021 -> 404 (parsed as 21, owner-scoped store lookup ran), /api/notes/+21 -> 404, /api/notes/-21 -> 404, vs /api/notes/21abc -> 400 invalid id. Owner-scoped re-check keeps it non-escalating: canonical/foreign probes gave identical 204/404 answers, so no oracle beyond what the canonical form already reveals. Reconfirmed from E1688, unchanged.",
-      "status": "confirmed"
-    },
-    {
-      "id": "RT-09",
-      "severity": "info",
-      "title": "Unbounded per-user note count (self-DoS, pre-existing, in-memory)",
-      "evidence": "AddNote has no per-user cap; ListNotes is O(all notes) per request. In-memory app, no persistence, no external victim. Known since E1688, unchanged by this feature (search adds per-note ToLower work, see RT-10).",
-      "status": "accepted"
-    },
-    {
-      "id": "RT-10",
-      "severity": "info",
-      "title": "Case-insensitivity uses per-rune strings.ToLower on q and every note text per request",
-      "evidence": "handleNotes: strings.ToLower(strings.TrimSpace(q)) + ToLower per note per request; allocation cost proportional to note count. Consistent ASCII behaviour verified live (BETA -> beta match); no full Unicode folding (by design). Performance nuance only.",
-      "status": "accepted"
-    },
-    {
-      "id": "RT-11",
-      "severity": "info",
-      "title": "UI search filters the cached notes array loaded at page load",
-      "evidence": "filterNotes() runs client-side over notes[] with no request per keystroke (spec core.md §3: 'client-side, no request per keystroke'); notes created elsewhere are not reflected until reload. By design; delete-404 triggers loadNotes() reload; stale-query path covered by SEARCH-E2E-8.",
-      "status": "accepted"
-    }
+    {"id": "RT-E0809-F1", "severity": "high", "verdict": "fixed", "file_line": "path1.project.json canaries.detect", "text": "detect placeholder/portability false positive; fixed and re-proven with 3/3 genuine detections"},
+    {"id": "RT-E0809-F2", "severity": "low", "verdict": "accepted", "file_line": "tools/_feature_dir.py", "text": "feature-dir ambiguity without ORC_FEATURE_DIR; ORC sets it"},
+    {"id": "RT-E0809-F3", "severity": "low", "verdict": "accepted", "file_line": "nginx edge", "text": "HTML 400 for malformed percent-escapes; no client path"},
+    {"id": "RT-E0809-F4", "severity": "info", "verdict": "accepted", "file_line": "main.go handleRegister", "text": "register enumeration trade-off; login non-enumerable"},
+    {"id": "RT-E0809-F5", "severity": "info", "verdict": "accepted", "file_line": "main.go decodeJSON", "text": "invalid UTF-8 sanitized to U+FFFD"},
+    {"id": "RT-E0809-F6", "severity": "info", "verdict": "accepted", "file_line": "web/app.js", "text": "no CSP; textContent-only defense"}
   ],
-  "stand": {
-    "url": "https://test2.nexus.ukituki.tech",
-    "sha": "a95876da78b26233045cd4d54df8b712756675af"
-  },
-  "checked_at": "2026-11-07T17:01:48Z"
+  "summary": {"open_critical_high": 0, "blockers": 0},
+  "independence": {"distinct": true},
+  "context": {"source": "orc_ctx", "tokens": 7200, "artifacts": ["doc/идеи/f-v4-note-search/attack-log.md", "doc/идеи/f-v4-note-search/red-team-review.json"]}
 }
