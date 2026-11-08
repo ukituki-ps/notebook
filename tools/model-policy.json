@@ -1,0 +1,49 @@
+{
+  "comment": "ADR-KIT-090 model-distinct + решение оператора 2026-10-15: автор/исполнители/тимлид — DeepSeek Flash (deepseek-flash) (провайдер deepseek); ВСЕ ревью и аудиты (s22b red-team, s22c adversarial code review, аудиты юнитов, «второй читатель») — qwen3.8-fast (провайдер llama-proxy). Кросс-пара обязательна, самопроверка запрещена. author_models/default_author_* — fallback модели АВТОРА, когда runtime-строка agent_sessions пуста по model/provider (роль роль-контракта → пин); пусто и здесь → fail-close author_model_unresolved, ревью не пропускается молча.",
+  "pairs": [
+    {
+      "author_provider": "deepseek",
+      "reviewer_provider": "llama-proxy",
+      "reviewer_model": "qwen3.8-fast"
+    },
+    {
+      "author_provider": "llama-proxy",
+      "reviewer_provider": "deepseek",
+      "reviewer_model": "deepseek-flash"
+    }
+  ],
+  "author_models": {
+    "sde": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    },
+    "developer": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    },
+    "architect": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    },
+    "planner": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    },
+    "spec": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    },
+    "team-lead": {
+      "model": "deepseek-flash",
+      "provider": "deepseek"
+    }
+  },
+  "default_author_model": "deepseek-flash",
+  "default_author_provider": "deepseek",
+  "rules": [
+    "reviewer.provider != author.provider",
+    "reviewer.model содержит reviewer_model из пары по провайдеру автора",
+    "author_session_id != reviewer_session_id (executor-distinct, инцидент E9236)",
+    "пустая модель автора в agent_sessions → author_models[role] → default_author_*; иначе fail-close author_model_unresolved"
+  ]
+}

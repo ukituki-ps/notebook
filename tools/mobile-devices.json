@@ -1,0 +1,97 @@
+{
+  "comment": "Реестр реальных устройств device-lab (path-1 mobile). host=local — этот хост (adb); host=mac — Mac mini по ssh (iPhone/XCUITest/Maestro).",
+  "devices": [
+    {
+      "id": "and-xiaomi",
+      "label": "Xiaomi 23078PND5G",
+      "platform": "android",
+      "os": "15",
+      "sdk": 35,
+      "host": "local",
+      "transport": "adb",
+      "serial": "6TJNTSVCL7EUXODQ",
+      "browsers": [
+        "com.android.chrome",
+        "com.mi.globalbrowser",
+        "org.mozilla.fennec_fdroid"
+      ],
+      "capabilities": [
+        "pwa",
+        "chrome-cdp",
+        "maestro",
+        "screenshot",
+        "gms",
+        "gecko"
+      ]
+    },
+    {
+      "id": "and-huawei",
+      "label": "Huawei MNA-LX9",
+      "platform": "android",
+      "os": "12",
+      "sdk": 31,
+      "host": "local",
+      "transport": "adb",
+      "serial": "JUP0223A09000028",
+      "browsers": [
+        "com.huawei.browser",
+        "com.yandex.browser"
+      ],
+      "capabilities": [
+        "pwa",
+        "maestro",
+        "screenshot",
+        "no-gms"
+      ],
+      "status": "offline",
+      "updated_at": "2026-10-15T17:37:42Z"
+    },
+    {
+      "id": "ios-iphone11",
+      "label": "iPhone 11",
+      "platform": "ios",
+      "os": "27.0.1",
+      "host": "mac",
+      "transport": "appium",
+      "udid": "00008030-001438840208802E",
+      "browsers": [
+        "com.apple.mobilesafari"
+      ],
+      "capabilities": [
+        "pwa",
+        "webkit-only",
+        "maestro",
+        "screenshot",
+        "xcuitest"
+      ],
+      "appium_team": "8XPN428JX7",
+      "appium_signing_id": "Apple Development",
+      "appium_wda_bundle": "pro.meins.wda",
+      "updated_at": "2026-10-15T19:15:54Z"
+    },
+    {
+      "id": "ios-iphone18-sim",
+      "name": "ios-iphone18-sim",
+      "platform": "ios",
+      "os": "27.0",
+      "host": "mac",
+      "transport": "simulator",
+      "serial": "",
+      "udid": "98F78004-10EB-4FEC-AEC5-213A67CB018A",
+      "browsers": [
+        "com.apple.mobilesafari"
+      ],
+      "capabilities": [
+        "pwa",
+        "webkit-only",
+        "maestro",
+        "screenshot"
+      ],
+      "runner_url": "",
+      "status": "available",
+      "created_by": "team-lead",
+      "created_at": "2026-10-15T17:37:42Z",
+      "updated_at": "2026-10-15T17:37:42Z"
+    }
+  ]
+}

@@ -218,6 +218,17 @@ entry_points:
   - target_repo_head
   - stand_url
   - golden_path_command
+- id: prototype
+  description: Приёмка уже интегрированного прототипа (s03b) без повторного fan-out
+  start_from: s03b.prototype_accept
+  required_context:
+  - work_branch
+  skip_steps:
+  - s01.product_discuss
+  - s02.architect_scope_analysis
+  - s02a.ds_pin
+  - s03.proto_visualize
+  - s03a.design_integrate
 steps:
 - id: s01.product_discuss
   name: Обсуждение идеи с product
@@ -534,6 +545,8 @@ steps:
             type: integer
             minimum: 0
       context:
+        type: object
+      approval_payload:
         type: object
 - id: s03c.prototype_rework
   name: Переделка прототипа по замечаниям s03b
@@ -3898,6 +3911,13 @@ gates:
       disposition: escalate
       reason: прототип не принят человеком или digest/blockers не совпадают
     x-status: proposed
+  - id: gate-prototype-human-approval
+    kind: approval
+    layer: 5
+    subject: prototype
+    on_fail: reject
+    profile: blob
+    target: '{context.feature_dir}/prototypes/v6/prototype-review.json'
   s22e.ux_audit:
   - id: gate-ux-audit
     kind: command

@@ -1,0 +1,32 @@
+[Unit]
+Description=Host runner for s20b/s20c preview deploy+E2E (path-10 dev)
+Documentation=https://github.com/ukituki-ps/archkit
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ukituki
+Group=ukituki
+# Runner-код и platform tools — из неизменяемого deploy-tree, НЕ из app worktree.
+ExecStart=/srv/archkit/deploy-dev/tools/stand-runner.sh --daemon
+Restart=on-failure
+RestartSec=5s
+
+Environment=STAND_RUNNER_CODE_ROOT=/srv/archkit/deploy-dev
+Environment=STAND_RUNNER_REPOS_ROOT=/srv/archkit/dev/orc-repos
+Environment=STAND_RUNNER_QUEUE=/srv/archkit/dev/orc-repos/.deploy-queue
+Environment=STAND_RUNNER_AUDIT_LOG=/srv/archkit/dev/stand-runner/audit.log
+Environment=STAND_RUNNER_MANIFEST=/srv/archkit/dev/stand-runner/manifest.sha256
+Environment=STAND_RUNNER_ALLOW_LEASE_ONLY=1
+
+# Runner исполняет только разрешённые команды из pinned-манифеста.
+# Сокет docker нужен для build/deploy стенда; PrivateTmp=no — иначе docker build
+# теряет общий /tmp с демоном.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/srv/archkit/dev/orc-repos /srv/archkit/dev/stand-runner /srv/archkit/deploy-dev /home/ukituki/.npm /home/ukituki/.docker /home/ukituki/.cache /tmp /var/run/docker.sock
+PrivateTmp=no
+
+[Install]
+WantedBy=multi-user.target
