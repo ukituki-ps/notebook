@@ -103,3 +103,5 @@ clean apart from this audit note):
 `new_findings: []` — no regression, no contract/auth/API/wire/design/E2E change,
 no skipped or weakened test, and the unit oracle plus the full Go suite are
 green. `regression_status: pass`.
+
+- accepted: s15.unit_regression (E0809-u02); new_findings []
