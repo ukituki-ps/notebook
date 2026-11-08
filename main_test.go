@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -1028,6 +1029,19 @@ func TestNotesSearchAuthRequired(t *testing.T) {
 	if res.code != http.StatusUnauthorized {
 		t.Fatalf("search with unknown token: %d %s", res.code, res.body)
 	}
+
+	// Auth is checked before the 512-byte query cap: an unauthenticated
+	// oversized q must yield 401, never 400.
+	res = ts.do(http.MethodGet, "/api/notes?q="+strings.Repeat("a", maxQueryBytes+1), "", nil)
+	if res.code != http.StatusUnauthorized {
+		t.Fatalf("oversized q without auth: %d %s", res.code, res.body)
+	}
+	if www := res.header.Get("WWW-Authenticate"); www != "Bearer" {
+		t.Fatalf("oversized q WWW-Authenticate: %q", www)
+	}
+	if got := strings.TrimSpace(res.body); got != `{"error":"unauthorized"}` {
+		t.Fatalf("oversized q body: %q", got)
+	}
 }
 
 func TestNotesSearchEmptyQuery(t *testing.T) {
@@ -1101,5 +1115,43 @@ func TestNotesSearchQueryTooLong(t *testing.T) {
 	}
 	if !strings.Contains(res.body, "query too long") {
 		t.Fatalf("long query body: %q", res.body)
+	}
+
+	// The cap is applied to the decoded bytes before trim, so a >512-byte
+	// whitespace-only q is rejected before any note scan.
+	spaceOnly := "/api/notes?q=" + strings.Repeat("%20", maxQueryBytes+1)
+	res = ts.authed(http.MethodGet, spaceOnly, "", token)
+	if res.code != http.StatusBadRequest {
+		t.Fatalf("whitespace-only long query: %d %s", res.code, res.body)
+	}
+	if got := strings.TrimSpace(res.body); got != `{"error":"query too long"}` {
+		t.Fatalf("whitespace-only long query body: %q", got)
+	}
+
+	// Exactly maxQueryBytes is accepted and still filters normally.
+	exact := ts.seedNote(token, strings.Repeat("b", maxQueryBytes))
+	res = ts.authed(http.MethodGet, "/api/notes?q="+strings.Repeat("b", maxQueryBytes), "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("exactly max query: %d %s", res.code, res.body)
+	}
+	assertNoteTexts(t, decodeNotes(t, res.body), exact.Text)
+
+	// The limit is bytes, not runes: 256 two-byte runes are exactly 512 bytes
+	// and are accepted, while 257 runes (514 bytes) are rejected.
+	multibyte := strings.Repeat("ж", maxQueryBytes/2)
+	multibyteNote := ts.seedNote(token, multibyte)
+	res = ts.authed(http.MethodGet, "/api/notes?q="+url.QueryEscape(multibyte), "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("exactly max bytes multibyte query: %d %s", res.code, res.body)
+	}
+	assertNoteTexts(t, decodeNotes(t, res.body), multibyteNote.Text)
+
+	overBytes := strings.Repeat("ж", maxQueryBytes/2+1)
+	res = ts.authed(http.MethodGet, "/api/notes?q="+url.QueryEscape(overBytes), "", token)
+	if res.code != http.StatusBadRequest {
+		t.Fatalf("over max bytes multibyte query: %d %s", res.code, res.body)
+	}
+	if got := strings.TrimSpace(res.body); got != `{"error":"query too long"}` {
+		t.Fatalf("over max bytes multibyte query body: %q", got)
 	}
 }
