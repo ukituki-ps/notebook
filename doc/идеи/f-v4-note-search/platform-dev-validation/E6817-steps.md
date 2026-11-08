@@ -25,3 +25,5 @@
 | s06e.reproduce | reproduce-result.json | CR-01 fails on 773acb1 (exit 1), passes on fix (exit 0) |
 | s06e.reproduce | reproduce-result.json + drift | accepted |
 | s10.change_definition | change-definition.md | domains: backend/web/deploy |
+| s10.change_definition | change-definition.md | accepted, 3 domains |
+| s11.planner_high_level | plan.md | high-level plan |
