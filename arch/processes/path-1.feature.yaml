@@ -3916,7 +3916,8 @@ gates:
     layer: 5
     subject: prototype
     on_fail: reject
-    profile: payload
+    profile: blob
+    target: '{context.feature_dir}/prototypes/v2/prototype-review.json'
   s22e.ux_audit:
   - id: gate-ux-audit
     kind: command
