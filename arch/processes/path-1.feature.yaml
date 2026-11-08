@@ -3470,6 +3470,16 @@ gates:
       disposition: quarantine
       max_attempts: 1
       reason: открыты critical/high по UI
+  - id: gate-ds-token-drift
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-token-drift {execution_id}
+    require_exit_zero: true
+    on_fail: &id001
+      action: retry
+      disposition: quarantine
+      max_attempts: 2
+      reason: implementation CSS/JS tokens drift from design/tokens.json (E0809)
   s22d.mobile_probe:
   - command: bash tools/path1-gate.sh mobile-lab {execution_id}
     id: gate-mobile-lab
@@ -3698,6 +3708,12 @@ gates:
       action: escalate
       reason: DS дрейфует от ds.lock или feature меняет DS
     x-status: proposed
+  - id: gate-ds-token-drift
+    kind: command
+    layer: 1
+    command: bash tools/path1-gate.sh ds-token-drift {execution_id}
+    require_exit_zero: true
+    on_fail: *id001
   s24a.branch_fresh:
   - id: gate-branch-fresh
     kind: command
@@ -3917,7 +3933,7 @@ gates:
     subject: prototype
     on_fail: reject
     profile: blob
-    target: '{context.feature_dir}/prototypes/v6/prototype-review.json'
+    target: '{context.feature_dir}/prototypes/v7/prototype-review.json'
   s22e.ux_audit:
   - id: gate-ux-audit
     kind: command
