@@ -1,388 +1,281 @@
 {
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
-  "execution_id": "E0809",
-  "step": "s07.requirements_reconcile",
-  "branch": "dev/f-v4-note-search-e2e",
+  "request_path": "doc/идеи/f-v4-note-search/feature-request.md",
   "source_items_total": 45,
-  "source": "feature-request.md",
-  "superseding_request": "2026-11-08 team-lead task: path-1@4.0.0, Notebook DS 1.0.0 (ds/v1.0.0, digest 02f027a8), branch dev/f-v4-note-search-e2e, test2 only",
-  "open_questions": [],
   "items": [
     {
       "item_id": "R01",
-      "raw_quote": "Feature is a new small feature `f-v4-note-search` in the path-10 contour.",
-      "our_interpretation": "Фича f-v4-note-search в контуре path-10; scope ограничен поиском заметок.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#in-scope; scope-report.md#1",
-      "confirmed_by_human": false
+      "raw_quote": "1. Feature is a new small feature `f-v4-note-search` in the path-10 contour.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R02",
-      "raw_quote": "Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.",
-      "our_interpretation": "Процесс обновлён до path-1.feature 4.0.0 (execution E0809), entry point default, platform web, feature_profile full.",
+      "raw_quote": "2. Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.",
+      "our_interpretation": "Reinterpreted: run path-1.feature@4.0.0 (current canon) instead of 3.2.2; entry default for the build run and entry prototype for the post-platform-fix s03b run.",
       "verdict": "reinterpreted",
-      "decision_ref": "superseding_request#path-1@4.0.0; orc_status E0809 process_version=4.0.0",
-      "confirmed_by_human": "edited",
-      "confirmation_ref": "2026-11-08 team-lead task: path-1@4.0.0"
+      "confirmed_by_human": "yes"
     },
     {
       "item_id": "R03",
-      "raw_quote": "Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.",
-      "our_interpretation": "База — текущая dev-линия e6aeb44e19f378811aa029fde1edf9ea42cbf73f с Notebook DS 1.0.0 (ветка dev/notebook-ds-1.0.0, tag ds/v1.0.0, digest 02f027a8), а не старая f-v3-ветка/SHA.",
-      "verdict": "reinterpreted",
-      "decision_ref": "superseding_request#Notebook DS 1.0.0; orc_ctx E0809 context.base_sha",
-      "confirmed_by_human": "edited",
-      "confirmation_ref": "2026-11-08 team-lead task: Notebook DS 1.0.0 (ds/v1.0.0, digest 02f027a8)"
+      "raw_quote": "3. Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R04",
-      "raw_quote": "Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.",
-      "our_interpretation": "Рабочая ветка dev/f-v4-note-search-e2e (не dev/f-v4-note-search); feature dir без изменений.",
+      "raw_quote": "4. Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.",
+      "our_interpretation": "Reinterpreted: work branch is dev/f-v4-note-search-fix (fix package), feature dir unchanged.",
       "verdict": "reinterpreted",
-      "decision_ref": "superseding_request#branch dev/f-v4-note-search-e2e; orc_ctx work_branch",
-      "confirmed_by_human": "edited",
-      "confirmation_ref": "2026-11-08 team-lead task: branch dev/f-v4-note-search-e2e"
+      "confirmed_by_human": "yes"
     },
     {
       "item_id": "R05",
-      "raw_quote": "Skip `s45.push_primary` and `s46.post_deploy_verify`; do not execute them.",
-      "our_interpretation": "s45/s46 не исполняются; в path-1@4.0.0 также skipped s24a, s22d и s06a–s06e (по статусу E0809).",
-      "verdict": "reinterpreted",
-      "decision_ref": "orc_status E0809 steps; superseding_request#path-1@4.0.0",
-      "confirmed_by_human": "edited",
-      "confirmation_ref": "orc_status E0809: s45/s46/s24a/s22d/s06a-e skipped"
+      "raw_quote": "5. Skip `s45.push_primary` and `s46.post_deploy_verify`; do not execute them.",
+      "our_interpretation": "Matched: s45.push_primary and s46.post_deploy_verify are excluded; only a signed owner skip may close them.",
+      "verdict": "match"
     },
     {
       "item_id": "R06",
-      "raw_quote": "Do not roll back or rework `f-v3-auth-notes`.",
-      "our_interpretation": "f-v3-auth-notes не откатывается и не перерабатывается.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#dont",
-      "confirmed_by_human": false
+      "raw_quote": "6. Do not roll back or rework `f-v3-auth-notes`.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R07",
-      "raw_quote": "Do not resume/accept `E4312`; do not touch `E1320`.",
-      "our_interpretation": "E4312 не возобновляется и не принимается, E1320 не затрагивается.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#out-of-scope",
-      "confirmed_by_human": false
+      "raw_quote": "7. Do not resume/accept `E4312`; do not touch `E1320`.",
+      "our_interpretation": "Matched: E4312/E1320 untouched.",
+      "verdict": "match"
     },
     {
       "item_id": "R08",
-      "raw_quote": "Do not touch prod/main/stage; do not start canary rollout.",
-      "our_interpretation": "prod/main/stage не трогаем, canary не запускаем.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#out-of-scope",
-      "confirmed_by_human": false
+      "raw_quote": "8. Do not touch prod/main/stage; do not start canary rollout.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R09",
-      "raw_quote": "Mandatory gates: s21 UI graph, s22a UI audit, s22b/s22c independent reviewer (author != reviewer), s24 owner approval via `@nuxus_dev_bot`.",
-      "our_interpretation": "Гейты s21/s22a/s22b/s22c остаются обязательными; s24 owner approval — через Nexus human request + orc_wait (подписанный assertion), без ручного «approved» в чате.",
-      "verdict": "reinterpreted",
-      "decision_ref": "superseding_request; feature-brief.md#acceptance-criteria; orc_wait/orc_human_request contract",
-      "confirmed_by_human": "yes",
-      "confirmation_ref": "2026-11-08 team-lead task: s24 approval via orc_wait"
+      "raw_quote": "9. Mandatory gates: s21 UI graph, s22a UI audit, s22b/s22c independent reviewer (author != reviewer), s24 owner approval via `@nuxus_dev_bot`.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R10",
-      "raw_quote": "No force/skip/waiver, no fake evidence/self-sign, do not commit per-run artifacts.",
-      "our_interpretation": "Без force/skip/waiver и фейковых evidence; per-run артефакты не коммитим (s07: коммита нет).",
-      "verdict": "match",
-      "decision_ref": "superseding_request; s07 task (no commit)",
-      "confirmed_by_human": false
+      "raw_quote": "10. No force/skip/waiver, no fake evidence/self-sign, do not commit per-run artifacts.",
+      "our_interpretation": "Matched: no force/skip/waiver/self-sign; evidence is content-addressed; no per-run data/ artifacts committed.",
+      "verdict": "match"
     },
     {
       "item_id": "R11",
-      "raw_quote": "Session fan-out must be verified after s20: 3 child executions, 3 distinct child session_ids, parent session different, parent receives only summary/diff/verdict.",
-      "our_interpretation": "Проверка fan-out сохраняется, но применяется к unit-исполнениям s20 (3 child execution, 3 distinct session_id, parent иной, parent получает только summary/diff/verdict).",
-      "verdict": "reinterpreted",
-      "decision_ref": "superseding_request#path-1@4.0.0 units; feature-brief.md#acceptance-criteria",
-      "confirmed_by_human": "yes",
-      "confirmation_ref": "2026-11-08 team-lead task: fan-out verification applies to s20 units"
+      "raw_quote": "11. Session fan-out must be verified after s20: 3 child executions, 3 distinct child session_ids, parent session different, parent receives only summary/diff/verdict.",
+      "our_interpretation": "Matched: s20 fan-out uses 3 distinct child sessions; parent session differs.",
+      "verdict": "match"
     },
     {
       "item_id": "R12",
-      "raw_quote": "`GET /api/notes?q=<text>`.",
-      "our_interpretation": "GET /api/notes получает опциональный q; отдельного эндпоинта нет.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-OWNER-SCOPE",
-      "confirmed_by_human": false
+      "raw_quote": "12. `GET /api/notes?q=<text>`.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R13",
-      "raw_quote": "Without `q` — all notes of the current user.",
-      "our_interpretation": "Без q — 200 и все заметки текущего пользователя.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-EMPTY-Q",
-      "confirmed_by_human": false
+      "raw_quote": "13. Without `q` — all notes of the current user.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R14",
-      "raw_quote": "With `q` — case-insensitive search over note text.",
-      "our_interpretation": "С q — регистронезависимый substring-поиск по тексту заметки (strings.ToLower).",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#search-semantics; invariants.json#INV-SEARCH-CASE-INSENSITIVE",
-      "confirmed_by_human": false
+      "raw_quote": "14. With `q` — case-insensitive search over note text.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R15",
-      "raw_quote": "Only notes of the current user are returned.",
-      "our_interpretation": "Owner predicate применяется до текстового фильтра; q сужает, но не расширяет выдачу.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#do; invariants.json#INV-USER-ISOLATION",
-      "confirmed_by_human": false
+      "raw_quote": "15. Only notes of the current user are returned.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R16",
-      "raw_quote": "Without bearer token — HTTP 401.",
-      "our_interpretation": "Без/с битым bearer — 401 до method/query handling.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-AUTH-REQUIRED",
-      "confirmed_by_human": false
+      "raw_quote": "16. Without bearer token — HTTP 401.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R17",
-      "raw_quote": "Empty `q` — all notes.",
-      "our_interpretation": "Пустой q после trim — 200 и все свои заметки.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-EMPTY-Q",
-      "confirmed_by_human": false
+      "raw_quote": "17. Empty `q` — all notes.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R18",
-      "raw_quote": "Whitespace-only `q` — must be fixed in the spec as either all notes or 400.",
-      "our_interpretation": "Решение зафиксировано в спеке: whitespace-only q трактуется как пустой и возвращает все свои заметки (не 400).",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#api-contract (Decision on whitespace-only q)",
-      "confirmed_by_human": false
+      "raw_quote": "18. Whitespace-only `q` — must be fixed in the spec as either all notes or 400.",
+      "our_interpretation": "Reinterpreted: whitespace-only q is fixed as \"all notes\" in spec §3.1; confirmed by the owner brief.",
+      "verdict": "reinterpreted",
+      "confirmed_by_human": "yes"
     },
     {
       "item_id": "R19",
-      "raw_quote": "Tests: search finds a note.",
-      "our_interpretation": "Go-тест: поиск находит существующую заметку.",
-      "verdict": "match",
-      "decision_ref": "invariants.json#INV-SEARCH-CASE-INSENSITIVE",
-      "confirmed_by_human": false
+      "raw_quote": "19. Tests: search finds a note.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R20",
-      "raw_quote": "Tests: search does not find an absent note.",
-      "our_interpretation": "Go-тест: несовпадающий q даёт 200 [].",
-      "verdict": "match",
-      "decision_ref": "invariants.json#INV-SEARCH-NOT-FOUND",
-      "confirmed_by_human": false
+      "raw_quote": "20. Tests: search does not find an absent note.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R21",
-      "raw_quote": "Tests: a user does not see another user's notes.",
-      "our_interpretation": "Go-тест: user A не видит заметки user B, включая поиск.",
-      "verdict": "match",
-      "decision_ref": "invariants.json#INV-USER-ISOLATION; INV-SEARCH-OWNER-SCOPE",
-      "confirmed_by_human": false
+      "raw_quote": "21. Tests: a user does not see another user's notes.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R22",
-      "raw_quote": "Tests: unauthenticated request returns 401.",
-      "our_interpretation": "Go-тест: запрос без токена — 401.",
-      "verdict": "match",
-      "decision_ref": "invariants.json#INV-AUTH-REQUIRED",
-      "confirmed_by_human": false
+      "raw_quote": "22. Tests: unauthenticated request returns 401.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R23",
-      "raw_quote": "Tests: URL-encoding and special characters in `q`.",
-      "our_interpretation": "Go-тест: URL-encoded и спецсимволы в q декодируются без паники/500.",
-      "verdict": "match",
-      "decision_ref": "invariants.json#INV-SEARCH-ENCODING",
-      "confirmed_by_human": false
+      "raw_quote": "23. Tests: URL-encoding and special characters in `q`.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R24",
-      "raw_quote": "Search field in the notes view.",
-      "our_interpretation": "На экране заметок добавлено поле поиска (data-testid=notes-search) над списком.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-TESTIDS",
-      "confirmed_by_human": false
+      "raw_quote": "24. Search field in the notes view.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R25",
-      "raw_quote": "Filtering the notes list by the query.",
-      "our_interpretation": "Список фильтруется по query client-side по уже загруженному owner-scoped списку.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-FILTER",
-      "confirmed_by_human": false
+      "raw_quote": "25. Filtering the notes list by the query.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R26",
-      "raw_quote": "Clearing the search restores the full list.",
-      "our_interpretation": "Очистка поля (notes-search-clear) возвращает полный список.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-FILTER",
-      "confirmed_by_human": false
+      "raw_quote": "26. Clearing the search restores the full list.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R27",
-      "raw_quote": "Empty state \"ничего не найдено\".",
-      "our_interpretation": "При непустом q без совпадений — «Ничего не найдено.» (notes-search-empty); при нуле заметок побеждает base notes-empty.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#aod-1; invariants.json#INV-SEARCH-UI-EMPTY",
-      "confirmed_by_human": false
+      "raw_quote": "27. Empty state \"ничего не найдено\".",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R28",
-      "raw_quote": "Do not break create/delete/reload.",
-      "our_interpretation": "Create/delete/reload работают; активный query re-apply после изменений.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#do; invariants.json#INV-SEARCH-UI-FILTER",
-      "confirmed_by_human": false
+      "raw_quote": "28. Do not break create/delete/reload.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R29",
-      "raw_quote": "`data-testid` for the search field and for the empty state.",
-      "our_interpretation": "Стабильные testid: notes-search, notes-search-clear, notes-search-empty.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-TESTIDS",
-      "confirmed_by_human": false
+      "raw_quote": "29. `data-testid` for the search field and for the empty state.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R30",
-      "raw_quote": "Actualize the UI graph.",
-      "our_interpretation": "UI-GRAPH актуализируется из кода на s21.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; B-12",
-      "confirmed_by_human": false
+      "raw_quote": "30. Actualize the UI graph.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R31",
-      "raw_quote": "Preview deploy on `test2`.",
-      "our_interpretation": "Preview deploy только на test2 под арендой стенда для E0809; другие стенды и канареечный rollout исключены.",
-      "verdict": "reinterpreted",
-      "decision_ref": "superseding_request#test2 only; feature-brief.md#acceptance-criteria; s19 stand lease",
-      "confirmed_by_human": "yes",
-      "confirmation_ref": "2026-11-08 team-lead task: test2 only, lease"
+      "raw_quote": "31. Preview deploy on `test2`.",
+      "our_interpretation": "Matched: preview only on test2; no main/prod/preprod/test1.",
+      "verdict": "match"
     },
     {
       "item_id": "R32",
-      "raw_quote": "E2E scenario: login.",
-      "our_interpretation": "Playwright E2E-сценарий логина на test2.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e",
-      "confirmed_by_human": false
+      "raw_quote": "32. E2E scenario: login.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R33",
-      "raw_quote": "E2E scenario: create 2 notes.",
-      "our_interpretation": "E2E: создание двух заметок.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e",
-      "confirmed_by_human": false
+      "raw_quote": "33. E2E scenario: create 2 notes.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R34",
-      "raw_quote": "E2E scenario: search finds one note.",
-      "our_interpretation": "E2E: поиск находит одну заметку.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
-      "confirmed_by_human": false
+      "raw_quote": "34. E2E scenario: search finds one note.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R35",
-      "raw_quote": "E2E scenario: search finds nothing.",
-      "our_interpretation": "E2E: поиск не находит ничего и показывает empty state.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
-      "confirmed_by_human": false
+      "raw_quote": "35. E2E scenario: search finds nothing.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R36",
-      "raw_quote": "E2E scenario: clearing search returns both notes.",
-      "our_interpretation": "E2E: очистка поиска возвращает обе заметки.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
-      "confirmed_by_human": false
+      "raw_quote": "36. E2E scenario: clearing search returns both notes.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R37",
-      "raw_quote": "E2E scenario: user B does not see user A's notes.",
-      "our_interpretation": "E2E: user B не видит заметки user A (auth-notes E2E-6 + search suite).",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; scope-report.md#6",
-      "confirmed_by_human": false
+      "raw_quote": "37. E2E scenario: user B does not see user A's notes.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R38",
-      "raw_quote": "Use Playwright 1.64.1, not 1.53.",
-      "our_interpretation": "Playwright 1.64.1 как test-only зависимость.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#dont; scope-report.md#2",
-      "confirmed_by_human": false
+      "raw_quote": "38. Use Playwright 1.64.1, not 1.53.",
+      "our_interpretation": "Matched: Playwright 1.64.1.",
+      "verdict": "match"
     },
     {
       "item_id": "R39",
-      "raw_quote": "Do not roll back package/lock files.",
-      "our_interpretation": "package.json/package-lock.json не откатываются.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#dont; scope-report.md#2",
-      "confirmed_by_human": false
+      "raw_quote": "39. Do not roll back package/lock files.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R40",
-      "raw_quote": "`pngdiff` must be OK.",
-      "our_interpretation": "pngdiff на preview-прогоне должен быть OK.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#acceptance-criteria; INV-UI-E2E-PREVIEW",
-      "confirmed_by_human": false
+      "raw_quote": "40. `pngdiff` must be OK.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R41",
-      "raw_quote": "Auth and persistence behaviour must not change.",
-      "our_interpretation": "Auth/session/TTL и persistence (in-memory) не меняются.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#dont; invariants.json#INV-AUTH-REQUIRED",
-      "confirmed_by_human": false
+      "raw_quote": "41. Auth and persistence behaviour must not change.",
+      "our_interpretation": "Matched: auth/persistence unchanged.",
+      "verdict": "match"
     },
     {
       "item_id": "R42",
-      "raw_quote": "Only search scope is in scope; no unrelated refactors.",
-      "our_interpretation": "Только scope поиска; без несвязанных рефакторингов.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#out-of-scope; scope-report.md#2",
-      "confirmed_by_human": false
+      "raw_quote": "42. Only search scope is in scope; no unrelated refactors.",
+      "our_interpretation": "Matched: search scope only; no unrelated refactors.",
+      "verdict": "match"
     },
     {
       "item_id": "R43",
-      "raw_quote": "No changes to the old `f-v3-auth-notes` branch or its artifacts.",
-      "our_interpretation": "Старая f-v3-auth-notes ветка и её артефакты не меняются.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#out-of-scope",
-      "confirmed_by_human": false
+      "raw_quote": "43. No changes to the old `f-v3-auth-notes` branch or its artifacts.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R44",
-      "raw_quote": "`E4312` and `E1320` are not resumed, accepted, or modified.",
-      "our_interpretation": "E4312 и E1320 не возобновляются, не принимаются и не изменяются; E0809 — отдельное исполнение, их состояние не затрагивается.",
-      "verdict": "reinterpreted",
-      "decision_ref": "superseding_request; orc_status E0809 (independent execution)",
-      "confirmed_by_human": "yes",
-      "confirmation_ref": "2026-11-08 team-lead task: E4312/E1320 untouched"
+      "raw_quote": "44. `E4312` and `E1320` are not resumed, accepted, or modified.",
+      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "verdict": "match"
     },
     {
       "item_id": "R45",
-      "raw_quote": "Preview is allowed only on `test2`; prod/main/stage and canary are out of scope.",
-      "our_interpretation": "Preview разрешён только на test2; prod/main/stage и canary вне scope.",
-      "verdict": "match",
-      "decision_ref": "feature-brief.md#out-of-scope; superseding_request#test2 only",
-      "confirmed_by_human": false
+      "raw_quote": "45. Preview is allowed only on `test2`; prod/main/stage and canary are out of scope.",
+      "our_interpretation": "Matched: test2 only; prod/main/stage/canary out of scope.",
+      "verdict": "match"
     }
-  ],
-  "summary": {
-    "matches": 37,
-    "reinterpreted": 8,
-    "dropped": 0,
-    "missing": 0,
-    "items_total": 45
-  }
+  ]
 }

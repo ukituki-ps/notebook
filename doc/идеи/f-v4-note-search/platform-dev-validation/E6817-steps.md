@@ -8,3 +8,5 @@
 | s05.architect_validation | expertise-report.md | validation of planned graph + DS 1.0.1 |
 | s05.architect_validation | expertise-report.md | accepted |
 | s06.feature_brief_final | feature-brief.md | final brief |
+| s06.feature_brief_final | feature-brief.md | accepted |
+| s07.requirements_reconcile | intent-trace.json + intent-brief.md | 45/45 request items traced |
