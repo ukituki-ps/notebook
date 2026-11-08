@@ -63,7 +63,8 @@
           <button class="logout" data-testid="logout" id="logout" type="button">Logout</button>
         </header>
 
-        <p class="error" data-testid="notes-error" role="alert" aria-live="polite" hidden></p>
+        <p class="error" data-testid="notes-error" id="notes-error" role="alert" aria-live="polite" hidden></p>
+        <button data-testid="notes-retry" id="notes-retry" type="button" hidden>Повторить</button>
 
         <form class="note-form" data-testid="note-form" id="note-form" novalidate>
           <label for="note-input">Текст заметки</label>
@@ -72,7 +73,8 @@
           <button data-testid="add-note" id="add-note" type="submit" disabled>Add</button>
         </form>
 
-        <p class="muted" data-testid="notes-loading" id="notes-loading">Загрузка...</p>
+        <p class="muted" data-testid="notes-loading" id="notes-loading"
+           role="status" aria-live="polite" hidden>Загрузка...</p>
 
         <div class="notes-search" role="search" aria-label="Поиск заметок">
           <label for="notes-search">Поиск заметок</label>
@@ -82,18 +84,29 @@
                    placeholder="Поиск по тексту..." aria-controls="notes-list">
             <button data-testid="notes-search-clear" id="notes-search-clear"
                     class="notes-search-clear" type="button"
-                    aria-label="Очистить поиск" hidden>Clear</button>
+                    aria-label="Очистить поиск" hidden>Очистить</button>
           </div>
         </div>
+
+        <div class="note-item" data-testid="notes-offline" id="notes-offline"
+             role="status" hidden>
+          <p class="note-text muted" id="notes-offline-text">Нет сети — показаны загруженные заметки.</p>
+          <button data-testid="notes-offline-check" id="notes-offline-check"
+                  type="button" aria-label="Проверить сеть">Проверить сеть</button>
+        </div>
+
+        <p class="muted" data-testid="notes-search-count" id="notes-search-count"
+           aria-live="polite" hidden>Найдено 0</p>
 
         <p class="muted" data-testid="notes-empty" id="notes-empty" hidden>
           Пока нет заметок. Добавьте первую выше.
         </p>
         <p class="muted" data-testid="notes-search-empty" id="notes-search-empty"
            role="status" aria-live="polite" hidden>
-          Ничего не найдено.
+          Ничего не найдено. Сократите запрос или очистите поиск.
         </p>
-        <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list" hidden></ul>
+        <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list"
+            aria-busy="false" hidden></ul>
       </div>
     </section>
   </main>
@@ -102,7 +115,8 @@
   <template id="note-item-template">
     <li class="note-item" data-testid="note-item" role="listitem">
       <span class="note-text"></span>
-      <button class="delete-note" data-testid="delete-note" type="button">Delete</button>
+      <button class="delete-note" data-testid="delete-note" type="button"
+              aria-label="Удалить заметку">Удалить</button>
     </li>
   </template>
 

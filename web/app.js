@@ -174,6 +174,7 @@
           done = true;
           writeStorage(localStorage, TOKEN_KEY, res.data.token);
           writeStorage(localStorage, USER_KEY, username);
+          removeStorage(sessionStorage, SEARCH_KEY);
           location.replace("/notes");
           return;
         }
@@ -307,20 +308,83 @@
   var notesLoading = byTestId("notes-loading");
   var notesSearch = byTestId("notes-search");
   var notesSearchClear = byTestId("notes-search-clear");
+  var notesSearchCount = byTestId("notes-search-count");
   var notesSearchEmpty = byTestId("notes-search-empty");
+  var notesRetry = byTestId("notes-retry");
+  var notesOfflineEl = byTestId("notes-offline");
+  var notesOfflineText = document.getElementById("notes-offline-text");
+  var notesOfflineCheck = byTestId("notes-offline-check");
   var userNameEl = byTestId("user-name");
   var logoutButton = byTestId("logout");
   var noteTemplate = document.getElementById("note-item-template");
 
+  var LOAD_ERROR = "Не удалось загрузить заметки. Попробуйте ещё раз.";
+  var OFFLINE_LOADED = "Нет сети — показаны загруженные заметки.";
+  var OFFLINE_EMPTY = "Нет сети — нет загруженных заметок.";
+
   var notesInitialized = false;
   var notes = [];
   var searchQuery = "";
+  var notesBusy = false;
+  var notesFailed = false;
+  var notesOfflineState = false;
+  var notesLocked = false;
 
-  function setNotesEnabled(enabled) {
+  function isOffline() {
+    return typeof navigator !== "undefined" && navigator.onLine === false;
+  }
+
+  function searchBlocked() {
+    return notesLocked || notesBusy || notesFailed || notesOfflineState || notes.length === 0;
+  }
+
+  // syncNotesState keeps the search/count/offline/list affordances aligned with
+  // the current load, error, connectivity and collection state.
+  function syncNotesState() {
+    var blocked = searchBlocked();
+
+    if (notesSearch) {
+      notesSearch.disabled = blocked;
+      if (blocked) {
+        notesSearch.setAttribute("aria-disabled", "true");
+        notesSearch.setAttribute(
+          "aria-describedby",
+          notesOfflineState ? "notes-offline"
+            : notesBusy ? "notes-loading"
+              : notesFailed ? "notes-error"
+                : "notes-empty"
+        );
+        notesSearch.placeholder = notesOfflineState
+          ? "Поиск недоступен без сети"
+          : "Поиск по тексту...";
+      } else {
+        notesSearch.removeAttribute("aria-disabled");
+        notesSearch.removeAttribute("aria-describedby");
+        notesSearch.placeholder = "Поиск по тексту...";
+      }
+    }
+
+    if (notesSearchClear) {
+      notesSearchClear.hidden = searchQuery.trim() === "";
+      notesSearchClear.disabled = blocked;
+    }
+
+    if (notesList) notesList.setAttribute("aria-busy", notesBusy ? "true" : "false");
+    if (notesLoading) notesLoading.hidden = !notesBusy;
+    if (notesRetry) notesRetry.hidden = !notesFailed;
+
+    if (notesOfflineEl) {
+      notesOfflineEl.hidden = !notesOfflineState;
+      if (notesOfflineText) {
+        notesOfflineText.textContent = notes.length > 0 ? OFFLINE_LOADED : OFFLINE_EMPTY;
+      }
+    }
+  }
+
+  function syncFormState() {
+    var enabled = !notesLocked && !notesBusy && !notesFailed && !notesOfflineState;
     notesForm.dataset.enabled = enabled ? "1" : "0";
     noteInput.disabled = !enabled;
-    if (notesSearch) notesSearch.disabled = !enabled;
-    if (notesSearchClear) notesSearchClear.disabled = !enabled;
     if (!enabled) addButton.disabled = true;
     else updateAddState();
   }
@@ -368,11 +432,18 @@
   }
 
   // Single render/filter function: load, create, delete and reload all funnel
-  // here so the active query is always re-applied.
-  function renderNotes() {
+  // here so the active query is always re-applied. An optional query argument
+  // updates the in-memory query (search input/clear); no persistence.
+  function renderNotes(query) {
+    if (typeof query === "string") {
+      searchQuery = query;
+      if (notesSearch && notesSearch.value !== query) notesSearch.value = query;
+    }
+
     var visible = filterNotes();
     var hasQuery = searchQuery.trim() !== "";
     var noNotes = notes.length === 0;
+    var blocked = notesBusy || notesFailed || notesOfflineState;
 
     notesList.textContent = "";
     visible.forEach(function (note) {
@@ -384,16 +455,28 @@
     // notes-search-empty is only for an active query that filters a non-empty
     // collection down to nothing; the base empty state stays notes-empty.
     if (notesSearchEmpty) {
-      notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0);
+      notesSearchEmpty.hidden = !(hasQuery && !noNotes && visible.length === 0 && !blocked);
     }
-    if (notesSearchClear) notesSearchClear.hidden = searchQuery.trim() === "";
+    if (notesSearchCount) {
+      notesSearchCount.textContent = "Найдено " + visible.length;
+      notesSearchCount.hidden = !(hasQuery && !noNotes && !blocked);
+    }
+    syncNotesState();
   }
 
   function handleUnauthorized() {
     removeStorage(localStorage, TOKEN_KEY);
     removeStorage(localStorage, USER_KEY);
     removeStorage(sessionStorage, SEARCH_KEY);
-    setNotesEnabled(false);
+    // The query is in-memory only; drop it on 401 so another user never sees it.
+    searchQuery = "";
+    if (notesSearch) notesSearch.value = "";
+    notesBusy = false;
+    notesFailed = false;
+    notesOfflineState = false;
+    notesLocked = true;
+    syncFormState();
+    syncNotesState();
     showError("notes", "Сессия истекла. Перенаправление на вход...");
     window.setTimeout(function () {
       location.replace("/login");
@@ -406,30 +489,62 @@
       handleUnauthorized();
       return;
     }
-    notesLoading.hidden = false;
+    notesLocked = false;
+    notesBusy = true;
+    notesFailed = false;
+    notesOfflineState = isOffline();
+    showError("notes", "");
     notesEmpty.hidden = true;
     notesList.hidden = true;
     if (notesSearchEmpty) notesSearchEmpty.hidden = true;
-    setNotesEnabled(false);
+    if (notesSearchCount) notesSearchCount.hidden = true;
+    syncFormState();
+    syncNotesState();
 
     api("/api/notes", { token: token })
       .then(function (res) {
-        notesLoading.hidden = true;
+        notesBusy = false;
         if (res.status === 401) {
           handleUnauthorized();
           return;
         }
         if (res.status !== 200) {
-          showError("notes", "Не удалось загрузить заметки.");
+          notesFailed = true;
+          showError("notes", LOAD_ERROR);
+          notesEmpty.hidden = true;
+          notesList.hidden = true;
+          if (notesSearchEmpty) notesSearchEmpty.hidden = true;
+          if (notesSearchCount) notesSearchCount.hidden = true;
+          syncFormState();
+          syncNotesState();
           return;
         }
         notes = Array.isArray(res.data) ? res.data : [];
+        notesFailed = false;
+        notesOfflineState = isOffline();
+        syncFormState();
         renderNotes();
-        setNotesEnabled(true);
       })
       .catch(function () {
-        notesLoading.hidden = true;
-        showError("notes", "Ошибка сети. Проверьте соединение.");
+        notesBusy = false;
+        notesOfflineState = isOffline();
+        if (notesOfflineState) {
+          // Offline is a distinct state: keep any already loaded notes visible
+          // and let the offline banner explain the situation (no error alert).
+          notesFailed = false;
+          showError("notes", "");
+          syncFormState();
+          renderNotes();
+          return;
+        }
+        notesFailed = true;
+        showError("notes", LOAD_ERROR);
+        notesEmpty.hidden = true;
+        notesList.hidden = true;
+        if (notesSearchEmpty) notesSearchEmpty.hidden = true;
+        if (notesSearchCount) notesSearchCount.hidden = true;
+        syncFormState();
+        syncNotesState();
       });
   }
 
@@ -441,6 +556,8 @@
     if (!token) {
       // No token means a different user may log in in this tab. Never leave
       // the previous user's query in sessionStorage (RT-NEW-1).
+      searchQuery = "";
+      if (notesSearch) notesSearch.value = "";
       removeStorage(sessionStorage, SEARCH_KEY);
       location.replace("/login");
       return;
@@ -448,11 +565,18 @@
     var user = readStorage(localStorage, USER_KEY);
     if (user && userNameEl) userNameEl.textContent = user;
 
-    // Restore an active query across a browser reload, then let loadNotes()
-    // re-apply it to the freshly fetched list.
-    searchQuery = readStorage(sessionStorage, SEARCH_KEY) || "";
-    if (notesSearch) notesSearch.value = searchQuery;
+    // In-memory only: never restore the query from storage. Drop any legacy
+    // value written by an older build and start with an empty query.
+    searchQuery = "";
+    if (notesSearch) notesSearch.value = "";
+    removeStorage(sessionStorage, SEARCH_KEY);
 
+    notesOfflineState = isOffline();
+    if (notesOfflineState) {
+      renderNotes();
+      syncFormState();
+      return;
+    }
     loadNotes();
   }
 
@@ -561,21 +685,56 @@
 
   if (notesSearch) {
     notesSearch.addEventListener("input", function () {
-      searchQuery = notesSearch.value;
-      writeStorage(sessionStorage, SEARCH_KEY, searchQuery);
-      renderNotes();
+      // Query lives in memory only; no sessionStorage/URL persistence.
+      renderNotes(notesSearch.value);
     });
   }
 
   if (notesSearchClear) {
     notesSearchClear.addEventListener("click", function () {
-      searchQuery = "";
-      if (notesSearch) notesSearch.value = "";
       removeStorage(sessionStorage, SEARCH_KEY);
-      renderNotes();
+      renderNotes("");
       if (notesSearch) notesSearch.focus();
     });
   }
+
+  if (notesRetry) {
+    notesRetry.addEventListener("click", function () {
+      notesOfflineState = isOffline();
+      if (notesOfflineState) {
+        syncFormState();
+        syncNotesState();
+        return;
+      }
+      loadNotes();
+    });
+  }
+
+  if (notesOfflineCheck) {
+    notesOfflineCheck.addEventListener("click", function () {
+      notesOfflineState = isOffline();
+      if (notesOfflineState) {
+        syncFormState();
+        syncNotesState();
+        return;
+      }
+      loadNotes();
+    });
+  }
+
+  window.addEventListener("offline", function () {
+    notesOfflineState = true;
+    syncFormState();
+    syncNotesState();
+  });
+
+  window.addEventListener("online", function () {
+    // Connectivity may be back, but the offline banner stays until the user
+    // presses Проверить сеть: that control re-checks navigator.onLine and
+    // re-runs the normal load path (which hides the banner on success).
+    syncFormState();
+    syncNotesState();
+  });
 
   // Enter submits the note; Shift+Enter inserts a newline.
   noteInput.addEventListener("keydown", function (event) {
