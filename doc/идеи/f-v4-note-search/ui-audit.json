@@ -2,12 +2,14 @@
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
   "artifact_path": "doc/идеи/f-v4-note-search/ui-audit.json",
-  "phase": "preliminary-s20a (full A-L audit at s22a)",
   "platform": "web",
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "57e958c3dc2a5ab963278667375ec28d51e7d6be"
+    "sha": "5785dc0",
+    "build_ref": "5785dc0",
+    "image_digest": "sha256:1990befb2cbfe44935c4f3a682671be8ea637da8f0d9ec6d9a02227b4edce86e",
+    "execution_id": "E0809"
   },
   "design_system": {
     "release": "1.0.0",
@@ -15,69 +17,337 @@
     "manifest_sha256": "sha256:72e26a2d354cb67b5d24c5974ee20442a5b607bf883ac4d89ebcc3549ef79bf2",
     "component_refs_sha256": "sha256:3c0cfed5f5a8394be698ae43a33017c4f4157214f54b8c424d1dfde7acd3622d",
     "ds_usage_violations": 0,
-    "registry_components_used": [
-      "primitives/card",
-      "primitives/button",
-      "primitives/button-secondary",
-      "primitives/input",
-      "primitives/textarea",
-      "primitives/error",
-      "patterns/notes-header",
-      "patterns/notes-list",
-      "patterns/note-item",
-      "patterns/search-field",
-      "patterns/search-clear",
-      "states/loading",
-      "states/empty",
-      "states/search-empty"
-    ],
+    "registry_components_used": 14,
     "registry_components_total": 14,
     "kubi_imports": 0,
     "local_instances": 0,
     "path6_accepted": [
-      {
-        "node_id": "n-count",
-        "selector": "[data-testid=notes-search-count]",
-        "kind": "missing-pattern",
-        "accepted": true
-      },
-      {
-        "node_id": "n-offline",
-        "selector": "[data-testid=notes-offline]",
-        "kind": "missing-pattern",
-        "accepted": true
-      },
-      {
-        "node_id": "n-retry",
-        "selector": "[data-testid=notes-retry]",
-        "kind": "missing-pattern",
-        "accepted": true
-      },
-      {
-        "node_id": "n-delete",
-        "selector": ".delete-note",
-        "kind": "registry-omission",
-        "accepted": true
-      },
-      {
-        "node_id": "n-search-count",
-        "selector": "[data-testid=notes-search-count]",
-        "kind": "missing-pattern",
-        "accepted": true
-      }
+      "n-count",
+      "n-delete",
+      "n-offline",
+      "n-retry"
+    ]
+  },
+  "scope": {
+    "screens": [
+      "note-search"
     ],
-    "scan": {
-      "command": "python3 scan web/index.html web/app.js web/app.css vs design/registry.json",
-      "result": "0 unregistered feature components; 5 accepted path6 gap nodes; 0 Kubiki imports"
-    }
+    "viewports": [
+      "390x844",
+      "1200x900"
+    ]
   },
   "summary": {
     "verdict": "pass",
     "blockers": 0,
-    "majors": 0,
-    "minors": 0,
+    "open_critical_high": 0,
+    "majors_open": 0,
+    "minors_open": 0,
+    "items_total": 24,
     "ds_usage_violations": 0
   },
-  "items": [],
-  "note": "Preliminary DS-usage block for gate-ds-usage at s20a; s22a replaces with full A-L audit + oracles/evidence."
+  "items": [
+    {
+      "id": "A1",
+      "block": "A",
+      "criterion": "DS tokens are the only visual source (bg/card/text/muted/accent/danger/radius/controls)",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/check-design-gates.py ds-usage",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/ui-audit.json"
+      }
+    },
+    {
+      "id": "A2",
+      "block": "A",
+      "criterion": "Notebook DS 1.0.0 manifest hash pinned",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:sha256sum design/releases/1.0.0/manifest.json",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "design/releases/1.0.0/manifest.json"
+      }
+    },
+    {
+      "id": "B1",
+      "block": "B",
+      "criterion": "390 layout has no horizontal overflow",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-18'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-18.png"
+      }
+    },
+    {
+      "id": "B2",
+      "block": "B",
+      "criterion": "1200 layout has no horizontal overflow",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-18'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-18.png"
+      }
+    },
+    {
+      "id": "C1",
+      "block": "C",
+      "criterion": "All 14 registry components used, 0 Kubiki imports",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/check-design-gates.py ds-usage",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/component-refs.json"
+      }
+    },
+    {
+      "id": "C2",
+      "block": "C",
+      "criterion": "0 local DS instances; path6 gaps accepted (count/delete)",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/check-design-gates.py design-integrate",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/design-gaps.json"
+      }
+    },
+    {
+      "id": "D1",
+      "block": "D",
+      "criterion": "idle/results/no-results/empty distinct",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-2|SEARCH-E2E-9'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png"
+      }
+    },
+    {
+      "id": "D2",
+      "block": "D",
+      "criterion": "loading state role=status and search disabled",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-11'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-11.png"
+      }
+    },
+    {
+      "id": "D3",
+      "block": "D",
+      "criterion": "error state role=alert with working retry",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-12'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-12.png"
+      }
+    },
+    {
+      "id": "D4",
+      "block": "D",
+      "criterion": "offline banner + offline-zero distinct from search empty",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-13|SEARCH-E2E-14'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-13.png"
+      }
+    },
+    {
+      "id": "E1",
+      "block": "E",
+      "criterion": "Search input has label, role=search, aria-controls",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-16'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png"
+      }
+    },
+    {
+      "id": "E2",
+      "block": "E",
+      "criterion": "Clear/Delete label-in-name and aria labels",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-16'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png"
+      }
+    },
+    {
+      "id": "F1",
+      "block": "F",
+      "criterion": "Keyboard focus + focus-visible ring + 44px targets",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-16'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png"
+      }
+    },
+    {
+      "id": "F2",
+      "block": "F",
+      "criterion": "Clear returns focus to search input",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-19'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-19.png"
+      }
+    },
+    {
+      "id": "G1",
+      "block": "G",
+      "criterion": "Search finds title/body text case-insensitively",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-1|SEARCH-E2E-3'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png"
+      }
+    },
+    {
+      "id": "G2",
+      "block": "G",
+      "criterion": "Count shown only for non-empty query",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-9'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-9.png"
+      }
+    },
+    {
+      "id": "H1",
+      "block": "H",
+      "criterion": "Note markup HTML is rendered literally (XSS safe)",
+      "verdict": "ok",
+      "severity": "major",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-15'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-15.png"
+      }
+    },
+    {
+      "id": "I1",
+      "block": "I",
+      "criterion": "Owner scope: user B never sees user A notes",
+      "verdict": "ok",
+      "severity": "major",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-20'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-20.png"
+      }
+    },
+    {
+      "id": "I2",
+      "block": "I",
+      "criterion": "UI truth: server reload == rendered list",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-5|SEARCH-E2E-6'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png"
+      }
+    },
+    {
+      "id": "J1",
+      "block": "J",
+      "criterion": "API 512-byte accepted / 513 -> 400 query too long",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 - <<'PY' (see e2e-api-smoke.log)",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/e2e-api-smoke.log"
+      }
+    },
+    {
+      "id": "K1",
+      "block": "K",
+      "criterion": "ds-drift: release manifest/refs unchanged",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/check-design-gates.py ds-drift",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/ds.lock.json"
+      }
+    },
+    {
+      "id": "K2",
+      "block": "K",
+      "criterion": "ui-audit release == ds-pin release",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/check-design-gates.py ds-usage",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/ds-pin.json"
+      }
+    },
+    {
+      "id": "L1",
+      "block": "L",
+      "criterion": "Screenshots captured from deployed build 5785dc0 at both widths",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js --workers=1",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-20.png"
+      }
+    },
+    {
+      "id": "L2",
+      "block": "L",
+      "criterion": "20 screenshots are non-duplicate (pngdiff threshold 0.005)",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:python3 tools/pngdiff.py --thresh 0.005 doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-*.png",
+      "evidence": {
+        "kind": "cmd",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/"
+      }
+    }
+  ],
+  "independence": {
+    "auditor_session": "designer/s22a",
+    "author_session": "ses_e4433e6faffeDGXVi4lKO4t3W8",
+    "distinct": true
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 6200,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/ui-audit.json",
+      "doc/идеи/f-v4-note-search/screenshots/",
+      "doc/идеи/f-v4-note-search/component-refs.json"
+    ]
+  }
 }
