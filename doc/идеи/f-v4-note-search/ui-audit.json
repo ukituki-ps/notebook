@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "artifact_path": "doc/идеи/f-v4-note-search/ui-audit.json",
+  "phase": "preliminary-s20a (full A-L audit at s22a)",
+  "platform": "web",
+  "stand": {
+    "name": "test2",
+    "url": "https://test2.nexus.ukituki.tech",
+    "sha": "57e958c3dc2a5ab963278667375ec28d51e7d6be"
+  },
+  "design_system": {
+    "release": "1.0.0",
+    "digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+    "manifest_sha256": "sha256:72e26a2d354cb67b5d24c5974ee20442a5b607bf883ac4d89ebcc3549ef79bf2",
+    "component_refs_sha256": "sha256:3c0cfed5f5a8394be698ae43a33017c4f4157214f54b8c424d1dfde7acd3622d",
+    "ds_usage_violations": 0,
+    "registry_components_used": [
+      "primitives/card",
+      "primitives/button",
+      "primitives/button-secondary",
+      "primitives/input",
+      "primitives/textarea",
+      "primitives/error",
+      "patterns/notes-header",
+      "patterns/notes-list",
+      "patterns/note-item",
+      "patterns/search-field",
+      "patterns/search-clear",
+      "states/loading",
+      "states/empty",
+      "states/search-empty"
+    ],
+    "registry_components_total": 14,
+    "kubi_imports": 0,
+    "local_instances": 0,
+    "path6_accepted": [
+      {
+        "node_id": "n-count",
+        "selector": "[data-testid=notes-search-count]",
+        "kind": "missing-pattern",
+        "accepted": true
+      },
+      {
+        "node_id": "n-offline",
+        "selector": "[data-testid=notes-offline]",
+        "kind": "missing-pattern",
+        "accepted": true
+      },
+      {
+        "node_id": "n-retry",
+        "selector": "[data-testid=notes-retry]",
+        "kind": "missing-pattern",
+        "accepted": true
+      },
+      {
+        "node_id": "n-delete",
+        "selector": ".delete-note",
+        "kind": "registry-omission",
+        "accepted": true
+      },
+      {
+        "node_id": "n-search-count",
+        "selector": "[data-testid=notes-search-count]",
+        "kind": "missing-pattern",
+        "accepted": true
+      }
+    ],
+    "scan": {
+      "command": "python3 scan web/index.html web/app.js web/app.css vs design/registry.json",
+      "result": "0 unregistered feature components; 5 accepted path6 gap nodes; 0 Kubiki imports"
+    }
+  },
+  "summary": {
+    "verdict": "pass",
+    "blockers": 0,
+    "majors": 0,
+    "minors": 0,
+    "ds_usage_violations": 0
+  },
+  "items": [],
+  "note": "Preliminary DS-usage block for gate-ds-usage at s20a; s22a replaces with full A-L audit + oracles/evidence."
+}
