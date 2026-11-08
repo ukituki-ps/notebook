@@ -39,6 +39,7 @@ web view, without changing authentication, storage, or note lifecycle semantics.
 | `q=` (empty after trim) | `200`, all notes of the current user |
 | `q` contains only whitespace | `200`, all notes of the current user |
 | `q` non-empty | `200`, current user's notes whose text contains `q`, case-insensitive |
+| `q` longer than 512 bytes | `400 {"error":"query too long"}`, before any note scan |
 | No matches | `200`, `[]` (never `null`) |
 | Other methods on `/api/notes` | unchanged (`405` with `Allow`) |
 
@@ -55,6 +56,9 @@ Search semantics:
 - Unicode case-insensitivity follows Go's `strings.ToLower`; no locale-specific
   collation is promised.
 - Substring matching, not prefix/token matching.
+- `q` is capped at 512 bytes on the decoded value (`maxQueryBytes`); a longer
+  query is rejected with `400` before the notes are scanned. 512 bytes is
+  accepted. The cap is a byte limit, not a character limit.
 - `q` is decoded by `net/http` from the query string; URL-encoded and special
   characters must work without panics.
 - Note text boundaries are unchanged; search does not alter stored text.
