@@ -121,6 +121,28 @@ expect_body "\"id\":${idA}" "GET /api/notes A"
 expect_body "\"text\":\"${textA}\"" "GET /api/notes A"
 ok "GET /api/notes A содержит note A"
 
+# 2.4a search API smoke: q filter, no-match [], 512 accepted, 513 -> 400.
+http GET "/api/notes?q=${textA}" "" "$tokenA"
+expect_status 200 "GET /api/notes?q=textA"
+expect_body "\"id\":${idA}" "GET /api/notes?q=textA"
+ok "GET /api/notes?q=textA -> 200, note A найден"
+
+http GET "/api/notes?q=zzz-no-such-note" "" "$tokenA"
+expect_status 200 "GET /api/notes?q=no-match"
+[ "$BODY" = "[]" ] || fail "GET /api/notes?q=no-match: ожидался [], получено ${BODY}"
+ok "GET /api/notes?q=no-match -> 200 []"
+
+q512="$(printf 'a%.0s' {1..512})"
+http GET "/api/notes?q=${q512}" "" "$tokenA"
+expect_status 200 "GET /api/notes?q=512"
+ok "GET /api/notes?q=512 bytes -> 200"
+
+q513="$(printf 'a%.0s' {1..513})"
+http GET "/api/notes?q=${q513}" "" "$tokenA"
+expect_status 400 "GET /api/notes?q=513"
+expect_body '"error":"query too long"' "GET /api/notes?q=513"
+ok "GET /api/notes?q=513 bytes -> 400 query too long"
+
 # 2.5 register/login B.
 http POST /api/register "{\"username\":\"$userB\",\"password\":\"$password\"}"
 expect_status 201 "register B"
