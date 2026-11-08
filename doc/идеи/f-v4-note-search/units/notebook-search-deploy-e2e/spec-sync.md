@@ -72,3 +72,5 @@ skeleton is the correct honest state for this step.
 
 **Verdict: synced — spec §1/§3/§4 and T0103 acceptance are covered statically;
 runtime proof and evidence remain a deliberate s20c obligation.**
+
+- accepted: s16.unit_spec_sync (E0809-u03)
