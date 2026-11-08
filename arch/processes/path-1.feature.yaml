@@ -3933,7 +3933,7 @@ gates:
     subject: prototype
     on_fail: reject
     profile: blob
-    target: '{context.feature_dir}/prototypes/v6/prototype-review.json'
+    target: '{context.feature_dir}/prototypes/v7/prototype-review.json'
   s22e.ux_audit:
   - id: gate-ux-audit
     kind: command

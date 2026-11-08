@@ -129,6 +129,11 @@ def check_review(review: dict) -> list[str]:
     verdict = review["verdict"]
     if verdict.get("status") not in {"approved", "changes_requested"}:
         errs.append("review.verdict.status недопустим")
+    # s03b is FAIL-CLOSE on human acceptance: a changes_requested review is a
+    # valid s03b *outcome* that routes to s03c, but it must never pass the
+    # prototype-accept gate as if the prototype were approved.
+    if verdict.get("status") != "approved":
+        errs.append("review.verdict.status != approved (s03b accept requires approved)")
     if not verdict.get("decided_at"):
         errs.append("review.verdict.decided_at пуст")
     summary = review["summary"]

@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "prototype": {
+    "version": "v7",
+    "manifest_path": "prototypes/v7/manifest.json",
+    "manifest_sha256": "sha256:746b04b955243f09deb9e5539a226bbb78c738903d5864a0744786028d0b39ec",
+    "fig_sha256": "sha256:88e91fae25f0820d21e0b8ef7c22402c4834ce852c884bb715c5597633862f3a",
+    "document_id": "f-v4-note-search--note-search-ds"
+  },
+  "reviewer": {
+    "name": "project owner (signature pending: ORC host cannot read v7 yet)",
+    "role": "human"
+  },
+  "verdict": {
+    "status": "changes_requested",
+    "decided_at": "2026-11-08T18:48:38Z"
+  },
+  "summary": {
+    "blockers_open": 1,
+    "majors_open": 0,
+    "minors_open": 0,
+    "items_total": 4
+  },
+  "items": [
+    {
+      "id": "P-01",
+      "screen_id": "note-search",
+      "block": "review",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "Independent UI review",
+      "comment": "Independent designer session ses_e438fe495ffeZDD7et9kGib3D1 (distinct from author and UX) re-reviewed the reworked v7 and accepted: 0 blockers, 0 majors, 13 minors (fixed/accepted). Full record: reviews/ui-review-v7.json."
+    },
+    {
+      "id": "P-02",
+      "screen_id": "note-search",
+      "block": "review",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "Independent UX review",
+      "comment": "Independent product-ux session ses_e438fdd7dffe6jwYOHgNxz6458 (distinct from author and UI) re-reviewed the reworked v7 and accepted: 0 blockers, 0 majors, 11 minors (fixed/accepted). Full record: reviews/ux-review-v7.json."
+    },
+    {
+      "id": "P-03",
+      "screen_id": "note-search",
+      "block": "design-system",
+      "severity": "info",
+      "status": "fixed",
+      "criterion": "DS 1.0.1 pin and visual verification",
+      "comment": "v7 is pinned to Notebook DS 1.0.1 (digest sha256:4e0ef105…). 16 exports (8 states x 390/1200) were freshly rendered from proto.html + web/app.css; non-offline frames were pixel-compared to v6 (4 differing pixels total at max channel delta 1), offline frames changed only by the intended UX fixes (disabled deletes, banner spacing), and offline-zero is new. ds-token-drift PASS (20 checks)."
+    },
+    {
+      "id": "P-99",
+      "screen_id": "note-search",
+      "block": "approval",
+      "severity": "blocker",
+      "status": "open",
+      "criterion": "Signed Nexus approval notebook/prototype (blob)",
+      "comment": "BLOCKED by platform: orc_human_request cannot read the v7 manifest on the ORC host because /app/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 is checked out at dev/f-v4-note-search and has no ref for dev/f-v4-note-search-fix (E4071 on orc_start). Required host-side remediation: git -C /app/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 fetch origin dev/f-v4-note-search-fix:refs/heads/dev/f-v4-note-search-fix (then retry orc_start/human_request). No self-approval was created."
+    }
+  ],
+  "independence": {
+    "distinct": true,
+    "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+    "ui_reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+    "ux_reviewer_session_id": "ses_e438fdd7dffe6jwYOHgNxz6458",
+    "note": "independent UI and UX sessions; human signature pending"
+  },
+  "context": {
+    "source": "independent subagent sessions + ORC preflight error",
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/prototypes/v7/manifest.json",
+      "doc/идеи/f-v4-note-search/reviews/ui-review-v7.json",
+      "doc/идеи/f-v4-note-search/reviews/ux-review-v7.json",
+      "design/releases/1.0.1/manifest.json",
+      "web/app.css"
+    ]
+  },
+  "evidence": {
+    "ui_review": "doc/идеи/f-v4-note-search/reviews/ui-review-v7.json",
+    "ux_review": "doc/идеи/f-v4-note-search/reviews/ux-review-v7.json",
+    "exports": "doc/идеи/f-v4-note-search/prototypes/v7/exports/",
+    "fig": "doc/идеи/f-v4-note-search/prototypes/v7/.fig-cache/f-v4-note-search--note-search-ds.fig"
+  }
+}
