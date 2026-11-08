@@ -45,8 +45,10 @@
 
 - **Before:** auth/notes Go tests and 7 auth E2E scenarios.
 - **After:** search Go tests above plus Playwright
-  `web/e2e/notes-search.spec.js` covering login, 2 notes, find one, find none,
-  clear returns both, user B isolation. Playwright stays 1.64.1.
+  `web/e2e/notes-search.spec.js` with 8 search scenarios (find, not-found empty
+  state, case-insensitive match, clear restores the list, create/delete with an
+  active query, whitespace-only query, no-token query cleanup). User-B isolation
+  remains covered by `web/e2e/auth-notes.spec.js` E2E-6. Playwright stays 1.64.1.
 - **Files:** `main_test.go`, `web/e2e/notes-search.spec.js`.
 - **Acceptance:** full `go test ./...`, Playwright green, pngdiff OK.
 
