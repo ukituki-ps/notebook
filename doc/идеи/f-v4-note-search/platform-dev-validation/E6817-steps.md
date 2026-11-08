@@ -29,3 +29,5 @@
 | s11.planner_high_level | plan.md | high-level plan |
 | s11.planner_high_level | plan.md | accepted |
 | s13.plan_save | plan.md | saved |
+| s13.plan_save | plan.md | accepted |
+| s14.spec_generation | spec/core.md + contract-matrix.md | 8 endpoints, 0 drift |
