@@ -12,21 +12,10 @@
     "execution_id": "E0809"
   },
   "design_system": {
-    "release": "1.0.0",
-    "digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
-    "manifest_sha256": "sha256:72e26a2d354cb67b5d24c5974ee20442a5b607bf883ac4d89ebcc3549ef79bf2",
-    "component_refs_sha256": "sha256:3c0cfed5f5a8394be698ae43a33017c4f4157214f54b8c424d1dfde7acd3622d",
-    "ds_usage_violations": 0,
-    "registry_components_used": 14,
-    "registry_components_total": 14,
-    "kubi_imports": 0,
-    "local_instances": 0,
-    "path6_accepted": [
-      "n-count",
-      "n-delete",
-      "n-offline",
-      "n-retry"
-    ]
+    "release": "1.0.1",
+    "digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+    "manifest_sha256": "sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b",
+    "component_refs_sha256": "sha256:65d056f4c2ac9997639fb7cb6068c8f9154b2ff5dbcccd57d8722b02edf08c18"
   },
   "scope": {
     "screens": [
@@ -62,13 +51,13 @@
     {
       "id": "A2",
       "block": "A",
-      "criterion": "Notebook DS 1.0.0 manifest hash pinned",
+      "criterion": "Notebook DS 1.0.1 manifest hash pinned",
       "verdict": "ok",
       "severity": "cosmetic",
-      "oracle": "cmd:sha256sum design/releases/1.0.0/manifest.json",
+      "oracle": "cmd:sha256sum design/releases/1.0.1/manifest.json",
       "evidence": {
         "kind": "cmd",
-        "ref": "design/releases/1.0.0/manifest.json"
+        "ref": "design/releases/1.0.1/manifest.json"
       }
     },
     {
