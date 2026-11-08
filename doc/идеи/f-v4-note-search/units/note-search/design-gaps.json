@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "screen_id": "note-search",
+  "ds_release": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "items": [
+    {
+      "id": "GAP-1",
+      "node_id": "n-count",
+      "selector": "[data-testid=notes-search-count]",
+      "kind": "missing-pattern",
+      "path6_required": true,
+      "blocking": false,
+      "status": "accepted",
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json (14 записей проверены: primitives/card, primitives/button, primitives/button-secondary, primitives/input, primitives/textarea, primitives/error, patterns/notes-header, patterns/notes-list, patterns/note-item, patterns/search-field, patterns/search-clear, states/loading, states/empty, states/search-empty). Нет ни registry_id, ни состояния для count label.",
+      "impact": "Нет канонического компонента и его состояний (hidden при loading/error, значение 0 при empty/no-results).",
+      "workaround": "Текст на токенах design/tokens.json: color --muted (#5B6470) для вторичного счётчика либо --text (#1F2328) для акцентного; font body 15px (system-ui stack), line-height 1.45; скрытие через атрибут hidden (web/app.css: [hidden]) — без локальных стилей и без новых классов.",
+      "proposed_ds_change": "Добавить в реестр patterns/count-label (selector .notes-search-count, states: default, hidden, zero) в следующем релизе DS 1.x.",
+      "owner": "designer",
+      "accepted_by": "designer",
+      "rationale_accepted": "Не блокирует реализацию: элемент чисто текстовый, покрывается существующими токенами и правилом [hidden]; расхождение с DS фиксируется как кандидат в registry."
+    },
+    {
+      "id": "GAP-2",
+      "node_id": "n-offline",
+      "selector": "[data-testid=notes-offline]",
+      "kind": "missing-pattern",
+      "path6_required": true,
+      "blocking": false,
+      "status": "accepted",
+      "reason": "Offline-баннер «Нет сети — поиск недоступен. Показаны сохранённые заметки.» отсутствует в design/registry.json. primitives/error (selector .error) покрывает только danger-семейство (--danger #B42318 / --danger-bg #FEF3F2), отдельного offline/info-баннера в реестре нет.",
+      "impact": "Нет канонического offline-состояния баннера; роль role=status и связка с кнопкой «Проверить сеть» (n-offline-check) не описаны в DS.",
+      "workaround": "Контейнер на токенах design/tokens.json: background --bg (#F4F6F8), color --text (#1F2328), border 1px solid --border-subtle (#D0D7DE), radius 8px (radius.sm), space 3/4 (12/16px); контраст text/bg = 14.6:1 (AA). Не переиспользовать danger-палитру, чтобы offline не читался как ошибка.",
+      "proposed_ds_change": "Добавить в реестр patterns/offline-banner (selector [data-testid=notes-offline], states: default, hidden) с нейтральной info-палитрой в следующем релизе DS 1.x.",
+      "owner": "designer",
+      "accepted_by": "designer",
+      "rationale_accepted": "Не блокирует реализацию: баннер собирается из существующих токенов (bg/border-subtle/text) и primitives/button для действия; расхождение с DS фиксируется как кандидат в registry."
+    }
+  ],
+  "notes": [
+    {
+      "id": "NOTE-1",
+      "node_ids": ["n-retry", "n-offline-check"],
+      "kind": "reuse-not-gap",
+      "text": "proto.json помечает n-retry и n-offline-check как path6_required:true, но dedicated DS-компоненты им не нужны и не создаются: оба — экземпляры primitive-кнопки. registry_id = primitives/button (selector button, states default/hover/focus/disabled; высота 44px --control-height, radius 8px, accent #1F6FEB, hover #1554B8, focus outline 3px #1F6FEB). Локальных instance-модификаций нет, поэтому в design-gaps.json они не попадают."
+    },
+    {
+      "id": "NOTE-2",
+      "node_ids": ["n-search-field"],
+      "kind": "composition",
+      "text": ".notes-search (patterns/search-field) композирует <input> (primitives/input: min-height 44px, radius 8px, focus outline 3px) и .notes-search-clear (patterns/search-clear). Отдельного node_id для input/textarea в proto.json нет — это внутренняя композиция паттерна, не отдельный gap."
+    },
+    {
+      "id": "NOTE-3",
+      "node_ids": ["n-notes-header"],
+      "kind": "composition",
+      "text": ".notes-header (patterns/notes-header) содержит .brand и .logout; .logout — primitives/button-secondary (selector .logout), но отдельного node_id в proto.json нет. Отдельным gap не считается."
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "blocking": 0,
+    "accepted": 2,
+    "open": 0
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "screen_id": "note-search",
+  "ds_release": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "components": [
+    {
+      "node_id": "n-search-field",
+      "registry_id": "patterns/search-field",
+      "selector": ".notes-search"
+    },
+    {
+      "node_id": "n-search-clear",
+      "registry_id": "patterns/search-clear",
+      "selector": ".notes-search-clear"
+    },
+    {
+      "node_id": "n-notes-list",
+      "registry_id": "patterns/notes-list",
+      "selector": ".notes-list"
+    },
+    {
+      "node_id": "n-note-item",
+      "registry_id": "patterns/note-item",
+      "selector": ".note-item"
+    },
+    {
+      "node_id": "n-notes-header",
+      "registry_id": "patterns/notes-header",
+      "selector": ".notes-header"
+    },
+    {
+      "node_id": "n-loading",
+      "registry_id": "states/loading",
+      "selector": "[data-testid=notes-loading]"
+    },
+    {
+      "node_id": "n-empty",
+      "registry_id": "states/empty",
+      "selector": "[data-testid=notes-empty]"
+    },
+    {
+      "node_id": "n-search-empty",
+      "registry_id": "states/search-empty",
+      "selector": "[data-testid=notes-search-empty]"
+    },
+    {
+      "node_id": "n-error",
+      "registry_id": "primitives/error",
+      "selector": ".error"
+    },
+    {
+      "node_id": "n-button",
+      "registry_id": "primitives/button",
+      "selector": "button"
+    },
+    {
+      "node_id": "n-retry",
+      "registry_id": "primitives/button",
+      "selector": "[data-testid=notes-retry]"
+    },
+    {
+      "node_id": "n-offline-check",
+      "registry_id": "primitives/button",
+      "selector": "[data-testid=notes-offline-check]"
+    }
+  ],
+  "path6_required": [
+    {
+      "node_id": "n-count",
+      "selector": "[data-testid=notes-search-count]",
+      "kind": "count-label",
+      "reason": "Счётчик результатов «Найдено N» — текстовый элемент вне реестра Notebook DS 1.0.0: ни один из 14 registry_id не описывает count label (ни селектор, ни состояние). Стилизуется только унаследованными токенами (--muted/--text, body 15px) из design/tokens.json."
+    },
+    {
+      "node_id": "n-offline",
+      "selector": "[data-testid=notes-offline]",
+      "kind": "offline-banner",
+      "reason": "Баннер «Нет сети — поиск недоступен» — контейнер role=status вне реестра Notebook DS 1.0.0: primitives/error покрывает только .error (danger-семейство), offline-баннера (info/neutral) в registry.json нет. Требует решения по DS в следующем релизе; до этого реализуется на существующих токенах."
+    }
+  ],
+  "path6_resolved_by_reuse": [
+    {
+      "node_id": "n-retry",
+      "registry_id": "primitives/button",
+      "reason": "proto.json помечает path6_required, но dedicated-компонента нет. Переиспользуется primitives/button (selector button, states default/hover/focus/disabled) без локальной instance-модификации."
+    },
+    {
+      "node_id": "n-offline-check",
+      "registry_id": "primitives/button",
+      "reason": "proto.json помечает path6_required, но dedicated-компонента нет. Переиспользуется primitives/button (selector button, states default/hover/focus/disabled) как secondary-вариант вторичного действия."
+    }
+  ],
+  "local_instances": [],
+  "summary": {
+    "local_instances": 0,
+    "registry_components": 10,
+    "path6_required": 2,
+    "path6_resolved_by_reuse": 2,
+    "nodes_total": 14
+  }
+}

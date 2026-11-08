@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "screen_id": "note-search",
+  "unit_id": "note-search",
+  "artifact_path": "doc/идеи/f-v4-note-search/units/note-search/ds-lock.json",
+  "design_system_version": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "constraint": "=1.0.0",
+  "source_of_truth": {
+    "tokens": "design/tokens.json",
+    "registry": "design/registry.json",
+    "release_manifest": "design/releases/1.0.0/manifest.json",
+    "code": "web/app.css"
+  },
+  "release": {
+    "version": "1.0.0",
+    "manifest_path": "design/releases/1.0.0/manifest.json",
+    "manifest_sha256": "sha256:72e26a2d354cb67b5d24c5974ee20442a5b607bf883ac4d89ebcc3549ef79bf2",
+    "tag": "ds/v1.0.0"
+  },
+  "tokens_sha256": "sha256:9cca3164b76bcc2d648143cbccfc563503df046563a3cb81044fede5e4964068",
+  "registry_sha256": "sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1",
+  "kit_sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+  "components": [
+    {
+      "registry_id": "primitives/button",
+      "selector": "button",
+      "nodes": ["n-button", "n-retry", "n-offline-check"]
+    },
+    {
+      "registry_id": "primitives/error",
+      "selector": ".error",
+      "nodes": ["n-error"]
+    },
+    {
+      "registry_id": "patterns/notes-header",
+      "selector": ".notes-header",
+      "nodes": ["n-notes-header"]
+    },
+    {
+      "registry_id": "patterns/notes-list",
+      "selector": ".notes-list",
+      "nodes": ["n-notes-list"]
+    },
+    {
+      "registry_id": "patterns/note-item",
+      "selector": ".note-item",
+      "nodes": ["n-note-item"]
+    },
+    {
+      "registry_id": "patterns/search-field",
+      "selector": ".notes-search",
+      "nodes": ["n-search-field"]
+    },
+    {
+      "registry_id": "patterns/search-clear",
+      "selector": ".notes-search-clear",
+      "nodes": ["n-search-clear"]
+    },
+    {
+      "registry_id": "states/loading",
+      "selector": "[data-testid=\"notes-loading\"]",
+      "nodes": ["n-loading"]
+    },
+    {
+      "registry_id": "states/empty",
+      "selector": "[data-testid=\"notes-empty\"]",
+      "nodes": ["n-empty"]
+    },
+    {
+      "registry_id": "states/search-empty",
+      "selector": "[data-testid=\"notes-search-empty\"]",
+      "nodes": ["n-search-empty"]
+    }
+  ],
+  "components_count": 10,
+  "path6_required": [
+    {
+      "node_id": "n-count",
+      "selector": "[data-testid=notes-search-count]",
+      "registry_id": null,
+      "design_gap": "GAP-1"
+    },
+    {
+      "node_id": "n-offline",
+      "selector": "[data-testid=notes-offline]",
+      "registry_id": null,
+      "design_gap": "GAP-2"
+    }
+  ],
+  "local_instances": []
+}

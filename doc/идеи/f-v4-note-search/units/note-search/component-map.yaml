@@ -1,0 +1,85 @@
+# note-search: node_id -> Notebook DS 1.0.0 registry_id
+# Source: doc/идеи/f-v4-note-search/units/note-search/proto.json nodes[]
+# Registry: design/registry.json @ ds/v1.0.0 (sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1)
+# No registry ids are invented. Nodes flagged path6_required with no DS match map to
+# registry_id: null and are tracked in design-gaps.json. Nodes flagged path6_required
+# that do have a DS primitive map to that primitive and are listed as reuse, not gaps.
+schema_version: "1.0"
+screen_id: note-search
+unit_id: note-search
+ds_release: "1.0.0"
+ds_digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
+registry_sha256: "sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1"
+
+nodes:
+  # --- registry-backed content nodes ---
+  n-search-field:
+    registry_id: patterns/search-field
+    selector: .notes-search
+  n-search-clear:
+    registry_id: patterns/search-clear
+    selector: .notes-search-clear
+  n-notes-list:
+    registry_id: patterns/notes-list
+    selector: .notes-list
+  n-note-item:
+    registry_id: patterns/note-item
+    selector: .note-item
+  n-notes-header:
+    registry_id: patterns/notes-header
+    selector: .notes-header
+
+  # --- registry-backed state nodes ---
+  n-loading:
+    registry_id: states/loading
+    selector: '[data-testid="notes-loading"]'
+    state: loading
+  n-empty:
+    registry_id: states/empty
+    selector: '[data-testid="notes-empty"]'
+    state: empty
+  n-search-empty:
+    registry_id: states/search-empty
+    selector: '[data-testid="notes-search-empty"]'
+    state: no-results
+  n-error:
+    registry_id: primitives/error
+    selector: .error
+    state: error
+  n-button:
+    registry_id: primitives/button
+    selector: button
+    states: [default, hover, focus, disabled]
+
+  # --- path6_required: no DS registry id (design gaps) ---
+  n-count:
+    registry_id: null
+    selector: '[data-testid="notes-search-count"]'
+    path6_required: true
+    design_gap: GAP-1
+  n-offline:
+    registry_id: null
+    selector: '[data-testid="notes-offline"]'
+    path6_required: true
+    design_gap: GAP-2
+
+  # --- path6_required: resolved by reuse of an existing primitive (not a gap) ---
+  n-retry:
+    registry_id: primitives/button
+    selector: '[data-testid="notes-retry"]'
+    path6_required: true
+    resolution: reuse
+    reused_registry_id: primitives/button
+  n-offline-check:
+    registry_id: primitives/button
+    selector: '[data-testid="notes-offline-check"]'
+    path6_required: true
+    resolution: reuse
+    reused_registry_id: primitives/button
+
+summary:
+  nodes_total: 14
+  registry_backed: 12
+  path6_required_unresolved: 2
+  path6_required_resolved_by_reuse: 2
+  local_instances: 0
