@@ -1,0 +1,24 @@
+{
+  "schema": "orc.preview-verdict/v1",
+  "execution_id": "E0809",
+  "result": "pass",
+  "status": "verified",
+  "target": "https://test2.nexus.ukituki.tech",
+  "url": "https://test2.nexus.ukituki.tech",
+  "evaluated_sha": "5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6",
+  "ref": "5785dc0",
+  "stand": "test2",
+  "stand_image_digest": "sha256:1990befb2cbfe44935c4f3a682671be8ea637da8f0d9ec6d9a02227b4edce86e",
+  "build_args_hash": "sha256:3f74c5635468d93c040e79cb9c2c662ba6f601854975f8d485fcae0c7833b2ff",
+  "gate_bundle_digest": "sha256:42f4ba6fc07ca60f3c69e6d6309b3c8f5bdf101254edc46c8254d94fac348cd6",
+  "bundle": "",
+  "artifact_digest": "sha256:7fe1559f4c4a3142fce9a2054709e755435318a41634931c74d5c63207fc3354",
+  "evidence_manifest_sha256": "sha256:7fe1559f4c4a3142fce9a2054709e755435318a41634931c74d5c63207fc3354",
+  "checked_at": "2026-11-08T16:11:07Z",
+  "scenarios": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "tool": "playwright 1.64.1 chromium, workers=1"
+}
