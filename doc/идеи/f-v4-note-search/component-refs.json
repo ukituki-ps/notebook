@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "ds_release": "1.0.0",
+  "screens": [
+    {
+      "screen_id": "note-search",
+      "instances": [
+        {
+          "component": "PageHeader",
+          "registry_id": "patterns/PageHeader",
+          "node_id": "page.header",
+          "states": [
+            "normal"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "Search",
+          "registry_id": "primitives/Search",
+          "node_id": "search.field",
+          "states": [
+            "normal",
+            "focus",
+            "disabled"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "IconButton",
+          "registry_id": "primitives/IconButton",
+          "node_id": "search.clear",
+          "states": [
+            "normal",
+            "hover",
+            "disabled"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "InboxList",
+          "registry_id": "patterns/InboxList",
+          "node_id": "notes.list",
+          "states": [
+            "normal",
+            "empty",
+            "loading"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "InboxItem",
+          "registry_id": "patterns/InboxItem",
+          "node_id": "notes.item",
+          "states": [
+            "normal",
+            "hover"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "EmptyState",
+          "registry_id": "patterns/EmptyState",
+          "node_id": "states.empty",
+          "states": [
+            "normal"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "Skeleton",
+          "registry_id": "primitives/Skeleton",
+          "node_id": "states.loading",
+          "states": [
+            "normal"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "ErrorState",
+          "registry_id": "patterns/ErrorState",
+          "node_id": "states.error",
+          "states": [
+            "normal"
+          ],
+          "source": "ds"
+        },
+        {
+          "component": "SafetyBand",
+          "registry_id": "patterns/SafetyBand",
+          "node_id": "states.offline",
+          "states": [
+            "normal"
+          ],
+          "source": "ds"
+        }
+      ],
+      "local_instances": [],
+      "path6_required": []
+    }
+  ],
+  "summary": {
+    "ds_instances": 9,
+    "local_instances": 0,
+    "path6_required": 0,
+    "coverage": 1.0
+  }
+}

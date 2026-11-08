@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "profile": "frontend",
+  "release": {
+    "version": "1.0.0",
+    "tag": "ds/v1.0.0",
+    "commit": "1cfcca8fa869d7aa191c213220fd0630fce38d28",
+    "manifest_path": "design/releases/1.0.0/manifest.json",
+    "manifest_sha256": "sha256:9ce12559ca5e506ca72c3c9f5f515a360a7544c124e8ba21b92ad4d7eb323431"
+  },
+  "constraint": "=1.0.0",
+  "resolved": {
+    "tokens_sha256": "sha256:191c46f80322a7100cb39bd227de4ff436c1fdcdab18b4e5721601b93565a5ff",
+    "registry_sha256": "sha256:f2a3b08e409e2ceccb17c7ac73178f92f180362bc68f38a81887f12ca363cd33",
+    "kit_sha256": "sha256:4b0147e1d373139203d5e796bafb9831e024698445b095daa326848a1a460787"
+  },
+  "screens": [
+    "note-search"
+  ],
+  "locked_by": "s03a.design_integrate",
+  "locked_at": "2026-11-08T10:25:00Z"
+}
