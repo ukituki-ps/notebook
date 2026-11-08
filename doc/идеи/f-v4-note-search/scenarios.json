@@ -6,50 +6,182 @@
     {
       "id": "SEARCH-E2E-1",
       "title": "search finds matching note",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-1",
-      "then": "search finds matching note",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-1 search finds matching note"
+      "given": "пользователь на /notes с заметками, одна из которых содержит уникальный needle",
+      "when": "вводит needle в поле поиска",
+      "then": "видна только совпавшая заметка, count = 1, search-empty скрыт",
+      "e2e_ref": "SEARCH-E2E-1",
+      "status": "planned"
     },
     {
       "id": "SEARCH-E2E-2",
       "title": "non-matching query shows the search empty state",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-2",
-      "then": "non-matching query shows the search empty state",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-2 non-matching query shows the search empty state"
+      "given": "пользователь на /notes с непустым списком заметок",
+      "when": "вводит запрос, не совпадающий ни с одной заметкой",
+      "then": "0 строк, notes-search-empty с финальным текстом, notes-empty скрыт, поле поиска остаётся доступным",
+      "e2e_ref": "SEARCH-E2E-2",
+      "status": "planned"
     },
     {
       "id": "SEARCH-E2E-3",
       "title": "match is case-insensitive",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-3",
-      "then": "match is case-insensitive",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-3 match is case-insensitive"
+      "given": "заметка сохранена в верхнем регистре",
+      "when": "пользователь вводит запрос в нижнем регистре",
+      "then": "заметка находится (ASCII case-insensitive substring)",
+      "e2e_ref": "SEARCH-E2E-3",
+      "status": "planned"
     },
     {
       "id": "SEARCH-E2E-4",
       "title": "clear restores the full list",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-4",
-      "then": "clear restores the full list",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-4 clear restores the full list"
+      "given": "активный запрос отфильтровал часть заметок",
+      "when": "пользователь нажимает Очистить",
+      "then": "запрос пуст, полный список восстановлен, search-empty скрыт",
+      "e2e_ref": "SEARCH-E2E-4",
+      "status": "planned"
     },
     {
       "id": "SEARCH-E2E-5",
       "title": "create while query active re-applies the filter",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-5",
-      "then": "create while query active re-applies the filter",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-5 create while query active re-applies the filter"
+      "given": "активный запрос и список отфильтрован",
+      "when": "пользователь создаёт заметку, совпадающую и не совпадающую с запросом",
+      "then": "запрос сохранён; несовпавшая заметка скрыта, совпавшая появляется без очистки поиска",
+      "e2e_ref": "SEARCH-E2E-5",
+      "status": "planned"
     },
     {
       "id": "SEARCH-E2E-6",
       "title": "delete while query active keeps the filter consistent",
-      "given": "пользователь на /notes",
-      "when": "выполняется SEARCH-E2E-6",
-      "then": "delete while query active keeps the filter consistent",
-      "e2e_ref": "web/e2e/notes-search.spec.js::SEARCH-E2E-6 delete while query active keeps the filter consistent"
+      "given": "активный запрос и несколько совпавших заметок",
+      "when": "пользователь удаляет совпавшие заметки",
+      "then": "запрос сохранён; после удаления последней совпавшей показывается search-empty, а не notes-empty; clear возвращает остальные",
+      "e2e_ref": "SEARCH-E2E-6",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-7",
+      "title": "whitespace-only query keeps the clear control hidden",
+      "given": "пользователь на /notes с непустым списком",
+      "when": "вводит только пробелы",
+      "then": "список полный, Очистить и count скрыты (trimmed query пуст)",
+      "e2e_ref": "SEARCH-E2E-7",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-8",
+      "title": "no-token path clears a leftover query",
+      "given": "в sessionStorage остался legacy notebook.search, токена нет",
+      "when": "открывается /notes",
+      "then": "редирект на /login, notebook.search удалён (запрос не переносится между пользователями)",
+      "e2e_ref": "SEARCH-E2E-8",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-9",
+      "title": "count is shown only for a non-empty query",
+      "given": "пользователь на /notes с заметками",
+      "when": "запрос пуст, затем непустой, затем без совпадений, затем только пробелы",
+      "then": "count скрыт для пустого/whitespace запроса; для непустого показывает Найдено N, включая Найдено 0",
+      "e2e_ref": "SEARCH-E2E-9",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-10",
+      "title": "zero notes shows the base empty state and disables search",
+      "given": "у пользователя нет ни одной заметки",
+      "when": "открывается /notes",
+      "then": "notes-empty побеждает, search-empty/count/clear скрыты, поле поиска disabled",
+      "e2e_ref": "SEARCH-E2E-10",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-11",
+      "title": "loading shows the status and disables search",
+      "given": "GET /api/notes задерживается",
+      "when": "/notes загружается",
+      "then": "notes-loading виден с role=status, поле поиска disabled, список скрыт; после ответа поиск снова доступен",
+      "e2e_ref": "SEARCH-E2E-11",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-12",
+      "title": "error state offers retry that reloads notes",
+      "given": "GET /api/notes возвращает 500",
+      "when": "открывается /notes",
+      "then": "notes-error с role=alert и Повторить; retry повторяет loadNotes и при успехе показывает список",
+      "e2e_ref": "SEARCH-E2E-12",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-13",
+      "title": "offline banner keeps loaded notes and hides false empty",
+      "given": "заметки загружены, затем сеть пропадает",
+      "when": "пользователь на /notes offline",
+      "then": "notes-offline сообщает, что показаны загруженные заметки; строки видны, search-empty/notes-empty скрыты, поиск disabled; Проверить сеть восстанавливает online-режим",
+      "e2e_ref": "SEARCH-E2E-13",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-14",
+      "title": "offline with zero notes is distinct from search empty",
+      "given": "у пользователя нет заметок, затем сеть пропадает",
+      "when": "пользователь на /notes offline",
+      "then": "offline-баннер показывает вариант без загруженных заметок, notes-empty остаётся, search-empty не показывается",
+      "e2e_ref": "SEARCH-E2E-14",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-15",
+      "title": "note markup renders literally (no XSS)",
+      "given": "создаётся заметка с HTML/script разметкой",
+      "when": "заметка отображается и ищется",
+      "then": "текст рендерится буквально (textContent), теги не становятся узлами, скрипт не исполняется, поиск по литералу работает",
+      "e2e_ref": "SEARCH-E2E-15",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-16",
+      "title": "keyboard focus and aria wiring",
+      "given": "пользователь на /notes с заметками",
+      "when": "фокусирует поиск с клавиатуры, вводит запрос и нажимает Tab",
+      "then": "label/accessible name, type=search, aria-controls, видимый focus ring, Tab на Очистить, aria-live у count/search-empty/error, role=status у loading",
+      "e2e_ref": "SEARCH-E2E-16",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-17",
+      "title": "query length cap: 513 bytes rejected, 512 accepted",
+      "given": "аутентифицированный пользователь и Bearer-токен",
+      "when": "GET /api/notes?q= с decoded q 513 и 512 байт",
+      "then": "513 -> 400 query too long до скана (в т.ч. whitespace-only); 512 -> 200 JSON-массив",
+      "e2e_ref": "SEARCH-E2E-17",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-18",
+      "title": "390 and 1200 viewports avoid horizontal overflow",
+      "given": "пользователь на /notes с непустым списком и активным запросом",
+      "when": "viewport 390px, затем 1200px",
+      "then": "390: stacked search row, full-width 44px controls; 1200: inline search+clear; горизонтального скролла нет",
+      "e2e_ref": "SEARCH-E2E-18",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-19",
+      "title": "clear returns focus to the search input",
+      "given": "активный запрос отфильтровал список",
+      "when": "пользователь нажимает Очистить",
+      "then": "полный список восстановлен, count/clear скрыты, фокус возвращён в поле поиска",
+      "e2e_ref": "SEARCH-E2E-19",
+      "status": "planned"
+    },
+    {
+      "id": "SEARCH-E2E-20",
+      "title": "owner scope B never sees user A notes",
+      "given": "user A создал секретную заметку, user B залогинен и имеет свою заметку",
+      "when": "B ищет текст A и просматривает список",
+      "then": "B не видит заметку A ни в списке, ни в результатах поиска (owner-scope); его собственные заметки остаются",
+      "e2e_ref": "SEARCH-E2E-20",
+      "status": "planned"
     }
   ]
 }
