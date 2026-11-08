@@ -6,9 +6,9 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "5785dc0",
-    "build_ref": "5785dc0",
-    "image_digest": "sha256:1990befb2cbfe44935c4f3a682671be8ea637da8f0d9ec6d9a02227b4edce86e",
+    "sha": "7026b7e",
+    "build_ref": "7026b7e",
+    "image_digest": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee",
     "execution_id": "E0809"
   },
   "design_system": {

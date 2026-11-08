@@ -2,13 +2,13 @@
   "schema_version": "1.0",
   "execution_id": "E0809",
   "feature_id": "f-v4-note-search",
-  "run_at": "2026-11-08T16:11:07Z",
+  "run_at": "2026-11-08T16:52:00Z",
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "build_ref": "5785dc0",
-    "commit": "5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6",
-    "image_digest": "sha256:1990befb2cbfe44935c4f3a682671be8ea637da8f0d9ec6d9a02227b4edce86e"
+    "build_ref": "7026b7e",
+    "commit": "7026b7ecc40a12660afe1dfc155b7e3982ef2f22",
+    "image_digest": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee"
   },
   "status": "pass",
   "summary": {
@@ -23,63 +23,63 @@
       "e2e_ref": "SEARCH-E2E-1",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png",
-      "sha256": "dd97c66206f8ec49429b5705e2825fd8d0a18dec7247d9770eda3bace1bca6d9",
+      "sha256": "fed8f93db2819890caf3482548561b7f55aff939d64da02ba13adb9e81f39786",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-2",
       "e2e_ref": "SEARCH-E2E-2",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png",
-      "sha256": "23c106ae75a4648e3735df5170e342f8f65cb1deac9610c07d01589815c71da2",
+      "sha256": "d6ae070ee1b160eac85c54b416b5f24488191c5575654e4ccf07b05b3e929ecb",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-3",
       "e2e_ref": "SEARCH-E2E-3",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png",
-      "sha256": "c87e36f79e252738fa81d0b778c42e5f575ae00bce2985ee9573aa16423baaaa",
+      "sha256": "15b83a4c81c3f6d9c2d1a5848cfd3f5962fefa34200aeeb53fe961bf3bc87f9f",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-4",
       "e2e_ref": "SEARCH-E2E-4",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png",
-      "sha256": "1efa16f6efd47e2cbd43b35fa0f0e2184069923d42f436b9b446305e3a6bd7f5",
+      "sha256": "642b13548846be64406a7f7ddf0a453eea2c6dcb8b5c49644a2d126d261efba1",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-5",
       "e2e_ref": "SEARCH-E2E-5",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png",
-      "sha256": "cbb2e565c1480d40a9648506937c37601aba272634dc462eb294899b5525f7e5",
+      "sha256": "70f19c57f6088a5829b68f7232b579dda90ff7f44524c2ed5513ac39f886accc",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-6",
       "e2e_ref": "SEARCH-E2E-6",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png",
-      "sha256": "825d456543b910d969cdc270fc0afcff629b56462a3b01c386d935379cc8a4fe",
+      "sha256": "275319be19398c48d60ac4c14069ffb980ebeb5f770446731193652b3ad427e6",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-7",
       "e2e_ref": "SEARCH-E2E-7",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-7.png",
-      "sha256": "2cff0003ffad1fe44c5326bb3a9a6bc32ba47442913235bfbf1ee460fa27bc08",
+      "sha256": "19176525c1adfad7e32dd39f922e6b8c7a0c7ed92368627d6da9646f4b5e855b",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-8",
@@ -88,115 +88,115 @@
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-8.png",
       "sha256": "5d496f25b020c251da4cccbaf214bab75ea69dbf04e637fef9923399a80a816a",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-9",
       "e2e_ref": "SEARCH-E2E-9",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-9.png",
-      "sha256": "ba3428f18f0939ca0f3dc1f8df34f61962b1007351923fbb01d56ac8ae4aac8b",
+      "sha256": "5832d06b16df0f8135d653e72722137abfcd82e00f737025f1bd2b3faf8aa070",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-10",
       "e2e_ref": "SEARCH-E2E-10",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-10.png",
-      "sha256": "fef56a6a6baf2050ff2eda37258fb3a8349293cee6b68dadb058ddf7632e0411",
+      "sha256": "f76a1475131cdf5a8fdf907271783c6608179b3dc7ee68952a507c3a1461ec67",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-11",
       "e2e_ref": "SEARCH-E2E-11",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-11.png",
-      "sha256": "a36aa434204b39fd55cdf7566e32089154a4df34679a6264a6a431ede1b902d1",
+      "sha256": "a727d88507a57d4acfe07ea6656815b618feb522393150d93ca008561a84e611",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-12",
       "e2e_ref": "SEARCH-E2E-12",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-12.png",
-      "sha256": "f6255d1006ac5751e733cc761ba65baf883f27f986c9c51f77fa9ec1f2f142ec",
+      "sha256": "a75efa0237549605f681c55ffd45ea0d653dc17585e242caf3df07763f909471",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-13",
       "e2e_ref": "SEARCH-E2E-13",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-13.png",
-      "sha256": "018aa6bb7a8a16c91079c67b631d9bbe3d570ac91c14469fbc6c3ac7be631e66",
+      "sha256": "ac891546fecf6fb78aec25328657d95258d833b68a9b4fde19e25d36cfe63f5a",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-14",
       "e2e_ref": "SEARCH-E2E-14",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-14.png",
-      "sha256": "5e1791dd6c4f17dcaf1779c82c3f1bd20b6921b76bfe0bcbeb68d81625bef930",
+      "sha256": "b57e7f0c8645a6a0b2e0161d7deaea5fe320d6fbf4d99bc55d44d434765f0635",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-15",
       "e2e_ref": "SEARCH-E2E-15",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-15.png",
-      "sha256": "632686d013530efbdf679274ee2f113c23d6dba12ec807e04ea3d6481e8b3efd",
+      "sha256": "7c4c99da25451b4a8cd22923af2a6610384bacd8617a15faf5bbcd1370f2e450",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-16",
       "e2e_ref": "SEARCH-E2E-16",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png",
-      "sha256": "72dcf5ca0cd290caba1867f52009d664b2b69c7108e8f706abfc6eb4d1f84d3b",
+      "sha256": "d32fcff246e7cfea61ef1d5224a751dee4e7a8abd93f1ec54f948f58fd0fc584",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-17",
       "e2e_ref": "SEARCH-E2E-17",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-17.png",
-      "sha256": "af8ba8f29a23c9d60928148507d4b7d37ad108c01093191147df7322e8ce8b45",
+      "sha256": "2cc1db7b15107a103c8bf8fc1aaecd1d8ce500ef3f389f8047d79fc2d1bc8923",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-18",
       "e2e_ref": "SEARCH-E2E-18",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-18.png",
-      "sha256": "41e77b8f67f4d9fb49c551af1f227482bbad2d6bfefb9d68083df62caf1e8d95",
+      "sha256": "4004bbfde93e7652aad81459cec87bfa0d398f3ee16906aeeaf809d6fae00ec1",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-19",
       "e2e_ref": "SEARCH-E2E-19",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-19.png",
-      "sha256": "28caddd129527747d614b7f7e465cf824c797963b50222efa13fa3283064ff37",
+      "sha256": "c82982a19352a0c8ca6165d676f6ef2e747f5cdf8ff06105a0063e289bb1cc8f",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     },
     {
       "id": "SEARCH-E2E-20",
       "e2e_ref": "SEARCH-E2E-20",
       "status": "pass",
       "screenshot": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-20.png",
-      "sha256": "9c8a71e5171910dec9b61bc5b1d24109edf9991c71bf82b6dfeab31fd15eee71",
+      "sha256": "e1833ec91760c647ee15fe9f8969537136ee250b44444c9c258bb076c3fb3c46",
       "pngdiff": "OK",
-      "notes": "run on test2 build 5785dc0; 20/20 passed"
+      "notes": "run on test2 build 7026b7e; 20/20 passed"
     }
   ]
 }
