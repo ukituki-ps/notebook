@@ -3914,6 +3914,7 @@ gates:
     layer: 5
     subject: prototype
     on_fail: reject
+    profile: payload
   s22e.ux_audit:
   - id: gate-ux-audit
     kind: command
