@@ -77,3 +77,9 @@ None. Three clean ORC machine merges (`2147b0b`→`fd643bf`→`57e958c`), two pa
 - The 512-byte API smoke is executed separately at s20c and recorded as evidence; it is
   not required to modify the protected deploy script.
 - Verified: `ORC_BASE_SHA=e6aeb44e bash tools/check-tools-untouched.sh` -> OK.
+
+## Re-integration after s23 (no product changes)
+
+- s23 decision: no code changes; product tree at HEAD is byte-identical to deploy 5785dc0.
+- Re-ran integration gates at HEAD: tools/deploy unchanged vs base; go build/vet/test green.
+- Three units remain merged; no conflicts; E2E/UI/UX evidence still binds to 5785dc0.
