@@ -1,6 +1,6 @@
-# f-v4-note-search / note-search: node_id -> Notebook DS 1.0.0 registry_id (feature-level)
+# f-v4-note-search / note-search: node_id -> Notebook DS 1.0.1 registry_id (feature-level)
 # Source: doc/идеи/f-v4-note-search/units/note-search/proto.json nodes[] (18 nodes)
-# Registry: design/registry.json @ ds/v1.0.0 (sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1, 14 entries)
+# Registry: design/registry.json @ ds/v1.0.1 (sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359, 14 entries)
 # Rules:
 #   * registry_id is a verbatim id from design/registry.json — nothing invented.
 #   * composition: node assembled from existing primitives; registry_id null unless the node
@@ -11,9 +11,9 @@ schema_version: "1.0"
 feature_id: f-v4-note-search
 screen_id: note-search
 unit_id: note-search
-ds_release: "1.0.0"
-ds_digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
-registry_sha256: "sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1"
+ds_release: "1.0.1"
+ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
 
 nodes:
   # --- header ---
@@ -29,7 +29,7 @@ nodes:
     proto_registry_id_rejected: patterns/note-form
     note: >-
       proto.json указывает registry_id patterns/note-form, но такого id нет в
-      design/registry.json 1.0.0 (14 записей: primitives/*, patterns/*, states/*).
+      design/registry.json 1.0.1 (14 записей: primitives/*, patterns/*, states/*).
       Рекомендованная трактовка — композит primitives/textarea + primitives/button;
       registry id не присваивается, локального CSS нет.
   n-note-textarea:
@@ -63,7 +63,7 @@ nodes:
     note: >-
       Registry omission: .delete-note (danger-вариант кнопки: transparent фон,
       border/color --danger, hover --danger-bg) есть в web/app.css, но отсутствует
-      в design/registry.json 1.0.0. Registry id не присваивается; используется
+      в design/registry.json 1.0.1. Registry id не присваивается; используется
       существующий DS-класс как есть, локального CSS нет.
 
   # --- states ---

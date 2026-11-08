@@ -3,8 +3,8 @@
   "screen_id": "note-search",
   "unit_id": "note-search",
   "platform": "web",
-  "design_system_version": "1.0.0",
-  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "design_system_version": "1.0.1",
+  "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "states": [
     "normal",
     "idle",
@@ -13,7 +13,8 @@
     "empty",
     "loading",
     "error",
-    "offline"
+    "offline",
+    "offline-zero"
   ],
   "state_matrix": [
     {
@@ -115,7 +116,7 @@
     },
     {
       "state": "empty",
-      "description": "Сервер вернул пустой список при пустом запросе: форма заметки и поиск видимы, «Пока нет заметок. Добавьте первую выше.», счётчик скрыт, список скрыт.",
+      "description": "Сервер вернул пустой список: форма заметки видима, поиск disabled (нет заметок для фильтрации), «Пока нет заметок. Добавьте первую выше.», счётчик скрыт, список скрыт.",
       "visible": [
         "n-notes-header",
         "n-note-form",
@@ -135,7 +136,8 @@
         "n-retry",
         "n-offline",
         "n-offline-check"
-      ]
+      ],
+      "search_disabled": true
     },
     {
       "state": "loading",
@@ -187,7 +189,7 @@
     },
     {
       "state": "offline",
-      "description": "Нет сети: форма заметки видима, баннер-композиция note-item с note-text/muted-текстом «Нет сети — показаны загруженные заметки.» и кнопкой «Проверить сеть»; поиск disabled с placeholder «Поиск недоступен без сети», счётчик скрыт, все 4 загруженные заметки с Delete видны.",
+      "description": "Нет сети: форма заметки видима, баннер-композиция note-item с note-text/muted-текстом «Нет сети — показаны загруженные заметки.» и кнопкой «Проверить сеть»; поиск disabled с placeholder «Поиск недоступен без сети», счётчик скрыт, все 4 загруженные заметки с Delete видны (Delete disabled: DELETE требует сети).",
       "visible": [
         "n-notes-header",
         "n-note-form",
@@ -207,7 +209,34 @@
         "n-search-empty",
         "n-error",
         "n-retry"
-      ]
+      ],
+      "search_disabled": true
+    },
+    {
+      "state": "offline-zero",
+      "description": "Нет сети и нет загруженных заметок: баннер «Нет сети — нет загруженных заметок.», базовая пустая подсказка «Пока нет заметок. Добавьте первую выше.», поиск disabled, список/счётчик/очистка скрыты, форма disabled.",
+      "visible": [
+        "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
+        "n-search-field",
+        "n-offline",
+        "n-offline-check",
+        "n-empty"
+      ],
+      "hidden": [
+        "n-notes-list",
+        "n-note-item",
+        "n-search-clear",
+        "n-count",
+        "n-loading",
+        "n-search-empty",
+        "n-error",
+        "n-retry"
+      ],
+      "search_disabled": true,
+      "form_disabled": true
     }
   ],
   "nodes": [

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "screen_id": "note-search",
-  "ds_release": "1.0.0",
-  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "ds_release": "1.0.1",
+  "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "items": [
     {
       "id": "GAP-1",
@@ -12,9 +12,9 @@
       "path6_required": true,
       "blocking": false,
       "status": "accepted",
-      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0 (проверены все 14 записей). Нет ни registry_id, ни состояний для count label; поведение «виден только при непустом запросе» задаётся логикой экрана.",
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.1 (проверены все 14 записей). Нет ни registry_id, ни состояний для count label; поведение «виден только при непустом запросе» задаётся логикой экрана.",
       "impact": "Нет канонического компонента и его состояний (hidden в idle/normal/empty/loading/error/offline, значение 0 при no-results).",
-      "workaround": "Текст на токенах design/tokens.json: .muted → color --muted (#5B6470) на --card (#FFFFFF), контраст 6.0:1 (AA); font body 15px system-ui, line-height 1.45; скрытие атрибутом hidden (web/app.css: [hidden]). Локального CSS нет.",
+      "workaround": "Текст на токенах design/tokens.json: .muted → color --muted (#5B6470) на --card (#FFFFFF), контраст 6.0:1 (AA); font body 16px system-ui, line-height 1.45; скрытие атрибутом hidden (web/app.css: [hidden]). Локального CSS нет.",
       "proposed_ds_change": "Добавить patterns/count-label (selector .notes-search-count, states: default, hidden, zero) в следующем релизе DS 1.x.",
       "owner": "designer",
       "accepted_by": "designer",
@@ -46,37 +46,66 @@
       "path6_required": true,
       "blocking": false,
       "status": "accepted",
-      "reason": "Danger-вариант кнопки удаления .delete-note существует в web/app.css (248–257: display inline-flex, прозрачный фон, border 1px --danger #B42318, color --danger, hover background --danger-bg #FEF3F2), но отсутствует в design/registry.json 1.0.0 (14 записей). Это пропуск в реестре: стиль компонента в DS есть, записи (id, states) нет.",
+      "reason": "Danger-вариант кнопки удаления .delete-note существует в web/app.css (248–257: display inline-flex, прозрачный фон, border 1px --danger #B42318, color --danger, hover background --danger-bg #FEF3F2), но отсутствует в design/registry.json 1.0.1 (14 записей). Это пропуск в реестре: стиль компонента в DS есть, записи (id, states) нет.",
       "impact": "Компонент нельзя сослаться по registry_id; состояния default/hover не покрыты контрактом реестра, состояние disabled у .delete-note в CSS не описано (только :focus-visible глобально). Риск: удаление заметки выглядит как непроверенный DS-элемент при UI-приёмке.",
       "workaround": "Используется существующий DS-класс .delete-note из web/app.css как есть, без локального CSS и без локальных instance-классов. Контраст: --danger на --card = 6.57:1, на hover --danger-bg = 6.07:1 (AA); фокус — глобальный :focus-visible 3px #1F6FEB; у каждой кнопки aria-label «Удалить заметку #<id>».",
       "proposed_ds_change": "Зарегистрировать в design/registry.json danger-вариант кнопки: либо primitives/button-danger (selector .delete-note, states: default, hover, focus, disabled), либо states/delete-affordance в patterns/note-item — в следующем релизе DS 1.x.",
       "owner": "designer",
       "accepted_by": "designer",
       "rationale_accepted": "Не блокирует: реальный DS-класс уже в app.css, экран использует его без модификаций, доступность подтверждена (AA + aria-label + focus-visible). Расхождение чисто реестровое и фиксируется как кандидат в registry."
+    },
+    {
+      "id": "GAP-4",
+      "node_id": "n-utility-classes",
+      "selector": ".brand / .user-name / .note-text / .notes-search-row / .muted",
+      "kind": "registry-omission",
+      "path6_required": false,
+      "blocking": false,
+      "status": "accepted",
+      "reason": "Классы реально определены в web/app.css (release code Notebook DS 1.0.1), но не перечислены как registry components (14 записей). Это пробел реестра, а не локальные UI-компоненты.",
+      "impact": "Нет registry_id/состояний для пяти служебных классов; traceability неполная, визуального риска нет.",
+      "workaround": "Использовать классы из релизного web/app.css без локального CSS; зафиксировать в component-refs как registry omission и предложить registry update в DS 1.x.",
+      "proposed_ds_change": "Добавить utilities (.muted, .note-text, .brand, .user-name) и patterns/notes-search-row в registry или явно объявить их utilities-слоем DS.",
+      "owner": "designer",
+      "accepted_by": "designer",
+      "rationale_accepted": "Не блокирует: классы принадлежат релизному DS-коду, не фиче; покрыты ds-token-drift и UI-ревью."
     }
   ],
   "notes": [
     {
       "id": "NOTE-1",
-      "node_ids": ["n-retry", "n-offline-check", "n-note-add", "n-button"],
+      "node_ids": [
+        "n-retry",
+        "n-offline-check",
+        "n-note-add",
+        "n-button"
+      ],
       "kind": "reuse-not-gap",
       "text": "Все кнопки экрана — экземпляры primitives/button (selector button; states default/hover/focus/disabled; min-height 44px, radius 8px, accent #1F6FEB, hover #1554B8, focus outline 3px #1F6FEB). Dedicated-компоненты не создаются, локальных модификаций нет."
     },
     {
       "id": "NOTE-2",
-      "node_ids": ["n-note-form", "n-note-textarea", "n-note-add"],
+      "node_ids": [
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add"
+      ],
       "kind": "composition",
-      "text": "Форма создания заметки — композит primitives/textarea (textarea, states default/focus/invalid) + primitives/button (submit «Add»). proto.json указывает registry_id patterns/note-form, которого нет в design/registry.json 1.0.0 — id отклонён, registry id композиту не присваивается. Кандидат в DS: patterns/note-form (form + textarea + submit) в следующем релизе."
+      "text": "Форма создания заметки — композит primitives/textarea (textarea, states default/focus/invalid) + primitives/button (submit «Add»). proto.json указывает registry_id patterns/note-form, которого нет в design/registry.json 1.0.1 — id отклонён, registry id композиту не присваивается. Кандидат в DS: patterns/note-form (form + textarea + submit) в следующем релизе."
     },
     {
       "id": "NOTE-3",
-      "node_ids": ["n-offline"],
+      "node_ids": [
+        "n-offline"
+      ],
       "kind": "composition",
       "text": "Offline-баннер больше не gap: это второе вхождение patterns/note-item (.note-item) с muted-текстом (.muted) и кнопкой primitives/button. Отдельного offline-паттерна в DS нет, но композиция покрыта реестром, локального CSS нет — path6_required не ставится, GAP прошлого раунда снят."
     },
     {
       "id": "NOTE-4",
-      "node_ids": ["n-search-field"],
+      "node_ids": [
+        "n-search-field"
+      ],
       "kind": "composition",
       "text": "Поле поиска — <input> (primitives/input) внутри .notes-search (patterns/search-field); отдельного node_id в proto.json нет. Учитывается в ds-lock.components/composed_components как используемый registry id."
     },
@@ -88,17 +117,20 @@
     },
     {
       "id": "NOTE-6",
-      "node_ids": ["n-delete", "n-note-item"],
+      "node_ids": [
+        "n-delete",
+        "n-note-item"
+      ],
       "kind": "registry-omission",
       "text": ".delete-note — дочерняя кнопка внутри patterns/note-item, присутствует в каждой строке списка (idle/normal/results/offline) и в no-results не рендерится вместе со списком. Класс уже в web/app.css, но не в реестре: это единственный настоящий registry-omission на экране (GAP-3), в отличие от n-count (missing-pattern) и disabled-состояния input (missing-state)."
     }
   ],
   "summary": {
-    "total": 3,
+    "total": 4,
     "blocking": 0,
-    "accepted": 3,
+    "accepted": 4,
     "open": 0,
-    "registry_omissions": 1,
+    "registry_omissions": 2,
     "missing_patterns": 1,
     "missing_states": 1
   }

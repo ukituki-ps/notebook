@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Note search proto — Notebook DS 1.0.0</title>
+  <title>Note search proto — Notebook DS 1.0.1</title>
   <link rel="stylesheet" href="/web/app.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
       </header>
 
       <p class="error" data-testid="notes-error" id="notes-error"
-         role="alert" aria-live="assertive" hidden>
+         role="alert" aria-live="polite" hidden>
         Не удалось загрузить заметки. Попробуйте ещё раз.
       </p>
       <button data-testid="notes-retry" id="notes-retry" type="button" hidden>
@@ -43,9 +43,9 @@
         </div>
       </div>
 
-      <div class="note-item" data-testid="notes-offline" id="notes-offline"
+      <div class="note-item notes-search-empty" data-testid="notes-offline" id="notes-offline"
            role="status" hidden>
-        <p class="note-text muted">Нет сети — показаны загруженные заметки.</p>
+        <p class="note-text muted" id="notes-offline-text">Нет сети — показаны загруженные заметки.</p>
         <button data-testid="notes-offline-check" id="notes-offline-check"
                 type="button" aria-label="Проверить сеть">Проверить&nbsp;сеть</button>
       </div>
@@ -95,8 +95,9 @@
     (function () {
       "use strict";
 
-      var STATES = ["idle", "results", "no-results", "empty", "loading", "error", "offline"];
-      var state = new URLSearchParams(window.location.search).get("state");
+      var STATES = ["idle", "results", "no-results", "empty", "loading", "error", "offline", "offline-zero"];
+      var params = new URLSearchParams(window.location.search);
+      var state = params.get("state");
       if (STATES.indexOf(state) === -1) state = "idle";
 
       document.body.setAttribute("data-state", state);
@@ -107,10 +108,12 @@
       function byTestId(id) {
         return document.querySelector('[data-testid="' + id + '"]');
       }
-
       function setHidden(id, hidden) {
         var el = byTestId(id);
         if (el) el.hidden = hidden;
+      }
+      function go(next) {
+        window.location.search = "?state=" + next;
       }
 
       var search = byTestId("notes-search");
@@ -119,9 +122,11 @@
       var list = byTestId("notes-list");
       var noteText = byTestId("note-input");
       var addButton = byTestId("add-note");
+      var offlineText = document.getElementById("notes-offline-text");
 
       var hasQuery = state === "results" || state === "no-results";
-      var formDisabled = state === "loading" || state === "error" || state === "offline";
+      var offlineState = state === "offline" || state === "offline-zero";
+      var formDisabled = state === "loading" || state === "error" || offlineState;
 
       function updateAddState() {
         if (!addButton) return;
@@ -129,26 +134,33 @@
         addButton.disabled = disabled;
         addButton.setAttribute("aria-disabled", disabled ? "true" : "false");
       }
-
       updateAddState();
-      if (noteText) noteText.addEventListener("input", updateAddState);
-      var showsList = state === "idle" || state === "results" || state === "offline";
-      var searchDisabled = state === "loading" || state === "error" || state === "offline";
+      if (noteText) {
+        // Parity with web/app.js syncFormState: the composer field is disabled
+        // in loading/error/offline, not just the Add button.
+        noteText.disabled = formDisabled;
+        noteText.addEventListener("input", updateAddState);
+      }
 
+      var showsList = state === "idle" || state === "results" || state === "offline";
+      // empty is a dead control in the shipped app: searchBlocked includes notes.length === 0.
+      var searchDisabled = state === "loading" || state === "error" || offlineState || state === "empty";
       var query = state === "results" ? "план" : state === "no-results" ? "отпуск" : "";
 
       if (search) {
         search.value = query;
         search.disabled = searchDisabled;
-        search.placeholder =
-          state === "offline" ? "Поиск недоступен без сети" : "Поиск по тексту...";
+        search.placeholder = offlineState ? "Поиск недоступен без сети" : "Поиск по тексту...";
         if (searchDisabled) {
           search.setAttribute("aria-disabled", "true");
+          // Never point at a hidden node; notes-empty is visible in empty and
+          // offline-zero, so it is a valid description target there.
           search.setAttribute(
             "aria-describedby",
-            state === "offline" ? "notes-offline"
+            offlineState ? "notes-offline"
               : state === "loading" ? "notes-loading"
-              : "notes-error"
+                : state === "error" ? "notes-error"
+                  : "notes-empty"
           );
         } else {
           search.removeAttribute("aria-disabled");
@@ -156,40 +168,62 @@
         }
       }
 
-      if (clear) clear.hidden = !hasQuery;
+      if (clear) {
+        clear.hidden = !hasQuery;
+        clear.addEventListener("click", function () { go("idle"); });
+      }
 
       if (count) {
         count.hidden = !hasQuery;
-        if (hasQuery) {
-          count.textContent = "Найдено " + (state === "no-results" ? "0" : "2");
-        }
+        if (hasQuery) count.textContent = "Найдено " + (state === "no-results" ? "0" : "2");
       }
 
       if (list) {
         list.hidden = !showsList;
         var rows = list.querySelectorAll(".note-item");
         for (var i = 0; i < rows.length; i++) {
-          rows[i].hidden =
-            state === "results" && rows[i].getAttribute("data-search-match") !== "1";
+          rows[i].hidden = state === "results" && rows[i].getAttribute("data-search-match") !== "1";
+          var del = rows[i].querySelector(".delete-note");
+          if (del) {
+            // The prototype treats a network-bound DELETE as unavailable while
+            // offline/loading/error (product-code parity tracked for s22a/s22e).
+            del.disabled = formDisabled;
+            del.setAttribute("aria-disabled", formDisabled ? "true" : "false");
+            del.addEventListener("click", function () {
+              var row = this.closest(".note-item");
+              if (row) row.remove();
+              var left = list.querySelectorAll(".note-item:not([hidden])").length;
+              if (left === 0) go(state === "results" ? "no-results" : "empty");
+              else if (state === "results" && count) count.textContent = "Найдено " + left;
+            });
+          }
         }
         if (state === "loading") list.setAttribute("aria-busy", "true");
         else list.removeAttribute("aria-busy");
       }
 
+      var retry = byTestId("notes-retry");
+      if (retry) retry.addEventListener("click", function () { go("idle"); });
+
       var offlineCheck = byTestId("notes-offline-check");
       if (offlineCheck) {
-        offlineCheck.addEventListener("click", function () {
-          window.location.reload();
-        });
+        // Simulate a successful connectivity re-check: return to the loaded list.
+        offlineCheck.addEventListener("click", function () { go("idle"); });
+      }
+
+      if (offlineText) {
+        offlineText.textContent = state === "offline-zero"
+          ? "Нет сети — нет загруженных заметок."
+          : "Нет сети — показаны загруженные заметки.";
       }
 
       setHidden("notes-loading", state !== "loading");
-      setHidden("notes-empty", state !== "empty");
+      setHidden("notes-empty", state !== "empty" && state !== "offline-zero");
       setHidden("notes-search-empty", state !== "no-results");
       setHidden("notes-error", state !== "error");
       setHidden("notes-retry", state !== "error");
-      setHidden("notes-offline", state !== "offline");
-      setHidden("notes-offline-check", state !== "offline");
+      setHidden("notes-offline", !offlineState);
+      setHidden("notes-offline-check", !offlineState);
     })();
   </script>
 </body>

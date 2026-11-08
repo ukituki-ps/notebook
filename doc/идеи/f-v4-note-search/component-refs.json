@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
-  "ds_release": "1.0.0",
-  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "ds_release": "1.0.1",
+  "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "screens": [
     {
       "screen_id": "note-search",
-      "ds_release": "1.0.0",
+      "ds_release": "1.0.1",
       "local_instances": [],
       "components": [
         {
@@ -19,8 +19,11 @@
           "registry_id": null,
           "selector": ".note-form",
           "resolution": "composition",
-          "composition": ["primitives/textarea", "primitives/button"],
-          "note": "proto.json ссылается на patterns/note-form — такого registry id в DS 1.0.0 нет; композит существующих примитивов."
+          "composition": [
+            "primitives/textarea",
+            "primitives/button"
+          ],
+          "note": "proto.json ссылается на patterns/note-form — такого registry id в DS 1.0.1 нет; композит существующих примитивов."
         },
         {
           "node_id": "n-note-textarea",
@@ -80,7 +83,10 @@
           "registry_id": "patterns/note-item",
           "selector": "[data-testid=notes-offline]",
           "resolution": "composition",
-          "composition": ["patterns/note-item", "primitives/button"]
+          "composition": [
+            "patterns/note-item",
+            "primitives/button"
+          ]
         },
         {
           "node_id": "n-offline-check",
@@ -112,7 +118,10 @@
           "existing_css": "web/app.css:248-257"
         }
       ],
-      "path6_required": ["n-count", "n-delete"]
+      "path6_required": [
+        "n-count",
+        "n-delete"
+      ]
     }
   ],
   "composed_components": [
@@ -120,7 +129,11 @@
       "registry_id": "primitives/input",
       "selector": "input",
       "composed_in": "n-search-field",
-      "states": ["default", "focus", "invalid"],
+      "states": [
+        "default",
+        "focus",
+        "invalid"
+      ],
       "reason": "Поле поиска рендерится как <input> внутри .notes-search, но самостоятельного node_id в proto.json нет. Учитывается в ds-lock.components как используемый registry id; на нём завязаны focus/disabled и GAP-2."
     }
   ],
@@ -129,13 +142,13 @@
       "node_id": "n-count",
       "selector": "[data-testid=notes-search-count]",
       "kind": "count-label",
-      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0: ни один из 14 registry_id не описывает count label (ни селектором, ни состояниями). После UI-review счётчик виден только при непустом запросе (скрыт в idle/normal/empty/loading/error/offline) — это поведение задаётся логикой экрана, а не DS."
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.1: ни один из 14 registry_id не описывает count label (ни селектором, ни состояниями). После UI-review счётчик виден только при непустом запросе (скрыт в idle/normal/empty/loading/error/offline) — это поведение задаётся логикой экрана, а не DS."
     },
     {
       "node_id": "n-delete",
       "selector": ".delete-note",
       "kind": "registry-omission",
-      "reason": "Danger-вариант кнопки удаления .delete-note реально существует в web/app.css (248–257: background transparent, border-color/color --danger #B42318, hover background --danger-bg #FEF3F2), но не зарегистрирован в design/registry.json 1.0.0 — это пропуск в реестре, а не отсутствие стиля. Контраст --danger на --card 6.57:1, на hover-фоне 6.07:1 (AA). Registry id не присваивается."
+      "reason": "Danger-вариант кнопки удаления .delete-note реально существует в web/app.css (248–257: background transparent, border-color/color --danger #B42318, hover background --danger-bg #FEF3F2), но не зарегистрирован в design/registry.json 1.0.1 — это пропуск в реестре, а не отсутствие стиля. Контраст --danger на --card 6.57:1, на hover-фоне 6.07:1 (AA). Registry id не присваивается."
     }
   ],
   "path6_resolved_by_reuse": [
