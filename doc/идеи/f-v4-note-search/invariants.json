@@ -1,14 +1,42 @@
 {
   "feature": "f-v4-note-search",
-  "execution_id": "E1546",
+  "execution_id": "E0809",
   "step": "s06.feature_brief_final",
+  "branch": "dev/f-v4-note-search-e2e",
   "change_class": "plain",
-  "branch": "dev/f-v4-note-search",
+  "do": [
+    "Extend GET /api/notes with an optional trimmed, case-insensitive substring q over the current user's notes.",
+    "Apply the owner predicate before the text predicate so q only narrows the result.",
+    "Cap the decoded q at 512 bytes and return 400 before scanning; return 200 [] when nothing matches.",
+    "Add a labelled search input, a clear control, a result count, and a search empty state to the notes screen.",
+    "Filter the already loaded owner-scoped list client-side and re-apply the query after create/delete/reload.",
+    "Show Найдено N only for a non-empty trimmed query with aria-live=polite.",
+    "Render note text with textContent (no innerHTML).",
+    "Cover the API with existing Go tests and the UI with web/e2e/notes-search.spec.js on test2."
+  ],
+  "dont": [
+    "Do not change authentication, sessions, bearer/TTL handling, or the 401 path.",
+    "Do not add persistence, a cache, a schema field, a migration, or a title field.",
+    "Do not add pagination, ranking, fuzzy matching, highlighting, or server search per keystroke.",
+    "Do not send q from the UI; the client-side filter is the feature path.",
+    "Do not persist the query across reload or in the URL/hash; clear it on login/logout/401.",
+    "Do not show the search empty state for a zero-note collection; disable search when notes.length == 0.",
+    "Do not invent a second design system, local CSS, a new dependency, a CDN, or a bundler.",
+    "Do not modify design/, code, or web/ at s06."
+  ],
+  "out_of_scope": [
+    "Registration/login/session/token changes.",
+    "Persistence changes; notes stay in-memory.",
+    "Create/delete/reload behaviour changes.",
+    "Pagination, sorting, ranking, fuzzy matching, server-side highlighting.",
+    "Production/main/stage deployment and canary rollout.",
+    "Reworking f-v3-auth-notes, E4312, or E1320."
+  ],
   "invariants": [
     {
       "id": "INV-AUTH-REQUIRED",
       "status": "active",
-      "statement": "Любой запрос к /api/notes* без bearer-заголовка, с битым или истёкшим токеном => 401 (auth проверяется раньше method/id/body).",
+      "statement": "Любой запрос к /api/notes* без bearer-заголовка, с битым или истёкшим токеном => 401 (auth проверяется раньше method/query/body).",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestAuthRequired|TestNotesSearchAuthRequired' ./...",
       "covers": ["SEC-AUTH-REQUIRED"]
@@ -24,7 +52,7 @@
     {
       "id": "INV-SEARCH-OWNER-SCOPE",
       "status": "active",
-      "statement": "GET /api/notes?q= возвращает только заметки текущего пользователя; query может сузить, но не расширить выдачу.",
+      "statement": "GET /api/notes?q= возвращает только заметки текущего пользователя; owner predicate применяется до текстового фильтра, query может сузить, но не расширить выдачу.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchIsolation' ./...",
       "covers": ["SEC-RLS-SCOPE-PREDICATE", "DATA-SCOPE-VALIDATION"]
@@ -62,6 +90,14 @@
       "covers": ["DATA-ADAPTER-REAL-TRANSPORT"]
     },
     {
+      "id": "INV-SEARCH-Q-MAX",
+      "status": "active",
+      "statement": "Decoded q длиннее 512 байт => 400 {\"error\":\"query too long\"} до сканирования заметок; ровно 512 байт допустимы; cap считается в байтах, не в рунах.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchQueryTooLong' ./...",
+      "covers": ["CONTRACT-STATUS-CODE"]
+    },
+    {
       "id": "INV-WIRE-CASING",
       "status": "active",
       "statement": "Wire-поля JSON остаются id/text/token/username/error в нижнем регистре; UserID не сериализуется.",
@@ -88,49 +124,25 @@
     {
       "id": "INV-UI-TRUTH",
       "status": "active",
-      "statement": "UI показывает реальные данные API (GET /api/notes) и не содержит захардкоженных/фантомных заметок; состояние после reload совпадает с сервером.",
+      "statement": "UI показывает реальные данные API (GET /api/notes) и не содержит захардкоженных/фантомных заметок; после reload состояние совпадает с сервером.",
       "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": []
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": ["UI-LOADING-ERROR-STATES"]
     },
     {
       "id": "INV-UI-LABEL",
       "status": "active",
-      "statement": "У поля поиска и кнопок есть видимая или aria-подпись; submit-кнопки сохраняют текст Login/Register/Add/Delete.",
+      "statement": "У поля поиска и кнопок есть видимая или aria-подпись; feature-копия на русском, Add/Logout остаются English по DS-term policy, Delete имеет видимый label «Удалить» и aria-label «Удалить заметку #N».",
       "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
       "covers": []
     },
     {
       "id": "INV-UI-A11Y-NAME",
       "status": "active",
-      "statement": "У поля поиска есть доступное имя и корректная role; ошибки выводятся в role=alert c aria-live=polite.",
+      "statement": "У поля поиска есть доступное имя и корректная role; empty state и count используют aria-live=polite; ошибки выводятся в role=alert с aria-live=polite.",
       "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": []
-    },
-    {
-      "id": "INV-SEARCH-UI-FILTER",
-      "status": "active",
-      "statement": "Поле поиска фильтрует загруженный owner-scoped список; очистка возвращает полный список; create/delete/reload не ломаются.",
-      "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": ["UI-FILTER-SERIALIZATION", "UI-EMPTY-STATE-CONTROLS"]
-    },
-    {
-      "id": "INV-SEARCH-UI-EMPTY",
-      "status": "active",
-      "statement": "При непустом q без совпадений показывается empty state data-testid=notes-search-empty; при пустом q он не показывается.",
-      "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
-      "covers": ["UI-EMPTY-STATE-CONTROLS"]
-    },
-    {
-      "id": "INV-SEARCH-UI-TESTIDS",
-      "status": "active",
-      "statement": "Поле поиска имеет data-testid=notes-search, empty state — data-testid=notes-search-empty.",
-      "enforcement": "test",
-      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics' ./...",
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
       "covers": []
     },
     {
@@ -138,16 +150,48 @@
       "status": "proposed",
       "statement": "У каждого критерия UI-аудита (блоки A-L) есть исполнимый оракул и evidence.",
       "enforcement": "s22a.ui_audit: ui-audit.json items[].oracle/evidence + gates gate-ui-audit-oracle, gate-ui-audit-machine",
-      "test_ref": "cmd:python3 tools/ui-audit-check.py --platform web --expect-sha <stand-sha>",
+      "test_ref": "cmd:python3 tools/ui-audit-check.py --platform web",
       "covers": []
     },
     {
       "id": "INV-UI-E2E-PREVIEW",
       "status": "proposed",
-      "statement": "UI-сценарии поиска проходят на стенде и подтверждены e2e-report/screenshot.",
-      "enforcement": "s20c: E2E на test2 через deploy/path1/e2e-preview.sh + Playwright web/e2e/notes-search.spec.js",
+      "statement": "UI-сценарии поиска проходят на стенде test2 и подтверждены e2e-report/screenshot.",
+      "enforcement": "s20c.e2e_preview: E2E на test2 + Playwright web/e2e/notes-search.spec.js + pngdiff",
       "test_ref": "cmd:bash deploy/path1/e2e-preview.sh",
       "covers": ["UI-E2E-PREVIEW"]
+    },
+    {
+      "id": "INV-XSS-ESCAPE",
+      "status": "active",
+      "statement": "Текст заметки рендерится через textContent; innerHTML для пользовательских данных не используется, поэтому HTML/скрипт в заметке или q не исполняется.",
+      "enforcement": "test",
+      "test_ref": "cmd:go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./...",
+      "covers": []
+    },
+    {
+      "id": "INV-SEARCH-UI-FILTER",
+      "status": "active",
+      "statement": "Поле поиска фильтрует загруженный owner-scoped список; очистка возвращает полный список; create/delete/reload не ломаются и re-apply активный query.",
+      "enforcement": "test",
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": ["UI-FILTER-SERIALIZATION", "UI-EMPTY-STATE-CONTROLS"]
+    },
+    {
+      "id": "INV-SEARCH-UI-EMPTY",
+      "status": "active",
+      "statement": "При непустом trimmed q без совпадений показывается empty state data-testid=notes-search-empty; при пустом q он не показывается; при нуле заметок побеждает base notes-empty.",
+      "enforcement": "test",
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": ["UI-EMPTY-STATE-CONTROLS"]
+    },
+    {
+      "id": "INV-SEARCH-UI-TESTIDS",
+      "status": "active",
+      "statement": "Поле поиска имеет data-testid=notes-search, empty state — data-testid=notes-search-empty, clear — data-testid=notes-search-clear.",
+      "enforcement": "test",
+      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": []
     }
   ]
 }
