@@ -1,6 +1,7 @@
 # Plan — f-v4-note-search (E0809, s11)
 
 - Execution: **E0809** · step **s11.planner_high_level** · role **planner**
+- Saved: **s13.plan_save** (approved plan artifact, branch dev/f-v4-note-search-e2e)
 - Process: `path-1.feature` **4.0.0** (entry `default`, platform `web`, profile `full`)
 - Branch: `dev/f-v4-note-search-e2e` · base `e6aeb44e`
 - DS: **Notebook DS 1.0.0** (`ds/v1.0.0`, digest `02f027a8…da3d`, constraint `=1.0.0`)
