@@ -61,3 +61,5 @@ density.
 - `ui-audit-check.py` and `web/e2e/**` are later-step oracles (s22a / U03).
 
 Verdict: **crutch_density_grew = false**.
+
+- accepted: s14.unit_quality (E0809-u02)
