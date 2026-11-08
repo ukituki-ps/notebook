@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "artifact_path": "doc/идеи/f-v4-note-search/ds-pin.json",
+  "design_system_version": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "approved_by": "team-lead",
+  "pinned_at": "2026-11-08T14:02:32Z",
+  "fallback_used": false,
+  "screens": [
+    {
+      "screen_id": "note-search",
+      "screen_brief": "Owner-scoped note search over Notebook DS: search field, clear, idle/results/empty/loading/error/offline, 390/1200, read-only list with delete.",
+      "platform": "web",
+      "feature_profile": "full",
+      "design_system_version": "1.0.0",
+      "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
+    }
+  ]
+}
