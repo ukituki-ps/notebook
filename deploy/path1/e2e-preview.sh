@@ -3,13 +3,33 @@
 # Стенд/URL приходят из platform-скрипта run-stand-e2e.sh (env E2E_BASE_URL).
 #
 # Порядок: health (nginx JSON) -> auth-smoke API (401, register/login A/B,
-# authed GET/POST/DELETE, A/B isolation, 404/400-негативы) -> Playwright chromium.
+# authed GET/POST/DELETE, A/B isolation, 404/400-негативы) -> search-smoke API
+# (owner-scope find/not-found, auth-before-q, 512-byte cap) -> Playwright
+# chromium (20 SEARCH-E2E scenarios).
 # Playwright — fail-close: нет node/npx/браузеров => ненулевой exit, не skip.
 set -euo pipefail
 
 base="${E2E_BASE_URL:-${PREVIEW_BASE_URL:-}}"
 [ -n "$base" ] || { echo "e2e-preview: E2E_BASE_URL не задан" >&2; exit 2; }
 base="${base%/}"
+
+# test2-only guard: f-v4 E2E runs only on the leased test2 stand. The local
+# edge container (preview-deploy.sh) is test2 as well; prod/main/stage/test1/
+# canary are never valid targets for this feature.
+hostport="${base#*://}"
+host="${hostport%%/*}"
+host="${host%%:*}"
+case "$host" in
+  test2|test2.*|127.0.0.1|localhost|host.docker.internal|notebook-stand-test2-*) ;;
+  *) echo "e2e-preview: test2-only guard: host '$host' не разрешён (base=$base)" >&2; exit 2 ;;
+esac
+case "$host" in
+  *prod*|*stage*|*canary*|test1.*|*test1*)
+    echo "e2e-preview: test2-only guard: запрещённый контур '$host'" >&2
+    exit 2
+    ;;
+esac
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 TMP="$(mktemp -d)"
@@ -27,6 +47,16 @@ http() { # http METHOD PATH [JSON_BODY] [TOKEN]
   if [ -n "$data" ]; then args+=(-H 'Content-Type: application/json' --data "$data"); fi
   if [ -n "$token" ]; then args+=(-H "Authorization: Bearer $token"); fi
   STATUS="$(curl "${args[@]}")" || fail "curl $method $path: транспортная ошибка"
+  BODY="$(cat "$TMP/body")"
+  HEADERS="$(cat "$TMP/headers")"
+}
+
+http_search() { # http_search QUERY [TOKEN] — GET /api/notes?q=<decoded query>
+  local query="$1" token="${2:-}"
+  local -a args=(-sS -m 20 -G -o "$TMP/body" -D "$TMP/headers" -w '%{http_code}'
+    "$base/api/notes" --data-urlencode "q=$query")
+  if [ -n "$token" ]; then args+=(-H "Authorization: Bearer $token"); fi
+  STATUS="$(curl "${args[@]}")" || fail "curl GET /api/notes?q=...: транспортная ошибка"
   BODY="$(cat "$TMP/body")"
   HEADERS="$(cat "$TMP/headers")"
 }
@@ -130,6 +160,53 @@ tokenB="$(json_string token)"
 [ ${#tokenB} -ge 32 ] || fail "login B: token пуст/короткий (len=${#tokenB}, body=${BODY})"
 ok "register/login B -> 201/200"
 
+# 2.5b search-smoke API (owner-scope + 512-byte cap) — до Playwright.
+# 2.5b.1 owner-scope find: A находит свою заметку по тексту.
+http_search "$textA" "$tokenA"
+expect_status 200 "search A: q=textA"
+expect_body "\"id\":${idA}" "search A: q=textA"
+expect_body "\"text\":\"${textA}\"" "search A: q=textA"
+ok "search A: q=textA -> 200, note A найдена"
+
+# 2.5b.2 not-found: у A нет заметки с таким текстом -> 200 [] (не null).
+http_search "e2e-no-such-note-${run}" "$tokenA"
+expect_status 200 "search A: not found"
+[ "$BODY" = "[]" ] || fail "search A: not found -> ожидалось [] (body=${BODY})"
+ok "search A: not found -> 200 []"
+
+# 2.5b.3 owner-scope: B ищет текст A -> 200 [] и не видит чужую заметку.
+http_search "$textA" "$tokenB"
+expect_status 200 "search B: q=textA (owner-scope)"
+deny_body "$textA" "search B: q=textA (owner-scope)"
+[ "$BODY" = "[]" ] || fail "search B: q=textA -> ожидалось [] (body=${BODY})"
+ok "search B: q=textA -> 200 [] (owner-scope)"
+
+# 2.5b.4 auth раньше query: без токена любой q -> 401 + WWW-Authenticate.
+http_search "$textA" ""
+expect_status 401 "unauth search q=textA"
+expect_bearer "unauth search q=textA"
+expect_body '"error":"unauthorized"' "unauth search q=textA"
+ok "unauth search q=textA -> 401 + WWW-Authenticate"
+
+# 2.5b.5 512-byte cap на decoded q: >512 -> 400 query too long до скана.
+q513="$(head -c 513 /dev/zero | tr '\0' 'a')"
+q512="$(head -c 512 /dev/zero | tr '\0' 'a')"
+[ ${#q513} -eq 513 ] || fail "q513: ожидалось 513 байт, получено ${#q513}"
+[ ${#q512} -eq 512 ] || fail "q512: ожидалось 512 байт, получено ${#q512}"
+
+http_search "$q513" "$tokenA"
+expect_status 400 "search A: q=513 bytes"
+expect_body '"error":"query too long"' "search A: q=513 bytes"
+ok "search A: q=513 bytes -> 400 query too long"
+
+http_search "$q512" "$tokenA"
+expect_status 200 "search A: q=512 bytes (accepted)"
+case "$BODY" in
+  \[*\]) ;;
+  *) fail "search A: q=512 bytes -> ожидался JSON-массив (body=${BODY})" ;;
+esac
+ok "search A: q=512 bytes -> 200 (accepted)"
+
 # 2.6 isolation: B не видит заметку A (свежий пользователь -> пустой список).
 http GET /api/notes "" "$tokenB"
 expect_status 200 "GET /api/notes B"
@@ -181,7 +258,7 @@ http DELETE "/api/notes/$idB" "" "$tokenB"
 expect_status 204 "DELETE своей note B"
 ok "DELETE своей note B -> 204"
 
-echo "e2e-preview: API smoke GREEN (auth 401, A/B isolation, 404/400, 204)"
+echo "e2e-preview: API smoke GREEN (auth 401, A/B isolation, 404/400, 204, search owner-scope, 512-byte cap)"
 
 # s20a integration-gate: API-smoke на стенде. Playwright (UI) выполняется на s20c
 # через host-runner/browser, т.к. ORC-контейнер Alpine/musl не запускает glibc-Chromium.
@@ -195,7 +272,7 @@ echo "e2e-preview: Playwright (chromium) против $base"
 command -v node >/dev/null 2>&1 || fail "node не найден: Playwright E2E невозможен (fail-close, skip запрещён)"
 command -v npm >/dev/null 2>&1 || fail "npm не найден: Playwright E2E невозможен (fail-close)"
 [ -f "$ROOT/playwright.config.js" ] || fail "playwright.config.js отсутствует в $ROOT (нужен merge U02)"
-[ -f "$ROOT/web/e2e/auth-notes.spec.js" ] || fail "web/e2e/auth-notes.spec.js отсутствует (fail-close)"
+[ -f "$ROOT/web/e2e/notes-search.spec.js" ] || fail "web/e2e/notes-search.spec.js отсутствует (fail-close)"
 
 # Test-only dependency: @playwright/test + chromium. Не влияет на runtime-образ.
 if ! ( cd "$ROOT" && node -e 'require("@playwright/test")' >/dev/null 2>&1 ); then
@@ -215,7 +292,9 @@ if [ -z "$chromium" ] || [ ! -f "$chromium" ]; then
 fi
 [ -n "$chromium" ] && [ -f "$chromium" ] || fail "chromium не установлен (fail-close, не skip)"
 echo "e2e-preview: chromium=$chromium"
-( cd "$ROOT" && E2E_BASE_URL="$base" PREVIEW_BASE_URL="$base" ./node_modules/.bin/playwright test ) \
-  || fail "Playwright E2E FAIL"
+# Exactly the 20 SEARCH-E2E scenarios; E2E_BASE_URL is already required above.
+( cd "$ROOT" && E2E_BASE_URL="$base" PREVIEW_BASE_URL="$base" \
+    ./node_modules/.bin/playwright test web/e2e/notes-search.spec.js ) \
+  || fail "Playwright E2E FAIL (SEARCH-E2E-1..20)"
 
-echo "e2e-preview: OK (health + auth-smoke + Playwright chromium)"
+echo "e2e-preview: OK (health + auth-smoke + search-smoke + Playwright 20 scenarios)"
