@@ -111,3 +111,11 @@ items and two accepted UX minors; none changes the product outcome.
   `distinct=true`.
 - This result audit is performed by the `architect` role at `s22.result_audit`, after the
   independent s22a/s22e reviews, and re-runs the gates rather than trusting the author's claims.
+
+## Re-audit after s23 (build 7026b7e)
+
+- Reason: s23 refinement invalidated integration; no product changes, but process requires re-deploy/verify.
+- Re-deployed HEAD 7026b7e to test2 (image sha256:8302078e…, build_args sha256:d16f8c44…).
+- E2E re-run: 20/20 pass; API smoke 512→200, 513→400, no-token 401.
+- UI/UX audits re-run and pass (stand.sha 7026b7e); canaries 3/3 genuinely detected after detector fix.
+- Verdict remains **pass**; residuals unchanged (CR-01 medium, CR-02/03 low, DS token drift).
