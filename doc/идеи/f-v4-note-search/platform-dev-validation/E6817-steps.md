@@ -23,3 +23,5 @@
 | s06d.canonize | canon.json | accepted |
 | s06e.reproduce | reproduce-result.json | 30/30 E2E + go test |
 | s06e.reproduce | reproduce-result.json | CR-01 fails on 773acb1 (exit 1), passes on fix (exit 0) |
+| s06e.reproduce | reproduce-result.json + drift | accepted |
+| s10.change_definition | change-definition.md | domains: backend/web/deploy |
