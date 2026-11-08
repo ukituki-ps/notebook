@@ -33,3 +33,5 @@
 | s14.spec_generation | spec/core.md + contract-matrix.md | 8 endpoints, 0 drift |
 | s14.spec_generation | core.md + contract-matrix.md | accepted 0 drift |
 | s15.brief_milestone | M01/brief.md | milestone brief |
+| s15.brief_milestone | M01/brief.md | accepted |
+| s16.brief_tasks | T0101-0103/brief.md | 3 unit briefs |
