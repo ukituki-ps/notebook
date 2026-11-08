@@ -546,6 +546,8 @@ steps:
             minimum: 0
       context:
         type: object
+      approval_payload:
+        type: object
 - id: s03c.prototype_rework
   name: Переделка прототипа по замечаниям s03b
   description: 'Переисполняет design-unit для затронутых экранов после
