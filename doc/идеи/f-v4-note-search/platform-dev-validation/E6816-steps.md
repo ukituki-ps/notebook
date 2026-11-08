@@ -9,3 +9,4 @@
 | s02a.ds_pin | 8d522f7 | ds-pin.json | accepted, ds-pin PASS |
 | s03.proto_visualize | unit branch | units/note-search | 4 unit steps accepted |
 | s03a.design_integrate | pending | ds.lock/refs/review | aggregate DS 1.0.1 |
+| s03b.prototype_accept | pending | prototypes/v7 | P-99 accepted; awaiting signed Nexus approval |

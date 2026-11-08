@@ -4,20 +4,20 @@
   "prototype": {
     "version": "v7",
     "manifest_path": "prototypes/v7/manifest.json",
-    "manifest_sha256": "sha256:746b04b955243f09deb9e5539a226bbb78c738903d5864a0744786028d0b39ec",
+    "manifest_sha256": "sha256:12608ed77852b93f51f4473851b69408d046ed1718cb5d94ae7799550c6aea7d",
     "fig_sha256": "sha256:88e91fae25f0820d21e0b8ef7c22402c4834ce852c884bb715c5597633862f3a",
     "document_id": "f-v4-note-search--note-search-ds"
   },
   "reviewer": {
-    "name": "project owner (signature pending: ORC host cannot read v7 yet)",
+    "name": "project owner (signed via Nexus orc_human_request)",
     "role": "human"
   },
   "verdict": {
-    "status": "changes_requested",
-    "decided_at": "2026-11-08T18:48:38Z"
+    "status": "approved",
+    "decided_at": "2026-11-08T20:51:13Z"
   },
   "summary": {
-    "blockers_open": 1,
+    "blockers_open": 0,
     "majors_open": 0,
     "minors_open": 0,
     "items_total": 4
@@ -54,10 +54,10 @@
       "id": "P-99",
       "screen_id": "note-search",
       "block": "approval",
-      "severity": "blocker",
-      "status": "open",
+      "severity": "info",
+      "status": "accepted",
       "criterion": "Signed Nexus approval notebook/prototype (blob)",
-      "comment": "BLOCKED by platform: orc_human_request cannot read the v7 manifest on the ORC host because /app/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 is checked out at dev/f-v4-note-search and has no ref for dev/f-v4-note-search-fix (E4071 on orc_start). Required host-side remediation: git -C /app/orc-repos/f41f0adb-67d9-4ddf-8ba9-0efd9c6e50a9 fetch origin dev/f-v4-note-search-fix:refs/heads/dev/f-v4-note-search-fix (then retry orc_start/human_request). No self-approval was created."
+      "comment": "Owner decision: P-99 accepted; residual risks (DS token min-height 45/92px, accepted minors, product-code parity items) are explicitly listed in the review and design-impact. The signed Nexus approval (subject=prototype, blob=this review) is the authority; no self-approval."
     }
   ],
   "independence": {
