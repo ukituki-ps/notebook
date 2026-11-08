@@ -1,0 +1,123 @@
+# Fault catalog — notebook feature (f-v4-note-search, E0809)
+#
+# App-mode catalog declared by path1.project.json:
+#   audit.mode=app, detectors.catalog_dir=audit/fault-catalog
+# Every entry is a defect class that the audit MUST resolve with a verdict.
+# `detect` is the real executable oracle from path1.project.json
+# (audit.oracles) or doc/идеи/f-v4-note-search/invariants.json; there are no
+# placeholder or descriptive-only checks.
+#
+# Domains: security | contract | ui | data
+# Severities: low | medium | high | critical
+
+- id: SEC-AUTH-REQUIRED
+  domain: security
+  title: "Request reaches notes/search logic without a valid bearer → 401 bypass"
+  detect: "go test -count=1 -run 'TestAuthRequired|TestLoginInvalid' ./..."
+  severity: critical
+  source: "path1.project.json audit.oracles SEC-AUTH-REQUIRED; f-v3-auth-notes/E4312 inherited"
+
+- id: SEC-USER-ISOLATION
+  domain: security
+  title: "List/search/delete leaks another user's notes (cross-user read or write)"
+  detect: "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
+  severity: critical
+  source: "path1.project.json audit.oracles SEC-USER-ISOLATION; f-v3/E4312 inherited"
+
+- id: SEC-RLS-SCOPE-PREDICATE
+  domain: security
+  title: "Owner predicate applied after the text filter or omitted → q widens the result set"
+  detect: "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
+  severity: critical
+  source: "path1.project.json audit.oracles SEC-RLS-SCOPE-PREDICATE; invariants.json INV-SEARCH-OWNER-SCOPE"
+
+- id: SEC-ERROR-LEAK
+  domain: security
+  title: "Error responses leak secrets (password/hash/salt/token/stack) in the body"
+  detect: "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./..."
+  severity: high
+  source: "path1.project.json audit.oracles SEC-ERROR-LEAK; f-v3/E4312 inherited"
+
+- id: SEC-SKIP-TAGGED-INVARIANT
+  domain: security
+  title: "Invariant tests excluded by integration/e2e/manual build tags → green suite proves nothing"
+  detect: "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\""
+  severity: high
+  source: "path1.project.json audit.oracles SEC-SKIP-TAGGED-INVARIANT; invariants.json INV-NO-SKIP-TAGS"
+
+- id: CONTRACT-WIRE-CASING
+  domain: contract
+  title: "Wire keys change case or UserID is serialized (id/text/token/username/error must stay lower-case)"
+  detect: "go test -count=1 -run TestWireContract ./..."
+  severity: high
+  source: "path1.project.json audit.oracles CONTRACT-WIRE-CASING; invariants.json INV-WIRE-CASING"
+
+- id: CONTRACT-NULL-OMITEMPTY
+  domain: contract
+  title: "Empty or no-match note list serialized as null instead of [] (also omitempty drift)"
+  detect: "go test -count=1 -run 'TestNotesLifecycle|TestWireContract' ./..."
+  severity: medium
+  source: "path1.project.json audit.oracles CONTRACT-NULL-OMITEMPTY; invariants.json INV-SEARCH-EMPTY-Q/INV-SEARCH-NOT-FOUND"
+
+- id: CONTRACT-STATUS-CODE
+  domain: contract
+  title: "Wrong status code on notes/auth paths (401/400/405/404/201/204) or missing Allow/WWW-Authenticate"
+  detect: "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed|TestRegister|TestLogin' ./..."
+  severity: high
+  source: "path1.project.json audit.oracles CONTRACT-STATUS-CODE; spec/contract-matrix.md"
+
+- id: DATA-SCOPE-VALIDATION
+  domain: data
+  title: "Owner scope taken from client input (q/body/id) instead of the authenticated session"
+  detect: "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
+  severity: high
+  source: "path1.project.json audit.oracles DATA-SCOPE-VALIDATION; invariants.json INV-USER-ISOLATION"
+
+- id: DATA-ADAPTER-REAL-TRANSPORT
+  domain: data
+  title: "Tests bypass the real HTTP transport (direct Store calls) and hide routing/auth/query defects"
+  detect: "go test -count=1 -run TestHTTPTransport ./..."
+  severity: medium
+  source: "path1.project.json audit.oracles DATA-ADAPTER-REAL-TRANSPORT; invariants.json INV-REAL-TRANSPORT"
+
+- id: UI-EMPTY-STATE-CONTROLS
+  domain: ui
+  title: "Zero-note and no-match states collide or a false search-empty replaces the base empty state"
+  detect: "go test -count=1 -run TestUISemantics ./..."
+  severity: medium
+  source: "path1.project.json audit.oracles UI-EMPTY-STATE-CONTROLS; invariants.json INV-SEARCH-UI-EMPTY"
+
+- id: UI-FILTER-SERIALIZATION
+  domain: ui
+  title: "Client filter not re-applied after load/create/delete/reload or clear does not restore the full list"
+  detect: "go test -count=1 -run TestUISemantics ./..."
+  severity: high
+  source: "path1.project.json audit.oracles UI-FILTER-SERIALIZATION; invariants.json INV-SEARCH-UI-FILTER"
+
+- id: UI-LOADING-ERROR-STATES
+  domain: ui
+  title: "Loading/error/retry/offline states missing, misleading, or not announced via role/aria-live"
+  detect: "go test -count=1 -run TestUISemantics ./..."
+  severity: medium
+  source: "path1.project.json audit.oracles UI-LOADING-ERROR-STATES; invariants.json INV-UI-TRUTH"
+
+- id: UI-E2E-PREVIEW
+  domain: ui
+  title: "Preview/E2E evidence fabricated or the search UI never exercised on a real preview stand"
+  detect: "bash -c 'curl -fsS -m 10 https://test2.nexus.ukituki.tech/healthz >/dev/null && test \"$(curl -s -o /dev/null -w %{http_code} -m 10 https://test2.nexus.ukituki.tech/api/notes)\" = 401'"
+  severity: high
+  source: "path1.project.json audit.oracles UI-E2E-PREVIEW; invariants.json INV-UI-E2E-PREVIEW (proposed; materializes at s20c)"
+
+- id: UI-A11Y-LABEL
+  domain: ui
+  title: "Search/clear/delete controls lack accessible names, labels, or polite live regions"
+  detect: "npx playwright test web/e2e/notes-search.spec.js --reporter=line"
+  severity: medium
+  source: "invariants.json INV-UI-LABEL / INV-UI-A11Y-NAME (Playwright oracle); static complement TestUISemantics"
+
+- id: UI-XSS-ESCAPE
+  domain: ui
+  title: "User note text or q rendered via innerHTML → script/HTML injection"
+  detect: "go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./..."
+  severity: high
+  source: "invariants.json INV-XSS-ESCAPE; web/app.js textContent rendering"

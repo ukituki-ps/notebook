@@ -1,127 +1,120 @@
 {
-  "CONTRACT-WIRE-CASING": {
+  "SEC-AUTH-REQUIRED": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run TestWireContract ./...; wire keys id/text/token/username/error only, UserID json:\"-\"",
-    "evidence": "invariant:INV-WIRE-CASING/test:TestWireContract",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "check": "go test -count=1 -run 'TestAuthRequired|TestLoginInvalid' ./...",
+    "evidence": "E0809 s17 run (2026-11-08): exit 0; invariant:INV-AUTH-REQUIRED (TestAuthRequired + TestNotesSearchAuthRequired); 401 before method/query handling, WWW-Authenticate: Bearer",
+    "source": "path1.project.json audit.oracles SEC-AUTH-REQUIRED"
   },
-  "CONTRACT-ERROR-ENVELOPE": {
+  "SEC-USER-ISOLATION": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestDeleteErrorEnvelope|TestNoSecretLeak|TestNotesMethodNotAllowed' ./...; all errors {\"error\":\"<literal>\"} without stack/details",
-    "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak",
-    "inherited_from": "f-v3-auth-notes/E4312"
-  },
-  "CONTRACT-STATUS-CODE": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestRegister|TestLogin|TestLoginInvalid|TestAuthRequired|TestNotesSearch|TestAddNote|TestDeleteNote|TestNotesMethodNotAllowed' ./...; full status matrix in spec/contract-matrix.md",
-    "evidence": "spec:doc/идеи/f-v4-note-search/spec/contract-matrix.md"
-  },
-  "CONTRACT-NULL-OMITEMPTY": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchNotFound|TestNotesLifecycle' ./...; empty/no-match search returns [] not null",
-    "evidence": "invariant:INV-SEARCH-EMPTY-Q/test:TestNotesSearchEmptyQuery",
-    "inherited_from": "f-v3-auth-notes/E4312 (list [] semantics), extended by f-v4 search"
-  },
-  "CONTRACT-DATE-BOUNDARY": {
-    "verdict": "na",
-    "check": "manual: spec/core.md §1-§2, spec/contract-matrix.md — no date/time wire fields; Session.ExpiresAt is json:\"-\"",
-    "justification": "No date fields in the API/JSON surface; TTL is internal to Store."
-  },
-  "DATA-ADAPTER-REAL-TRANSPORT": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestHTTPTransport|TestNotesSearchEncoding' ./...; tests use httptest.Server, E2E uses the real stand",
-    "evidence": "invariant:INV-REAL-TRANSPORT/test:TestNotesSearchEncoding",
-    "inherited_from": "f-v3-auth-notes/E4312"
-  },
-  "DATA-CURSOR-STABLE-KEY": {
-    "verdict": "na",
-    "check": "manual: spec/core.md §1 — GET /api/notes returns the full owner-scoped list in insertion order; no cursor/pagination",
-    "justification": "No pagination or cursor contract in this feature."
-  },
-  "DATA-HASMORE-OVERSCAN": {
-    "verdict": "na",
-    "check": "manual: spec/core.md §1 — response is a full JSON array without hasMore/limit/overscan",
-    "justification": "No pagination/overscan contract in this feature."
-  },
-  "DATA-SCOPE-VALIDATION": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation|TestDeleteForeignNote' ./...; owner only from session, q can only narrow",
-    "evidence": "invariant:INV-SEARCH-OWNER-SCOPE/test:TestNotesSearchIsolation"
-  },
-  "DATA-DESCRIPTION-DERIVATION": {
-    "verdict": "na",
-    "check": "manual: spec/core.md §2 — Note.Text is stored verbatim; no derived/auto-generated descriptions",
-    "justification": "No derived descriptions in the data model."
+    "check": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+    "evidence": "E0809 s17 run: exit 0; invariant:INV-USER-ISOLATION (TestNotesIsolation, TestDeleteForeignNote); cross-user list/search/delete cannot read or mutate foreign notes",
+    "source": "path1.project.json audit.oracles SEC-USER-ISOLATION"
   },
   "SEC-RLS-SCOPE-PREDICATE": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation|TestDeleteForeignNote' ./...; Note.UserID == session.UserID for list/search/delete",
-    "evidence": "invariant:INV-SEARCH-OWNER-SCOPE/test:TestNotesSearchIsolation",
-    "inherited_from": "f-v3-auth-notes/E4312 (base), extended by f-v4 search"
+    "check": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+    "evidence": "E0809 s17 run: exit 0; invariant:INV-SEARCH-OWNER-SCOPE (TestNotesSearchIsolation); Store.ListNotes(session.UserID) runs before the text predicate, so q narrows but never widens",
+    "source": "path1.project.json audit.oracles SEC-RLS-SCOPE-PREDICATE"
+  },
+  "SEC-ERROR-LEAK": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./...",
+    "evidence": "E0809 s17 run: exit 0; TestNoSecretLeak + TestDeleteErrorEnvelope; error bodies are a literal {\"error\":\"...\"} envelope with no password/hash/salt/token/stack",
+    "source": "path1.project.json audit.oracles SEC-ERROR-LEAK"
   },
   "SEC-SKIP-TAGGED-INVARIANT": {
     "verdict": "covered",
     "detector_exit": 0,
     "check": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
-    "evidence": "invariant:INV-NO-SKIP-TAGS/test:build-tag-grep",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "evidence": "E0809 s17 run: exit 0; no *_test.go file in the repo carries an integration/e2e/manual build tag; the invariant suite runs under plain go test",
+    "source": "path1.project.json audit.oracles SEC-SKIP-TAGGED-INVARIANT"
   },
-  "SEC-PREFIX-BOUNDARY": {
+  "CONTRACT-WIRE-CASING": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...; abc/empty/overflow id => 400; /api/notes/1/extra is not id 1",
-    "evidence": "invariant:INV-PREFIX-BOUNDARY/test:TestNotesPrefixBoundary",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "check": "go test -count=1 -run TestWireContract ./...",
+    "evidence": "E0809 s17 run: exit 0; invariant:INV-WIRE-CASING (TestWireContract); wire keys stay id/text/token/username/error and UserID is json:\"-\"",
+    "source": "path1.project.json audit.oracles CONTRACT-WIRE-CASING"
   },
-  "SEC-WRITE-VERB-REJECT": {
+  "CONTRACT-NULL-OMITEMPTY": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestNotesMethodNotAllowed|TestNotesSearchAuthRequired' ./...; wrong method => 405+Allow; auth before method",
-    "evidence": "invariant:INV-VERB-REJECT/test:TestNotesMethodNotAllowed",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "check": "go test -count=1 -run 'TestNotesLifecycle|TestWireContract' ./...",
+    "evidence": "E0809 s17 run: exit 0; invariants INV-SEARCH-EMPTY-Q / INV-SEARCH-NOT-FOUND (TestNotesSearchEmptyQuery, TestNotesSearchNotFound); empty and no-match lists serialize as [] not null",
+    "source": "path1.project.json audit.oracles CONTRACT-NULL-OMITEMPTY"
   },
-  "SEC-ERROR-LEAK": {
+  "CONTRACT-STATUS-CODE": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./...; no password/hash/salt/token in error bodies",
-    "evidence": "invariant:INV-NO-SECRET-LEAK/test:TestNoSecretLeak",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "check": "go test -count=1 -run 'TestDeleteNote|TestDeleteErrorEnvelope|TestNotesMethodNotAllowed|TestRegister|TestLogin' ./...",
+    "evidence": "E0809 s17 run: exit 0; status matrix in spec/contract-matrix.md (201/204/400/401/404/405) is asserted by the named tests; search 512-byte 400 is additionally pinned by INV-SEARCH-Q-MAX/TestNotesSearchQueryTooLong",
+    "source": "path1.project.json audit.oracles CONTRACT-STATUS-CODE"
   },
-  "UI-DATE-BOUNDARY": {
-    "verdict": "na",
-    "check": "manual: spec/core.md §3 — no date/time UI fields in notes or search",
-    "justification": "No date fields rendered by the UI."
-  },
-  "UI-E2E-PREVIEW": {
+  "DATA-SCOPE-VALIDATION": {
     "verdict": "covered",
     "detector_exit": 0,
-    "check": "bash deploy/path1/e2e-preview.sh on test2; Playwright notes-search.spec.js 6/6 + pngdiff",
-    "evidence": "s20c:preview-verdict/pass-verified"
+    "check": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
+    "evidence": "E0809 s17 run: exit 0; invariants INV-USER-ISOLATION / INV-SEARCH-OWNER-SCOPE; owner scope is derived from the authenticated session, never from q/body/id",
+    "source": "path1.project.json audit.oracles DATA-SCOPE-VALIDATION"
+  },
+  "DATA-ADAPTER-REAL-TRANSPORT": {
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestHTTPTransport ./...",
+    "evidence": "E0809 s17 run: exit 0; invariant:INV-REAL-TRANSPORT (TestHTTPTransport + TestNotesSearchEncoding); tests exercise httptest.Server/real HTTP, not direct Store calls",
+    "source": "path1.project.json audit.oracles DATA-ADAPTER-REAL-TRANSPORT"
   },
   "UI-EMPTY-STATE-CONTROLS": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run TestUISemantics ./...; notes-empty for empty server list, notes-search-empty for non-empty no-match",
-    "evidence": "invariant:INV-SEARCH-UI-EMPTY/test:TestUISemantics"
+    "verdict": "na",
+    "detector_exit": 1,
+    "check": "go test -count=1 -run TestUISemantics ./...",
+    "justification": "UI empty-state fault class is in scope, but the declared static oracle is currently red on the unrelated R-1 CSS assertion (web_ui_test.go:264 expects literal 'min-height: 44px' while web/app.css uses the DS token 'min-height: var(--control-height)'). notes-empty / notes-search-empty markup exists, but the oracle cannot certify the class until T0102 resolves R-1. Tracked as minor gap R-1 in coverage-audit.json; re-certified at s20/s22.",
+    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\")",
+    "source": "path1.project.json audit.oracles UI-EMPTY-STATE-CONTROLS"
   },
   "UI-FILTER-SERIALIZATION": {
-    "verdict": "covered",
-    "detector_exit": 0,
-    "check": "go test -count=1 -run TestUISemantics ./...; search filters loaded list, clear restores it, create/delete/reload preserved",
-    "evidence": "invariant:INV-SEARCH-UI-FILTER/test:TestUISemantics"
+    "verdict": "na",
+    "detector_exit": 1,
+    "check": "go test -count=1 -run TestUISemantics ./...",
+    "justification": "Client filter/clear behaviour is in scope but the shared static oracle is red on R-1 (min-height vs DS token), so the class cannot be certified now. The plan covers create/delete/reload re-application with a single renderNotes() (T0006) and 20-scenario Playwright at s20c. Tracked as minor gap R-1 in coverage-audit.json.",
+    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\")",
+    "source": "path1.project.json audit.oracles UI-FILTER-SERIALIZATION"
   },
   "UI-LOADING-ERROR-STATES": {
-    "verdict": "covered",
+    "verdict": "na",
+    "detector_exit": 1,
+    "check": "go test -count=1 -run TestUISemantics ./...",
+    "justification": "Loading/error states exist at base, but count/retry/offline/offline-zero and the loading role=status are specified for s20 U02/T0007 and are not implemented yet; the shared static oracle is also red on R-1. Tracked as minor gaps SEARCH-UI-PENDING-S20 and R-1 in coverage-audit.json.",
+    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\"); notes-retry/notes-offline/notes-search-count are absent from web/index.html and web_ui_test.go",
+    "source": "path1.project.json audit.oracles UI-LOADING-ERROR-STATES"
+  },
+  "UI-E2E-PREVIEW": {
+    "verdict": "na",
     "detector_exit": 0,
-    "check": "go test -count=1 -run TestUISemantics ./...; existing loading/error/401 UI states unchanged",
-    "evidence": "invariant:INV-UI-TRUTH/test:TestUISemantics",
-    "inherited_from": "f-v3-auth-notes/E4312"
+    "check": "bash -c 'curl -fsS -m 10 https://test2.nexus.ukituki.tech/healthz >/dev/null && test \"$(curl -s -o /dev/null -w %{http_code} -m 10 https://test2.nexus.ukituki.tech/api/notes)\" = 401'",
+    "justification": "E2E oracle materializes at s20c; will be covered by INV-UI-E2E-PREVIEW. The declared health+401 oracle exits 0 today, but it does not exercise the search UI; the branch E2E is still 8 of 20 scenarios and no preview run exists for this branch. Tracked as minor gap E2E-PREVIEW-PENDING-S20C (owner sde-infra/T0103).",
+    "observed": "health+401 oracle exit 0 on test2; web/e2e/notes-search.spec.js currently defines 8 scenarios, not 20; no s20c run/evidence for dev/f-v4-note-search-e2e",
+    "source": "path1.project.json audit.oracles UI-E2E-PREVIEW"
+  },
+  "UI-A11Y-LABEL": {
+    "verdict": "na",
+    "detector_exit": null,
+    "check": "npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+    "justification": "Accessible-name fault class is in scope; the Playwright oracle needs the integrated preview UI on test2, which is pending s20b/s20c. The static complement TestUISemantics asserts <label for>, role=alert and aria-live but is red on R-1. Tracked as minor gaps R-1 and E2E-PREVIEW-PENDING-S20C in coverage-audit.json.",
+    "observed": "Playwright not run at s17 (no preview UI for this branch); static TestUISemantics exit 1 on R-1 only",
+    "source": "invariants.json INV-UI-LABEL / INV-UI-A11Y-NAME"
+  },
+  "UI-XSS-ESCAPE": {
+    "verdict": "na",
+    "detector_exit": 1,
+    "check": "go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./...",
+    "justification": "XSS fault class is in scope and web/app.js renders note text with textContent (no innerHTML), but the declared invariant oracle is red on the unrelated R-1 CSS assertion, so the class is not certified at s17. Re-certified at s20 when T0102 makes TestUISemantics green; E2E scenario 15 (XSS/escaping) lands at s20c. Tracked as minor gap R-1 in coverage-audit.json.",
+    "observed": "go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./... => exit 1 (TestUISemantics fails only on min-height; TestNotesSearchEncoding passes); direct static check '! grep innerHTML web/app.js && grep textContent web/app.js' exit 0",
+    "source": "invariants.json INV-XSS-ESCAPE"
   }
 }
