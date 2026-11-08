@@ -6,8 +6,8 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6",
-    "build_ref": "5785dc0"
+    "sha": "7026b7ecc40a12660afe1dfc155b7e3982ef2f22",
+    "build_ref": "7026b7e"
   },
   "scope": {
     "screens": [
@@ -332,5 +332,11 @@
       "web/index.html",
       "web/app.js"
     ]
+  },
+  "review_reaudit": {
+    "build": "7026b7e",
+    "at": "2026-11-08T16:53:22Z",
+    "e2e": "20/20",
+    "verdict": "pass"
   }
 }

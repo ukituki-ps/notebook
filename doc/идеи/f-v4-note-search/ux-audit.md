@@ -70,3 +70,6 @@ Scenario contract: `scenario-evidence.json` (20/20 pass on test2, 5785dc0) and
 `preview-verdict.json` (pass, evaluated_sha 5785dc0...). Executable oracles are
 `web/e2e/notes-search.spec.js` scenarios and repo-level `grep` checks; the audit
 JSON records one oracle and one existing evidence ref per item.
+
+## Re-audit (after s23, build 7026b7e)
+- E2E 20/20 re-run; UX product unchanged; verdict pass, 0 blockers, 2 accepted minors remain.
