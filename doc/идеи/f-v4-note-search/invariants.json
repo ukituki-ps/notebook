@@ -141,7 +141,7 @@
       "status": "active",
       "statement": "Тесты не исключены build-тегами integration/e2e/manual; инвариантный набор исполняется штатным go test.",
       "enforcement": "test",
-      "test_ref": "cmd:sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
+      "test_ref": "cmd:sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' . >/dev/null\"",
       "covers": [
         "SEC-SKIP-TAGGED-INVARIANT"
       ]

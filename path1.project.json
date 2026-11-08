@@ -29,7 +29,7 @@
       {
         "id": "sec-skip-tagged",
         "seed": "sed -i '1i //go:build integration' {worktree}/main_test.go",
-        "detect": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\""
+        "detect": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' . >/dev/null\""
       }
     ]
   },
@@ -73,7 +73,7 @@
       "DATA-ADAPTER-REAL-TRANSPORT": "go test -count=1 -run TestHTTPTransport ./...",
       "DATA-SCOPE-VALIDATION": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
       "SEC-RLS-SCOPE-PREDICATE": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./...",
-      "SEC-SKIP-TAGGED-INVARIANT": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
+      "SEC-SKIP-TAGGED-INVARIANT": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' . >/dev/null\"",
       "SEC-PREFIX-BOUNDARY": "go test -count=1 -run 'TestDeleteInvalidID|TestNotesPrefixBoundary' ./...",
       "SEC-WRITE-VERB-REJECT": "go test -count=1 -run 'TestNotesMethodNotAllowed|TestAuthMethodOrder' ./...",
       "SEC-ERROR-LEAK": "go test -count=1 -run 'TestNoSecretLeak|TestDeleteErrorEnvelope' ./...",
