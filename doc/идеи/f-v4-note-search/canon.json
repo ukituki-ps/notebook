@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "canon": [
+    {
+      "term": "Note",
+      "definition": "Owner-scoped record {id,user_id,text}; only text is searchable."
+    },
+    {
+      "term": "Owner scope",
+      "definition": "Every list/search/delete applies user_id = session user before any other predicate."
+    },
+    {
+      "term": "Search query q",
+      "definition": "Optional decoded query string; absent/empty/whitespace = no filter; >512 bytes = 400 before scanning."
+    },
+    {
+      "term": "Match",
+      "definition": "Case-insensitive substring of Note.text (strings.ToLower both sides); no ranking/highlighting."
+    },
+    {
+      "term": "Search empty",
+      "definition": "Non-empty q with zero matches: HTTP 200 + [] and UI search-empty; distinct from base empty (zero notes)."
+    },
+    {
+      "term": "Offline",
+      "definition": "No network: loaded notes stay visible; search disabled; clear works offline; reconnect re-checks via /api/notes."
+    },
+    {
+      "term": "Locked",
+      "definition": "401 during load: search disabled, notes-empty hidden, no aria-describedby to a hidden node, redirect to /login."
+    },
+    {
+      "term": "Stale load",
+      "definition": "A load superseded by DELETE/create/401 must not resurrect/removed data; generation counter guards responses."
+    }
+  ]
+}

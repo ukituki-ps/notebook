@@ -18,3 +18,5 @@
 | s06b.reconcile | reconcile-verdict.json | coverage 8/8, no drift |
 | s06b.reconcile | reconcile-verdict.json | accepted 8/8 |
 | s06c.reconcile_verify | reconcile-verify.json | independent pass |
+| s06c.reconcile_verify | reconcile-verify.json | accepted pass |
+| s06d.canonize | canon.json | 8 canonical concepts |
