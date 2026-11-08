@@ -136,5 +136,13 @@
       "path1.project.json",
       "audit/fault-catalog/notebook.yaml"
     ]
+  },
+  "re_review": {
+    "build": "7026b7e",
+    "at": "2026-11-08T16:54:45Z",
+    "e2e": "20/20",
+    "product_delta_vs_deploy": "none",
+    "verdict": "pass",
+    "note": "post-s23 re-run; findings/CR-01 medium unchanged"
   }
 }
