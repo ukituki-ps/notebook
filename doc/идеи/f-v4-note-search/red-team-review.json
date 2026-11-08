@@ -4,22 +4,92 @@
   "step": "s22b.red_team_audit",
   "verdict": "pass",
   "attack_log": "doc/идеи/f-v4-note-search/attack-log.md",
-  "reviewer": {"model": "qwen3.8-fast", "provider": "llama-proxy", "session_id": "ses_e43ffd54effeHrVF3ImMEt3vkf"},
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy",
+    "session_id": "ses_e43ffd54effeHrVF3ImMEt3vkf"
+  },
   "author_model": "deepseek-flash",
   "author_provider": "deepseek",
   "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8",
   "reviewer_session_id": "ses_e43ffd54effeHrVF3ImMEt3vkf",
-  "proofs": [{"evidence_id": "PR-0f0052e9d56c", "command": "CANARY_FORCE=1 bash tools/canary-run.sh E0809"}],
-  "canary": {"total": 3, "detected": 3, "fault_catalog_execute_ok": true, "catalog_items": 16},
-  "findings": [
-    {"id": "RT-E0809-F1", "severity": "high", "verdict": "fixed", "file_line": "path1.project.json canaries.detect", "text": "detect placeholder/portability false positive; fixed and re-proven with 3/3 genuine detections"},
-    {"id": "RT-E0809-F2", "severity": "low", "verdict": "accepted", "file_line": "tools/_feature_dir.py", "text": "feature-dir ambiguity without ORC_FEATURE_DIR; ORC sets it"},
-    {"id": "RT-E0809-F3", "severity": "low", "verdict": "accepted", "file_line": "nginx edge", "text": "HTML 400 for malformed percent-escapes; no client path"},
-    {"id": "RT-E0809-F4", "severity": "info", "verdict": "accepted", "file_line": "main.go handleRegister", "text": "register enumeration trade-off; login non-enumerable"},
-    {"id": "RT-E0809-F5", "severity": "info", "verdict": "accepted", "file_line": "main.go decodeJSON", "text": "invalid UTF-8 sanitized to U+FFFD"},
-    {"id": "RT-E0809-F6", "severity": "info", "verdict": "accepted", "file_line": "web/app.js", "text": "no CSP; textContent-only defense"}
+  "proofs": [
+    {
+      "evidence_id": "PR-0f0052e9d56c",
+      "command": "CANARY_FORCE=1 bash tools/canary-run.sh E0809"
+    }
   ],
-  "summary": {"open_critical_high": 0, "blockers": 0},
-  "independence": {"distinct": true},
-  "context": {"source": "orc_ctx", "tokens": 7200, "artifacts": ["doc/идеи/f-v4-note-search/attack-log.md", "doc/идеи/f-v4-note-search/red-team-review.json"]}
+  "canary": {
+    "total": 3,
+    "detected": 3,
+    "fault_catalog_execute_ok": true,
+    "catalog_items": 16
+  },
+  "findings": [
+    {
+      "id": "RT-E0809-F1",
+      "severity": "high",
+      "verdict": "fixed",
+      "file_line": "path1.project.json canaries.detect",
+      "text": "detect placeholder/portability false positive; fixed and re-proven with 3/3 genuine detections"
+    },
+    {
+      "id": "RT-E0809-F2",
+      "severity": "low",
+      "verdict": "accepted",
+      "file_line": "tools/_feature_dir.py",
+      "text": "feature-dir ambiguity without ORC_FEATURE_DIR; ORC sets it"
+    },
+    {
+      "id": "RT-E0809-F3",
+      "severity": "low",
+      "verdict": "accepted",
+      "file_line": "nginx edge",
+      "text": "HTML 400 for malformed percent-escapes; no client path"
+    },
+    {
+      "id": "RT-E0809-F4",
+      "severity": "info",
+      "verdict": "accepted",
+      "file_line": "main.go handleRegister",
+      "text": "register enumeration trade-off; login non-enumerable"
+    },
+    {
+      "id": "RT-E0809-F5",
+      "severity": "info",
+      "verdict": "accepted",
+      "file_line": "main.go decodeJSON",
+      "text": "invalid UTF-8 sanitized to U+FFFD"
+    },
+    {
+      "id": "RT-E0809-F6",
+      "severity": "info",
+      "verdict": "accepted",
+      "file_line": "web/app.js",
+      "text": "no CSP; textContent-only defense"
+    }
+  ],
+  "summary": {
+    "open_critical_high": 0,
+    "blockers": 0
+  },
+  "independence": {
+    "distinct": true
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 7200,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/attack-log.md",
+      "doc/идеи/f-v4-note-search/red-team-review.json"
+    ]
+  },
+  "re_review": {
+    "build": "7026b7e",
+    "image": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee",
+    "at": "2026-11-08T16:54:00Z",
+    "e2e": "20/20",
+    "canaries": "3/3 detected",
+    "verdict": "pass"
+  }
 }
