@@ -1,0 +1,336 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "artifact_path": "doc/идеи/f-v4-note-search/ux-audit.json",
+  "platform": "web",
+  "stand": {
+    "name": "test2",
+    "url": "https://test2.nexus.ukituki.tech",
+    "sha": "5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6",
+    "build_ref": "5785dc0"
+  },
+  "scope": {
+    "screens": [
+      "note-search"
+    ],
+    "viewports": [
+      "390x844",
+      "1200x900"
+    ]
+  },
+  "summary": {
+    "verdict": "pass",
+    "blockers": 0,
+    "open_critical_high": 0,
+    "majors": 0,
+    "minors": 2
+  },
+  "items": [
+    {
+      "id": "A1",
+      "screen_id": "note-search",
+      "block": "A",
+      "criterion": "Task fit: an authenticated user can locate a note by text without scanning the full list; the search filters the owner-scoped collection already on screen.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-1'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png"
+      }
+    },
+    {
+      "id": "A2",
+      "screen_id": "note-search",
+      "block": "A",
+      "criterion": "Owner scope: user B's search never surfaces user A's note, and B's own note remains the only result after clearing.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-20'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-20.png"
+      }
+    },
+    {
+      "id": "B1",
+      "screen_id": "note-search",
+      "block": "B",
+      "criterion": "Information architecture follows composer -> search -> count -> list (AOD-7), search stays directly above its results.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -n 'note-form\\|notes-search\\|notes-search-count\\|notes-list' web/index.html",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png"
+      }
+    },
+    {
+      "id": "B2",
+      "screen_id": "note-search",
+      "block": "B",
+      "criterion": "Search, clear, and count are visually adjacent and the search block is grouped with its list region (role=search, aria-controls=notes-list).",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-16'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png"
+      }
+    },
+    {
+      "id": "C1",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Idle state is truthful: empty query shows the full list, no count, no clear control, search available.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-9'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-9.png"
+      }
+    },
+    {
+      "id": "C2",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Results state is truthful: non-matching rows disappear, the matched row remains, and the count reflects the filtered collection.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-1'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png"
+      }
+    },
+    {
+      "id": "C3",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "No-results state is truthful and actionable: zero rows show the search-empty copy, notes-empty stays hidden, and the search field remains enabled.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-2'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png"
+      }
+    },
+    {
+      "id": "C4",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Empty collection wins over search-empty: base notes-empty is shown, search is disabled, and count/clear are hidden (AOD-1).",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-10'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-10.png"
+      }
+    },
+    {
+      "id": "C5",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Loading state is announced (role=status), search and form are disabled, the list is hidden, and the normal state returns after the response.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-11'",
+      "evidence": {
+        "kind": "command",
+        "ref": "web/e2e/notes-search.spec.js"
+      }
+    },
+    {
+      "id": "C6",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Error state is announced (role=alert) and offers a visible Повторить control that reloads notes and returns the list.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-12'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-12.png"
+      }
+    },
+    {
+      "id": "C7",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Offline with loaded notes states what is shown, keeps the loaded rows visible, disables search, and hides both false-empty states (AOD-4).",
+      "verdict": "ok",
+      "severity": "minor",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-13'",
+      "evidence": {
+        "kind": "command",
+        "ref": "web/e2e/notes-search.spec.js"
+      }
+    },
+    {
+      "id": "C8",
+      "screen_id": "note-search",
+      "block": "C",
+      "criterion": "Offline-zero is distinct from search-empty: the banner says no notes were loaded, notes-empty remains, and the search-empty copy is not shown.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-14'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-14.png"
+      }
+    },
+    {
+      "id": "D1",
+      "screen_id": "note-search",
+      "block": "D",
+      "criterion": "Clear recovery: Очистить appears only with an active query, restores the full list, hides count/search-empty, and returns focus to the input.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-19'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-19.png"
+      }
+    },
+    {
+      "id": "D2",
+      "screen_id": "note-search",
+      "block": "D",
+      "criterion": "Offline recovery: Проверить сеть re-checks connectivity and reloads notes, restoring the enabled online state without a reload of the page.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-13'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-13.png"
+      }
+    },
+    {
+      "id": "E1",
+      "screen_id": "note-search",
+      "block": "E",
+      "criterion": "Copy and labels are clear and consistent: Russian search/clear/count/empty/offline/retry copy, Удалить per row with a note-specific accessible name, Add/Logout retained by policy.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:grep -n 'Поиск заметок\\|Очистить\\|Найдено\\|Ничего не найдено\\|Повторить\\|Удалить' web/index.html web/app.js",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png"
+      }
+    },
+    {
+      "id": "E2",
+      "screen_id": "note-search",
+      "block": "E",
+      "criterion": "Count semantics: Найдено N is hidden for empty and whitespace-only queries, shown only for a non-empty trimmed query, and announced with aria-live=polite.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-9'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-9.png"
+      }
+    },
+    {
+      "id": "E3",
+      "screen_id": "note-search",
+      "block": "E",
+      "criterion": "Zero is a valid count: a live query with no matches shows Найдено 0 alongside the search-empty explanation rather than hiding the count.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-9'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png"
+      }
+    },
+    {
+      "id": "F1",
+      "screen_id": "note-search",
+      "block": "F",
+      "criterion": "390px hierarchy: composer, search, stacked full-width clear, count, then list; controls are at least 44px tall and there is no horizontal overflow.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-18'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-18.png"
+      }
+    },
+    {
+      "id": "F2",
+      "screen_id": "note-search",
+      "block": "F",
+      "criterion": "1200px hierarchy: centered card, inline search plus clear row, count between search and list, no horizontal overflow.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-18'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png"
+      }
+    },
+    {
+      "id": "G1",
+      "screen_id": "note-search",
+      "block": "G",
+      "criterion": "Keyboard and focus: visible label and accessible name, type=search, aria-controls, visible focus ring, Tab reaches Очистить, and live regions use the intended roles.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-16'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png"
+      }
+    },
+    {
+      "id": "G2",
+      "screen_id": "note-search",
+      "block": "G",
+      "criterion": "512-byte cap communication: the UI filters the loaded list client-side and never sends q, so the server cap produces no hidden UI limit, 400, or dead end for long input.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-17'; cmd:grep -n 'filterNotes\\|/api/notes' web/app.js",
+      "evidence": {
+        "kind": "command",
+        "ref": "web/app.js"
+      }
+    },
+    {
+      "id": "G3",
+      "screen_id": "note-search",
+      "block": "G",
+      "criterion": "No dead ends in audited online states: no-results keeps search input, Очистить, and the composer usable; zero/error states expose a visible next action.",
+      "verdict": "ok",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-2|SEARCH-E2E-10|SEARCH-E2E-12'",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png"
+      }
+    }
+  ],
+  "independence": {
+    "distinct": true,
+    "auditor_session_id": "ses_e44094ddfffeZsHroFCFnDiUWh",
+    "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8"
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 7600,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/feature-brief.md",
+      "doc/идеи/f-v4-note-search/spec/core.md",
+      "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
+      "doc/идеи/f-v4-note-search/prototypes/v6",
+      "doc/идеи/f-v4-note-search/scenario-evidence.json",
+      "doc/идеи/f-v4-note-search/preview-verdict.json",
+      "doc/идеи/f-v4-note-search/screenshots/",
+      "web/index.html",
+      "web/app.js"
+    ]
+  }
+}
