@@ -1,139 +1,140 @@
 {
-  "schema": "orc.code-review/v1",
-  "step": "s22c.adversarial_code_review",
-  "execution_id": "E1546",
+  "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
-  "verdict": "pass",
-  "summary": "Independent adversarial code review of f-v4-note-search at execution-branch tip 8c0f5f1 (worktree /tmp/kilo/E1546; source files byte-identical to a95876d, the commit s22b red-team live-verified on stand test2; the 9723acd..8c0f5f1 range is docs/artifacts only). Verified against spec/core.md and contract-matrix.md: q is trimmed, case-insensitive substring via strings.ToLower on both sides, owner-first scoping (ListNotes(UserID) before the filter, q can only narrow), empty/no-match yields 200 [] (non-nil slices, never null), 401 + WWW-Authenticate: Bearer is checked before method/query handling, URL-decoded q is safe across encoding classes (no panic/500), UI testids present and enforced (notes-search/notes-search-clear/notes-search-empty via TestUISemantics); client-side filtering with no request per keystroke; a single renderNotes() re-applies the active query on load/create/delete/reload; no XSS sinks (textContent/setAttribute only, inert template rows); static error envelopes without secret leakage. go build/vet/test all green (full suite ok 2.833s; 13/13 targeted tests). 0 critical/high confirmed. Findings: 3 low (512-byte q cap undocumented in spec/matrix incl. whitespace>512 -> 400 vs OD-1; per-tab search query persists across account switch without Logout — RT-E1546-1 still open; non-canonical Atoi DELETE ids — RT-08) plus 5 info notes (XSS suspicion refuted; dead note.title branch; invariants.json branch provenance; nginx edge envelope deviations; accepted self-DoS/ToLower cost).",
-  "findings": [
-    {
-      "id": "CR-E1546-01",
-      "severity": "low",
-      "status": "confirmed",
-      "title": "GET /api/notes q length cap (512 bytes -> 400 'query too long') is not documented in spec/core.md or contract-matrix.md",
-      "file": "main.go",
-      "line": 542,
-      "evidence": "handleNotes caps raw q at maxQueryBytes=512 and answers 400 'query too long' (RT-NEW-2 hardening, per the code comment). Spec core.md §1.1 error table and contract-matrix.md rows have no such 400; the cap is recorded only in red-team-attack-log.md:88-89 and TestNotesSearchQueryTooLong. The cap is checked before the trim/empty check, so a whitespace-only q of 513+ bytes yields 400 instead of the OD-1 'all notes' behaviour, and the byte-based cap rejects legitimate long multi-byte queries (512 bytes ≈ 170 Cyrillic runes). No security/data impact; recommend documenting the cap and its boundary semantics in spec/matrix."
-    },
-    {
-      "id": "CR-E1546-02",
-      "severity": "low",
-      "status": "confirmed",
-      "title": "Per-tab search query (sessionStorage notebook.search) survives account switches without Logout — reconfirms red-team RT-E1546-1 (open)",
-      "file": "web/app.js",
-      "line": 173,
-      "evidence": "Successful login (lines 173-178) overwrites TOKEN_KEY/USER_KEY and redirects to /notes without clearing SEARCH_KEY; initNotes() restores the stale query whenever any token is present (line 453). SEARCH_KEY is cleared on no-token init (444), 401 (395), clear click (574) and logout (595) only. Repro: A searches on /notes -> navigates to /login without Logout -> B logs in -> B's search box is pre-filled with A's query. Exposure is the query string only (filtering stays owner-scoped; no note data). SEARCH-E2E-8 covers the no-token path only. Mitigation: clear SEARCH_KEY on successful login or key it per user. RT-E1546-1 status=open, unfixed at tip."
-    },
-    {
-      "id": "CR-E1546-03",
-      "severity": "low",
-      "status": "confirmed",
-      "title": "DELETE /api/notes/{id} accepts non-canonical Atoi forms (007, +5, 0021)",
-      "file": "main.go",
-      "line": 590,
-      "evidence": "strconv.Atoi accepts '+5'/'007'/signed alternate forms; DeleteNote re-scopes to session.UserID so no cross-tenant impact. Red team reconfirmed live on a95876d as RT-08 (DELETE /api/notes/0021, +21, -21 -> owner-scoped 404; 21abc -> 400). Inherited from f-v3, unchanged by this feature; consistent with E1688 CR-F4-01."
-    },
-    {
-      "id": "CR-E1546-04",
-      "severity": "info",
-      "status": "refuted",
-      "title": "Suspected stored XSS via note text rendering",
-      "file": "web/app.js",
-      "line": 341,
-      "evidence": "REFUTED: note.text rendered via textContent (line 341); delete-note aria-label via setAttribute with a numeric id; template rows are inert and cloned (no phantom rows, verified in TestUISemantics); grep of app.js for innerHTML/outerHTML/document.write/eval/new Function returns zero matches. Consistent with E1688 CR-F4-04 and the s22b verdict."
-    },
-    {
-      "id": "CR-E1546-05",
-      "severity": "info",
-      "status": "confirmed",
-      "title": "noteSearchText() matches a note.title field the API does not expose",
-      "file": "web/app.js",
-      "line": 355,
-      "evidence": "The title branch (note.title != null -> String(note.title)) is unreachable today (API wire is {id,text} only, verified by TestWireContract); deliberate future-proofing per the in-code comment; no behaviour impact (undefined -> skipped). No action required."
-    },
-    {
-      "id": "CR-E1546-06",
-      "severity": "info",
-      "status": "confirmed",
-      "title": "invariants.json branch provenance does not match the execution branch",
-      "file": "doc/идеи/f-v4-note-search/invariants.json",
-      "line": 6,
-      "evidence": "execution_id was corrected E9294 -> E1546 in this range (resolving E1688 CR-F4-02), but the branch field still reads 'dev/f-v4-note-search' while the execution ran on 'dev/f-v4-note-search-ae079e5c' (worktree branch orc-exec-E1546). Cosmetic provenance mismatch; the invariant set itself is complete and matches the live tests."
-    },
-    {
-      "id": "CR-E1546-07",
-      "severity": "info",
-      "status": "confirmed",
-      "title": "nginx edge layer answers HTML 400 for NUL-in-URI and 301 for GET /api instead of the app JSON envelope",
-      "file": "deploy (edge layer, not app code)",
-      "line": 0,
-      "evidence": "RT-E1546-2/3: NUL in a path is rejected by the edge/Go net/http (HTML 400, app never reached); GET /api -> 301 -> /api/ -> 404 JSON. App code is correct (handleAPINotFound serves 404 JSON for /api/); deviations are edge-layer cosmetic on RFC-invalid/edge input; traversal probes (e.g. /api/notes/%2e%2e) -> 404 JSON. No security impact; no app-code action required."
-    },
-    {
-      "id": "CR-E1546-08",
-      "severity": "info",
-      "status": "accepted",
-      "title": "Unbounded per-user note count and per-request O(n) ToLower (self-DoS / performance nuance)",
-      "file": "main.go",
-      "line": 551,
-      "evidence": "AddNote has no per-user cap; ListNotes scans all notes per request and per-request strings.ToLower over q and every note text (no full Unicode case folding, by design). In-memory app without persistence; self-DoS only, no external victim. RT-09/RT-10 accepted; search adds the per-request ToLower cost over the f-v3 baseline."
-    }
-  ],
-  "proofs": [
-    {
-      "id": "PR-GO-BUILD-VET-TEST",
-      "command": "cd /tmp/kilo/E1546 && go build ./... && go vet ./... && go test -count=1 ./...",
-      "result": "pass — build OK, vet OK, full suite ok github.com/ukituki-ps/notebook (2.833s)"
-    },
-    {
-      "id": "PR-GO-TARGETED-TEST",
-      "command": "cd /tmp/kilo/E1546 && go test -count=1 -v -run 'TestNotesSearch|TestUISemantics|TestAuthRequired|TestNotesIsolation|TestAuthMethodOrder' .",
-      "result": "pass — 13/13 targeted tests PASS (TestAuthRequired, TestNotesIsolation, TestAuthMethodOrder, TestNotesSearchFinds/NotFound/CaseInsensitive/Isolation/AuthRequired/EmptyQuery/WhitespaceQuery/Encoding/QueryTooLong, TestUISemantics)"
-    },
-    {
-      "id": "PR-SOURCE-IDENTITY",
-      "command": "git diff --stat a95876d 8c0f5f1 -- main.go main_test.go web/ web_ui_test.go",
-      "result": "identical — zero source diff between the s22b live-verified commit and the reviewed tip; the 9723acd..8c0f5f1 range is doc/ + artifacts/ only"
-    },
-    {
-      "id": "PR-GO-RACE",
-      "command": "CGO_ENABLED=1 go test -count=1 -race ./...",
-      "result": "not run — no gcc/cgo toolchain on the reviewer host; concurrency verified by lock-discipline inspection (all Store maps guarded by s.mu; PBKDF2 computed outside the lock; regMu serializes the registration check-hash-insert sequence)"
-    }
-  ],
-  "author": {
-    "model": "deepseek/deepseek-flash",
-    "provider": "deepseek",
-    "session_id": "ses_e492b197fffeN08PUKpdAXLjP8",
-    "role": "step_author"
-  },
-  "author_model": "deepseek/deepseek-flash",
-  "author_provider": "deepseek",
-  "author_session_id": "ses_e492b197fffeN08PUKpdAXLjP8",
-  "code_author_sessions": [
-    "ses_e492b197fffeN08PUKpdAXLjP8"
-  ],
+  "step": "s22c.adversarial_code_review",
   "reviewer": {
     "model": "qwen3.8-fast",
-    "provider": "llama-proxy",
-    "session_id": "PLACEHOLDER_S22C"
+    "provider": "llama-proxy"
   },
-  "reviewer_model": "qwen3.8-fast",
-  "reviewer_provider": "llama-proxy",
-  "reviewer_session_id": "ses_e4907f767ffe2ggtCgNm2loouU",
-  "review_scope": {
-    "worktree": "/tmp/kilo/E1546",
-    "branch": "orc-exec-E1546",
-    "base": "9723acd3e6277c119ac90f8b95fcc0f9bdd7a2a6",
-    "tip": "8c0f5f128ffab55f32f1ff8fc51cc84ab093b05f",
-    "note": "Source files byte-identical between a95876d (s22b stand-verified) and tip 8c0f5f1; dev/f-v4-note-search-ae079e5c branch pointer sits at 738edbb, the review target is the execution-branch tip 8c0f5f1."
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8",
+  "reviewer_session_id": "ses_e43f4a1f8ffeUtE51xTXmkTBp2",
+  "verdict": "pass",
+  "proofs": [
+    {
+      "id": "P1",
+      "command": "go build ./...",
+      "result": "OK exit 0"
+    },
+    {
+      "id": "P2",
+      "command": "go vet ./...",
+      "result": "OK exit 0"
+    },
+    {
+      "id": "P3",
+      "command": "go test -count=1 ./...",
+      "result": "ok 2.841s"
+    },
+    {
+      "id": "P4",
+      "command": "node --check web/app.js",
+      "result": "OK"
+    },
+    {
+      "id": "P5",
+      "command": "npx --no-install playwright test web/e2e/notes-search.spec.js --list",
+      "result": "20 tests"
+    },
+    {
+      "id": "P6",
+      "command": "git diff 5785dc0..HEAD -- main.go main_test.go web_ui_test.go web",
+      "result": "empty: product code identical to 20/20-verified deploy 5785dc0"
+    },
+    {
+      "id": "P7",
+      "command": "grep -rn innerHTML web/",
+      "result": "0 matches"
+    }
+  ],
+  "findings": [
+    {
+      "id": "CR-01",
+      "severity": "medium",
+      "verdict": "confirmed",
+      "file_line": "web/app.js:504-527,583-601,701-723",
+      "text": "Stale in-flight load can overwrite a concurrent successful delete (offline->Проверить сеть->Удалить); transient self-healing UI inconsistency, no data loss/security impact. Recommend generation counter or disable delete while busy."
+    },
+    {
+      "id": "CR-02",
+      "severity": "low",
+      "verdict": "confirmed",
+      "file_line": "web/app.js:348-356,467-484,497",
+      "text": "401 mid-load sets aria-describedby to hidden notes-empty during locked window; cosmetic a11y edge."
+    },
+    {
+      "id": "CR-03",
+      "severity": "low",
+      "verdict": "confirmed",
+      "file_line": "web/app.js:337-339,367-370",
+      "text": "Query cannot be cleared while offline (search+clear disabled); resolves after reconnect."
+    },
+    {
+      "id": "CR-04",
+      "severity": "low",
+      "verdict": "accepted",
+      "file_line": "path1.project.json:22-31,76",
+      "text": "Portable skip-tag detector widened to whole tree; green current tree, keep in mind for non-test build tags."
+    },
+    {
+      "id": "CR-05",
+      "severity": "info",
+      "verdict": "refuted",
+      "file_line": "main.go:33,541-545; main_test.go:1116-1157",
+      "text": "512-byte cap is bytes, evaluated before trim; boundaries pinned."
+    },
+    {
+      "id": "CR-06",
+      "severity": "info",
+      "verdict": "refuted",
+      "file_line": "web/app.js:400-415",
+      "text": "No XSS sink; textContent-only; E2E-15 proves literal rendering."
+    },
+    {
+      "id": "CR-07",
+      "severity": "info",
+      "verdict": "accepted",
+      "file_line": "web/app.js:417-424",
+      "text": "Client search includes note.title (undefined today); harmless future-proofing."
+    },
+    {
+      "id": "CR-08",
+      "severity": "info",
+      "verdict": "accepted",
+      "file_line": "web/app.js:701-711",
+      "text": "Error+offline overlap is a documented UI-GRAPH transition, exitable."
+    },
+    {
+      "id": "CR-09",
+      "severity": "info",
+      "verdict": "refuted",
+      "file_line": "code-review.json (E1546)",
+      "text": "E1546 findings closed; DELETE Atoi laxness is inherited/out of scope."
+    }
+  ],
+  "summary": {
+    "open_critical_high": 0,
+    "blockers": 0,
+    "medium_confirmed": 1
   },
-  "test_results": {
-    "go_build": "pass",
-    "go_vet": "pass",
-    "go_test_full": "pass — ok github.com/ukituki-ps/notebook (2.833s)",
-    "go_test_targeted": "pass — 13/13",
-    "go_test_race": "n/a (no gcc/cgo toolchain on reviewer host; lock discipline verified by inspection)"
-  },
-  "checked_at": "2026-11-07T17:09:16Z"
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 24000,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/spec/core.md",
+      "doc/идеи/f-v4-note-search/invariants.json",
+      "doc/идеи/f-v4-note-search/ds.lock.json",
+      "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
+      "doc/идеи/f-v4-note-search/preview-verdict.json",
+      "web/app.js",
+      "web/index.html",
+      "main.go",
+      "main_test.go",
+      "web_ui_test.go",
+      "web/e2e/notes-search.spec.js",
+      "path1.project.json",
+      "audit/fault-catalog/notebook.yaml"
+    ]
+  }
 }
