@@ -1,0 +1,4 @@
+{
+  "schema_version": "1.0",
+  "expected_behavior": "Owner-scoped note search: 30/30 E2E and go test ./... pass; CR-01 stale load does not resurrect a deleted note."
+}

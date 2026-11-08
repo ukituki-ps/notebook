@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0",
+  "actual_behavior": "Owner-scoped note search: 30/30 E2E and go test ./... pass; CR-01 stale load does not resurrect a deleted note.",
+  "ci_hash": "sha256:03b57899e0218076d8fd68981597d8d9c0d6d83f59b0d401d00dd16c62e1f2a9",
+  "evidence": "doc/идеи/f-v4-note-search/platform-dev-validation/pre-run-local-evidence.txt"
+}
