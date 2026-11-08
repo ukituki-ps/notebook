@@ -1,26 +1,19 @@
-# Actualized UI graph (s21, from-code) — f-v4-note-search.
-# Base: s04 planned graph (37648cb). The notes screen is actualized with the
-# search controls delivered by unit notebook-search-ui (T0002) and integrated
-# at s20a; auth/register/notes components are unchanged from f-v3.
+# UI-граф (planned) — f-v4-note-search, экран note-search
+# Источник: s04.graph_builder_design (E0809, from-design) по:
+#   visualized-brief.md, scope-report.md, design-impact.md, ds.lock.json,
+#   component-refs.json, component-map.yaml, design-gaps.json,
+#   prototypes/v6/manifest.json, prototypes/v6/prototype-review.json,
+#   units/note-search/proto.json, web/index.html, web/app.js.
+# Схема/стиль: arch/structure/ui-pages/UI-GRAPH.yaml (pages/components/edges),
+# детализация узлов — как в arch/structure/ui-pages/notes.yaml (id/kind/label/selector).
+# Это ПЛАНОВЫЙ граф (status: planned); актуализация по коду — на s21.
 schema: ui-graph/v1
 feature_id: f-v4-note-search
-status: actualized
+status: planned
 platform: web
-execution_id: E1546
-actualized_from:
-  branch: dev/f-v4-note-search-ae079e5c
-  base_commit: a95876da78b26233045cd4d54df8b712756675af
-  working_tree: false
-  source_files:
-    - web/index.html
-    - web/app.js
-    - web/app.css
-  note: >-
-    Actualized at s21 for E1546 from the integrated and deployed build a95876d:
-    web/index.html adds notes-search, notes-search-clear and
-    notes-search-empty; web/app.js keeps the loaded list in `notes` and
-    re-renders through one filter (load, create, delete, reload). E2E 15/15
-    on test2 (SEARCH-E2E-1..8 incl 7/8).
+execution_id: E0809
+step: s04.graph_builder_design
+source: prototype
 source_roots:
   - web
 source_files:
@@ -28,173 +21,431 @@ source_files:
   - web/app.js
   - web/app.css
 pages:
-  - id: login
-    route: /login
-    screen_attr: login
-    components: [login-card, login-form, login-error, login-link]
-  - id: register
-    route: /register
-    screen_attr: register
-    components: [register-card, register-form, register-error, register-link]
-  - id: notes
-    route: /notes
+  - id: note-search
+    page_id: ui-page-note-search
+    route: /
     screen_attr: notes
-    components:
-      - notes-header
-      - notes-search
-      - notes-search-clear
-      - note-form
-      - notes-list
-      - note-item
-      - notes-empty
-      - notes-search-empty
-      - notes-loading
-      - notes-error
-    selectors:
-      - testid: notes-search
-        kind: input
-        role: searchbox
-        label: "Поиск заметок"
-        purpose: >-
-          Live search over the already loaded owner-scoped notes list;
-          type="search", aria-controls="notes-list", data-testid is part of the
-          feature contract.
-      - testid: notes-search-clear
-        kind: button
-        role: button
-        label: "Очистить поиск (clear)"
-        purpose: >-
-          Clears the query and restores the full loaded list; hidden while the
-          query is empty, visible when a query is active.
-      - testid: notes-search-empty
-        kind: text
-        role: status
-        label: "Ничего не найдено."
-        purpose: >-
-          role=status/aria-live=polite; shown only when the trimmed query is
-          non-empty and the filtered list is empty; never replaces notes-empty
-          for a genuinely empty server list.
-    states:
-      - id: search-idle
-        detail: >-
-          Query empty/whitespace: all loaded notes are rendered (list or
-          notes-empty); notes-search-empty hidden; notes-search-clear hidden.
-      - id: search-filtering
-        detail: >-
-          Trimmed query non-empty: the loaded owner-scoped list is filtered
-          client-side (case-insensitive substring); no per-keystroke request.
-      - id: search-results
-        detail: >-
-          Non-empty query with >=1 match: matching note-item rows visible,
-          non-matching rows hidden/removed, notes-search-empty hidden.
-      - id: search-empty
-        detail: >-
-          Non-empty query with 0 matches: notes-search-empty visible, no
-          note-item visible, notes-empty hidden, search input remains usable.
-      - id: search-cleared
-        detail: >-
-          notes-search-clear (or clearing the input) returns to search-idle and
-          restores the full loaded list.
-      - id: search-after-mutation
-        detail: >-
-          POST 201 / DELETE 204 while a query is active re-applies the same
-          filter; a non-matching new note stays hidden, a matching one appears,
-          and deleting the last match shows notes-search-empty.
-      - id: loading
-        detail: >-
-          Notes load in progress: notes-loading visible, list/empty hidden,
-          note-form disabled; search controls are not usable until loaded.
-      - id: empty
-        detail: >-
-          Server returned GET 200 [] with an empty query: notes-empty visible,
-          notes-list hidden.
-      - id: list
-        detail: >-
-          GET 200 [..]: notes-list visible with one note-item per returned note;
-          no phantom/hardcoded rows.
-      - id: error
-        detail: >-
-          notes-error visible for GET !=200 / network errors and POST/DELETE
-          failures; existing f-v3 error semantics unchanged.
-      - id: unauthorized
-        detail: >-
-          401 or missing token: clear notebook.token/user, notes-error
-          "Сессия истекла...", redirect to /login; unchanged from f-v3.
-edges:
-  - from: register
-    to: login
-    kind: navigation
-    trigger: register-success
-  - from: login
-    to: notes
-    kind: navigation
-    trigger: login-success
-  - from: notes
-    to: login
-    kind: navigation
-    trigger: 401-or-logout
-  - from: notes
-    to: notes
-    kind: self-update
-    trigger: add-or-delete
-  - from: notes
-    to: notes
-    kind: self-update
-    trigger: "search-input: non-empty trimmed q filters the loaded list (no request)"
-  - from: notes
-    to: notes
-    kind: self-update
-    trigger: "search-clear: empty query restores the full loaded list"
-  - from: notes
-    to: notes
-    kind: self-update
-    trigger: "POST 201 / DELETE 204 with an active query re-applies the filter"
-testids:
-  - notes-search
-  - notes-search-clear
-  - notes-search-empty
-  - notes-header
-  - user-name
-  - logout
-  - note-form
-  - note-input
-  - add-note
-  - notes-error
-  - notes-loading
-  - notes-empty
-  - notes-list
-  - note-item
-  - delete-note
-testids_source: web/index.html
-testids_count: 15
-evidence:
-  - id: SEARCH-E2E-1
-    page: notes
-    title: "search finds matching note"
-    file: web/e2e/notes-search.spec.js
-  - id: SEARCH-E2E-2
-    page: notes
-    title: "non-matching query shows the search empty state"
-    file: web/e2e/notes-search.spec.js
-  - id: SEARCH-E2E-3
-    page: notes
-    title: "match is case-insensitive"
-    file: web/e2e/notes-search.spec.js
-  - id: SEARCH-E2E-4
-    page: notes
-    title: "clear restores the full list"
-    file: web/e2e/notes-search.spec.js
-  - id: SEARCH-E2E-5
-    page: notes
-    title: "create while query active re-applies the filter"
-    file: web/e2e/notes-search.spec.js
-  - id: SEARCH-E2E-6
-    page: notes
-    title: "delete while query active keeps the filter consistent"
-    file: web/e2e/notes-search.spec.js
+    screen: note-search
+    status: planned
+    source: prototype
+    graph_ref: arch/frontend/pages/note-search.yaml
+    page_file: arch/frontend/pages/note-search.yaml
+    prototype: v6
+    breakpoints: [390, 1200]
+    source_files:
+      - web/index.html
+      - web/app.js
+      - web/app.css
 
-# Search state machine (s21, from-code contract):
-# idle -> filtering (trimmed q non-empty) -> results | search-empty -> clear.
-# notes-search stays visible and usable in every search state; create/delete
-# re-render through the same filter function. notes-empty remains reserved for
-# a genuinely empty server list.
+# Узлы экрана: 18 (page + 12 registry-backed/композиции + 2 path6 + 3 state-варианта
+# сверх page/структуры + offline/retry). Каждый узел — из прототипа v6 (source: prototype).
+nodes:
+  - id: note-search
+    kind: page
+    label: "Экран поиска заметок (route /)"
+    component: page
+    registry_id: null
+    selector: "[data-screen=notes]"
+    states: [idle, results, no-results, empty, loading, error, offline]
+    source: prototype
+
+  - id: n-notes-header
+    kind: header
+    label: "Шапка (Notebook, username, Logout)"
+    component: patterns/notes-header
+    registry_id: patterns/notes-header
+    selector: ".notes-header"
+    states: [default]
+    source: prototype
+
+  - id: n-note-form
+    kind: form
+    label: "Новая заметка"
+    component: composition
+    registry_id: null
+    composition: [primitives/textarea, primitives/button]
+    selector: ".note-form"
+    states: [default, focus, invalid]
+    source: prototype
+
+  - id: n-note-textarea
+    kind: textarea
+    label: "Текст заметки"
+    component: primitives/textarea
+    registry_id: primitives/textarea
+    selector: "textarea"
+    states: [default, focus, invalid]
+    source: prototype
+
+  - id: n-note-add
+    kind: button
+    label: "Add"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: "[data-testid=add-note]"
+    states: [default, hover, focus, disabled]
+    source: prototype
+
+  - id: n-search-field
+    kind: input
+    label: "Поиск заметок"
+    component: patterns/search-field
+    registry_id: patterns/search-field
+    composed_primitives: [primitives/input]
+    selector: ".notes-search"
+    states: [default, focus, disabled]
+    design_gap: GAP-2
+    source: prototype
+
+  - id: n-search-clear
+    kind: button
+    label: "Очистить поиск (Clear)"
+    component: patterns/search-clear
+    registry_id: patterns/search-clear
+    selector: ".notes-search-clear"
+    states: [default, focus]
+    source: prototype
+
+  - id: n-count
+    kind: text
+    label: "Найдено N"
+    component: null
+    registry_id: null
+    path6: true
+    design_gap: GAP-1
+    selector: "[data-testid=notes-search-count]"
+    states: [visible, zero, hidden]
+    source: prototype
+
+  - id: n-notes-list
+    kind: list
+    label: "Список заметок (role=list)"
+    component: patterns/notes-list
+    registry_id: patterns/notes-list
+    selector: ".notes-list"
+    states: [default, busy]
+    source: prototype
+
+  - id: n-note-item
+    kind: list-item
+    label: "Заметка: #<id> <text> (role=listitem)"
+    component: patterns/note-item
+    registry_id: patterns/note-item
+    selector: ".note-item"
+    states: [default, pending]
+    source: prototype
+
+  - id: n-note-text
+    kind: text
+    label: "#<id> <text>"
+    component: null
+    registry_id: null
+    selector: ".note-text"
+    states: [default]
+    source: prototype
+
+  - id: n-delete
+    kind: button
+    label: "Delete (aria-label=«Удалить заметку #<id>»)"
+    component: null
+    registry_id: null
+    path6: true
+    design_gap: GAP-3
+    selector: ".delete-note"
+    existing_css: "web/app.css:248-257"
+    states: [default, hover, focus, disabled]
+    source: prototype
+
+  - id: n-loading
+    kind: state
+    label: "Загрузка..."
+    component: states/loading
+    registry_id: states/loading
+    selector: "[data-testid=notes-loading]"
+    states: [loading]
+    source: prototype
+
+  - id: n-empty
+    kind: state
+    label: "Пока нет заметок. Добавьте первую выше."
+    component: states/empty
+    registry_id: states/empty
+    selector: "[data-testid=notes-empty]"
+    states: [empty]
+    source: prototype
+
+  - id: n-search-empty
+    kind: state
+    label: "Ничего не найдено. Сократите запрос или очистите поиск."
+    component: states/search-empty
+    registry_id: states/search-empty
+    selector: "[data-testid=notes-search-empty]"
+    states: [no-results]
+    source: prototype
+
+  - id: n-error
+    kind: alert
+    label: "Не удалось загрузить заметки. Попробуйте ещё раз."
+    component: primitives/error
+    registry_id: primitives/error
+    selector: ".error"
+    states: [error]
+    source: prototype
+
+  - id: n-offline
+    kind: banner
+    label: "Нет сети — показаны загруженные заметки."
+    component: composition
+    registry_id: patterns/note-item
+    composition: [patterns/note-item, primitives/button]
+    composition_note: >-
+      Второе вхождение patterns/note-item с muted-текстом и кнопкой
+      primitives/button «Проверить сеть» ([data-testid=notes-offline-check]);
+      отдельный node для кнопки не выделяется — она часть композиции баннера.
+    selector: "[data-testid=notes-offline]"
+    states: [offline]
+    source: prototype
+
+  - id: n-retry
+    kind: button
+    label: "Повторить"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: "[data-testid=notes-retry]"
+    states: [default, hover, focus, disabled]
+    source: prototype
+
+# Состояния экрана (state machine) — из units/note-search/proto.json.
+# normal — алиас idle (8 имён, 7 рендерящихся состояний).
+states:
+  - id: normal
+    alias_of: idle
+    description: "Normal view (alias of idle): пустой запрос, список заметок."
+  - id: idle
+    description: "Пустой запрос: форма, поиск и все загруженные заметки; clear/count скрыты."
+  - id: results
+    description: "Непустой запрос с совпадениями: отфильтрованный список, clear и count видимы."
+  - id: no-results
+    description: "Непустой запрос без совпадений при непустой коллекции: search-empty, count=0, список скрыт."
+  - id: empty
+    description: "GET 200 [] при пустом запросе: notes-empty, список скрыт."
+  - id: loading
+    description: "Загрузка: notes-loading, поиск disabled, count/list скрыты."
+  - id: error
+    description: "Ошибка загрузки: notes-error + notes-retry, поиск disabled."
+  - id: offline
+    description: "Нет сети: offline-banner + кнопка «Проверить сеть», поиск disabled, загруженные заметки видны."
+
+# Рёбра: contains (структура), renders (что показано), uses (DS-составляющие),
+# state-transition (переходы состояния экрана).
+# В state-transition узлы состояний адресуются как state-<id> (см. states ниже);
+# state-any — любое состояние. uses-рёбра с to_kind=component/css/token
+# ссылаются на registry id / DS-код / токен, а не на DOM-узел.
+state_ref_prefix: "state-"
+edges:
+  # --- contains: структура экрана ---
+  - from: note-search
+    to: n-notes-header
+    kind: contains
+  - from: note-search
+    to: n-note-form
+    kind: contains
+  - from: n-note-form
+    to: n-note-textarea
+    kind: contains
+  - from: n-note-form
+    to: n-note-add
+    kind: contains
+  - from: note-search
+    to: n-search-field
+    kind: contains
+  - from: n-search-field
+    to: n-search-clear
+    kind: contains
+    trigger: "clear видим, когда trimmed query непустой"
+  - from: note-search
+    to: n-notes-list
+    kind: contains
+
+  # --- renders: условный рендер ---
+  - from: n-notes-list
+    to: n-note-item
+    kind: renders
+    trigger: "по одному note-item на каждую видимую заметку"
+  - from: n-note-item
+    to: n-note-text
+    kind: renders
+    trigger: "текст строки #<id> <text>"
+  - from: n-note-item
+    to: n-delete
+    kind: renders
+    trigger: "кнопка удаления в каждой строке (idle/results/offline)"
+  - from: note-search
+    to: n-count
+    kind: renders
+    trigger: "count видим только в results/no-results; hidden в idle/normal/empty/loading/error/offline"
+  - from: state-idle
+    to: n-notes-list
+    kind: renders
+    trigger: "все загруженные заметки"
+  - from: state-results
+    to: n-notes-list
+    kind: renders
+    trigger: "только совпадающие заметки"
+  - from: state-no-results
+    to: n-search-empty
+    kind: renders
+    trigger: "role=status, aria-live=polite"
+  - from: state-empty
+    to: n-empty
+    kind: renders
+  - from: state-loading
+    to: n-loading
+    kind: renders
+    trigger: "role=status, aria-live=polite; notes-list aria-busy=true"
+  - from: state-error
+    to: n-error
+    kind: renders
+    trigger: "role=alert"
+  - from: state-error
+    to: n-retry
+    kind: renders
+    trigger: "error -> retry"
+  - from: state-offline
+    to: n-offline
+    kind: renders
+    trigger: "offline -> banner"
+
+  # --- uses: DS-составляющие (component/tokens/css) ---
+  - from: n-note-form
+    to: primitives/textarea
+    kind: uses
+    to_kind: component
+  - from: n-note-form
+    to: primitives/button
+    kind: uses
+    to_kind: component
+  - from: n-search-field
+    to: primitives/input
+    kind: uses
+    to_kind: component
+    trigger: "input внутри .notes-search"
+  - from: n-offline
+    to: patterns/note-item
+    kind: uses
+    to_kind: component
+    trigger: "баннер — второе вхождение note-item"
+  - from: n-offline
+    to: primitives/button
+    kind: uses
+    to_kind: component
+    trigger: "«Проверить сеть» ([data-testid=notes-offline-check])"
+  - from: n-retry
+    to: primitives/button
+    kind: uses
+    to_kind: component
+  - from: n-delete
+    to: "web/app.css:248-257"
+    kind: uses
+    to_kind: css
+    trigger: "path6 GAP-3: danger-вариант .delete-note уже в DS-коде, нет записи в registry"
+  - from: n-count
+    to: "design/tokens.json#--muted"
+    kind: uses
+    to_kind: token
+    trigger: "path6 GAP-1: .muted на --card, скрытие через [hidden]"
+
+  # --- state transitions ---
+  - from: state-idle
+    to: state-results
+    kind: state-transition
+    trigger: "input: непустой trimmed query, >=1 совпадение"
+  - from: state-idle
+    to: state-no-results
+    kind: state-transition
+    trigger: "input: непустой query, непустая коллекция, 0 совпадений"
+  - from: state-results
+    to: state-no-results
+    kind: state-transition
+    trigger: "запрос сужается до 0 совпадений"
+  - from: state-no-results
+    to: state-results
+    kind: state-transition
+    trigger: "запрос расширяется / появляются совпадения"
+  - from: state-results
+    to: state-idle
+    kind: state-transition
+    trigger: "click clear / пустой query"
+  - from: state-no-results
+    to: state-idle
+    kind: state-transition
+    trigger: "click clear / пустой query"
+  - from: state-idle
+    to: state-empty
+    kind: state-transition
+    trigger: "GET 200 [] при пустом query"
+  - from: state-any
+    to: state-loading
+    kind: state-transition
+    trigger: "старт загрузки/перезагрузки GET /api/notes"
+  - from: state-loading
+    to: state-idle
+    kind: state-transition
+    trigger: "GET 200 [..] при пустом query"
+  - from: state-loading
+    to: state-results
+    kind: state-transition
+    trigger: "GET 200 + восстановленный непустой query с совпадениями"
+  - from: state-loading
+    to: state-no-results
+    kind: state-transition
+    trigger: "GET 200 + восстановленный непустой query без совпадений"
+  - from: state-loading
+    to: state-empty
+    kind: state-transition
+    trigger: "GET 200 [] при пустом query"
+  - from: state-loading
+    to: state-error
+    kind: state-transition
+    trigger: "GET != 200 / network error"
+  - from: state-error
+    to: state-loading
+    kind: state-transition
+    trigger: "click [data-testid=notes-retry] -> повторный GET"
+  - from: state-any
+    to: state-offline
+    kind: state-transition
+    trigger: "network offline / fetch rejection"
+  - from: state-offline
+    to: state-idle
+    kind: state-transition
+    trigger: "сеть восстановлена -> загруженные заметки"
+
+# Трассируемость артефакта.
+traceability:
+  ds_release: "1.0.0"
+  ds_digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
+  ds_constraint: "=1.0.0"
+  ds_lock: doc/идеи/f-v4-note-search/ds.lock.json
+  design_impact: doc/идеи/f-v4-note-search/design-impact.md
+  component_refs: doc/идеи/f-v4-note-search/component-refs.json
+  component_map: doc/идеи/f-v4-note-search/component-map.yaml
+  design_gaps_file: doc/идеи/f-v4-note-search/design-gaps.json
+  prototype:
+    version: v6
+    manifest: doc/идеи/f-v4-note-search/prototypes/v6/manifest.json
+    manifest_sha256: "sha256:e83fc746d075b6c270b2aaadd0954b77b73454a91a8befe83840169f5ddf0a6a"
+    review: doc/идеи/f-v4-note-search/prototypes/v6/prototype-review.json
+    review_verdict: approved
+    proto_json: doc/идеи/f-v4-note-search/units/note-search/proto.json
+    fig_sha256: "sha256:88e91fae25f0820d21e0b8ef7c22402c4834ce852c884bb715c5597633862f3a"
+  screen: note-search
+  route: /
+  breakpoints: [390, 1200]
+  states_count: 7
+  state_aliases:
+    normal: idle
+  path6_required: [n-count, n-delete]
+  design_gaps: [GAP-1, GAP-2, GAP-3]
+  registry_components: 12
+  local_instances: 0
