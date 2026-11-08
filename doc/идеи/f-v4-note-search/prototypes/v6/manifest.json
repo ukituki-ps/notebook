@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "version": "v6",
+  "created_at": "2026-11-08T12:30:00Z",
+  "design_system": {
+    "version": "1.0.0",
+    "digest": "sha256:96213f0f57cd23d4f0fd718f57b750f38da088861f68f864c10be6854e1f9fb5"
+  },
+  "s3": {
+    "bucket": "openpencil",
+    "prefix": "open_pencil_storage/canvases/"
+  },
+  "documents": [
+    {
+      "screen_id": "note-search",
+      "document_id": "f-v4-note-search--note-search-v6",
+      "s3_key": "open_pencil_storage/canvases/f-v4-note-search--note-search-v6.fig",
+      "sha256": "sha256:0eff1621620ac061ded70c74fea10e010d91ad047cea0b3e3e70fb6a46d267b4",
+      "size": 138853,
+      "exports": [
+        "exports/note-search-mobile-normal.png",
+        "exports/note-search-mobile-results.png",
+        "exports/note-search-mobile-empty.png",
+        "exports/note-search-mobile-loading.png",
+        "exports/note-search-mobile-error.png",
+        "exports/note-search-mobile-offline.png",
+        "exports/note-search-mobile-offline-zero.png"
+      ]
+    }
+  ],
+  "review": {
+    "path": "prototype-review.json",
+    "verdict": "approved"
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 1234
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "prototype": {
+    "version": "v6",
+    "manifest_path": "doc/идеи/f-v4-note-search/prototypes/v6/manifest.json",
+    "manifest_sha256": "sha256:d238756acee93d630dff792c4e49737836c766f60f330359a3b5c481e727c038",
+    "fig_sha256": "sha256:0eff1621620ac061ded70c74fea10e010d91ad047cea0b3e3e70fb6a46d267b4",
+    "s3_bucket": "openpencil",
+    "s3_key": "open_pencil_storage/canvases/f-v4-note-search--note-search-v6.fig"
+  },
+  "reviewer": {
+    "name": "owner",
+    "role": "human",
+    "session_id": "ses_human_e4076"
+  },
+  "verdict": {
+    "status": "approved",
+    "decided_at": "2026-11-08T12:30:00Z"
+  },
+  "summary": {
+    "blockers_open": 0,
+    "majors_open": 0,
+    "minors_open": 0,
+    "items_total": 6
+  },
+  "items": [
+    {
+      "id": "UI-V6-01",
+      "screen_id": "note-search",
+      "block": "visual-quality",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "Kubiki DS components, 390/1200, all states, lint 0/0",
+      "comment": "Independent designer review v6: accept 0 blockers/0 majors.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/note-search-mobile-normal.png"
+      }
+    },
+    {
+      "id": "UI-V6-02",
+      "screen_id": "note-search",
+      "block": "a11y",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "Contrast, focus, labels, hit areas",
+      "comment": "Lint accessibility 0; non-text contrast >=3:1; touch >=44.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/note-search-mobile-results.png"
+      }
+    },
+    {
+      "id": "UX-V6-01",
+      "screen_id": "note-search",
+      "block": "task-success",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "Search/first action/empty/error/offline/offline-zero",
+      "comment": "Independent product review v5/v6: accept 0 blockers/0 majors.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/note-search-mobile-empty.png"
+      }
+    },
+    {
+      "id": "UI-V6-03",
+      "screen_id": "note-search",
+      "block": "ds-usage",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "DS instances, tokens, no detached components",
+      "comment": "Kubiki 1.0.0; tag chip instances match master; tokens bound.",
+      "evidence": {
+        "kind": "fig",
+        "ref": "open_pencil_storage/canvases/f-v4-note-search--note-search-v6.fig"
+      }
+    },
+    {
+      "id": "UI-V6-04",
+      "screen_id": "note-search",
+      "block": "manifest",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "Per-screen manifest, actions/testid, counters",
+      "comment": "Manifest v6 complete; counters 4/12/3 consistent.",
+      "evidence": {
+        "kind": "manifest",
+        "ref": "manifest.json"
+      }
+    },
+    {
+      "id": "UI-V6-05",
+      "screen_id": "note-search",
+      "block": "visual-quality",
+      "severity": "info",
+      "status": "accepted",
+      "criterion": "No residual visual rows",
+      "comment": "Optional document-wide literal cleanup #157F47 remains non-blocking; rendered #137A43.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/note-search-mobile-offline.png"
+      }
+    }
+  ],
+  "independence": {
+    "author_session_id": "ses_proto_e4076",
+    "reviewer_session_id": "ses_human_e4076",
+    "distinct": true
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 1234
+  }
+}
