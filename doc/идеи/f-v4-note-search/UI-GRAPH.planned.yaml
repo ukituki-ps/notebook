@@ -1,0 +1,138 @@
+schema: ui-graph/v1
+feature_id: f-v4-note-search
+screen_id: note-search
+status: planned
+execution_id: E6177
+step: s04.graph_builder_design
+source: design
+design_system:
+  version: "1.0.1"
+  digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  code: web/app.css
+prototype: prototypes/v7
+nodes:
+  - id: app-shell
+    kind: layout
+    selector: .app
+    component_ref: layout/app-shell
+  - id: notes-header
+    kind: region
+    selector: .topbar
+    states: [default]
+  - id: brand
+    kind: text
+    selector: .brand
+    label: Notebook
+  - id: logout
+    kind: action
+    selector: .logout
+    label: Выйти
+  - id: note-form
+    kind: form
+    selector: .note-form
+    states: [idle, disabled]
+  - id: note-input
+    kind: input
+    selector: "#note-text"
+    data_testids: [note-input]
+    states: [default, focus, disabled]
+  - id: add-note
+    kind: button
+    selector: "#add-note"
+    data_testids: [add-note]
+    states: [default, disabled, pending]
+  - id: search-field
+    kind: input
+    selector: "#notes-search"
+    data_testids: [notes-search]
+    states: [default, focus, disabled]
+  - id: search-clear
+    kind: button
+    selector: ".notes-search-row button"
+    data_testids: [notes-search-clear]
+    states: [default, hidden, disabled]
+  - id: search-count
+    kind: text
+    selector: "#notes-search-count"
+    data_testids: [notes-search-count]
+    states: [visible, hidden]
+  - id: notes-list
+    kind: list
+    selector: "#notes-list"
+    data_testids: [notes-list]
+    states: [visible, hidden, busy]
+  - id: note-item
+    kind: list-item
+    selector: ".note-item"
+    data_testids: [note-item]
+    states: [default, hidden]
+  - id: delete-note
+    kind: button
+    selector: ".delete-note"
+    states: [default, pending, disabled, hidden]
+  - id: loading
+    kind: status
+    selector: "#notes-loading"
+    data_testids: [notes-loading]
+    states: [visible, hidden]
+  - id: base-empty
+    kind: message
+    selector: "#notes-empty"
+    data_testids: [notes-empty]
+    states: [visible, hidden]
+  - id: search-empty
+    kind: message
+    selector: "#notes-search-empty"
+    data_testids: [notes-search-empty]
+    states: [visible, hidden]
+  - id: error
+    kind: alert
+    selector: "#notes-error"
+    data_testids: [notes-error]
+    states: [visible, hidden]
+  - id: retry
+    kind: button
+    selector: "#notes-retry"
+    data_testids: [notes-retry]
+    states: [visible, hidden]
+  - id: offline
+    kind: banner
+    selector: "#notes-offline"
+    data_testids: [notes-offline]
+    states: [visible, hidden]
+  - id: offline-check
+    kind: button
+    selector: "#notes-offline-check"
+    data_testids: [notes-offline-check]
+    states: [visible, hidden]
+edges:
+  - from: note-input
+    to: add-note
+    kind: enables
+  - from: search-field
+    to: search-clear
+    kind: reveals
+  - from: search-field
+    to: notes-list
+    kind: filters
+  - from: search-field
+    to: search-count
+    kind: updates
+  - from: note-item
+    to: delete-note
+    kind: contains
+  - from: error
+    to: retry
+    kind: offers
+  - from: offline
+    to: offline-check
+    kind: offers
+states:
+  idle: [notes-header, note-form, search-field, notes-list]
+  results: [search-field, search-clear, search-count, notes-list]
+  no-results: [search-field, search-clear, search-count, search-empty]
+  empty: [note-form, base-empty]
+  loading: [loading]
+  error: [error, retry]
+  offline: [offline, offline-check, notes-list]
+  offline-zero: [offline, offline-check, base-empty]
