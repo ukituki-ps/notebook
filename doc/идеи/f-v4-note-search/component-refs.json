@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "ds_release": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "screens": [
+    {
+      "screen_id": "note-search",
+      "ds_release": "1.0.0",
+      "local_instances": [],
+      "components": [
+        {
+          "node_id": "n-notes-header",
+          "registry_id": "patterns/notes-header",
+          "selector": ".notes-header"
+        },
+        {
+          "node_id": "n-note-form",
+          "registry_id": null,
+          "selector": ".note-form",
+          "resolution": "composition",
+          "composition": ["primitives/textarea", "primitives/button"],
+          "note": "proto.json ссылается на patterns/note-form — такого registry id в DS 1.0.0 нет; композит существующих примитивов."
+        },
+        {
+          "node_id": "n-note-textarea",
+          "registry_id": "primitives/textarea",
+          "selector": "textarea"
+        },
+        {
+          "node_id": "n-note-add",
+          "registry_id": "primitives/button",
+          "selector": "[data-testid=add-note]"
+        },
+        {
+          "node_id": "n-search-field",
+          "registry_id": "patterns/search-field",
+          "selector": ".notes-search"
+        },
+        {
+          "node_id": "n-search-clear",
+          "registry_id": "patterns/search-clear",
+          "selector": ".notes-search-clear"
+        },
+        {
+          "node_id": "n-count",
+          "registry_id": null,
+          "selector": "[data-testid=notes-search-count]",
+          "resolution": "path6_required",
+          "design_gap": "GAP-1"
+        },
+        {
+          "node_id": "n-loading",
+          "registry_id": "states/loading",
+          "selector": "[data-testid=notes-loading]"
+        },
+        {
+          "node_id": "n-empty",
+          "registry_id": "states/empty",
+          "selector": "[data-testid=notes-empty]"
+        },
+        {
+          "node_id": "n-search-empty",
+          "registry_id": "states/search-empty",
+          "selector": "[data-testid=notes-search-empty]"
+        },
+        {
+          "node_id": "n-error",
+          "registry_id": "primitives/error",
+          "selector": ".error"
+        },
+        {
+          "node_id": "n-retry",
+          "registry_id": "primitives/button",
+          "selector": "[data-testid=notes-retry]",
+          "resolution": "reuse"
+        },
+        {
+          "node_id": "n-offline",
+          "registry_id": "patterns/note-item",
+          "selector": "[data-testid=notes-offline]",
+          "resolution": "composition",
+          "composition": ["patterns/note-item", "primitives/button"]
+        },
+        {
+          "node_id": "n-offline-check",
+          "registry_id": "primitives/button",
+          "selector": "[data-testid=notes-offline-check]",
+          "resolution": "reuse"
+        },
+        {
+          "node_id": "n-notes-list",
+          "registry_id": "patterns/notes-list",
+          "selector": ".notes-list"
+        },
+        {
+          "node_id": "n-note-item",
+          "registry_id": "patterns/note-item",
+          "selector": ".note-item"
+        },
+        {
+          "node_id": "n-button",
+          "registry_id": "primitives/button",
+          "selector": "button"
+        },
+        {
+          "node_id": "n-delete",
+          "registry_id": null,
+          "selector": ".delete-note",
+          "resolution": "path6_required",
+          "design_gap": "GAP-3",
+          "existing_css": "web/app.css:248-257"
+        }
+      ],
+      "path6_required": ["n-count", "n-delete"]
+    }
+  ],
+  "composed_components": [
+    {
+      "registry_id": "primitives/input",
+      "selector": "input",
+      "composed_in": "n-search-field",
+      "states": ["default", "focus", "invalid"],
+      "reason": "Поле поиска рендерится как <input> внутри .notes-search, но самостоятельного node_id в proto.json нет. Учитывается в ds-lock.components как используемый registry id; на нём завязаны focus/disabled и GAP-2."
+    }
+  ],
+  "path6_required_detail": [
+    {
+      "node_id": "n-count",
+      "selector": "[data-testid=notes-search-count]",
+      "kind": "count-label",
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0: ни один из 14 registry_id не описывает count label (ни селектором, ни состояниями). После UI-review счётчик виден только при непустом запросе (скрыт в idle/normal/empty/loading/error/offline) — это поведение задаётся логикой экрана, а не DS."
+    },
+    {
+      "node_id": "n-delete",
+      "selector": ".delete-note",
+      "kind": "registry-omission",
+      "reason": "Danger-вариант кнопки удаления .delete-note реально существует в web/app.css (248–257: background transparent, border-color/color --danger #B42318, hover background --danger-bg #FEF3F2), но не зарегистрирован в design/registry.json 1.0.0 — это пропуск в реестре, а не отсутствие стиля. Контраст --danger на --card 6.57:1, на hover-фоне 6.07:1 (AA). Registry id не присваивается."
+    }
+  ],
+  "path6_resolved_by_reuse": [
+    {
+      "node_id": "n-retry",
+      "registry_id": "primitives/button",
+      "reason": "Отдельного компонента нет и не требуется: кнопка «Повторить» — экземпляр primitives/button (selector button, states default/hover/focus/disabled) без локальных модификаций."
+    },
+    {
+      "node_id": "n-offline-check",
+      "registry_id": "primitives/button",
+      "reason": "Кнопка «Проверить сеть» — экземпляр primitives/button (selector button, states default/hover/focus/disabled) внутри композиции n-offline; локальных модификаций нет."
+    }
+  ],
+  "summary": {
+    "local_instances": 0,
+    "nodes_total": 18,
+    "registry_components": 12,
+    "path6_required": 2
+  }
+}
