@@ -184,3 +184,5 @@ Supplementary ORC evidence: `go test -count=1 ./...` via `orc_proof_run`
 
 Result: **PASS** for the unit scope. No code, `design/**`, or commit change
 was made by this verification.
+
+- accepted: s13.unit_verify (E0809-s20.sde_5fexecution-u02)
