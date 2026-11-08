@@ -53,6 +53,17 @@ nodes:
     selector: '[data-testid="notes-search-count"]'
     path6_required: true
     design_gap: GAP-1
+  n-delete:
+    registry_id: null
+    selector: .delete-note
+    path6_required: true
+    design_gap: GAP-3
+    existing_css: web/app.css:248-257
+    note: >-
+      Registry omission: .delete-note (danger-вариант кнопки: transparent фон,
+      border/color --danger, hover --danger-bg) есть в web/app.css, но отсутствует
+      в design/registry.json 1.0.0. Registry id не присваивается; используется
+      существующий DS-класс как есть, локального CSS нет.
 
   # --- states ---
   n-loading:
@@ -106,10 +117,11 @@ nodes:
     states: [default, hover, focus, disabled]
 
 summary:
-  nodes_total: 17
+  nodes_total: 18
   nodes_with_registry_id: 15
   composition_without_registry_id: 1
   composition_with_registry_id: 1
-  path6_required: 1
+  path6_required: 2
   path6_resolved_by_reuse: 2
+  registry_omissions: 1
   local_instances: 0

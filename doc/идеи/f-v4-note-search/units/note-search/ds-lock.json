@@ -108,6 +108,12 @@
     {
       "registry_id": "primitives/button-secondary",
       "reason": "Logout (.logout) внутри n-notes-header присутствует в разметке, но node_id отсутствует; состояние экрана от него не зависит."
+    },
+    {
+      "selector": ".delete-note",
+      "node_id": "n-delete",
+      "registry_id": null,
+      "reason": "Registry omission: класс .delete-note (danger-вариант кнопки) реально существует в web/app.css (строки 248–257: прозрачный фон, border/color --danger #B42318, hover background --danger-bg #FEF3F2), но отсутствует в design/registry.json 1.0.0. Поэтому в components не входит (только registry ids) и зафиксирован в path6_required как GAP-3."
     }
   ],
   "path6_required": [
@@ -116,6 +122,14 @@
       "selector": "[data-testid=notes-search-count]",
       "registry_id": null,
       "design_gap": "GAP-1"
+    },
+    {
+      "node_id": "n-delete",
+      "selector": ".delete-note",
+      "registry_id": null,
+      "design_gap": "GAP-3",
+      "existing_css": "web/app.css:248-257",
+      "states_in_css": ["default", "hover"]
     }
   ],
   "compositions": [

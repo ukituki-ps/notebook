@@ -97,6 +97,14 @@
       "node_id": "n-button",
       "registry_id": "primitives/button",
       "selector": "button"
+    },
+    {
+      "node_id": "n-delete",
+      "registry_id": null,
+      "selector": ".delete-note",
+      "resolution": "path6_required",
+      "design_gap": "GAP-3",
+      "existing_css": "web/app.css:248-257"
     }
   ],
   "composed_components": [
@@ -114,6 +122,12 @@
       "selector": "[data-testid=notes-search-count]",
       "kind": "count-label",
       "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0: ни один из 14 registry_id не описывает count label (ни селектором, ни состояниями). После UI-review счётчик виден только при непустом запросе (скрыт в idle/normal/empty/loading/error/offline) — это поведение задаётся логикой экрана, а не DS."
+    },
+    {
+      "node_id": "n-delete",
+      "selector": ".delete-note",
+      "kind": "registry-omission",
+      "reason": "Danger-вариант кнопки удаления .delete-note реально существует в web/app.css (248–257: background transparent, border-color/color --danger #B42318, hover background --danger-bg #FEF3F2), но не зарегистрирован в design/registry.json 1.0.0 — это пропуск в реестре, а не отсутствие стиля. Контраст --danger на --card 6.57:1, на hover-фоне 6.07:1 (AA). Registry id не присваивается."
     }
   ],
   "path6_resolved_by_reuse": [
@@ -132,9 +146,9 @@
   "summary": {
     "local_instances": 0,
     "registry_components": 12,
-    "nodes_total": 17,
+    "nodes_total": 18,
     "nodes_with_registry_id": 15,
-    "path6_required": 1,
+    "path6_required": 2,
     "path6_resolved_by_reuse": 2,
     "compositions": 2
   }

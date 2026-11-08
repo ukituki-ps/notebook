@@ -13,6 +13,16 @@
       "majors": 0,
       "minors": 2,
       "reviewed_at": "2026-11-08T14:29:12Z"
+    },
+    "ux": {
+      "role": "product-ux",
+      "session_id": "ses_e446e93b4ffe3yWt9AYmiK6bbm",
+      "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+      "verdict": "accept",
+      "blockers": 0,
+      "majors": 0,
+      "minors": 7,
+      "reviewed_at": "2026-11-08T14:43:05Z"
     }
   },
   "findings": [
@@ -213,13 +223,189 @@
         "ref": "exports/export-390-loading.png, export-390-error.png, export-1200-offline.png; web/app.js:319-334; state-matrix.md:7"
       },
       "criterion": "State correctness: disabled form controls"
+    },
+    {
+      "id": "UX-01",
+      "severity": "minor",
+      "status": "open",
+      "text": "The prototype now shows «Найдено 2» for the 2-of-4 result set, but the current app still has no result count: web/index.html has no notes-search-count element and web/app.js never computes or updates one (repo grep returns none; filter/render is app.js:362-390). s20 must implement it as visible.length for a non-empty trimmed query, hidden for an empty query, and keep aria-live=\"polite\"; otherwise the design's query → count → clear loop is not delivered in the product.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:53,161-166; web/index.html:77-96; web/app.js:362-390; grep notes-search-count = none"
+      },
+      "criterion": "Task fit: query → results count → clear"
+    },
+    {
+      "id": "UX-02",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. Offline copy is now «Нет сети — показаны загруженные заметки.» (proto.html:48; state-matrix.md:19; export-390/1200-offline), so it no longer promises a persistence/cache the app does not have. Residual s20 item: the app still has no offline detection or cache; if offline ships, define its data source (in-memory list vs real cache) and add an offline-zero variant.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-offline.png, exports/export-1200-offline.png; proto.html:48; state-matrix.md:19; web/app.js:316,430-433"
+      },
+      "criterion": "No false promises: offline cache/persistence"
+    },
+    {
+      "id": "UX-03",
+      "severity": "minor",
+      "status": "open",
+      "text": "Partially addressed. «Проверить сеть» now has a click handler that reloads the page (proto.html:179-184; verified: clicking keeps ?state=offline), so it is no longer an unwired control. But there is still no success/failure feedback, no 'still offline' state, and no announcement; in the real app a reload while offline can land in the generic error state and lose the banner/list. s20: define a true connectivity re-check; on success restore list/search and announce, on failure keep the offline banner and say it is still offline.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:49-50,179-184; state-matrix.md:19; exports/export-390-offline.png, export-1200-offline.png; Playwright click keeps state=offline"
+      },
+      "criterion": "Error/offline recovery has an observable outcome"
+    },
+    {
+      "id": "UX-04",
+      "severity": "minor",
+      "status": "open",
+      "text": "Still open. If a query is active when a load or mutation fails, the app keeps it in searchQuery/sessionStorage (app.js:453-456) and renderNotes filters the list, while setNotesEnabled(false) disables both search and clear (app.js:319-326). The user can be left with a filtered list and no way to clear it, especially in the offline state. The prototype still models offline only with an empty query. s20: keep Clear usable, clear the query on failure, or render the unfiltered loaded list with the query visible.",
+      "evidence": {
+        "kind": "file",
+        "ref": "web/app.js:317,319-326,389,453-456,562-578; proto.html:121-142; state-matrix.md:19; exports/export-390-offline.png"
+      },
+      "criterion": "No dead ends: active query during loading/error/offline"
+    },
+    {
+      "id": "UX-05",
+      "severity": "minor",
+      "status": "open",
+      "text": "Still open. With zero notes the search field stays enabled (empty exports; proto.html:34-44), but typing cannot produce results or the no-results state: notes-empty wins whenever notes.length === 0 (app.js:382-388). Search is a no-op/dead control in the empty state. Disable or hide search when the loaded list is empty, or show a clear 'nothing to search yet' state; s20 must choose.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-empty.png, exports/export-1200-empty.png; proto.html:34-44; web/app.js:372-390"
+      },
+      "criterion": "No dead controls: search when there are zero notes"
+    },
+    {
+      "id": "UX-06",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. results uses query «план» and shows exactly 2 of 4 rows (#12 «План на неделю», #13 «Утренний план тренировок») with «Найдено 2»; the two non-matching rows are hidden (proto.html:66-89,138,161-174; Playwright: visibleRows=2/total=4). no-results uses a visibly different query «отпуск» and shows 0 rows/count 0 (export-390/1200-no-results). Filtering and partial-match count are now demonstrated.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-results.png, export-390-no-results.png, export-1200-results.png, export-1200-no-results.png; proto.html:66-89,138,161-174; Playwright visibleRows=2/4"
+      },
+      "criterion": "Domain honesty: accurate count and demonstrated filtering"
+    },
+    {
+      "id": "UX-07",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. Error copy is now «Не удалось загрузить заметки. Попробуйте ещё раз.» (proto.html:20; state-matrix.md:18; export-390/1200-error), aligned with the «Повторить» affordance. Residual s20 item: the retry control is still a no-op in the static prototype (click leaves the URL/state unchanged) and the app has no retry button (web/index.html:66; app.js:422-424); wire it to loadNotes.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-error.png, exports/export-1200-error.png; proto.html:18-24; web/index.html:66; web/app.js:422-424; Playwright retry click no-op"
+      },
+      "criterion": "Text clarity and consistency; recovery action"
+    },
+    {
+      "id": "UX-08",
+      "severity": "minor",
+      "status": "open",
+      "text": "Partially fixed. Delete is now localized («Удалить»), but Add and Logout remain English in the Russian UI. Localize Add/Logout to «Добавить»/«Выйти» or record an explicit English-term policy; the prototype should not mix without a rule.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, exports/export-1200-idle.png; proto.html:15,31,70; web/index.html:63,72,105"
+      },
+      "criterion": "Russian/English consistency"
+    },
+    {
+      "id": "UX-09",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. no-results now includes an actionable hint: «Ничего не найдено. Сократите запрос или очистите поиск.» (proto.html:62; Playwright and export-390/1200-no-results confirm). Residual cosmetic: «Найдено 0» and the message are both shown; accepted because the count is consistent with results and the message is actionable.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-no-results.png, exports/export-1200-no-results.png; proto.html:53,60-63"
+      },
+      "criterion": "No-results clarity and next step"
+    },
+    {
+      "id": "UX-10",
+      "severity": "minor",
+      "status": "open",
+      "text": "Still open. At 390 the first screen is dominated by a full-width Logout and a 3-row create form; the search input, the feature's primary control, starts below the composer. The s03 wireframe (feature-brief.md:79-103) and the v6 flow put search at the top with the composer at the bottom; at 1200 Logout is compact and search still sits below the form. Align the order or confirm the deviation; action priority at 390 currently favors Logout/Add over search.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, exports/export-1200-idle.png; proto.html:26-44; feature-brief.md:79-103; web/app.css:259-290"
+      },
+      "criterion": "390/1200 hierarchy, density, action priority"
+    },
+    {
+      "id": "UX-11",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. Every note row renders the real Delete button (proto.html:66-89: 4 rows, per-note aria-label); idle/offline show 4 rows/4 deletes and results shows the 2 matching rows/2 deletes (Playwright). 390 density re-assessed with real rows: scrollHeight 926 px (idle) and 1067 px (offline) at an 844 px viewport, vertical scroll works (max scrollY 82/223), and scrollWidth = clientWidth = 390 (no horizontal overflow); 1200 fits without scroll. .delete-note is recorded as GAP-3 in design-gaps.json, ds-lock.path6_required, component-map and component-refs as a registry omission (style exists in web/app.css, registry entry missing). The added control's label issue (UX-14) is now fixed too: visible «Удалить» + aria-label «Удалить заметку #<id>».",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, export-390-results.png, export-390-offline.png, export-1200-idle.png, export-1200-results.png, export-1200-offline.png; proto.html:66-89; design-gaps.json:41-56; ds-lock.json:113-133; component-map.yaml:56-66; component-refs.json:101-108,126-131; Playwright scrollWidth=clientWidth=390, scrollHeight 926/1067"
+      },
+      "criterion": "Prototype realism and 390 density; do not break delete"
+    },
+    {
+      "id": "UX-12",
+      "severity": "info",
+      "status": "accepted",
+      "text": "Still true. The 512-byte cap is not communicated in the UI. Client-side filtering never sends q (app.js:362-368), so the cap is unreachable today, but the API rejects a decoded q > 512 bytes with 400 before scanning (feature-brief.md:59-63; spec/core.md:29-37) and proto.html:37-39 has no maxlength or hint. Keep client-side filtering and document the cap as API-only, or add a byte-aware limit/hint and map 400 to a field error if s20 sends q. Do not use maxlength=512: it counts UTF-16 code units, not UTF-8 bytes.",
+      "evidence": {
+        "kind": "file",
+        "ref": "feature-brief.md:59-63; spec/core.md:29-37; proto.html:37-39; web/app.js:362-368"
+      },
+      "criterion": "512-byte cap communication"
+    },
+    {
+      "id": "UX-13",
+      "severity": "info",
+      "status": "open",
+      "text": "Still open. The notes screen has no page heading: the only header content is the brand span (proto.html:12-16), so screen-reader and landmark navigation cannot jump to the notes screen, and the visual hierarchy has no «Заметки» title. Add an h1/h2 (visually hidden if needed) or a labelled main region; s20 should include it in the notes screen.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, exports/export-1200-idle.png; proto.html:10-16"
+      },
+      "criterion": "Keyboard/AT landmarks and page heading"
+    },
+    {
+      "id": "UX-14",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. Every Delete button now renders visible text «Удалить» with aria-label «Удалить заметку #<id>» (proto.html:69-70,75-76,81-82,87-88). Playwright aria snapshot: button \"Удалить заметку #12\" with innerText «Удалить» — the accessible name contains the visible label, so WCAG 2.5.3 Label in Name passes. The fix is present in all 4 rows and in idle/results/offline exports; no layout change or overflow. Residual s20 item: the real app still renders visible «Delete» with the Russian aria-label (web/index.html:105 + web/app.js:345); apply the same visible-label fix in code.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, export-390-results.png, export-390-offline.png, export-1200-idle.png; proto.html:69-70,75-76,81-82,87-88; web/index.html:105; web/app.js:345; Playwright ariaSnapshot: button \"Удалить заметку #12\": Удалить; scrollWidth=clientWidth=390/1200"
+      },
+      "criterion": "a11y Label in Name (WCAG 2.5.3) / AT and voice control"
+    },
+    {
+      "id": "UX-15",
+      "severity": "info",
+      "status": "accepted",
+      "text": "390 density/scroll re-assessment: with real rows (note text + full-width danger Delete) the idle page is 926 px tall and offline 1067 px at an 844 px viewport, so 4 loaded notes require 82/223 px of vertical scroll; there is no horizontal overflow (scrollWidth = clientWidth = 390) and 1200 fits without scroll. The destructive Delete is visually prominent at 390 because .delete-note is full-width at ≤640px (web/app.css:283-286); this is faithful existing app/DS behavior, acceptable for this unit, and a candidate for a compact trailing Delete in a later DS pass.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-idle.png, export-390-offline.png; proto.html:66-89; web/app.css:259-290; Playwright scrollHeight 926/1067, scrollY 82/223, no horizontal overflow"
+      },
+      "criterion": "390 density, vertical scroll and no horizontal overflow"
+    },
+    {
+      "id": "UX-16",
+      "severity": "minor",
+      "status": "open",
+      "text": "Stale design-doc reference: state-matrix.md still describes the idle row as having a `.delete-note` «Delete» button (line 13) and the offline row as 'with Delete' (line 19), while the visible label is now «Удалить» (proto.html:70,76,82,88). Update the matrix to «Удалить» so s20 does not reintroduce the English label fixed in UX-14.",
+      "evidence": {
+        "kind": "file",
+        "ref": "state-matrix.md:13,19; proto.html:70,76,82,88; exports/export-390-idle.png"
+      },
+      "criterion": "Design-doc consistency with the fixed Delete label"
     }
   ],
   "summary": {
     "verdict": "accept",
     "blockers": 0,
     "majors": 0,
-    "minors": 2
+    "minors": 9
   },
   "context": {
     "source": "orc_ctx",

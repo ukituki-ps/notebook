@@ -36,6 +36,23 @@
       "owner": "designer",
       "accepted_by": "designer",
       "rationale_accepted": "Не блокирует: disabled-состояние достижимо без локального CSS и остаётся доступным (aria-disabled + aria-describedby). Критерий design-integrate соблюдён — gap accepted, blocking=false."
+    },
+    {
+      "id": "GAP-3",
+      "node_id": "n-delete",
+      "selector": ".delete-note",
+      "registry_id": null,
+      "kind": "registry-omission",
+      "path6_required": true,
+      "blocking": false,
+      "status": "accepted",
+      "reason": "Danger-вариант кнопки удаления .delete-note существует в web/app.css (248–257: display inline-flex, прозрачный фон, border 1px --danger #B42318, color --danger, hover background --danger-bg #FEF3F2), но отсутствует в design/registry.json 1.0.0 (14 записей). Это пропуск в реестре: стиль компонента в DS есть, записи (id, states) нет.",
+      "impact": "Компонент нельзя сослаться по registry_id; состояния default/hover не покрыты контрактом реестра, состояние disabled у .delete-note в CSS не описано (только :focus-visible глобально). Риск: удаление заметки выглядит как непроверенный DS-элемент при UI-приёмке.",
+      "workaround": "Используется существующий DS-класс .delete-note из web/app.css как есть, без локального CSS и без локальных instance-классов. Контраст: --danger на --card = 6.57:1, на hover --danger-bg = 6.07:1 (AA); фокус — глобальный :focus-visible 3px #1F6FEB; у каждой кнопки aria-label «Удалить заметку #<id>».",
+      "proposed_ds_change": "Зарегистрировать в design/registry.json danger-вариант кнопки: либо primitives/button-danger (selector .delete-note, states: default, hover, focus, disabled), либо states/delete-affordance в patterns/note-item — в следующем релизе DS 1.x.",
+      "owner": "designer",
+      "accepted_by": "designer",
+      "rationale_accepted": "Не блокирует: реальный DS-класс уже в app.css, экран использует его без модификаций, доступность подтверждена (AA + aria-label + focus-visible). Расхождение чисто реестровое и фиксируется как кандидат в registry."
     }
   ],
   "notes": [
@@ -68,12 +85,21 @@
       "node_ids": [],
       "kind": "not-counted",
       "text": "primitives/card (.card) и primitives/button-secondary (.logout) присутствуют в разметке proto.html, но node_id у них нет и состояния экрана от них не зависят — в ds-lock.components не входят (перечислены в ds-lock.not_counted)."
+    },
+    {
+      "id": "NOTE-6",
+      "node_ids": ["n-delete", "n-note-item"],
+      "kind": "registry-omission",
+      "text": ".delete-note — дочерняя кнопка внутри patterns/note-item, присутствует в каждой строке списка (idle/normal/results/offline) и в no-results не рендерится вместе со списком. Класс уже в web/app.css, но не в реестре: это единственный настоящий registry-omission на экране (GAP-3), в отличие от n-count (missing-pattern) и disabled-состояния input (missing-state)."
     }
   ],
   "summary": {
-    "total": 2,
+    "total": 3,
     "blocking": 0,
-    "accepted": 2,
-    "open": 0
+    "accepted": 3,
+    "open": 0,
+    "registry_omissions": 1,
+    "missing_patterns": 1,
+    "missing_states": 1
   }
 }

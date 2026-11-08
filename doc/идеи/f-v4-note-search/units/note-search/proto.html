@@ -17,7 +17,7 @@
 
       <p class="error" data-testid="notes-error" id="notes-error"
          role="alert" aria-live="assertive" hidden>
-        Не удалось загрузить заметки. Повторите позже.
+        Не удалось загрузить заметки. Попробуйте ещё раз.
       </p>
       <button data-testid="notes-retry" id="notes-retry" type="button" hidden>
         Повторить
@@ -45,12 +45,12 @@
 
       <div class="note-item" data-testid="notes-offline" id="notes-offline"
            role="status" hidden>
-        <p class="note-text muted">Нет сети — показаны сохранённые заметки.</p>
+        <p class="note-text muted">Нет сети — показаны загруженные заметки.</p>
         <button data-testid="notes-offline-check" id="notes-offline-check"
                 type="button" aria-label="Проверить сеть">Проверить&nbsp;сеть</button>
       </div>
 
-      <p class="muted" data-testid="notes-search-count" id="notes-search-count" aria-live="polite" hidden>Найдено 3</p>
+      <p class="muted" data-testid="notes-search-count" id="notes-search-count" aria-live="polite" hidden>Найдено 2</p>
 
       <p class="muted" data-testid="notes-loading" id="notes-loading"
          role="status" aria-live="polite" hidden>Загрузка...</p>
@@ -59,18 +59,33 @@
       </p>
       <p class="muted" data-testid="notes-search-empty" id="notes-search-empty"
          role="status" aria-live="polite" hidden>
-        Ничего не найдено.
+        Ничего не найдено. Сократите запрос или очистите поиск.
       </p>
 
       <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list">
-        <li class="note-item" data-testid="note-item" role="listitem">
-          <span class="note-text">#12 План на неделю: закончить отчёт</span>
+        <li class="note-item" data-testid="note-item" role="listitem"
+            data-note-id="12" data-search-match="1">
+          <span class="note-text">#12 План на неделю</span>
+          <button class="delete-note" data-testid="delete-note" type="button"
+                  aria-label="Удалить заметку #12">Удалить</button>
         </li>
-        <li class="note-item" data-testid="note-item" role="listitem">
+        <li class="note-item" data-testid="note-item" role="listitem"
+            data-note-id="13" data-search-match="1">
           <span class="note-text">#13 Утренний план тренировок</span>
+          <button class="delete-note" data-testid="delete-note" type="button"
+                  aria-label="Удалить заметку #13">Удалить</button>
         </li>
-        <li class="note-item" data-testid="note-item" role="listitem">
-          <span class="note-text">#14 Планирование бюджета на месяц</span>
+        <li class="note-item" data-testid="note-item" role="listitem"
+            data-note-id="14" data-search-match="0">
+          <span class="note-text">#14 Список покупок</span>
+          <button class="delete-note" data-testid="delete-note" type="button"
+                  aria-label="Удалить заметку #14">Удалить</button>
+        </li>
+        <li class="note-item" data-testid="note-item" role="listitem"
+            data-note-id="15" data-search-match="0">
+          <span class="note-text">#15 Позвонить маме</span>
+          <button class="delete-note" data-testid="delete-note" type="button"
+                  aria-label="Удалить заметку #15">Удалить</button>
         </li>
       </ul>
     </div>
@@ -120,8 +135,10 @@
       var showsList = state === "idle" || state === "results" || state === "offline";
       var searchDisabled = state === "loading" || state === "error" || state === "offline";
 
+      var query = state === "results" ? "план" : state === "no-results" ? "отпуск" : "";
+
       if (search) {
-        search.value = hasQuery ? "план" : "";
+        search.value = query;
         search.disabled = searchDisabled;
         search.placeholder =
           state === "offline" ? "Поиск недоступен без сети" : "Поиск по тексту...";
@@ -144,14 +161,26 @@
       if (count) {
         count.hidden = !hasQuery;
         if (hasQuery) {
-          count.textContent = "Найдено " + (state === "no-results" ? "0" : "3");
+          count.textContent = "Найдено " + (state === "no-results" ? "0" : "2");
         }
       }
 
       if (list) {
         list.hidden = !showsList;
+        var rows = list.querySelectorAll(".note-item");
+        for (var i = 0; i < rows.length; i++) {
+          rows[i].hidden =
+            state === "results" && rows[i].getAttribute("data-search-match") !== "1";
+        }
         if (state === "loading") list.setAttribute("aria-busy", "true");
         else list.removeAttribute("aria-busy");
+      }
+
+      var offlineCheck = byTestId("notes-offline-check");
+      if (offlineCheck) {
+        offlineCheck.addEventListener("click", function () {
+          window.location.reload();
+        });
       }
 
       setHidden("notes-loading", state !== "loading");
