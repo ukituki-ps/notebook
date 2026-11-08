@@ -1,11 +1,29 @@
 {
   "schema": "orc.evidence-manifest/v1",
+  "execution_id": "E0809",
+  "build_ref": "7026b7e",
+  "created_at": "2026-11-08T16:52:00Z",
   "files": {
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png": "259c057f8c0227643c6ee88283131f3e2ecee766ab6e5af28a7b018c070784ea",
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png": "3950d9f13e5ca0b931e3ef38d73669b196ae62fe8d90dea1395f961f612d3121",
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png": "5d3a34d95c5331bd86e8130e49e052098af95d678ad3f3456262b0c4285aae7f",
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png": "af93fbee1ef98e2c10243dc7fa927fa8f81f41e01fab54e2148d71937e48628c",
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png": "3b822a87260fba47bc87a03cd00bb5cd3cd87bd825448f8717612560f03aabd4",
-    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png": "c80e184b65a5f1f745abab0d6ee5cf64d4297e128c013a786f7c666f3f8384de"
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png": "fed8f93db2819890caf3482548561b7f55aff939d64da02ba13adb9e81f39786",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-2.png": "d6ae070ee1b160eac85c54b416b5f24488191c5575654e4ccf07b05b3e929ecb",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-3.png": "15b83a4c81c3f6d9c2d1a5848cfd3f5962fefa34200aeeb53fe961bf3bc87f9f",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-4.png": "642b13548846be64406a7f7ddf0a453eea2c6dcb8b5c49644a2d126d261efba1",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-5.png": "70f19c57f6088a5829b68f7232b579dda90ff7f44524c2ed5513ac39f886accc",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-6.png": "275319be19398c48d60ac4c14069ffb980ebeb5f770446731193652b3ad427e6",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-7.png": "19176525c1adfad7e32dd39f922e6b8c7a0c7ed92368627d6da9646f4b5e855b",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-8.png": "5d496f25b020c251da4cccbaf214bab75ea69dbf04e637fef9923399a80a816a",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-9.png": "5832d06b16df0f8135d653e72722137abfcd82e00f737025f1bd2b3faf8aa070",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-10.png": "f76a1475131cdf5a8fdf907271783c6608179b3dc7ee68952a507c3a1461ec67",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-11.png": "a727d88507a57d4acfe07ea6656815b618feb522393150d93ca008561a84e611",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-12.png": "a75efa0237549605f681c55ffd45ea0d653dc17585e242caf3df07763f909471",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-13.png": "ac891546fecf6fb78aec25328657d95258d833b68a9b4fde19e25d36cfe63f5a",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-14.png": "b57e7f0c8645a6a0b2e0161d7deaea5fe320d6fbf4d99bc55d44d434765f0635",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-15.png": "7c4c99da25451b4a8cd22923af2a6610384bacd8617a15faf5bbcd1370f2e450",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-16.png": "d32fcff246e7cfea61ef1d5224a751dee4e7a8abd93f1ec54f948f58fd0fc584",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-17.png": "2cc1db7b15107a103c8bf8fc1aaecd1d8ce500ef3f389f8047d79fc2d1bc8923",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-18.png": "4004bbfde93e7652aad81459cec87bfa0d398f3ee16906aeeaf809d6fae00ec1",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-19.png": "c82982a19352a0c8ca6165d676f6ef2e747f5cdf8ff06105a0063e289bb1cc8f",
+    "doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-20.png": "e1833ec91760c647ee15fe9f8969537136ee250b44444c9c258bb076c3fb3c46",
+    "doc/идеи/f-v4-note-search/scenario-evidence.json": "3f903a6e0b9a9e4309e5ca8e5c21a92c284294902c8542f2f7e662b2c5d24fa9"
   }
 }

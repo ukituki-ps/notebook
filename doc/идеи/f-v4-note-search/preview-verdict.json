@@ -12,8 +12,8 @@
   "build_args_hash": "sha256:d16f8c449f0251052eb1eb305ef39ec76fb42b2ff04e4ce91b1d6347d8747efc",
   "gate_bundle_digest": "sha256:42f4ba6fc07ca60f3c69e6d6309b3c8f5bdf101254edc46c8254d94fac348cd6",
   "bundle": "",
-  "artifact_digest": "sha256:3f903a6e0b9a9e4309e5ca8e5c21a92c284294902c8542f2f7e662b2c5d24fa9",
-  "evidence_manifest_sha256": "sha256:3f903a6e0b9a9e4309e5ca8e5c21a92c284294902c8542f2f7e662b2c5d24fa9",
+  "artifact_digest": "13bd8982f1ed51601d239e8f477baa84f237b2e31a2c256e8eb9955e1c60697a",
+  "evidence_manifest_sha256": "13bd8982f1ed51601d239e8f477baa84f237b2e31a2c256e8eb9955e1c60697a",
   "checked_at": "2026-11-08T16:52:00Z",
   "scenarios": {
     "total": 20,
