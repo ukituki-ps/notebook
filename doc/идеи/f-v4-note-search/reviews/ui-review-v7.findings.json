@@ -1,0 +1,121 @@
+[
+  {
+    "id": "UI-01",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Token heights accepted as DS token-semantics, not local drift: no local CSS; tokens control.height=44px/control.textarea=88px match declared web/app.css values; ds-token-drift PASS (20 checks). Actual 45px/92px comes from min-height + line-height/padding/border (rows=3); exact 44/88 requires DS 1.0.2. Recorded in design-impact residual item 5 (control 45px, textarea 92px).",
+    "evidence": "design/tokens.json:29-31; web/app.css:74,84,100; design-impact.md:69-73,89-92; tools/check-ds-token-drift.py"
+  },
+  {
+    "id": "UI-02",
+    "severity": "major",
+    "status": "fixed",
+    "text": "Offline banner gap is now 16px at both breakpoints (search bottom 421 -> banner top 437 at 390; 394 -> 410 at 1200); the merged double border is gone. Confirmed in export-390-offline.png / export-1200-offline.png.",
+    "evidence": "units/note-search/proto.html:46-49; Chromium measurements 390/1200"
+  },
+  {
+    "id": "UI-03",
+    "severity": "major",
+    "status": "fixed",
+    "text": "design-impact.md reissued for DS 1.0.1: ds_release 1.0.1, digest 4e0ef105…, constraint =1.0.1, manifest 1.0.1 sha dbc2983b…; stale 22px/15px residual claims replaced with the 1.0.1 alignment.",
+    "evidence": "design-impact.md:1-19,64-73; design/releases/1.0.1/manifest.json"
+  },
+  {
+    "id": "UI-04",
+    "severity": "major",
+    "status": "fixed",
+    "text": "prototypes/v7/manifest.json created: v7, DS 1.0.1 + digest + code web/app.css, 16 exports (8 states x 390/1200 incl. offline-zero); all files exist; .fig sha256/size match .fig-cache (88e91fae…, 57099 B). Sharing the .fig with v6 is justified by the absence of any DS 1.0.1 visual delta.",
+    "evidence": "prototypes/v7/manifest.json; prototypes/v7/exports (16 files)"
+  },
+  {
+    "id": "UI-05",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "No <h1>: hierarchy starts at .brand 19.2px and label 16px/600; font.h1=22.4px is confirmed only by the CSS rule, not by render. Accepted because the shipped screen has no page heading; residual tracked for s22a/UX.",
+    "evidence": "units/note-search/proto.html:12-16; web/app.css:56-59"
+  },
+  {
+    "id": "UI-06",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "Five utility classes (.brand/.user-name/.note-text/.notes-search-row/.muted) are recorded as GAP-4 registry-omission (blocking=false, accepted) in feature and unit design-gaps.json; design-impact residual item 1 lists them. They are release web/app.css classes, not local instances.",
+    "evidence": "design-gaps.json:65-79; units/note-search/design-gaps.json:58; design-impact.md:80-83"
+  },
+  {
+    "id": "UI-07",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "notes-empty remains without role/aria-live; the loading->empty transition is silent. Accepted as matching the shipped app and tracked for s22a.",
+    "evidence": "units/note-search/proto.html:57-59"
+  },
+  {
+    "id": "UI-08",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "no-results still has two live regions (count aria-live=polite and notes-search-empty role=status aria-live=polite). Accepted non-blocking duplication.",
+    "evidence": "units/note-search/proto.html:53,64-67"
+  },
+  {
+    "id": "UI-09",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Disabled search is visually indistinguishable from active (no input:disabled style), including the new empty state. GAP-2 accepted; no local CSS; DS 1.x should add a visual disabled state.",
+    "evidence": "web/app.css:70-82; design-gaps.json (GAP-2); export-390-empty.png"
+  },
+  {
+    "id": "UI-10",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "Stale references removed: state-matrix declares Notebook DS 1.0.1; GAP-1 workaround no longer says body 15px; design-gaps/component-refs/ds.lock are on 1.0.1 digest 4e0ef105….",
+    "evidence": "units/note-search/state-matrix.md:4; design-gaps.json; ds.lock.json"
+  },
+  {
+    "id": "UI-11",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Disabled Add remains 2.21:1 (white on #84B0F4) and reads as an active primary. WCAG 1.4.3 does not apply to disabled; accepted with a DS suggestion for an explicit disabled primary style.",
+    "evidence": "web/app.css:96-117; export-390-idle.png"
+  },
+  {
+    "id": "UI-12",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Primary button widths differ: retry is 120px at 1200 and full-width 332px at 390, while Add is always full-width (566/332). Accepted non-blocking inconsistency.",
+    "evidence": "web/app.css:60-64,136-138; proto.html:22-24"
+  },
+  {
+    "id": "UI-13",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "UI-02 side effect: the offline banner got class note-item notes-search-empty, using the search-empty state class as a spacing utility (margin-top:16px). Visually correct, no local CSS, but semantically overloaded; recommend moving the banner into .notes-list or adding a DS spacing utility.",
+    "evidence": "units/note-search/proto.html:46-48; web/app.css:215-217; design/registry.json:124"
+  },
+  {
+    "id": "UI-14",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "prototype-review.json is now present in prototypes/v7, so manifest.review.path resolves and the approved verdict is backed by a real review artifact.",
+    "evidence": "prototypes/v7/prototype-review.json"
+  },
+  {
+    "id": "UI-15",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "offline-zero shows both the offline banner and the base empty message «Добавьте первую выше» while Add/search/delete are offline-disabled. Accepted copy residual (state described in state-matrix); recommend offline-specific copy.",
+    "evidence": "units/note-search/proto.html:160-166; state-matrix.md:19; export-390-offline-zero.png"
+  },
+  {
+    "id": "UI-16",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Error is role=alert aria-live=polite, internally contradictory (role=alert is implicitly assertive). Intent is correct; cleaner would be role=status aria-live=polite. Accepted non-blocking ARIA cleanup.",
+    "evidence": "units/note-search/proto.html:18-19"
+  },
+  {
+    "id": "UI-17",
+    "severity": "info",
+    "status": "accepted",
+    "text": "Independent re-check by a session that is not the author or prior UI reviewer: all 16 v7 exports reproduce from proto.html + web/app.css with 0 pixel diff in Chromium 1.64; no local <style>/style=/external CSS; roles/labels/aria-live verified; clear/retry/offline-check/delete transitions work; contrasts AA; no horizontal overflow. Provenance note: .fig-cache is fixed-name, but sha256/size match the manifest and identity with v6 is explained by the absence of a DS 1.0.1 visual delta.",
+    "evidence": "prototypes/v7/exports (16/16, 0 diff px); prototypes/v7/manifest.json; web/app.css; proto.html:1-9"
+  }
+]

@@ -1,0 +1,128 @@
+[
+  {
+    "id": "UX-00",
+    "severity": "info",
+    "status": "accepted",
+    "text": "Independent re-review: this product-ux session is not the author (team-lead); read-only, no edits, no git writes, no deploy.",
+    "evidence": "design-review.fragment.json:1"
+  },
+  {
+    "id": "UX-01",
+    "severity": "blocker",
+    "status": "fixed",
+    "text": "empty now disables the search field (searchDisabled includes empty) with native disabled + aria-disabled=true + aria-describedby=notes-empty, matching web/app.js searchBlocked(notes.length===0).",
+    "evidence": "units/note-search/proto.html:142,153,216; state-matrix.md:16; web/app.js:346; export-390-empty.png"
+  },
+  {
+    "id": "UX-02",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Accepted product residual, re-rated minor. Offline search stays disabled per spec §3.3 with aria-disabled + aria-describedby + offline placeholder; the copy overstates a network dependency for a client-side filter (AOD-2). Bounded to the transient offline state; tracked for s22e.",
+    "evidence": "units/note-search/proto.html:142,148; feature-brief.md:280; spec/core.md:158; web/app.js:345"
+  },
+  {
+    "id": "UX-03",
+    "severity": "major",
+    "status": "fixed",
+    "text": "Prototype per-row delete is disabled via formDisabled in loading/error/offline/offline-zero and active in idle/results; product-code parity tracked for s22a/s22e.",
+    "evidence": "units/note-search/proto.html:185; state-matrix.md:20; export-390-offline.png"
+  },
+  {
+    "id": "UX-04",
+    "severity": "major",
+    "status": "fixed",
+    "text": "?state=offline-zero renders «Нет сети — нет загруженных заметок.» + base empty message, disabled search, hidden count/list/clear. 8 states x 2 viewports = 16 exports; proto.json and state-matrix describe it.",
+    "evidence": "units/note-search/proto.html:98,210,216; units/note-search/proto.json:216; state-matrix.md:19; export-390-offline-zero.png"
+  },
+  {
+    "id": "UX-05",
+    "severity": "major",
+    "status": "fixed",
+    "text": "«Проверить сеть» now simulates a successful re-check by returning to idle instead of reloading the same offline URL. The still-offline branch is not simulated (acceptable for a state prototype).",
+    "evidence": "units/note-search/proto.html:203; state-matrix.md:20"
+  },
+  {
+    "id": "UX-06",
+    "severity": "major",
+    "status": "fixed",
+    "text": "Clear -> idle, Retry -> idle, per-row delete removes the row and updates the results count, offline-check -> idle. Remaining focus/Add/Logout inertness is accepted as a state-prototype limitation.",
+    "evidence": "units/note-search/proto.html:166,187,200,203; state-matrix.md:14"
+  },
+  {
+    "id": "UX-07",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "Error region is role=alert aria-live=polite, matching spec §3.2 and web/index.html.",
+    "evidence": "units/note-search/proto.html:19; spec/core.md:133; web/index.html:75"
+  },
+  {
+    "id": "UX-08",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Active artifacts are on DS 1.0.1 (state-matrix, proto.json, design-impact, ds-pin/ds-lock/refs, digest 4e0ef105…); spec/core.md and visualized-brief.md remain historical 1.0.0 snapshots. 1.0.1's only CSS delta is an explicit body font-size, so there is no visual drift.",
+    "evidence": "state-matrix.md:4; design-impact.md:4; proto.json:6; ds-pin.json:5; visualized-brief.md:6; spec/core.md:6"
+  },
+  {
+    "id": "UX-09",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Accepted GAP-2 residual for DS 1.x: disabled search has no visual disabled treatment (only button:disabled is styled); the pixel comparison confirms the empty export is visually unchanged after disabling.",
+    "evidence": "web/app.css:114; visualized-brief.md:71; export-390-loading.png; export-390-empty.png"
+  },
+  {
+    "id": "UX-10",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Offline banner stays a .note-item card with an interactive button inside role=status; reads like another note row and wraps a control in a live region. Recovery CTA is clear; no local CSS.",
+    "evidence": "units/note-search/proto.html:46; web/app.css:228; web/index.html:83"
+  },
+  {
+    "id": "UX-11",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "At 390 the clear control is a separate full-width 44px block under the field (stacked .notes-search-row), detached from the query and as heavy as the composer action; label-in-name passes.",
+    "evidence": "web/app.css:275; export-390-results.png"
+  },
+  {
+    "id": "UX-12",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "Accepted minor, now recorded: state-matrix notes the prototype label/placeholder divergence from web/index.html and drops the no-autofocus claim.",
+    "evidence": "state-matrix.md:9,15; web/index.html:71"
+  },
+  {
+    "id": "UX-13",
+    "severity": "info",
+    "status": "accepted",
+    "text": "Verified count semantics (Найдено 2 / 0, hidden on empty query, polite live region); classes exist in web/app.css 1.0.1 with no local CSS; offline copy avoids a persistence promise; language split follows AOD-6; 16 exports cover 8 states. v6 comparison: 10/14 unchanged; 2 empty frames differ by 2 px at delta 1; 2 offline frames differ as intended (disabled deletes + banner spacing).",
+    "evidence": "units/note-search/proto.html:53,171; feature-brief.md:326; web/app.css:28; prototypes/v7/exports"
+  },
+  {
+    "id": "UX-14",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "Deleting the last visible match in results now goes to no-results (not empty), matching state-matrix and web/app.js renderNotes.",
+    "evidence": "units/note-search/proto.html:190; state-matrix.md:14; feature-brief.md:249; web/app.js:474"
+  },
+  {
+    "id": "UX-15",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "offline-zero shows «Добавьте первую выше» while Add is offline-disabled; accepted copy residual mirroring current app behavior (offline banner + notes-empty, form disabled), tracked for s22a.",
+    "evidence": "units/note-search/proto.html:57,129,216; proto.json:217; web/app.js:323,402"
+  },
+  {
+    "id": "UX-16",
+    "severity": "minor",
+    "status": "fixed",
+    "text": "The composer textarea is now disabled in loading/error/offline/offline-zero (noteText.disabled = formDisabled), matching web/app.js syncFormState.",
+    "evidence": "units/note-search/proto.html:28,129; proto.json:239; web/app.js:404"
+  },
+  {
+    "id": "UX-17",
+    "severity": "minor",
+    "status": "accepted",
+    "text": "State-per-render limitation: the search input is not live-wired in the static prototype (typing does not filter); web/app.js implements live filtering. Recorded in state-matrix so the query->results step is not read as a live interaction.",
+    "evidence": "units/note-search/proto.html:145; state-matrix.md:14; web/app.js:724"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "artifact": "prototypes/v7",
+  "role": "designer",
+  "session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+  "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+  "independent": true,
+  "verdict": "accept",
+  "blockers": 0,
+  "majors": 0,
+  "minors": 13,
+  "ds_version": "1.0.1",
+  "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+  "reviewed_at": "2026-11-08T18:20:00Z",
+  "findings_file": "reviews/ui-review-v7.findings.json"
+}
