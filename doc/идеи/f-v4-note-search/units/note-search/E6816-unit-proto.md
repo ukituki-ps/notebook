@@ -9,3 +9,9 @@
 - gate: `unit-proto-coverage --screen note-search` PASS.
 
 No new UI components; only Notebook DS registry classes/tokens, no local CSS.
+
+## s04a.unit_ds_resolve
+
+- ds-lock/component-map/component-refs pinned to DS 1.0.1 (`sha256:4e0ef105…`), constraint `=1.0.1`.
+- registry: 14 components, 12 used + GAP-1/GAP-3 path6-required, GAP-2 missing disabled state, GAP-4 registry omissions.
+- gate: `unit-ds-lock --screen note-search` PASS.
