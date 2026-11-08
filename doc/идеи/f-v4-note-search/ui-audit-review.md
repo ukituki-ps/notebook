@@ -131,3 +131,7 @@ pngdiff: OK — 20 скриншотов, near-duplicate не найдено     
 - No modifications were made to `ui-audit.json` or to code; no commit was created. Only this review file was added.
 - Finding 1 is a screenshot-recapture recommendation for the next audit revision; it does not alter the
   verdict because the corresponding criteria are independently proven by passing assertions and source inspection.
+
+## Re-audit (after s23, build 7026b7e)
+- E2E re-run 20/20 on test2 build 7026b7e (image sha256:830207…); UI product unchanged vs 5785dc0.
+- ui-audit-check --expect-sha 7026b7e PASS; 0 DS-usage violations; designer verdict remains ACCEPT.

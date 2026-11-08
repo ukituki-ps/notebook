@@ -349,5 +349,11 @@
       "doc/идеи/f-v4-note-search/screenshots/",
       "doc/идеи/f-v4-note-search/component-refs.json"
     ]
+  },
+  "review_reaudit": {
+    "build": "7026b7e",
+    "image": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee",
+    "at": "2026-11-08T16:53:01Z",
+    "e2e": "20/20"
   }
 }
