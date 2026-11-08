@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note search proto — Notebook DS 1.0.0</title>
+  <link rel="stylesheet" href="/web/app.css">
+</head>
+<body>
+  <main class="app" data-state="idle">
+    <div class="card notes">
+      <header class="notes-header" data-testid="notes-header">
+        <span class="brand">Notebook</span>
+        <span class="user-name">owner</span>
+        <button class="logout" type="button">Logout</button>
+      </header>
+
+      <div class="notes-search" role="search" aria-label="Поиск заметок">
+        <label for="notes-search">Поиск заметок</label>
+        <div class="notes-search-row">
+          <input data-testid="notes-search" id="notes-search" name="search"
+                 type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Поиск по тексту..." aria-controls="notes-list">
+          <button data-testid="notes-search-clear" id="notes-search-clear"
+                  class="notes-search-clear" type="button"
+                  aria-label="Очистить поиск" hidden>Clear</button>
+        </div>
+      </div>
+
+      <p data-testid="notes-search-count" id="notes-search-count">Найдено 3</p>
+
+      <p class="error" data-testid="notes-error" id="notes-error"
+         role="alert" aria-live="assertive" hidden>
+        Не удалось загрузить заметки. Повторите позже.
+      </p>
+      <button data-testid="notes-retry" id="notes-retry" type="button" hidden>
+        Повторить
+      </button>
+
+      <div data-testid="notes-offline" id="notes-offline" role="status" hidden>
+        <p>Нет сети — поиск недоступен. Показаны сохранённые заметки.</p>
+        <button data-testid="notes-offline-check" id="notes-offline-check"
+                type="button">Проверить сеть</button>
+      </div>
+
+      <p data-testid="notes-loading" id="notes-loading">Загрузка...</p>
+      <p data-testid="notes-empty" id="notes-empty" hidden>
+        Пока нет заметок. Добавьте первую выше.
+      </p>
+      <p data-testid="notes-search-empty" id="notes-search-empty"
+         role="status" aria-live="polite" hidden>
+        Ничего не найдено.
+      </p>
+
+      <ul class="notes-list" data-testid="notes-list" id="notes-list" role="list">
+        <li class="note-item" data-testid="note-item" role="listitem">
+          <span class="note-text">#12 План на неделю: закончить отчёт</span>
+        </li>
+        <li class="note-item" data-testid="note-item" role="listitem">
+          <span class="note-text">#13 Утренний план тренировок</span>
+        </li>
+        <li class="note-item" data-testid="note-item" role="listitem">
+          <span class="note-text">#14 Планирование бюджета на месяц</span>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var STATES = ["idle", "results", "no-results", "empty", "loading", "error", "offline"];
+      var state = new URLSearchParams(window.location.search).get("state");
+      if (STATES.indexOf(state) === -1) state = "idle";
+
+      document.body.setAttribute("data-state", state);
+      var app = document.querySelector(".app");
+      if (app) app.setAttribute("data-state", state);
+      document.title = "note-search: " + state;
+
+      function byTestId(id) {
+        return document.querySelector('[data-testid="' + id + '"]');
+      }
+
+      function setHidden(id, hidden) {
+        var el = byTestId(id);
+        if (el) el.hidden = hidden;
+      }
+
+      var search = byTestId("notes-search");
+      var clear = byTestId("notes-search-clear");
+      var count = byTestId("notes-search-count");
+      var list = byTestId("notes-list");
+
+      var hasQuery = state === "results" || state === "no-results";
+      var showsList = state === "idle" || state === "results" || state === "offline";
+      var showsCount = state !== "loading" && state !== "error";
+
+      if (search) {
+        search.value = hasQuery ? "план" : "";
+        search.disabled = state === "loading" || state === "error" || state === "offline";
+      }
+      if (clear) clear.hidden = !hasQuery;
+      if (count) {
+        count.hidden = !showsCount;
+        count.textContent = "Найдено " + (state === "empty" || state === "no-results" ? "0" : "3");
+      }
+      if (list) list.hidden = !showsList;
+
+      setHidden("notes-loading", state !== "loading");
+      setHidden("notes-empty", state !== "empty");
+      setHidden("notes-search-empty", state !== "no-results");
+      setHidden("notes-error", state !== "error");
+      setHidden("notes-retry", state !== "error");
+      setHidden("notes-offline", state !== "offline");
+      setHidden("notes-offline-check", state !== "offline");
+    })();
+  </script>
+</body>
+</html>

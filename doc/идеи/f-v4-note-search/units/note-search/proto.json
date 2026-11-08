@@ -1,0 +1,250 @@
+{
+  "schema_version": "1.0",
+  "screen_id": "note-search",
+  "unit_id": "note-search",
+  "platform": "web",
+  "design_system_version": "1.0.0",
+  "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
+  "states": [
+    "normal",
+    "idle",
+    "results",
+    "no-results",
+    "empty",
+    "loading",
+    "error",
+    "offline"
+  ],
+  "state_matrix": [
+    {
+      "state": "normal",
+      "alias_of": "idle",
+      "description": "Normal view: notes list, empty query (alias of idle)."
+    },
+    {
+      "state": "idle",
+      "description": "Пустой запрос: показаны все 3 сохранённые заметки, поле поиска пустое, Clear скрыт, счётчик «Найдено 3».",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-count",
+        "n-notes-list",
+        "n-note-item"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "results",
+      "description": "Запрос «план»: 3 совпадающие заметки, Clear виден, счётчик «Найдено 3».",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-search-clear",
+        "n-count",
+        "n-notes-list",
+        "n-note-item"
+      ],
+      "hidden": [
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "no-results",
+      "description": "Запрос «план» без совпадений: «Ничего не найдено.», счётчик «Найдено 0», Clear виден, список скрыт.",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-search-clear",
+        "n-count",
+        "n-search-empty"
+      ],
+      "hidden": [
+        "n-notes-list",
+        "n-note-item",
+        "n-loading",
+        "n-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "empty",
+      "description": "Сервер вернул пустой список при пустом запросе: «Пока нет заметок. Добавьте первую выше.», счётчик «Найдено 0», список скрыт.",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-count",
+        "n-empty"
+      ],
+      "hidden": [
+        "n-notes-list",
+        "n-note-item",
+        "n-search-clear",
+        "n-loading",
+        "n-search-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "loading",
+      "description": "Загрузка заметок: «Загрузка...», поиск и список недоступны, счётчик скрыт.",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-loading"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-count",
+        "n-notes-list",
+        "n-note-item",
+        "n-empty",
+        "n-search-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "error",
+      "description": "Ошибка загрузки: alert «Не удалось загрузить заметки. Повторите позже.» и кнопка «Повторить»; счётчик и список скрыты.",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-error",
+        "n-retry"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-count",
+        "n-notes-list",
+        "n-note-item",
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "offline",
+      "description": "Нет сети: баннер «Нет сети — поиск недоступен. Показаны сохранённые заметки.» и кнопка «Проверить сеть»; показаны сохранённые заметки и счётчик.",
+      "visible": [
+        "n-notes-header",
+        "n-search-field",
+        "n-offline",
+        "n-offline-check",
+        "n-count",
+        "n-notes-list",
+        "n-note-item"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-error",
+        "n-retry"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "node_id": "n-search-field",
+      "selector": ".notes-search",
+      "registry_id": "patterns/search-field"
+    },
+    {
+      "node_id": "n-search-clear",
+      "selector": ".notes-search-clear",
+      "registry_id": "patterns/search-clear"
+    },
+    {
+      "node_id": "n-notes-list",
+      "selector": ".notes-list",
+      "registry_id": "patterns/notes-list"
+    },
+    {
+      "node_id": "n-note-item",
+      "selector": ".note-item",
+      "registry_id": "patterns/note-item"
+    },
+    {
+      "node_id": "n-notes-header",
+      "selector": ".notes-header",
+      "registry_id": "patterns/notes-header"
+    },
+    {
+      "node_id": "n-loading",
+      "selector": "[data-testid=notes-loading]",
+      "registry_id": "states/loading"
+    },
+    {
+      "node_id": "n-empty",
+      "selector": "[data-testid=notes-empty]",
+      "registry_id": "states/empty"
+    },
+    {
+      "node_id": "n-search-empty",
+      "selector": "[data-testid=notes-search-empty]",
+      "registry_id": "states/search-empty"
+    },
+    {
+      "node_id": "n-error",
+      "selector": ".error",
+      "registry_id": "primitives/error"
+    },
+    {
+      "node_id": "n-button",
+      "selector": "button",
+      "registry_id": "primitives/button"
+    },
+    {
+      "node_id": "n-count",
+      "selector": "[data-testid=notes-search-count]",
+      "path6_required": true,
+      "gap": "count label not in DS registry"
+    },
+    {
+      "node_id": "n-offline",
+      "selector": "[data-testid=notes-offline]",
+      "path6_required": true,
+      "gap": "offline banner not in DS registry"
+    },
+    {
+      "node_id": "n-retry",
+      "selector": "[data-testid=notes-retry]",
+      "registry_id": "primitives/button",
+      "path6_required": true,
+      "gap": "retry button instance has no dedicated DS component; uses primitives/button"
+    },
+    {
+      "node_id": "n-offline-check",
+      "selector": "[data-testid=notes-offline-check]",
+      "registry_id": "primitives/button",
+      "path6_required": true,
+      "gap": "offline check button instance has no dedicated DS component; uses primitives/button"
+    }
+  ]
+}
