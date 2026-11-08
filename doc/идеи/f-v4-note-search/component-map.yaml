@@ -1,0 +1,10 @@
+note-search:
+  page.header: patterns/PageHeader
+  search.field: primitives/Search
+  search.clear: primitives/IconButton
+  notes.list: patterns/InboxList
+  notes.item: patterns/InboxItem
+  states.empty: patterns/EmptyState
+  states.loading: primitives/Skeleton
+  states.error: patterns/ErrorState
+  states.offline: patterns/SafetyBand

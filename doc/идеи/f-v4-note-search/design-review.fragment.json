@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "screen_id": "note-search",
+  "reviewers": {
+    "ui": {
+      "role": "designer",
+      "session_id": "ses_e54b16950ffeR4Iy8rZhlu3ZuD",
+      "author_session_id": "ses_proto_e4076",
+      "verdict": "accept",
+      "blockers": 0
+    },
+    "ux": {
+      "role": "product-ux",
+      "session_id": "ses_ux_review_e4076",
+      "author_session_id": "ses_proto_e4076",
+      "verdict": "accept",
+      "blockers": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "UI-1",
+      "severity": "minor",
+      "status": "accepted",
+      "text": "Prototype is state-complete; visual polish deferred.",
+      "owner": "designer"
+    },
+    {
+      "id": "UX-1",
+      "severity": "minor",
+      "status": "accepted",
+      "text": "Search/clear flow understandable; verify on real data in s22e.",
+      "owner": "product"
+    }
+  ],
+  "reviewed_at": "2026-11-08T01:05:00Z",
+  "artifacts": [
+    "units/note-search/proto.json",
+    "units/note-search/ds-lock.json"
+  ]
+}
