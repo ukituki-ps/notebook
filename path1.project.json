@@ -19,17 +19,17 @@
       {
         "id": "CANARY-DELETE-STATUS",
         "seed": "sed -i 's/http.StatusNoContent/http.StatusOK/' {worktree}/main.go",
-        "detect": "cd {worktree} && go test -run TestDeleteNote ./..."
+        "detect": "go test -run TestDeleteNote ./..."
       },
       {
         "id": "sec-rls-predicate-drop",
         "seed": "sed -i 's/if note.UserID == userID/if note.UserID != userID/' {worktree}/main.go",
-        "detect": "cd {worktree} && go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
+        "detect": "go test -count=1 -run 'TestNotesIsolation|TestDeleteForeignNote' ./..."
       },
       {
         "id": "sec-skip-tagged",
         "seed": "sed -i '1i //go:build integration' {worktree}/main_test.go",
-        "detect": "cd {worktree} && sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\""
+        "detect": "sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\""
       }
     ]
   },
