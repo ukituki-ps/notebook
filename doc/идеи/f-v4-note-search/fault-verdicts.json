@@ -102,12 +102,10 @@
     "source": "path1.project.json audit.oracles UI-E2E-PREVIEW"
   },
   "UI-A11Y-LABEL": {
-    "verdict": "na",
-    "detector_exit": null,
-    "check": "npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-    "justification": "Accessible-name fault class is in scope; the Playwright oracle needs the integrated preview UI on test2, which is pending s20b/s20c. The static complement TestUISemantics asserts <label for>, role=alert and aria-live but is red on R-1. Tracked as minor gaps R-1 and E2E-PREVIEW-PENDING-S20C in coverage-audit.json.",
-    "observed": "Playwright not run at s17 (no preview UI for this branch); static TestUISemantics exit 1 on R-1 only",
-    "source": "invariants.json INV-UI-LABEL / INV-UI-A11Y-NAME"
+    "verdict": "covered",
+    "detector_exit": 0,
+    "check": "go test -count=1 -run TestUISemantics ./...",
+    "evidence": "TestUISemantics green on integrated branch; SEARCH-E2E-16/19 pass on test2 5785dc0"
   },
   "UI-XSS-ESCAPE": {
     "verdict": "na",

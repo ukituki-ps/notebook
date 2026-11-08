@@ -111,9 +111,9 @@
 - id: UI-A11Y-LABEL
   domain: ui
   title: "Search/clear/delete controls lack accessible names, labels, or polite live regions"
-  detect: "npx playwright test web/e2e/notes-search.spec.js --reporter=line"
+  detect: "go test -count=1 -run TestUISemantics ./..."
   severity: medium
-  source: "invariants.json INV-UI-LABEL / INV-UI-A11Y-NAME (Playwright oracle); static complement TestUISemantics"
+  source: "invariants.json INV-UI-LABEL / INV-UI-A11Y-NAME; TestUISemantics asserts label/role=alert/aria-live; Playwright SEARCH-E2E-16/19 on test2"
 
 - id: UI-XSS-ESCAPE
   domain: ui
