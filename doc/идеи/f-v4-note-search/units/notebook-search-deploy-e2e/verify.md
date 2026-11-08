@@ -148,3 +148,5 @@ The Go failure is **pre-existing at the unit base** and unrelated to u03:
    `scenario-evidence.json` references none of them (all fields `null`). s20c must
    overwrite them and add 7–20; no stale frame may be attached to a pass entry.
 4. No code changes and no commit were made by this verification.
+
+- accepted: s13.unit_verify (E0809-u03)
