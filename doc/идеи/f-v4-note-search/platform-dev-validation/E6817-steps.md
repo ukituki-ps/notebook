@@ -27,3 +27,5 @@
 | s10.change_definition | change-definition.md | domains: backend/web/deploy |
 | s10.change_definition | change-definition.md | accepted, 3 domains |
 | s11.planner_high_level | plan.md | high-level plan |
+| s11.planner_high_level | plan.md | accepted |
+| s13.plan_save | plan.md | saved |
