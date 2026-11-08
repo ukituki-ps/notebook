@@ -82,9 +82,5 @@
     "ux_review": "doc/идеи/f-v4-note-search/reviews/ux-review-v7.json",
     "exports": "doc/идеи/f-v4-note-search/prototypes/v7/exports/",
     "fig": "doc/идеи/f-v4-note-search/prototypes/v7/.fig-cache/f-v4-note-search--note-search-ds.fig"
-  },
-  "signature_request": {
-    "status": "pending",
-    "note": "Owner decision P-99 accepted; request bound to execution E6816; supersedes unbound approval card."
   }
 }
