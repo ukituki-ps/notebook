@@ -1,0 +1,57 @@
+# Local pre-run evidence for dev/f-v4-note-search-fix @ 4c8aa66ceb3d0441b9143e55b760e6b0493b0793
+# date: 2026-11-08T18:49:36Z
+# server: /tmp/kilo/notebook-9082 (same web/ tree, port remapped only)
+
+## go test ./...
+ok  	github.com/ukituki-ps/notebook	(cached)
+
+## node --check web/app.js
+OK
+
+## ds-token-drift
+ds-token-drift: PASS — 20 token checks against design/tokens.json (web/app.css)
+
+## design gates
+ds-pin: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+design-integrate: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+design-review: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+design-review: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+unit-ds-lock: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+unit-proto-coverage: PASS — /workspace/projects/notebook/doc/идеи/f-v4-note-search
+
+## Playwright full suite (30 tests)
+
+Running 30 tests using 1 worker
+
+  ✓   1 [chromium] › web/e2e/auth-notes.spec.js:67:1 › E2E-1 register: valid account redirects to /login with username prefilled (204ms)
+  ✓   2 [chromium] › web/e2e/auth-notes.spec.js:82:1 › E2E-2 login and token: 200 stores notebook.token and opens /notes (222ms)
+  ✓   3 [chromium] › web/e2e/auth-notes.spec.js:96:1 › E2E-3 create note: Add renders #id text in notes-list (267ms)
+  ✓   4 [chromium] › web/e2e/auth-notes.spec.js:108:1 › E2E-4 reload: note stays visible after page.reload() (310ms)
+  ✓   5 [chromium] › web/e2e/auth-notes.spec.js:121:1 › E2E-5 delete note: 204 removes the row and empty state appears (363ms)
+  ✓   6 [chromium] › web/e2e/auth-notes.spec.js:135:1 › E2E-6 isolation: user B cannot see or delete user A's note (478ms)
+  ✓   7 [chromium] › web/e2e/auth-notes.spec.js:168:1 › E2E-7 unauthenticated GET /api/notes returns 401 with WWW-Authenticate (97ms)
+  ✓   8 [chromium] › web/e2e/notes-search.spec.js:173:1 › SEARCH-E2E-1 search finds matching note (358ms)
+  ✓   9 [chromium] › web/e2e/notes-search.spec.js:192:1 › SEARCH-E2E-2 non-matching query shows the search empty state (329ms)
+  ✓  10 [chromium] › web/e2e/notes-search.spec.js:212:1 › SEARCH-E2E-3 match is case-insensitive (328ms)
+  ✓  11 [chromium] › web/e2e/notes-search.spec.js:231:1 › SEARCH-E2E-4 clear restores the full list (376ms)
+  ✓  12 [chromium] › web/e2e/notes-search.spec.js:255:1 › SEARCH-E2E-5 create while query active re-applies the filter (496ms)
+  ✓  13 [chromium] › web/e2e/notes-search.spec.js:284:1 › SEARCH-E2E-6 delete while query active keeps the filter consistent (511ms)
+  ✓  14 [chromium] › web/e2e/notes-search.spec.js:335:1 › SEARCH-E2E-7 whitespace-only query keeps the clear control hidden (278ms)
+  ✓  15 [chromium] › web/e2e/notes-search.spec.js:349:1 › SEARCH-E2E-8 no-token path clears a leftover query (127ms)
+  ✓  16 [chromium] › web/e2e/notes-search.spec.js:359:1 › SEARCH-E2E-9 count is shown only for a non-empty query (448ms)
+  ✓  17 [chromium] › web/e2e/notes-search.spec.js:396:1 › SEARCH-E2E-10 zero notes shows the base empty state and disables search (227ms)
+  ✓  18 [chromium] › web/e2e/notes-search.spec.js:409:1 › SEARCH-E2E-11 loading shows the status and disables search (312ms)
+  ✓  19 [chromium] › web/e2e/notes-search.spec.js:452:1 › SEARCH-E2E-12 error state offers retry that reloads notes (359ms)
+  ✓  20 [chromium] › web/e2e/notes-search.spec.js:511:1 › SEARCH-E2E-13 offline banner keeps loaded notes and hides false empty (365ms)
+  ✓  21 [chromium] › web/e2e/notes-search.spec.js:536:1 › SEARCH-E2E-14 offline with zero notes is distinct from search empty (225ms)
+  ✓  22 [chromium] › web/e2e/notes-search.spec.js:554:1 › SEARCH-E2E-15 note markup renders literally (no XSS) (296ms)
+  ✓  23 [chromium] › web/e2e/notes-search.spec.js:587:1 › SEARCH-E2E-16 keyboard focus and aria wiring (294ms)
+  ✓  24 [chromium] › web/e2e/notes-search.spec.js:632:1 › SEARCH-E2E-17 query length cap: 513 bytes rejected, 512 accepted (263ms)
+  ✓  25 [chromium] › web/e2e/notes-search.spec.js:669:1 › SEARCH-E2E-18 390 and 1200 viewports avoid horizontal overflow (356ms)
+  ✓  26 [chromium] › web/e2e/notes-search.spec.js:721:1 › SEARCH-E2E-19 clear returns focus to the search input (402ms)
+  ✓  27 [chromium] › web/e2e/notes-search.spec.js:749:1 › SEARCH-E2E-20 owner scope B never sees user A notes (525ms)
+  ✓  28 [chromium] › web/e2e/notes-search.spec.js:787:1 › CR-01 a stale GET /api/notes cannot resurrect a deleted note (311ms)
+  ✓  29 [chromium] › web/e2e/notes-search.spec.js:859:1 › CR-02 a 401 lock never points aria-describedby at hidden notes-empty (6.4s)
+  ✓  30 [chromium] › web/e2e/notes-search.spec.js:914:1 › CR-03 clear works offline with a non-empty query, then reconnect (382ms)
+
+  30 passed (16.5s)
