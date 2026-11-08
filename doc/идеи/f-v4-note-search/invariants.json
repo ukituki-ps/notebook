@@ -39,7 +39,9 @@
       "statement": "Любой запрос к /api/notes* без bearer-заголовка, с битым или истёкшим токеном => 401 (auth проверяется раньше method/query/body).",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestAuthRequired|TestNotesSearchAuthRequired' ./...",
-      "covers": ["SEC-AUTH-REQUIRED"]
+      "covers": [
+        "SEC-AUTH-REQUIRED"
+      ]
     },
     {
       "id": "INV-USER-ISOLATION",
@@ -47,7 +49,11 @@
       "statement": "User A не видит заметки user B, включая поиск: результат поиска ограничен UserID текущей сессии.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesIsolation|TestNotesSearchIsolation' ./...",
-      "covers": ["SEC-RLS-SCOPE-PREDICATE", "SEC-USER-ISOLATION", "DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "SEC-RLS-SCOPE-PREDICATE",
+        "SEC-USER-ISOLATION",
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-OWNER-SCOPE",
@@ -55,7 +61,10 @@
       "statement": "GET /api/notes?q= возвращает только заметки текущего пользователя; owner predicate применяется до текстового фильтра, query может сузить, но не расширить выдачу.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchIsolation' ./...",
-      "covers": ["SEC-RLS-SCOPE-PREDICATE", "DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "SEC-RLS-SCOPE-PREDICATE",
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-CASE-INSENSITIVE",
@@ -63,7 +72,9 @@
       "statement": "Поиск по q регистронезависим (strings.ToLower обеих сторон), подстрока, без изменения хранимого текста.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchFinds|TestNotesSearchCaseInsensitive' ./...",
-      "covers": ["DATA-SCOPE-VALIDATION"]
+      "covers": [
+        "DATA-SCOPE-VALIDATION"
+      ]
     },
     {
       "id": "INV-SEARCH-EMPTY-Q",
@@ -71,7 +82,9 @@
       "statement": "Отсутствующий, пустой и whitespace-only q возвращают все заметки текущего пользователя; пустая выдача — [] не null.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery' ./...",
-      "covers": ["CONTRACT-NULL-OMITEMPTY"]
+      "covers": [
+        "CONTRACT-NULL-OMITEMPTY"
+      ]
     },
     {
       "id": "INV-SEARCH-NOT-FOUND",
@@ -79,7 +92,9 @@
       "statement": "Несовпадающий q возвращает 200 и пустой массив, без ошибки и без чужих заметок.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchNotFound' ./...",
-      "covers": ["CONTRACT-NULL-OMITEMPTY"]
+      "covers": [
+        "CONTRACT-NULL-OMITEMPTY"
+      ]
     },
     {
       "id": "INV-SEARCH-ENCODING",
@@ -87,7 +102,9 @@
       "statement": "URL-encoded и специальные символы в q декодируются net/http и не вызывают паники/500.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchEncoding' ./...",
-      "covers": ["DATA-ADAPTER-REAL-TRANSPORT"]
+      "covers": [
+        "DATA-ADAPTER-REAL-TRANSPORT"
+      ]
     },
     {
       "id": "INV-SEARCH-Q-MAX",
@@ -95,7 +112,9 @@
       "statement": "Decoded q длиннее 512 байт => 400 {\"error\":\"query too long\"} до сканирования заметок; ровно 512 байт допустимы; cap считается в байтах, не в рунах.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestNotesSearchQueryTooLong' ./...",
-      "covers": ["CONTRACT-STATUS-CODE"]
+      "covers": [
+        "CONTRACT-STATUS-CODE"
+      ]
     },
     {
       "id": "INV-WIRE-CASING",
@@ -103,7 +122,9 @@
       "statement": "Wire-поля JSON остаются id/text/token/username/error в нижнем регистре; UserID не сериализуется.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestWireContract' ./...",
-      "covers": ["CONTRACT-WIRE-CASING"]
+      "covers": [
+        "CONTRACT-WIRE-CASING"
+      ]
     },
     {
       "id": "INV-REAL-TRANSPORT",
@@ -111,7 +132,9 @@
       "statement": "Тесты поиска идут через httptest.Server/реальный HTTP-транспорт, а не прямыми вызовами Store.",
       "enforcement": "test",
       "test_ref": "cmd:go test -count=1 -run 'TestHTTPTransport|TestNotesSearchEncoding' ./...",
-      "covers": ["DATA-ADAPTER-REAL-TRANSPORT"]
+      "covers": [
+        "DATA-ADAPTER-REAL-TRANSPORT"
+      ]
     },
     {
       "id": "INV-NO-SKIP-TAGS",
@@ -119,31 +142,38 @@
       "statement": "Тесты не исключены build-тегами integration/e2e/manual; инвариантный набор исполняется штатным go test.",
       "enforcement": "test",
       "test_ref": "cmd:sh -c \"! grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .\"",
-      "covers": ["SEC-SKIP-TAGGED-INVARIANT"]
+      "covers": [
+        "SEC-SKIP-TAGGED-INVARIANT"
+      ]
     },
     {
       "id": "INV-UI-TRUTH",
-      "status": "active",
+      "status": "proposed",
       "statement": "UI показывает реальные данные API (GET /api/notes) и не содержит захардкоженных/фантомных заметок; после reload состояние совпадает с сервером.",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": ["UI-LOADING-ERROR-STATES"]
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [
+        "UI-LOADING-ERROR-STATES"
+      ],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     },
     {
       "id": "INV-UI-LABEL",
-      "status": "active",
+      "status": "proposed",
       "statement": "У поля поиска и кнопок есть видимая или aria-подпись; feature-копия на русском, Add/Logout остаются English по DS-term policy, Delete имеет видимый label «Удалить» и aria-label «Удалить заметку #N».",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": []
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     },
     {
       "id": "INV-UI-A11Y-NAME",
-      "status": "active",
+      "status": "proposed",
       "statement": "У поля поиска есть доступное имя и корректная role; empty state и count используют aria-live=polite; ошибки выводятся в role=alert с aria-live=polite.",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": []
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     },
     {
       "id": "INV-UI-ORACLE",
@@ -159,7 +189,9 @@
       "statement": "UI-сценарии поиска проходят на стенде test2 и подтверждены e2e-report/screenshot.",
       "enforcement": "s20c.e2e_preview: E2E на test2 + Playwright web/e2e/notes-search.spec.js + pngdiff",
       "test_ref": "cmd:bash deploy/path1/e2e-preview.sh",
-      "covers": ["UI-E2E-PREVIEW"]
+      "covers": [
+        "UI-E2E-PREVIEW"
+      ]
     },
     {
       "id": "INV-XSS-ESCAPE",
@@ -171,27 +203,35 @@
     },
     {
       "id": "INV-SEARCH-UI-FILTER",
-      "status": "active",
+      "status": "proposed",
       "statement": "Поле поиска фильтрует загруженный owner-scoped список; очистка возвращает полный список; create/delete/reload не ломаются и re-apply активный query.",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": ["UI-FILTER-SERIALIZATION", "UI-EMPTY-STATE-CONTROLS"]
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [
+        "UI-FILTER-SERIALIZATION",
+        "UI-EMPTY-STATE-CONTROLS"
+      ],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     },
     {
       "id": "INV-SEARCH-UI-EMPTY",
-      "status": "active",
+      "status": "proposed",
       "statement": "При непустом trimmed q без совпадений показывается empty state data-testid=notes-search-empty; при пустом q он не показывается; при нуле заметок побеждает base notes-empty.",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": ["UI-EMPTY-STATE-CONTROLS"]
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [
+        "UI-EMPTY-STATE-CONTROLS"
+      ],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     },
     {
       "id": "INV-SEARCH-UI-TESTIDS",
-      "status": "active",
+      "status": "proposed",
       "statement": "Поле поиска имеет data-testid=notes-search, empty state — data-testid=notes-search-empty, clear — data-testid=notes-search-clear.",
-      "enforcement": "test",
-      "test_ref": "cmd:npx playwright test web/e2e/notes-search.spec.js --reporter=line",
-      "covers": []
+      "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
+      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "covers": [],
+      "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23"
     }
   ]
 }
