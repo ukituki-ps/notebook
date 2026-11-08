@@ -68,3 +68,5 @@ unit oracle remains `TestUISemantics` plus the static checks in `verify.md`.
 ## Verdict
 
 **synced = true** for the U02 UI scope; no API/data contract drift.
+
+- accepted: s16.unit_spec_sync (E0809-u02); synced true
