@@ -210,3 +210,5 @@ This is a static compatibility check only; runtime proof remains s20c.
 **Verdict: pass — diff is in scope, static checks are green, evidence is honest, and
 the unit introduces no regression. Runtime acceptance and real evidence remain
 the explicit s20c obligation.**
+
+- accepted: s15.unit_regression (E0809-u03)
