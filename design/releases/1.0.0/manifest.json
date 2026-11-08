@@ -2,33 +2,33 @@
   "schema_version": "1.0",
   "release": "1.0.0",
   "tag": "ds/v1.0.0",
-  "commit": "1cfcca8fa869d7aa191c213220fd0630fce38d28",
-  "created_at": "2026-11-07T21:45:27Z",
+  "commit": "cc4218a50ca9fb2065e634a8863174bd8cd16ffe",
+  "created_at": "2026-11-08T13:49:51Z",
   "tokens": {
     "path": "design/tokens.json",
-    "sha256": "sha256:191c46f80322a7100cb39bd227de4ff436c1fdcdab18b4e5721601b93565a5ff"
+    "sha256": "sha256:9cca3164b76bcc2d648143cbccfc563503df046563a3cb81044fede5e4964068"
   },
   "registry": {
     "path": "design/registry.json",
-    "sha256": "sha256:f2a3b08e409e2ceccb17c7ac73178f92f180362bc68f38a81887f12ca363cd33"
+    "sha256": "sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1"
   },
   "kit": {
-    "s3_uri": "s3://openpencil/open_pencil_storage/canvases/ds--kit-1.0.0.fig",
-    "sha256": "sha256:4b0147e1d373139203d5e796bafb9831e024698445b095daa326848a1a460787",
-    "size": 208790
+    "s3_uri": "s3://openpencil/open_pencil_storage/canvases/notebook-ds-kit-1.0.0.fig",
+    "sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+    "size": 54743
   },
   "code": {
-    "path": "frontend/src/ui/kit",
-    "sha256": "sha256:17d138c8625955e087c7e6b8cc7f49be14613e9c2c4fd922fb2ba61635ca41dc"
+    "path": "web",
+    "sha256": "sha256:5f032e0a84204a04a5c83e92f32d29ebafef9ae4b8d42ae8742520b8fd44587b"
   },
   "quality": {
-    "tests": 144,
-    "tsc": "pass",
-    "build": "pass",
+    "tests": 15,
+    "tsc": "n/a (vanilla)",
+    "build": "n/a (static)",
     "axe": "not-run",
     "contrast": "AA",
     "lint_errors": 0,
-    "waiver": "axe/visual-regression CI is nice-to-have per P2.6-STATUS; manual a11y evidence in p26-final2-audit.md"
+    "waiver": "axe/visual-regression CI not run; manual contrast/touch/focus verified"
   },
-  "digest": "sha256:96213f0f57cd23d4f0fd718f57b750f38da088861f68f864c10be6854e1f9fb5"
+  "digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
 }

@@ -1,14 +1,20 @@
 {
   "schema_version": "1.0",
-  "name": "Kubiki Design System",
+  "name": "Notebook DS",
   "version": "1.0.0",
-  "source": "p2-kit@0.2.0",
   "components": [
     {
-      "id": "feedback/OfflineIndicator",
-      "name": "OfflineIndicator",
-      "source": "frontend/src/ui/kit/ui/feedback.tsx",
-      "package": "@kubiki/ui",
+      "id": "primitives/card",
+      "selector": ".card",
+      "source": "web/app.css",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "id": "primitives/button",
+      "selector": "button",
+      "source": "web/app.css",
       "states": [
         "default",
         "hover",
@@ -17,630 +23,109 @@
       ]
     },
     {
-      "id": "feedback/UpdatePill",
-      "name": "UpdatePill",
-      "source": "frontend/src/ui/kit/ui/feedback.tsx",
-      "package": "@kubiki/ui",
+      "id": "primitives/button-secondary",
+      "selector": ".logout",
+      "source": "web/app.css",
       "states": [
         "default",
         "hover",
-        "focus",
-        "disabled"
+        "focus"
       ]
     },
     {
-      "id": "p2/Tile",
-      "name": "Tile",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "primitives/input",
+      "selector": "input",
+      "source": "web/app.css",
       "states": [
         "default",
-        "hover",
         "focus",
-        "disabled"
+        "invalid"
       ]
     },
     {
-      "id": "p2/TileGrid",
-      "name": "TileGrid",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "primitives/textarea",
+      "selector": "textarea",
+      "source": "web/app.css",
       "states": [
         "default",
-        "hover",
         "focus",
-        "disabled"
+        "invalid"
       ]
     },
     {
-      "id": "p2/ChartBar",
-      "name": "ChartBar",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "primitives/error",
+      "selector": ".error",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "default"
       ]
     },
     {
-      "id": "p2/StatsChart",
-      "name": "StatsChart",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "patterns/notes-header",
+      "selector": ".notes-header",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "default"
       ]
     },
     {
-      "id": "p2/Ring",
-      "name": "Ring",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "patterns/notes-list",
+      "selector": ".notes-list",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "default"
       ]
     },
     {
-      "id": "p2/PINPad",
-      "name": "PINPad",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "patterns/note-item",
+      "selector": ".note-item",
+      "source": "web/app.css",
       "states": [
         "default",
-        "hover",
-        "focus",
-        "disabled"
+        "pending"
       ]
     },
     {
-      "id": "p2/ChatOverlay",
-      "name": "ChatOverlay",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "patterns/search-field",
+      "selector": ".notes-search",
+      "source": "web/app.css",
       "states": [
         "default",
-        "hover",
-        "focus",
-        "disabled"
+        "focus"
       ]
     },
     {
-      "id": "p2/ConsentRow",
-      "name": "ConsentRow",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "patterns/search-clear",
+      "selector": ".notes-search-clear",
+      "source": "web/app.css",
       "states": [
         "default",
-        "hover",
-        "focus",
-        "disabled"
+        "focus"
       ]
     },
     {
-      "id": "p2/ConnectionRow",
-      "name": "ConnectionRow",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "states/loading",
+      "selector": "[data-testid=\"notes-loading\"]",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "loading"
       ]
     },
     {
-      "id": "p2/NotificationPreview",
-      "name": "NotificationPreview",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "states/empty",
+      "selector": "[data-testid=\"notes-empty\"]",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "empty"
       ]
     },
     {
-      "id": "p2/CommerceSeparatedFooter",
-      "name": "CommerceSeparatedFooter",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
+      "id": "states/search-empty",
+      "selector": "[data-testid=\"notes-search-empty\"]",
+      "source": "web/app.css",
       "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "p2/EVOICard",
-      "name": "EVOICard",
-      "source": "frontend/src/ui/kit/ui/p2.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/PageHeader",
-      "name": "PageHeader",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/SectionHeader",
-      "name": "SectionHeader",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/SafetyBand",
-      "name": "SafetyBand",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/ActionCard",
-      "name": "ActionCard",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/InboxItem",
-      "name": "InboxItem",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/InboxList",
-      "name": "InboxList",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/TimelineRow",
-      "name": "TimelineRow",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/Timeline",
-      "name": "Timeline",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/BudgetBar",
-      "name": "BudgetBar",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/PortfolioSummary",
-      "name": "PortfolioSummary",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/Expander",
-      "name": "Expander",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/EmptyState",
-      "name": "EmptyState",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/ErrorState",
-      "name": "ErrorState",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/LoadingState",
-      "name": "LoadingState",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/Dialog",
-      "name": "Dialog",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/Sheet",
-      "name": "Sheet",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "patterns/BottomNav",
-      "name": "BottomNav",
-      "source": "frontend/src/ui/kit/ui/patterns.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Button",
-      "name": "Button",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/IconButton",
-      "name": "IconButton",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Input",
-      "name": "Input",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Textarea",
-      "name": "Textarea",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Select",
-      "name": "Select",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Switch",
-      "name": "Switch",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Checkbox",
-      "name": "Checkbox",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/RadioGroup",
-      "name": "RadioGroup",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Segmented",
-      "name": "Segmented",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Chip",
-      "name": "Chip",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Badge",
-      "name": "Badge",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Card",
-      "name": "Card",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Divider",
-      "name": "Divider",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Skeleton",
-      "name": "Skeleton",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Spinner",
-      "name": "Spinner",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Toast",
-      "name": "Toast",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Avatar",
-      "name": "Avatar",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Search",
-      "name": "Search",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "primitives/Progress",
-      "name": "Progress",
-      "source": "frontend/src/ui/kit/ui/primitives.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "shells/AppShellMobile",
-      "name": "AppShellMobile",
-      "source": "frontend/src/ui/kit/ui/shells.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "shells/AppShellDesktop",
-      "name": "AppShellDesktop",
-      "source": "frontend/src/ui/kit/ui/shells.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
-      ]
-    },
-    {
-      "id": "shells/SubpageShell",
-      "name": "SubpageShell",
-      "source": "frontend/src/ui/kit/ui/shells.tsx",
-      "package": "@kubiki/ui",
-      "states": [
-        "default",
-        "hover",
-        "focus",
-        "disabled"
+        "empty"
       ]
     }
-  ],
-  "patterns": [],
-  "templates": []
+  ]
 }

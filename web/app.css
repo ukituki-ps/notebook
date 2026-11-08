@@ -4,12 +4,15 @@
   --card: #ffffff;
   --text: #1f2328;
   --muted: #5b6470;
-  --border: #d0d7de;
+  --border: #8a837c;
+  --border-subtle: #d0d7de;
   --accent: #1f6feb;
   --accent-dark: #1554b8;
   --danger: #b42318;
   --danger-bg: #fef3f2;
   --radius: 10px;
+  --control-height: 44px;
+  --focus: #1f6feb;
 }
 
 * {
@@ -67,11 +70,11 @@ input,
 textarea {
   display: block;
   width: 100%;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--card);
   color: var(--text);
   overflow-wrap: anywhere;
 }
@@ -93,7 +96,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 10px 16px;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -113,7 +116,7 @@ button:disabled {
 }
 
 :focus-visible {
-  outline: 3px solid #ffbf47;
+  outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -228,7 +231,7 @@ form button[type="submit"] {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--card);
 }
 
 .note-item.pending {
