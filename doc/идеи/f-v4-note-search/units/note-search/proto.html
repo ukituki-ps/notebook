@@ -15,20 +15,6 @@
         <button class="logout" type="button">Logout</button>
       </header>
 
-      <div class="notes-search" role="search" aria-label="Поиск заметок">
-        <label for="notes-search">Поиск заметок</label>
-        <div class="notes-search-row">
-          <input data-testid="notes-search" id="notes-search" name="search"
-                 type="search" autocomplete="off" spellcheck="false"
-                 placeholder="Поиск по тексту..." aria-controls="notes-list">
-          <button data-testid="notes-search-clear" id="notes-search-clear"
-                  class="notes-search-clear" type="button"
-                  aria-label="Очистить поиск" hidden>Clear</button>
-        </div>
-      </div>
-
-      <p data-testid="notes-search-count" id="notes-search-count">Найдено 3</p>
-
       <p class="error" data-testid="notes-error" id="notes-error"
          role="alert" aria-live="assertive" hidden>
         Не удалось загрузить заметки. Повторите позже.
@@ -37,17 +23,41 @@
         Повторить
       </button>
 
-      <div data-testid="notes-offline" id="notes-offline" role="status" hidden>
-        <p>Нет сети — поиск недоступен. Показаны сохранённые заметки.</p>
-        <button data-testid="notes-offline-check" id="notes-offline-check"
-                type="button">Проверить сеть</button>
+      <form class="note-form" data-testid="note-form" id="note-form" novalidate>
+        <label for="note-text">Новая заметка</label>
+        <textarea data-testid="note-input" id="note-text" name="text" rows="3"
+                  placeholder="Текст заметки" aria-label="Новая заметка"></textarea>
+        <button data-testid="add-note" id="add-note" type="submit"
+                disabled aria-disabled="true">Add</button>
+      </form>
+
+      <div class="notes-search" role="search" aria-label="Поиск заметок">
+        <label for="notes-search">Поиск заметок</label>
+        <div class="notes-search-row">
+          <input data-testid="notes-search" id="notes-search" name="search"
+                 type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Поиск по тексту..." aria-controls="notes-list">
+          <button data-testid="notes-search-clear" id="notes-search-clear"
+                  class="notes-search-clear" type="button"
+                  aria-label="Очистить поиск" hidden>Очистить</button>
+        </div>
       </div>
 
-      <p data-testid="notes-loading" id="notes-loading">Загрузка...</p>
-      <p data-testid="notes-empty" id="notes-empty" hidden>
+      <div class="note-item" data-testid="notes-offline" id="notes-offline"
+           role="status" hidden>
+        <p class="note-text muted">Нет сети — показаны сохранённые заметки.</p>
+        <button data-testid="notes-offline-check" id="notes-offline-check"
+                type="button" aria-label="Проверить сеть">Проверить&nbsp;сеть</button>
+      </div>
+
+      <p class="muted" data-testid="notes-search-count" id="notes-search-count" aria-live="polite" hidden>Найдено 3</p>
+
+      <p class="muted" data-testid="notes-loading" id="notes-loading"
+         role="status" aria-live="polite" hidden>Загрузка...</p>
+      <p class="muted" data-testid="notes-empty" id="notes-empty" hidden>
         Пока нет заметок. Добавьте первую выше.
       </p>
-      <p data-testid="notes-search-empty" id="notes-search-empty"
+      <p class="muted" data-testid="notes-search-empty" id="notes-search-empty"
          role="status" aria-live="polite" hidden>
         Ничего не найдено.
       </p>
@@ -92,21 +102,57 @@
       var clear = byTestId("notes-search-clear");
       var count = byTestId("notes-search-count");
       var list = byTestId("notes-list");
+      var noteText = byTestId("note-input");
+      var addButton = byTestId("add-note");
 
       var hasQuery = state === "results" || state === "no-results";
+      var formDisabled = state === "loading" || state === "error" || state === "offline";
+
+      function updateAddState() {
+        if (!addButton) return;
+        var disabled = formDisabled || !noteText || noteText.value.trim() === "";
+        addButton.disabled = disabled;
+        addButton.setAttribute("aria-disabled", disabled ? "true" : "false");
+      }
+
+      updateAddState();
+      if (noteText) noteText.addEventListener("input", updateAddState);
       var showsList = state === "idle" || state === "results" || state === "offline";
-      var showsCount = state !== "loading" && state !== "error";
+      var searchDisabled = state === "loading" || state === "error" || state === "offline";
 
       if (search) {
         search.value = hasQuery ? "план" : "";
-        search.disabled = state === "loading" || state === "error" || state === "offline";
+        search.disabled = searchDisabled;
+        search.placeholder =
+          state === "offline" ? "Поиск недоступен без сети" : "Поиск по тексту...";
+        if (searchDisabled) {
+          search.setAttribute("aria-disabled", "true");
+          search.setAttribute(
+            "aria-describedby",
+            state === "offline" ? "notes-offline"
+              : state === "loading" ? "notes-loading"
+              : "notes-error"
+          );
+        } else {
+          search.removeAttribute("aria-disabled");
+          search.removeAttribute("aria-describedby");
+        }
       }
+
       if (clear) clear.hidden = !hasQuery;
+
       if (count) {
-        count.hidden = !showsCount;
-        count.textContent = "Найдено " + (state === "empty" || state === "no-results" ? "0" : "3");
+        count.hidden = !hasQuery;
+        if (hasQuery) {
+          count.textContent = "Найдено " + (state === "no-results" ? "0" : "3");
+        }
       }
-      if (list) list.hidden = !showsList;
+
+      if (list) {
+        list.hidden = !showsList;
+        if (state === "loading") list.setAttribute("aria-busy", "true");
+        else list.removeAttribute("aria-busy");
+      }
 
       setHidden("notes-loading", state !== "loading");
       setHidden("notes-empty", state !== "empty");

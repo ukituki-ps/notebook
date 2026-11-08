@@ -19,20 +19,43 @@
     {
       "state": "normal",
       "alias_of": "idle",
-      "description": "Normal view: notes list, empty query (alias of idle)."
-    },
-    {
-      "state": "idle",
-      "description": "Пустой запрос: показаны все 3 сохранённые заметки, поле поиска пустое, Clear скрыт, счётчик «Найдено 3».",
+      "description": "Normal view: notes list, empty query (alias of idle).",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
-        "n-count",
         "n-notes-list",
         "n-note-item"
       ],
       "hidden": [
         "n-search-clear",
+        "n-count",
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-error",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ]
+    },
+    {
+      "state": "idle",
+      "description": "Пустой запрос: форма заметки и поиск видимы, показаны все 3 сохранённые заметки, поле поиска пустое, Очистить и счётчик скрыты.",
+      "visible": [
+        "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
+        "n-search-field",
+        "n-notes-list",
+        "n-note-item"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-count",
         "n-loading",
         "n-empty",
         "n-search-empty",
@@ -44,9 +67,12 @@
     },
     {
       "state": "results",
-      "description": "Запрос «план»: 3 совпадающие заметки, Clear виден, счётчик «Найдено 3».",
+      "description": "Запрос «план»: форма заметки и поиск видимы, 3 совпадающие заметки, Очистить виден, счётчик «Найдено 3».",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
         "n-search-clear",
         "n-count",
@@ -65,9 +91,12 @@
     },
     {
       "state": "no-results",
-      "description": "Запрос «план» без совпадений: «Ничего не найдено.», счётчик «Найдено 0», Clear виден, список скрыт.",
+      "description": "Запрос «план» без совпадений: форма заметки и поиск видимы, «Ничего не найдено.», счётчик «Найдено 0», Очистить виден, список скрыт.",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
         "n-search-clear",
         "n-count",
@@ -86,17 +115,20 @@
     },
     {
       "state": "empty",
-      "description": "Сервер вернул пустой список при пустом запросе: «Пока нет заметок. Добавьте первую выше.», счётчик «Найдено 0», список скрыт.",
+      "description": "Сервер вернул пустой список при пустом запросе: форма заметки и поиск видимы, «Пока нет заметок. Добавьте первую выше.», счётчик скрыт, список скрыт.",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
-        "n-count",
         "n-empty"
       ],
       "hidden": [
         "n-notes-list",
         "n-note-item",
         "n-search-clear",
+        "n-count",
         "n-loading",
         "n-search-empty",
         "n-error",
@@ -107,9 +139,12 @@
     },
     {
       "state": "loading",
-      "description": "Загрузка заметок: «Загрузка...», поиск и список недоступны, счётчик скрыт.",
+      "description": "Загрузка заметок: форма заметки видима, «Загрузка...», поиск disabled, счётчик и список скрыты, список помечен aria-busy=true.",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
         "n-loading"
       ],
@@ -128,9 +163,12 @@
     },
     {
       "state": "error",
-      "description": "Ошибка загрузки: alert «Не удалось загрузить заметки. Повторите позже.» и кнопка «Повторить»; счётчик и список скрыты.",
+      "description": "Ошибка загрузки: форма заметки видима, alert «Не удалось загрузить заметки. Повторите позже.» и кнопка «Повторить»; поиск disabled, счётчик и список скрыты.",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
         "n-error",
         "n-retry"
@@ -149,18 +187,21 @@
     },
     {
       "state": "offline",
-      "description": "Нет сети: баннер «Нет сети — поиск недоступен. Показаны сохранённые заметки.» и кнопка «Проверить сеть»; показаны сохранённые заметки и счётчик.",
+      "description": "Нет сети: форма заметки видима, баннер-композиция note-item с note-text/muted-текстом «Нет сети — показаны сохранённые заметки.» и кнопкой «Проверить сеть»; поиск disabled с placeholder «Поиск недоступен без сети», счётчик скрыт, сохранённые заметки видны.",
       "visible": [
         "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
         "n-search-field",
         "n-offline",
         "n-offline-check",
-        "n-count",
         "n-notes-list",
         "n-note-item"
       ],
       "hidden": [
         "n-search-clear",
+        "n-count",
         "n-loading",
         "n-empty",
         "n-search-empty",
@@ -196,6 +237,24 @@
       "registry_id": "patterns/notes-header"
     },
     {
+      "node_id": "n-note-form",
+      "selector": ".note-form",
+      "composition": [
+        "primitives/textarea",
+        "primitives/button"
+      ]
+    },
+    {
+      "node_id": "n-note-textarea",
+      "selector": "textarea",
+      "registry_id": "primitives/textarea"
+    },
+    {
+      "node_id": "n-note-add",
+      "selector": "[data-testid=add-note]",
+      "registry_id": "primitives/button"
+    },
+    {
       "node_id": "n-loading",
       "selector": "[data-testid=notes-loading]",
       "registry_id": "states/loading"
@@ -229,22 +288,17 @@
     {
       "node_id": "n-offline",
       "selector": "[data-testid=notes-offline]",
-      "path6_required": true,
-      "gap": "offline banner not in DS registry"
+      "registry_id": "patterns/note-item"
     },
     {
       "node_id": "n-retry",
       "selector": "[data-testid=notes-retry]",
-      "registry_id": "primitives/button",
-      "path6_required": true,
-      "gap": "retry button instance has no dedicated DS component; uses primitives/button"
+      "registry_id": "primitives/button"
     },
     {
       "node_id": "n-offline-check",
       "selector": "[data-testid=notes-offline-check]",
-      "registry_id": "primitives/button",
-      "path6_required": true,
-      "gap": "offline check button instance has no dedicated DS component; uses primitives/button"
+      "registry_id": "primitives/button"
     }
   ]
 }

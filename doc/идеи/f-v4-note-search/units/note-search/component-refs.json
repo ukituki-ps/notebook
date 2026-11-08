@@ -5,6 +5,29 @@
   "ds_digest": "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d",
   "components": [
     {
+      "node_id": "n-notes-header",
+      "registry_id": "patterns/notes-header",
+      "selector": ".notes-header"
+    },
+    {
+      "node_id": "n-note-form",
+      "registry_id": null,
+      "selector": ".note-form",
+      "resolution": "composition",
+      "composition": ["primitives/textarea", "primitives/button"],
+      "note": "proto.json ссылается на patterns/note-form — такого registry id в DS 1.0.0 нет; композит существующих примитивов."
+    },
+    {
+      "node_id": "n-note-textarea",
+      "registry_id": "primitives/textarea",
+      "selector": "textarea"
+    },
+    {
+      "node_id": "n-note-add",
+      "registry_id": "primitives/button",
+      "selector": "[data-testid=add-note]"
+    },
+    {
       "node_id": "n-search-field",
       "registry_id": "patterns/search-field",
       "selector": ".notes-search"
@@ -15,19 +38,11 @@
       "selector": ".notes-search-clear"
     },
     {
-      "node_id": "n-notes-list",
-      "registry_id": "patterns/notes-list",
-      "selector": ".notes-list"
-    },
-    {
-      "node_id": "n-note-item",
-      "registry_id": "patterns/note-item",
-      "selector": ".note-item"
-    },
-    {
-      "node_id": "n-notes-header",
-      "registry_id": "patterns/notes-header",
-      "selector": ".notes-header"
+      "node_id": "n-count",
+      "registry_id": null,
+      "selector": "[data-testid=notes-search-count]",
+      "resolution": "path6_required",
+      "design_gap": "GAP-1"
     },
     {
       "node_id": "n-loading",
@@ -50,19 +65,47 @@
       "selector": ".error"
     },
     {
-      "node_id": "n-button",
-      "registry_id": "primitives/button",
-      "selector": "button"
-    },
-    {
       "node_id": "n-retry",
       "registry_id": "primitives/button",
-      "selector": "[data-testid=notes-retry]"
+      "selector": "[data-testid=notes-retry]",
+      "resolution": "reuse"
+    },
+    {
+      "node_id": "n-offline",
+      "registry_id": "patterns/note-item",
+      "selector": "[data-testid=notes-offline]",
+      "resolution": "composition",
+      "composition": ["patterns/note-item", "primitives/button"]
     },
     {
       "node_id": "n-offline-check",
       "registry_id": "primitives/button",
-      "selector": "[data-testid=notes-offline-check]"
+      "selector": "[data-testid=notes-offline-check]",
+      "resolution": "reuse"
+    },
+    {
+      "node_id": "n-notes-list",
+      "registry_id": "patterns/notes-list",
+      "selector": ".notes-list"
+    },
+    {
+      "node_id": "n-note-item",
+      "registry_id": "patterns/note-item",
+      "selector": ".note-item"
+    },
+    {
+      "node_id": "n-button",
+      "registry_id": "primitives/button",
+      "selector": "button"
+    }
+  ],
+  "composed_components": [
+    {
+      "registry_id": "primitives/input",
+      "selector": "input",
+      "composed_in": "n-search-field",
+      "states": ["default", "focus", "invalid"],
+      "reason": "Поле поиска рендерится как <input> внутри .notes-search, но самостоятельного node_id в proto.json нет. Учитывается в ds-lock.components как используемый registry id; на нём завязаны focus/disabled и GAP-2."
     }
   ],
   "path6_required": [
@@ -70,33 +113,29 @@
       "node_id": "n-count",
       "selector": "[data-testid=notes-search-count]",
       "kind": "count-label",
-      "reason": "Счётчик результатов «Найдено N» — текстовый элемент вне реестра Notebook DS 1.0.0: ни один из 14 registry_id не описывает count label (ни селектор, ни состояние). Стилизуется только унаследованными токенами (--muted/--text, body 15px) из design/tokens.json."
-    },
-    {
-      "node_id": "n-offline",
-      "selector": "[data-testid=notes-offline]",
-      "kind": "offline-banner",
-      "reason": "Баннер «Нет сети — поиск недоступен» — контейнер role=status вне реестра Notebook DS 1.0.0: primitives/error покрывает только .error (danger-семейство), offline-баннера (info/neutral) в registry.json нет. Требует решения по DS в следующем релизе; до этого реализуется на существующих токенах."
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0: ни один из 14 registry_id не описывает count label (ни селектором, ни состояниями). После UI-review счётчик виден только при непустом запросе (скрыт в idle/normal/empty/loading/error/offline) — это поведение задаётся логикой экрана, а не DS."
     }
   ],
   "path6_resolved_by_reuse": [
     {
       "node_id": "n-retry",
       "registry_id": "primitives/button",
-      "reason": "proto.json помечает path6_required, но dedicated-компонента нет. Переиспользуется primitives/button (selector button, states default/hover/focus/disabled) без локальной instance-модификации."
+      "reason": "Отдельного компонента нет и не требуется: кнопка «Повторить» — экземпляр primitives/button (selector button, states default/hover/focus/disabled) без локальных модификаций."
     },
     {
       "node_id": "n-offline-check",
       "registry_id": "primitives/button",
-      "reason": "proto.json помечает path6_required, но dedicated-компонента нет. Переиспользуется primitives/button (selector button, states default/hover/focus/disabled) как secondary-вариант вторичного действия."
+      "reason": "Кнопка «Проверить сеть» — экземпляр primitives/button (selector button, states default/hover/focus/disabled) внутри композиции n-offline; локальных модификаций нет."
     }
   ],
   "local_instances": [],
   "summary": {
     "local_instances": 0,
-    "registry_components": 10,
-    "path6_required": 2,
+    "registry_components": 12,
+    "nodes_total": 17,
+    "nodes_with_registry_id": 15,
+    "path6_required": 1,
     "path6_resolved_by_reuse": 2,
-    "nodes_total": 14
+    "compositions": 2
   }
 }

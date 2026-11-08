@@ -12,49 +12,62 @@
       "path6_required": true,
       "blocking": false,
       "status": "accepted",
-      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json (14 записей проверены: primitives/card, primitives/button, primitives/button-secondary, primitives/input, primitives/textarea, primitives/error, patterns/notes-header, patterns/notes-list, patterns/note-item, patterns/search-field, patterns/search-clear, states/loading, states/empty, states/search-empty). Нет ни registry_id, ни состояния для count label.",
-      "impact": "Нет канонического компонента и его состояний (hidden при loading/error, значение 0 при empty/no-results).",
-      "workaround": "Текст на токенах design/tokens.json: color --muted (#5B6470) для вторичного счётчика либо --text (#1F2328) для акцентного; font body 15px (system-ui stack), line-height 1.45; скрытие через атрибут hidden (web/app.css: [hidden]) — без локальных стилей и без новых классов.",
-      "proposed_ds_change": "Добавить в реестр patterns/count-label (selector .notes-search-count, states: default, hidden, zero) в следующем релизе DS 1.x.",
+      "reason": "Счётчик результатов «Найдено N» отсутствует в design/registry.json 1.0.0 (проверены все 14 записей). Нет ни registry_id, ни состояний для count label; поведение «виден только при непустом запросе» задаётся логикой экрана.",
+      "impact": "Нет канонического компонента и его состояний (hidden в idle/normal/empty/loading/error/offline, значение 0 при no-results).",
+      "workaround": "Текст на токенах design/tokens.json: .muted → color --muted (#5B6470) на --card (#FFFFFF), контраст 6.0:1 (AA); font body 15px system-ui, line-height 1.45; скрытие атрибутом hidden (web/app.css: [hidden]). Локального CSS нет.",
+      "proposed_ds_change": "Добавить patterns/count-label (selector .notes-search-count, states: default, hidden, zero) в следующем релизе DS 1.x.",
       "owner": "designer",
       "accepted_by": "designer",
-      "rationale_accepted": "Не блокирует реализацию: элемент чисто текстовый, покрывается существующими токенами и правилом [hidden]; расхождение с DS фиксируется как кандидат в registry."
+      "rationale_accepted": "Не блокирует реализацию: элемент текстовый, покрыт существующими токенами и правилом [hidden]; расхождение фиксируется как кандидат в registry."
     },
     {
       "id": "GAP-2",
-      "node_id": "n-offline",
-      "selector": "[data-testid=notes-offline]",
-      "kind": "missing-pattern",
-      "path6_required": true,
+      "node_id": "n-search-field",
+      "selector": "input",
+      "registry_id": "primitives/input",
+      "kind": "missing-state",
+      "path6_required": false,
       "blocking": false,
       "status": "accepted",
-      "reason": "Offline-баннер «Нет сети — поиск недоступен. Показаны сохранённые заметки.» отсутствует в design/registry.json. primitives/error (selector .error) покрывает только danger-семейство (--danger #B42318 / --danger-bg #FEF3F2), отдельного offline/info-баннера в реестре нет.",
-      "impact": "Нет канонического offline-состояния баннера; роль role=status и связка с кнопкой «Проверить сеть» (n-offline-check) не описаны в DS.",
-      "workaround": "Контейнер на токенах design/tokens.json: background --bg (#F4F6F8), color --text (#1F2328), border 1px solid --border-subtle (#D0D7DE), radius 8px (radius.sm), space 3/4 (12/16px); контраст text/bg = 14.6:1 (AA). Не переиспользовать danger-палитру, чтобы offline не читался как ошибка.",
-      "proposed_ds_change": "Добавить в реестр patterns/offline-banner (selector [data-testid=notes-offline], states: default, hidden) с нейтральной info-палитрой в следующем релизе DS 1.x.",
+      "reason": "У primitives/input в registry.json описаны состояния default/focus/invalid, но нет visual-state disabled. Экран штатно переводит поле поиска в disabled в loading/error/offline (proto.html: search.disabled = true, aria-disabled=true, aria-describedby → notes-loading/notes-error/notes-offline). web/app.css задаёт button:disabled { opacity: .55 }, но правила input:disabled нет — вид disabled-поля отдан UA-стилю браузера.",
+      "impact": "Внешний вид disabled-поиска не гарантирован между браузерами и не зафиксирован в DS; контраст текста/placeholder в disabled-состоянии не проверяем контрактно.",
+      "workaround": "Только существующие механизмы DS: нативный disabled + opacity через UA-стиль, aria-disabled=true, aria-describedby на видимый статус (notes-loading / notes-error / notes-offline), смена placeholder на «Поиск недоступен без сети» в offline. Локальный CSS и локальные instance-классы не добавляются.",
+      "proposed_ds_change": "Добавить состояние disabled в primitives/input (opacity .55 + --muted текст, cursor not-allowed) и зафиксировать его в states реестра в следующем релизе DS 1.x.",
       "owner": "designer",
       "accepted_by": "designer",
-      "rationale_accepted": "Не блокирует реализацию: баннер собирается из существующих токенов (bg/border-subtle/text) и primitives/button для действия; расхождение с DS фиксируется как кандидат в registry."
+      "rationale_accepted": "Не блокирует: disabled-состояние достижимо без локального CSS и остаётся доступным (aria-disabled + aria-describedby). Критерий design-integrate соблюдён — gap accepted, blocking=false."
     }
   ],
   "notes": [
     {
       "id": "NOTE-1",
-      "node_ids": ["n-retry", "n-offline-check"],
+      "node_ids": ["n-retry", "n-offline-check", "n-note-add", "n-button"],
       "kind": "reuse-not-gap",
-      "text": "proto.json помечает n-retry и n-offline-check как path6_required:true, но dedicated DS-компоненты им не нужны и не создаются: оба — экземпляры primitive-кнопки. registry_id = primitives/button (selector button, states default/hover/focus/disabled; высота 44px --control-height, radius 8px, accent #1F6FEB, hover #1554B8, focus outline 3px #1F6FEB). Локальных instance-модификаций нет, поэтому в design-gaps.json они не попадают."
+      "text": "Все кнопки экрана — экземпляры primitives/button (selector button; states default/hover/focus/disabled; min-height 44px, radius 8px, accent #1F6FEB, hover #1554B8, focus outline 3px #1F6FEB). Dedicated-компоненты не создаются, локальных модификаций нет."
     },
     {
       "id": "NOTE-2",
-      "node_ids": ["n-search-field"],
+      "node_ids": ["n-note-form", "n-note-textarea", "n-note-add"],
       "kind": "composition",
-      "text": ".notes-search (patterns/search-field) композирует <input> (primitives/input: min-height 44px, radius 8px, focus outline 3px) и .notes-search-clear (patterns/search-clear). Отдельного node_id для input/textarea в proto.json нет — это внутренняя композиция паттерна, не отдельный gap."
+      "text": "Форма создания заметки — композит primitives/textarea (textarea, states default/focus/invalid) + primitives/button (submit «Add»). proto.json указывает registry_id patterns/note-form, которого нет в design/registry.json 1.0.0 — id отклонён, registry id композиту не присваивается. Кандидат в DS: patterns/note-form (form + textarea + submit) в следующем релизе."
     },
     {
       "id": "NOTE-3",
-      "node_ids": ["n-notes-header"],
+      "node_ids": ["n-offline"],
       "kind": "composition",
-      "text": ".notes-header (patterns/notes-header) содержит .brand и .logout; .logout — primitives/button-secondary (selector .logout), но отдельного node_id в proto.json нет. Отдельным gap не считается."
+      "text": "Offline-баннер больше не gap: это второе вхождение patterns/note-item (.note-item) с muted-текстом (.muted) и кнопкой primitives/button. Отдельного offline-паттерна в DS нет, но композиция покрыта реестром, локального CSS нет — path6_required не ставится, GAP прошлого раунда снят."
+    },
+    {
+      "id": "NOTE-4",
+      "node_ids": ["n-search-field"],
+      "kind": "composition",
+      "text": "Поле поиска — <input> (primitives/input) внутри .notes-search (patterns/search-field); отдельного node_id в proto.json нет. Учитывается в ds-lock.components/composed_components как используемый registry id."
+    },
+    {
+      "id": "NOTE-5",
+      "node_ids": [],
+      "kind": "not-counted",
+      "text": "primitives/card (.card) и primitives/button-secondary (.logout) присутствуют в разметке proto.html, но node_id у них нет и состояния экрана от них не зависят — в ds-lock.components не входят (перечислены в ds-lock.not_counted)."
     }
   ],
   "summary": {

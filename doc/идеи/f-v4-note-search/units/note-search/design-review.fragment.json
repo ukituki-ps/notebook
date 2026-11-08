@@ -1,0 +1,248 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "screen_id": "note-search",
+  "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+  "reviewers": {
+    "ui": {
+      "role": "designer",
+      "session_id": "ses_e44805f58ffeQQzurMGcmR2JRm",
+      "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+      "verdict": "accept",
+      "blockers": 0,
+      "majors": 0,
+      "minors": 2,
+      "reviewed_at": "2026-11-08T14:29:12Z"
+    }
+  },
+  "findings": [
+    {
+      "id": "UI-01",
+      "severity": "blocker",
+      "status": "fixed",
+      "text": "Fixed. No local <style> block remains; the proto uses only Notebook DS classes (.muted, .note-item, .note-text, .note-form, textarea, button). The offline banner is a patterns/note-item composition, the count uses .muted, and ds-lock/component-map/component-refs report local_instances: 0.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:1-167 (no <style>); proto.html:46-51; ds-lock.json:137; component-map.yaml:9"
+      },
+      "criterion": "DS usage: only registry selectors/classes/tokens, no detached local instances"
+    },
+    {
+      "id": "UI-02",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. Offline placeholder is «Поиск недоступен без сети»; disabled search has native disabled + aria-disabled=true + aria-describedby to notes-loading/notes-error/notes-offline. The missing visual input:disabled state remains documented and accepted as GAP-2 (no local CSS), so this is resolved under the DS 1.0.0 lock.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:109,121-139; design-gaps.json:24-39; exports/export-390-loading.png, export-390-error.png, export-390-offline.png"
+      },
+      "criterion": "States visually distinct; disabled controls understandable"
+    },
+    {
+      "id": "UI-03",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. The note form (visible label + textarea + Add) is present above search in all 7 states; «Пока нет заметок. Добавьте первую выше.» now points to a real control.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:26-32; state-matrix.md:7,14; exports/export-390-empty.png, export-1200-empty.png"
+      },
+      "criterion": "Realism and state correctness: empty state action must exist"
+    },
+    {
+      "id": "UI-04",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. Clear control has visible «Очистить» and aria-label «Очистить поиск»; the accessible name contains the visible label, so WCAG 2.5.3 Label in Name passes.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:40-42; exports/export-390-results.png, export-390-no-results.png"
+      },
+      "criterion": "a11y mechanics: labels and accessible names (WCAG 2.5.3)"
+    },
+    {
+      "id": "UI-05",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. notes-loading, notes-empty and notes-search-empty all carry class=\"muted\"; loading/empty/no-results messages render in --muted #5B6470 (6.0:1) like web/index.html.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:55-63; web/index.html:75,89,92; exports/export-1200-loading.png, export-1200-empty.png, export-1200-no-results.png"
+      },
+      "criterion": "DS usage: registry classes and tokenized text color"
+    },
+    {
+      "id": "UI-06",
+      "severity": "minor",
+      "status": "accepted",
+      "text": "Residual token drift, accepted for this unit. radius.sm=8px is not exposed as a CSS var; inputs/buttons/note items hardcode 8px. tokens.font.h1=22px vs web/app.css h1 1.4rem (22.4px); .brand 1.2rem is untokenized; the screen still has no h1. Track for DS 1.x token cleanup.",
+      "evidence": {
+        "kind": "file",
+        "ref": "design/tokens.json:19-28; web/app.css:13,52-55,163-166; proto.html (no h1)"
+      },
+      "criterion": "Tokens: radius/typography used and drift noted honestly"
+    },
+    {
+      "id": "UI-07",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. Count is hidden in idle/normal/empty/loading/error/offline and visible only in results/no-results; «Найдено 3» no longer appears on an empty query.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:53,144-149; state-matrix.md:7; exports/export-390-idle.png, export-390-results.png, export-390-no-results.png"
+      },
+      "criterion": "State correctness: count semantics"
+    },
+    {
+      "id": "UI-08",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. notes-loading is role=status aria-live=polite; the list sets aria-busy=true while loading. Residual inert aria-busy target is recorded as accepted UI-13; the loading status still announces.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:55-56,151-155; state-matrix.md:15; exports/export-1200-loading.png"
+      },
+      "criterion": "a11y mechanics: aria-live/status for loading"
+    },
+    {
+      "id": "UI-09",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. Offline banner is a patterns/note-item composition: border var(--border) #8A837C (~3.7:1) and .note-text.muted #5B6470 (~6.0:1); no custom colors. Text and UI boundary contrast pass AA.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:46-51; web/app.css:227-246; design-gaps.json:55-58; exports/export-1200-offline.png"
+      },
+      "criterion": "Contrast AA for text and UI boundaries"
+    },
+    {
+      "id": "UI-10",
+      "severity": "info",
+      "status": "accepted",
+      "text": "Still true: offline hardcodes 3 notes and says «сохранённые заметки», but the app has no offline cache/listener and notes are in-memory (web/app.js:316). The state is reachable only if the list was loaded before the network dropped; after an offline reload there are no notes. Add offline-zero or reword to «загруженные заметки».",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:46-51; web/app.js:316; git 46dd490 prototypes/v6/exports/note-search-mobile-offline-zero.png"
+      },
+      "criterion": "Realism: do not imply persistence the app does not have"
+    },
+    {
+      "id": "UI-11",
+      "severity": "info",
+      "status": "accepted",
+      "text": "Working-tree provenance: proto.html, proto.json, the DS maps, state-matrix and all 14 exports are modified but uncommitted; this review fragment is untracked. The reviewed screenshots match the working tree, not HEAD. Commit the reviewed artifact (or regenerate from HEAD) so the gate evidence matches the artifact under review.",
+      "evidence": {
+        "kind": "file",
+        "ref": "git status --porcelain; git diff"
+      },
+      "criterion": "Artifact provenance for the review gate"
+    },
+    {
+      "id": "UI-12",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. The count now has aria-live=\"polite\"; the visible results/no-results count is announced, and the no-results message remains a separate polite status.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:53; state-matrix.md:7,12; exports/export-390-results.png, export-390-no-results.png"
+      },
+      "criterion": "a11y mechanics: live announcements for result counts"
+    },
+    {
+      "id": "UI-13",
+      "severity": "info",
+      "status": "accepted",
+      "text": "aria-busy=\"true\" is set on notes-list while the list is hidden (loading), so it is not exposed to assistive technology. The role=status loading message still announces; put aria-busy on a visible container or drop it when convenient.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:151-155; state-matrix.md:15"
+      },
+      "criterion": "a11y mechanics: effective aria-busy target"
+    },
+    {
+      "id": "UI-14",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed for Add and the visible label. Add is natively disabled with aria-disabled=true while the textarea is empty and in loading/error/offline; updateAddState enables it on input, and a visible <label for=\"note-text\">Новая заметка</label> is present. The textarea itself remains enabled in loading/error/offline; that residual is recorded separately as UI-18.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.html:26-32,109-119; state-matrix.md:7; exports/export-390-idle.png, export-390-loading.png, export-390-error.png; web/index.html:68-73; web/app.js:319-334"
+      },
+      "criterion": "State correctness and a11y labels for the context form"
+    },
+    {
+      "id": "UI-15",
+      "severity": "major",
+      "status": "fixed",
+      "text": "Fixed. The offline banner text now uses .note-text.muted, so the paragraph flexes and the button keeps its natural width; the button also uses a non-breaking space plus aria-label. Measured at 1200: accent button 168x45 px at y=413-457, single line; at 390: 306x45 px, single line. No wrap, no overflow; 390 content is 12..376 and 1200 content is 296..902.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-1200-offline.png (accent button 168x45); exports/export-390-offline.png (306x45); web/app.css:227-246"
+      },
+      "criterion": "Layout at 1200/390: DS control height and single-line primary action"
+    },
+    {
+      "id": "UI-16",
+      "severity": "info",
+      "status": "fixed",
+      "text": "Fixed. state-matrix.md:17 now describes the banner as «Нет сети — показаны сохранённые заметки.» with a single-line 44px button, matching proto.html:46-50; the «Поиск недоступен без сети» phrase is correctly attributed to the search placeholder.",
+      "evidence": {
+        "kind": "file",
+        "ref": "state-matrix.md:17; proto.html:46-50,126-127"
+      },
+      "criterion": "State-matrix accuracy"
+    },
+    {
+      "id": "UI-17",
+      "severity": "minor",
+      "status": "fixed",
+      "text": "Fixed. proto.json no longer invents patterns/note-form; n-note-form now has composition [primitives/textarea, primitives/button] and no registry_id, matching ds-lock/component-map/component-refs.",
+      "evidence": {
+        "kind": "file",
+        "ref": "proto.json:240-246; component-map.yaml:24-33; ds-lock.json:121-128; component-refs.json:13-18"
+      },
+      "criterion": "DS mapping consistency: no invented registry ids"
+    },
+    {
+      "id": "UI-18",
+      "severity": "minor",
+      "status": "open",
+      "text": "Residual form-state mismatch: the textarea remains enabled in loading/error/offline, while the DS app disables noteInput via setNotesEnabled(false) (web/app.js:319-326). Add is disabled, so no invalid submit is possible, but the field still looks usable. Fix by setting noteInput.disabled = formDisabled (and restoring it when the form is enabled), or document why it stays editable.",
+      "evidence": {
+        "kind": "screenshot",
+        "ref": "exports/export-390-loading.png, export-390-error.png, export-1200-offline.png; web/app.js:319-334; state-matrix.md:7"
+      },
+      "criterion": "State correctness: disabled form controls"
+    }
+  ],
+  "summary": {
+    "verdict": "accept",
+    "blockers": 0,
+    "majors": 0,
+    "minors": 2
+  },
+  "context": {
+    "source": "orc_ctx",
+    "tokens": 26,
+    "artifacts": [
+      "doc/идеи/f-v4-note-search/units/note-search/proto.html",
+      "doc/идеи/f-v4-note-search/units/note-search/proto.json",
+      "doc/идеи/f-v4-note-search/units/note-search/state-matrix.md",
+      "doc/идеи/f-v4-note-search/units/note-search/ds-lock.json",
+      "doc/идеи/f-v4-note-search/units/note-search/component-map.yaml",
+      "doc/идеи/f-v4-note-search/units/note-search/component-refs.json",
+      "doc/идеи/f-v4-note-search/units/note-search/design-gaps.json",
+      "doc/идеи/f-v4-note-search/units/note-search/exports/export-390-*.png",
+      "doc/идеи/f-v4-note-search/units/note-search/exports/export-1200-*.png",
+      "design/tokens.json",
+      "design/registry.json",
+      "design/releases/1.0.0/manifest.json",
+      "web/app.css",
+      "web/index.html",
+      "web/app.js",
+      "doc/идеи/f-v4-note-search/feature-brief.md",
+      "doc/идеи/f-v4-note-search/spec/core.md",
+      "doc/идеи/f-v4-note-search/UI-GRAPH.yaml"
+    ]
+  }
+}
