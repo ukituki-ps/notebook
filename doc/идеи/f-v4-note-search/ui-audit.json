@@ -15,7 +15,18 @@
     "release": "1.0.1",
     "digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
     "manifest_sha256": "sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b",
-    "component_refs_sha256": "sha256:65d056f4c2ac9997639fb7cb6068c8f9154b2ff5dbcccd57d8722b02edf08c18"
+    "component_refs_sha256": "sha256:65d056f4c2ac9997639fb7cb6068c8f9154b2ff5dbcccd57d8722b02edf08c18",
+    "ds_usage_violations": 0,
+    "registry_components_used": 14,
+    "registry_components_total": 14,
+    "kubi_imports": 0,
+    "local_instances": 0,
+    "path6_accepted": [
+      "n-count",
+      "n-delete",
+      "n-offline",
+      "n-retry"
+    ]
   },
   "scope": {
     "screens": [
