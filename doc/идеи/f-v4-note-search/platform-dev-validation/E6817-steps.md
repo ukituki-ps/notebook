@@ -6,3 +6,5 @@
 | s04.graph_builder_design | UI-GRAPH.planned.yaml | planned graph from DS 1.0.1 proto v7 |
 | s04.graph_builder_design | UI-GRAPH.planned.yaml | accepted |
 | s05.architect_validation | expertise-report.md | validation of planned graph + DS 1.0.1 |
+| s05.architect_validation | expertise-report.md | accepted |
+| s06.feature_brief_final | feature-brief.md | final brief |
