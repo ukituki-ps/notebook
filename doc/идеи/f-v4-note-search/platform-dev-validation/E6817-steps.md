@@ -10,3 +10,5 @@
 | s06.feature_brief_final | feature-brief.md | final brief |
 | s06.feature_brief_final | feature-brief.md | accepted |
 | s07.requirements_reconcile | intent-trace.json + intent-brief.md | 45/45 request items traced |
+| s07.requirements_reconcile | intent-trace.json | accepted 45/45 |
+| s08.intent_brief_review | intent-brief.md | awaiting owner approval |
