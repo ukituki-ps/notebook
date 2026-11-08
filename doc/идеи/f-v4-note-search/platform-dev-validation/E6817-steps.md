@@ -37,3 +37,4 @@
 | s16.brief_tasks | T0101-0103/brief.md | 3 unit briefs |
 | s16.brief_tasks | T0101-0103 | accepted |
 | s17.coverage_audit | coverage-audit.json | pass_with_gaps, 2 pending s20 |
+| s17.coverage_audit | coverage-audit.json | retry with explicit test oracles |

@@ -13,11 +13,11 @@
 
 ## Edge cases
 
-- Other users' notes are never returned (`TestNotesSearchIsolation`).
-- Empty/whitespace q returns all own notes (`TestNotesSearchEmptyQuery`, `TestNotesSearchWhitespaceQuery`).
-- URL-encoded/special chars decode safely (`TestNotesSearchEncoding`).
-- Non-matching q returns 200 + `[]` (`TestNotesSearchNotFound`).
-- Exactly 512 bytes is accepted; 513 bytes is 400.
+- Other users' notes are never returned — `go test ./... -run TestNotesSearchIsolation`.
+- Empty/whitespace q returns all own notes — `go test ./... -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery'`.
+- URL-encoded/special chars decode safely — `go test ./... -run TestNotesSearchEncoding`.
+- Non-matching q returns 200 + `[]` — `go test ./... -run TestNotesSearchNotFound`.
+- Exactly 512 bytes is accepted; 513 bytes is 400 — `go test ./... -run TestNotesSearchQueryTooLong`.
 
 ## UI contract
 
