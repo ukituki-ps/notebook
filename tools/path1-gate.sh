@@ -294,5 +294,8 @@ except Exception: print("")' 2>/dev/null || true)"
   ds-drift)
     base=""; [ "${3:-}" = "--base" ] && base="${4:-}"
     exec python3 "$DIR/check-design-gates.py" ds-drift --root "$ROOT" ${ORC_FEATURE_DIR:+--feature-dir "$ORC_FEATURE_DIR"} ${base:+--base "$base"} ;;
+  ds-token-drift)
+    # E0809: implementation CSS tokens must match design/tokens.json.
+    exec python3 "$DIR/check-ds-token-drift.py" --root "$ROOT" ;;
   *) echo "path1-gate: unknown gate '$gate' (fail-close)" >&2; exit 2 ;;
 esac

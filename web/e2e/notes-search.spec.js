@@ -778,3 +778,168 @@ test("SEARCH-E2E-20 owner scope B never sees user A notes", async ({ page, reque
   await expect(visibleItems(page)).toHaveCount(1);
   await shot(page, "SEARCH-E2E-20");
 });
+
+// CR-01..03 regressions added after the fix package (branch
+// dev/f-v4-note-search-fix, DS 1.0.1). They exercise the real app handlers;
+// the only non-user gesture is a programmatic click while the list is hidden,
+// which is how the load/delete race is made deterministic.
+
+test("CR-01 a stale GET /api/notes cannot resurrect a deleted note", async ({ page, request }) => {
+  await createUserAndLogin(page, request, "cr01");
+  const run = uniqueToken("run");
+  const text = `cr01 stale load ${run}`;
+  await addNote(page, text);
+
+  let releaseLoad;
+  const loadGate = new Promise((resolve) => {
+    releaseLoad = resolve;
+  });
+  let staleCaptured;
+  const captured = new Promise((resolve) => {
+    staleCaptured = resolve;
+  });
+  let held = 0;
+  await page.route("**/api/notes", async (route) => {
+    if (route.request().method() !== "GET") {
+      await route.continue();
+      return;
+    }
+    held += 1;
+    // Snapshot the backend response BEFORE the delete lands, then hold it.
+    const response = await route.fetch();
+    const stale = await response.json();
+    staleCaptured(stale);
+    await loadGate;
+    await route.fulfill({ response, json: stale });
+  });
+
+  // The offline banner exposes «Проверить сеть», whose handler runs loadNotes().
+  await page.context().setOffline(true);
+  await expect(page.getByTestId("notes-offline")).toBeVisible();
+  await page.context().setOffline(false);
+
+  const listed = page.waitForRequest(
+    (req) => req.method() === "GET" && new URL(req.url()).pathname === "/api/notes"
+  );
+  await page.getByTestId("notes-offline-check").click();
+  await listed;
+  expect(held).toBe(1);
+  const stale = await captured;
+  expect(
+    stale.some((note) => String(note.text) === text),
+    "held GET must contain the note that is about to be deleted"
+  ).toBe(true);
+  await expect(page.getByTestId("notes-loading")).toBeVisible();
+
+  // Delete the note while the stale load is still in flight. The list is
+  // hidden by the loading state, so dispatch the real button click directly.
+  const deleted = page.waitForResponse(
+    (res) =>
+      res.request().method() === "DELETE" &&
+      /\/api\/notes\/\d+$/.test(new URL(res.url()).pathname)
+  );
+  await page.evaluate((needle) => {
+    const rows = Array.from(document.querySelectorAll('[data-testid="note-item"]'));
+    const row = rows.find((el) => el.textContent.includes(needle));
+    if (!row) throw new Error("row not found for " + needle);
+    const button = row.querySelector(".delete-note");
+    if (!button) throw new Error("delete button not found");
+    button.click();
+  }, text);
+  const delRes = await deleted;
+  expect(delRes.status()).toBe(204);
+
+  // Releasing the stale response must not bring the deleted note back.
+  releaseLoad();
+  await expect(page.getByTestId("notes-loading")).toBeHidden();
+  await expect(page.getByTestId("note-item").filter({ hasText: text })).toHaveCount(0);
+  await shot(page, "CR-01");
+});
+
+test("CR-02 a 401 lock never points aria-describedby at hidden notes-empty", async ({ page, request }) => {
+  await createUserAndLogin(page, request, "cr02");
+  const run = uniqueToken("run");
+  await addNote(page, `cr02 locked ${run}`);
+
+  // Hold the /login document so the 401/locked window stays inspectable
+  // longer than the app's 200 ms redirect.
+  await page.route("**/login", async (route) => {
+    if (route.request().isNavigationRequest()) {
+      await new Promise((resolve) => setTimeout(resolve, 6000));
+    }
+    await route.continue();
+  });
+  await page.route("**/api/notes", async (route) => {
+    if (route.request().method() !== "GET") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: '{"error":"unauthorized"}',
+      headers: { "WWW-Authenticate": "Bearer" },
+    });
+  });
+
+  const listed = page.waitForRequest(
+    (req) => req.method() === "GET" && new URL(req.url()).pathname === "/api/notes"
+  );
+  await page.reload();
+  await listed;
+
+  const search = page.getByTestId("notes-search");
+  await expect(search).toBeDisabled();
+  await expect(search).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("notes-empty")).toBeHidden();
+
+  const described = await search.getAttribute("aria-describedby");
+  expect(
+    described,
+    "aria-describedby must not reference the hidden notes-empty while locked"
+  ).not.toBe("notes-empty");
+  if (described) {
+    const targetOk = await page.evaluate((id) => {
+      const el = document.getElementById(id);
+      return Boolean(el && !el.hidden && el.offsetParent !== null);
+    }, described);
+    expect(targetOk, `aria-describedby target #${described} must be visible`).toBe(true);
+  }
+  await shot(page, "CR-02");
+
+  // The lock still redirects to /login; the held document resolves after 6 s.
+  await page.waitForURL(/\/login$/, { timeout: 12000 });
+});
+
+test("CR-03 clear works offline with a non-empty query, then reconnect", async ({ page, request }) => {
+  await createUserAndLogin(page, request, "cr03");
+  const run = uniqueToken("run");
+  const text = `cr03 offline clear ${run}`;
+  await addNote(page, text);
+
+  await setQuery(page, run);
+  await expect(clearControl(page)).toBeVisible();
+
+  await page.context().setOffline(true);
+  await expect(page.getByTestId("notes-offline")).toBeVisible();
+  await expect(page.getByTestId("notes-search")).toBeDisabled();
+
+  // CR-03: only a 401 lock disables Clear; offline must keep it usable.
+  const clear = clearControl(page);
+  await expect(clear).toBeVisible();
+  await expect(clear).toBeEnabled();
+  await clear.click();
+  await expect(page.getByTestId("notes-search")).toHaveValue("");
+  await expect(clearControl(page)).toBeHidden();
+
+  await page.context().setOffline(false);
+  const listed = page.waitForRequest(
+    (req) => req.method() === "GET" && new URL(req.url()).pathname === "/api/notes"
+  );
+  await page.getByTestId("notes-offline-check").click();
+  await listed;
+  await expect(page.getByTestId("notes-offline")).toBeHidden();
+  await expect(page.getByTestId("notes-search")).toBeEnabled();
+  await expect(page.getByTestId("note-item").filter({ hasText: text })).toBeVisible();
+  await shot(page, "CR-03");
+});

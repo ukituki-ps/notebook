@@ -327,6 +327,10 @@
   // resurrect the deleted note. Every delete bumps the generation; stale
   // load continuations are ignored.
   var loadGeneration = 0;
+  // latestLoadGeneration identifies the most recently started load, so a
+  // stale response can still release the busy/loading affordances when an
+  // out-of-band mutation (DELETE) invalidated it without starting a new load.
+  var latestLoadGeneration = 0;
   var notes = [];
   var searchQuery = "";
   var notesBusy = false;
@@ -498,6 +502,7 @@
 
   function loadNotes() {
     var generation = ++loadGeneration;
+    latestLoadGeneration = generation;
     var token = readStorage(localStorage, TOKEN_KEY);
     if (!token) {
       handleUnauthorized();
@@ -517,7 +522,14 @@
 
     api("/api/notes", { token: token })
       .then(function (res) {
-        if (generation !== loadGeneration) return;
+        if (generation !== loadGeneration) {
+          if (generation === latestLoadGeneration) {
+            notesBusy = false;
+            syncFormState();
+            syncNotesState();
+          }
+          return;
+        }
         notesBusy = false;
         if (res.status === 401) {
           handleUnauthorized();
@@ -541,7 +553,14 @@
         renderNotes();
       })
       .catch(function () {
-        if (generation !== loadGeneration) return;
+        if (generation !== loadGeneration) {
+          if (generation === latestLoadGeneration) {
+            notesBusy = false;
+            syncFormState();
+            syncNotesState();
+          }
+          return;
+        }
         notesBusy = false;
         notesOfflineState = isOffline();
         if (notesOfflineState) {
