@@ -14,3 +14,5 @@
 | s08.intent_brief_review | intent-brief.md | awaiting owner approval |
 | s08.intent_brief_review | intent-brief.md | owner approved apr_b08a629fbec57cae36512a28a2b83914 |
 | s06a.reality_snapshot | reality-snapshot.json | 8 nodes, no drift |
+| s06a.reality_snapshot | reality-snapshot.json | accepted (8 nodes) |
+| s06b.reconcile | reconcile-verdict.json | coverage 8/8, no drift |

@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "coverage": {
+    "total": 8,
+    "resolved": 8
+  },
+  "divergences": [
+    {
+      "id": "GET /api/notes",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "GET /api/notes?q=",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "POST /api/notes",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "DELETE /api/notes/{id}",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "POST /api/auth/register|login",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "flow note-search",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "ui note-search",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    },
+    {
+      "id": "ui auth",
+      "classification": "no_drift",
+      "outcome": "covered",
+      "severity": "none"
+    }
+  ],
+  "scope": "process",
+  "summary": "Reality snapshot of 8 nodes matches the current branch behaviour; no doc_stale/code_bug/expectation_wrong. No findings."
+}
