@@ -1,416 +1,388 @@
 {
-  "feature": "f-v4-note-search",
+  "schema_version": "1.0",
+  "feature_id": "f-v4-note-search",
+  "execution_id": "E0809",
   "step": "s07.requirements_reconcile",
-  "execution_id": "E1546",
-  "source_file": "doc/идеи/f-v4-note-search/feature-request.md",
-  "source_count_command": "grep -cE '^[[:space:]]*([0-9]+[.)]|[-*])[[:space:]]+[^[:space:]]' doc/идеи/f-v4-note-search/feature-request.md",
+  "branch": "dev/f-v4-note-search-e2e",
   "source_items_total": 45,
+  "source": "feature-request.md",
+  "superseding_request": "2026-11-08 team-lead task: path-1@4.0.0, Notebook DS 1.0.0 (ds/v1.0.0, digest 02f027a8), branch dev/f-v4-note-search-e2e, test2 only",
   "open_questions": [],
   "items": [
     {
       "item_id": "R01",
       "raw_quote": "Feature is a new small feature `f-v4-note-search` in the path-10 contour.",
-      "our_interpretation": "Пункт R01 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Фича f-v4-note-search в контуре path-10; scope ограничен поиском заметок.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "decision_ref": "feature-brief.md#in-scope; scope-report.md#1",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R02",
       "raw_quote": "Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.",
-      "our_interpretation": "Пункт R02 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "Процесс обновлён до path-1.feature 4.0.0 (execution E0809), entry point default, platform web, feature_profile full.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request#path-1@4.0.0; orc_status E0809 process_version=4.0.0",
+      "confirmed_by_human": "edited",
+      "confirmation_ref": "2026-11-08 team-lead task: path-1@4.0.0"
     },
     {
       "item_id": "R03",
       "raw_quote": "Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.",
-      "our_interpretation": "Пункт R03 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "База — текущая dev-линия e6aeb44e19f378811aa029fde1edf9ea42cbf73f с Notebook DS 1.0.0 (ветка dev/notebook-ds-1.0.0, tag ds/v1.0.0, digest 02f027a8), а не старая f-v3-ветка/SHA.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request#Notebook DS 1.0.0; orc_ctx E0809 context.base_sha",
+      "confirmed_by_human": "edited",
+      "confirmation_ref": "2026-11-08 team-lead task: Notebook DS 1.0.0 (ds/v1.0.0, digest 02f027a8)"
     },
     {
       "item_id": "R04",
       "raw_quote": "Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.",
-      "our_interpretation": "Пункт R04 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "Рабочая ветка dev/f-v4-note-search-e2e (не dev/f-v4-note-search); feature dir без изменений.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request#branch dev/f-v4-note-search-e2e; orc_ctx work_branch",
+      "confirmed_by_human": "edited",
+      "confirmation_ref": "2026-11-08 team-lead task: branch dev/f-v4-note-search-e2e"
     },
     {
       "item_id": "R05",
       "raw_quote": "Skip `s45.push_primary` and `s46.post_deploy_verify`; do not execute them.",
-      "our_interpretation": "Пункт R05 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "s45/s46 не исполняются; в path-1@4.0.0 также skipped s24a, s22d и s06a–s06e (по статусу E0809).",
+      "verdict": "reinterpreted",
+      "decision_ref": "orc_status E0809 steps; superseding_request#path-1@4.0.0",
+      "confirmed_by_human": "edited",
+      "confirmation_ref": "orc_status E0809: s45/s46/s24a/s22d/s06a-e skipped"
     },
     {
       "item_id": "R06",
       "raw_quote": "Do not roll back or rework `f-v3-auth-notes`.",
-      "our_interpretation": "Пункт R06 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "f-v3-auth-notes не откатывается и не перерабатывается.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "decision_ref": "feature-brief.md#dont",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R07",
       "raw_quote": "Do not resume/accept `E4312`; do not touch `E1320`.",
-      "our_interpretation": "Пункт R07 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E4312 не возобновляется и не принимается, E1320 не затрагивается.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "decision_ref": "feature-brief.md#out-of-scope",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R08",
       "raw_quote": "Do not touch prod/main/stage; do not start canary rollout.",
-      "our_interpretation": "Пункт R08 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "prod/main/stage не трогаем, canary не запускаем.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "decision_ref": "feature-brief.md#out-of-scope",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R09",
       "raw_quote": "Mandatory gates: s21 UI graph, s22a UI audit, s22b/s22c independent reviewer (author != reviewer), s24 owner approval via `@nuxus_dev_bot`.",
-      "our_interpretation": "Пункт R09 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "Гейты s21/s22a/s22b/s22c остаются обязательными; s24 owner approval — через Nexus human request + orc_wait (подписанный assertion), без ручного «approved» в чате.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request; feature-brief.md#acceptance-criteria; orc_wait/orc_human_request contract",
+      "confirmed_by_human": "yes",
+      "confirmation_ref": "2026-11-08 team-lead task: s24 approval via orc_wait"
     },
     {
       "item_id": "R10",
       "raw_quote": "No force/skip/waiver, no fake evidence/self-sign, do not commit per-run artifacts.",
-      "our_interpretation": "Пункт R10 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Без force/skip/waiver и фейковых evidence; per-run артефакты не коммитим (s07: коммита нет).",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "decision_ref": "superseding_request; s07 task (no commit)",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R11",
       "raw_quote": "Session fan-out must be verified after s20: 3 child executions, 3 distinct child session_ids, parent session different, parent receives only summary/diff/verdict.",
-      "our_interpretation": "Пункт R11 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/process",
-      "scenario_ref": "s24/path-10"
+      "our_interpretation": "Проверка fan-out сохраняется, но применяется к unit-исполнениям s20 (3 child execution, 3 distinct session_id, parent иной, parent получает только summary/diff/verdict).",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request#path-1@4.0.0 units; feature-brief.md#acceptance-criteria",
+      "confirmed_by_human": "yes",
+      "confirmation_ref": "2026-11-08 team-lead task: fan-out verification applies to s20 units"
     },
     {
       "item_id": "R12",
       "raw_quote": "`GET /api/notes?q=<text>`.",
-      "our_interpretation": "Пункт R12 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "GET /api/notes получает опциональный q; отдельного эндпоинта нет.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-1/B-2",
-      "scenario_ref": "TestNotesSearchFinds"
+      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-OWNER-SCOPE",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R13",
       "raw_quote": "Without `q` — all notes of the current user.",
-      "our_interpretation": "Пункт R13 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Без q — 200 и все заметки текущего пользователя.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-1/B-2",
-      "scenario_ref": "TestNotesSearchFinds"
+      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-EMPTY-Q",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R14",
       "raw_quote": "With `q` — case-insensitive search over note text.",
-      "our_interpretation": "Пункт R14 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "С q — регистронезависимый substring-поиск по тексту заметки (strings.ToLower).",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-3",
-      "scenario_ref": "TestNotesSearchCaseInsensitive"
+      "decision_ref": "feature-brief.md#search-semantics; invariants.json#INV-SEARCH-CASE-INSENSITIVE",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R15",
       "raw_quote": "Only notes of the current user are returned.",
-      "our_interpretation": "Пункт R15 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Owner predicate применяется до текстового фильтра; q сужает, но не расширяет выдачу.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-4",
-      "scenario_ref": "TestNotesSearchIsolation"
+      "decision_ref": "feature-brief.md#do; invariants.json#INV-USER-ISOLATION",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R16",
       "raw_quote": "Without bearer token — HTTP 401.",
-      "our_interpretation": "Пункт R16 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Без/с битым bearer — 401 до method/query handling.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-1/INV-AUTH-REQUIRED",
-      "scenario_ref": "TestNotesSearchAuthRequired"
+      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-AUTH-REQUIRED",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R17",
       "raw_quote": "Empty `q` — all notes.",
-      "our_interpretation": "Пункт R17 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Пустой q после trim — 200 и все свои заметки.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-2/OD-1",
-      "scenario_ref": "TestNotesSearchEmptyQuery"
+      "decision_ref": "feature-brief.md#api-contract; invariants.json#INV-SEARCH-EMPTY-Q",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R18",
       "raw_quote": "Whitespace-only `q` — must be fixed in the spec as either all notes or 400.",
-      "our_interpretation": "Пункт R18 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Решение зафиксировано в спеке: whitespace-only q трактуется как пустой и возвращает все свои заметки (не 400).",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-2/OD-1",
-      "scenario_ref": "TestNotesSearchEmptyQuery"
+      "decision_ref": "feature-brief.md#api-contract (Decision on whitespace-only q)",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R19",
       "raw_quote": "Tests: search finds a note.",
-      "our_interpretation": "Пункт R19 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Go-тест: поиск находит существующую заметку.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-3",
-      "scenario_ref": "TestNotesSearchFinds"
+      "decision_ref": "invariants.json#INV-SEARCH-CASE-INSENSITIVE",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R20",
       "raw_quote": "Tests: search does not find an absent note.",
-      "our_interpretation": "Пункт R20 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Go-тест: несовпадающий q даёт 200 [].",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-3",
-      "scenario_ref": "TestNotesSearchNotFound"
+      "decision_ref": "invariants.json#INV-SEARCH-NOT-FOUND",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R21",
       "raw_quote": "Tests: a user does not see another user's notes.",
-      "our_interpretation": "Пункт R21 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Go-тест: user A не видит заметки user B, включая поиск.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-4",
-      "scenario_ref": "TestNotesSearchIsolation"
+      "decision_ref": "invariants.json#INV-USER-ISOLATION; INV-SEARCH-OWNER-SCOPE",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R22",
       "raw_quote": "Tests: unauthenticated request returns 401.",
-      "our_interpretation": "Пункт R22 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Go-тест: запрос без токена — 401.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-1",
-      "scenario_ref": "TestNotesSearchAuthRequired"
+      "decision_ref": "invariants.json#INV-AUTH-REQUIRED",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R23",
       "raw_quote": "Tests: URL-encoding and special characters in `q`.",
-      "our_interpretation": "Пункт R23 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Go-тест: URL-encoded и спецсимволы в q декодируются без паники/500.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-5",
-      "scenario_ref": "TestNotesSearchEncoding"
+      "decision_ref": "invariants.json#INV-SEARCH-ENCODING",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R24",
       "raw_quote": "Search field in the notes view.",
-      "our_interpretation": "Пункт R24 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "На экране заметок добавлено поле поиска (data-testid=notes-search) над списком.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-6",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-TESTIDS",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R25",
       "raw_quote": "Filtering the notes list by the query.",
-      "our_interpretation": "Пункт R25 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Список фильтруется по query client-side по уже загруженному owner-scoped списку.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-6",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-FILTER",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R26",
       "raw_quote": "Clearing the search restores the full list.",
-      "our_interpretation": "Пункт R26 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Очистка поля (notes-search-clear) возвращает полный список.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-6",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-FILTER",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R27",
       "raw_quote": "Empty state \"ничего не найдено\".",
-      "our_interpretation": "Пункт R27 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "При непустом q без совпадений — «Ничего не найдено.» (notes-search-empty); при нуле заметок побеждает base notes-empty.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-7",
-      "scenario_ref": "E2E-SEARCH-EMPTY"
+      "decision_ref": "feature-brief.md#aod-1; invariants.json#INV-SEARCH-UI-EMPTY",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R28",
       "raw_quote": "Do not break create/delete/reload.",
-      "our_interpretation": "Пункт R28 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Create/delete/reload работают; активный query re-apply после изменений.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-6",
-      "scenario_ref": "E2E-SEARCH-REGRESSION"
+      "decision_ref": "feature-brief.md#do; invariants.json#INV-SEARCH-UI-FILTER",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R29",
       "raw_quote": "`data-testid` for the search field and for the empty state.",
-      "our_interpretation": "Пункт R29 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Стабильные testid: notes-search, notes-search-clear, notes-search-empty.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-6/INV-SEARCH-UI-TESTIDS",
-      "scenario_ref": "TestUISemantics"
+      "decision_ref": "feature-brief.md#ux; invariants.json#INV-SEARCH-UI-TESTIDS",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R30",
       "raw_quote": "Actualize the UI graph.",
-      "our_interpretation": "Пункт R30 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "UI-GRAPH актуализируется из кода на s21.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "s21",
-      "scenario_ref": "s21/UI-GRAPH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; B-12",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R31",
       "raw_quote": "Preview deploy on `test2`.",
-      "our_interpretation": "Пункт R31 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "s20b/preview"
+      "our_interpretation": "Preview deploy только на test2 под арендой стенда для E0809; другие стенды и канареечный rollout исключены.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request#test2 only; feature-brief.md#acceptance-criteria; s19 stand lease",
+      "confirmed_by_human": "yes",
+      "confirmation_ref": "2026-11-08 team-lead task: test2 only, lease"
     },
     {
       "item_id": "R32",
       "raw_quote": "E2E scenario: login.",
-      "our_interpretation": "Пункт R32 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Playwright E2E-сценарий логина на test2.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R33",
       "raw_quote": "E2E scenario: create 2 notes.",
-      "our_interpretation": "Пункт R33 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E2E: создание двух заметок.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R34",
       "raw_quote": "E2E scenario: search finds one note.",
-      "our_interpretation": "Пункт R34 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E2E: поиск находит одну заметку.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R35",
       "raw_quote": "E2E scenario: search finds nothing.",
-      "our_interpretation": "Пункт R35 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E2E: поиск не находит ничего и показывает empty state.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R36",
       "raw_quote": "E2E scenario: clearing search returns both notes.",
-      "our_interpretation": "Пункт R36 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E2E: очистка поиска возвращает обе заметки.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; web/e2e/notes-search.spec.js",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R37",
       "raw_quote": "E2E scenario: user B does not see user A's notes.",
-      "our_interpretation": "Пункт R37 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "E2E: user B не видит заметки user A (auth-notes E2E-6 + search suite).",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "E2E-SEARCH"
+      "decision_ref": "feature-brief.md#acceptance-criteria; scope-report.md#6",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R38",
       "raw_quote": "Use Playwright 1.64.1, not 1.53.",
-      "our_interpretation": "Пункт R38 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Playwright 1.64.1 как test-only зависимость.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "s20c/playwright-1.64.1"
+      "decision_ref": "feature-brief.md#dont; scope-report.md#2",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R39",
       "raw_quote": "Do not roll back package/lock files.",
-      "our_interpretation": "Пункт R39 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "package.json/package-lock.json не откатываются.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "s20c/package-lock"
+      "decision_ref": "feature-brief.md#dont; scope-report.md#2",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R40",
       "raw_quote": "`pngdiff` must be OK.",
-      "our_interpretation": "Пункт R40 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "pngdiff на preview-прогоне должен быть OK.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-8",
-      "scenario_ref": "s20c/pngdiff"
+      "decision_ref": "feature-brief.md#acceptance-criteria; INV-UI-E2E-PREVIEW",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R41",
       "raw_quote": "Auth and persistence behaviour must not change.",
-      "our_interpretation": "Пункт R41 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Auth/session/TTL и persistence (in-memory) не меняются.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-1",
-      "scenario_ref": "existing auth/isolation tests"
+      "decision_ref": "feature-brief.md#dont; invariants.json#INV-AUTH-REQUIRED",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R42",
       "raw_quote": "Only search scope is in scope; no unrelated refactors.",
-      "our_interpretation": "Пункт R42 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Только scope поиска; без несвязанных рефакторингов.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "scope",
-      "scenario_ref": "s24/spec"
+      "decision_ref": "feature-brief.md#out-of-scope; scope-report.md#2",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R43",
       "raw_quote": "No changes to the old `f-v3-auth-notes` branch or its artifacts.",
-      "our_interpretation": "Пункт R43 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Старая f-v3-auth-notes ветка и её артефакты не меняются.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "constraints",
-      "scenario_ref": "s24/limits"
+      "decision_ref": "feature-brief.md#out-of-scope",
+      "confirmed_by_human": false
     },
     {
       "item_id": "R44",
       "raw_quote": "`E4312` and `E1320` are not resumed, accepted, or modified.",
-      "our_interpretation": "Пункт R44 выполняется в scope f-v4-note-search как описано в сыром запросе.",
-      "verdict": "match",
-      "added": false,
-      "decision_ref": "constraints",
-      "scenario_ref": "s24/limits"
+      "our_interpretation": "E4312 и E1320 не возобновляются, не принимаются и не изменяются; E0809 — отдельное исполнение, их состояние не затрагивается.",
+      "verdict": "reinterpreted",
+      "decision_ref": "superseding_request; orc_status E0809 (independent execution)",
+      "confirmed_by_human": "yes",
+      "confirmation_ref": "2026-11-08 team-lead task: E4312/E1320 untouched"
     },
     {
       "item_id": "R45",
       "raw_quote": "Preview is allowed only on `test2`; prod/main/stage and canary are out of scope.",
-      "our_interpretation": "Пункт R45 выполняется в scope f-v4-note-search как описано в сыром запросе.",
+      "our_interpretation": "Preview разрешён только на test2; prod/main/stage и canary вне scope.",
       "verdict": "match",
-      "added": false,
-      "decision_ref": "B-9/constraints",
-      "scenario_ref": "s20b/s20c/test2"
+      "decision_ref": "feature-brief.md#out-of-scope; superseding_request#test2 only",
+      "confirmed_by_human": false
     }
-  ]
+  ],
+  "summary": {
+    "matches": 37,
+    "reinterpreted": 8,
+    "dropped": 0,
+    "missing": 0,
+    "items_total": 45
+  }
 }
