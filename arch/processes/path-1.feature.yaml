@@ -3273,6 +3273,7 @@ gates:
     command: '[ ! -d tools ] || bash tools/check-tools-untouched.sh'
     require_exit_zero: true
     on_fail: escalate
+    base_ref: '{context.gate_base_ref}'
   - command: if [ -d orc ]; then for m in orc archd arch-validate nexus; do (cd "$m" && go build ./...) || exit 1; done; elif
       [ -f backend/go.mod ]; then (cd backend && go build ./...) || exit 1; elif [ -f go.mod ]; then go build ./... || exit
       1; else echo skip; fi
@@ -3553,6 +3554,7 @@ gates:
     command: '[ ! -d tools ] || bash tools/check-tools-untouched.sh'
     require_exit_zero: true
     on_fail: escalate
+    base_ref: '{context.gate_base_ref}'
   - id: gate-acceptance-approval
     kind: approval
     layer: 5
