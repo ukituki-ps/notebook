@@ -15,3 +15,4 @@
 | s22b.retry | reviewer metadata folded into declared attack-log.json |
 | s22b.retry2 | declared red-team-review.json in result |
 | s22b.reviewer | registered ses_e407d9859ffe9jWpROLEJT2eYU qwen3.8-fast/llama-proxy |
+| s22b | BLOCKED reviewer_model_mismatch (author model/provider unresolvable) |
