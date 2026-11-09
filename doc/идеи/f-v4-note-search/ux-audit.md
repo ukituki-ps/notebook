@@ -1,7 +1,9 @@
-# UX audit — note-search (E1868, s22e)
+# UX audit — note-search (E0722, s22e)
 
-- Stand: test2 (`https://test2.nexus.ukituki.tech`), build `5785dc0`,
-  commit `5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6`, execution E1868.
+- Stand: test2 (`https://test2.nexus.ukituki.tech`), build `4347f16`,
+  commit `4347f1612deb83c68a16d0d10768e107b207c9d6`, execution E0722.
+- Re-audit of the same UX/UI code as E1868 (web hashes identical); fresh
+  E2E 30/30 and 20/20 scenario evidence from E0722 on test2.
 - Scope: `note-search`, viewports 390x844 and 1200x900.
 - Audit role: product/UX auditor independent of the UI author
   (`ses_e4433e6faffeDGXVi4lKO4t3W8`); auditor session
@@ -71,5 +73,7 @@ Scenario contract: `scenario-evidence.json` (20/20 pass on test2, 5785dc0) and
 `web/e2e/notes-search.spec.js` scenarios and repo-level `grep` checks; the audit
 JSON records one oracle and one existing evidence ref per item.
 
-## Re-audit (after s23, build 9c1763c)
-- E2E 20/20 re-run; UX product unchanged; verdict pass, 0 blockers, 2 accepted minors remain.
+## Re-audit history
+- After s23, build 9c1763c (E1868): E2E 20/20 re-run; UX product unchanged; verdict pass, 0 blockers, 2 accepted minors.
+- E0722, build 4347f16: independent re-audit of the identical UX code; 30/30 Playwright and
+  20/20 scenario evidence on test2; verdict pass, 0 blockers, 0 open critical/high, 2 accepted minors remain.

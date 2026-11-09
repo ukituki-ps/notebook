@@ -6,9 +6,10 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "9c1763c0b69f77c96889a26e9a07d9f5cd3fd37a",
-    "build_ref": "9c1763c",
-    "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b"
+    "sha": "4347f1612deb83c68a16d0d10768e107b207c9d6",
+    "build_ref": "4347f16",
+    "image_digest": "sha256:dda878c926b170c10a49052b70a6a0ddd175566c2c33a8b860f44ebce74ceb38",
+    "gate_bundle_digest": "sha256:663b4a27edb3dde900d9724f62398a6ca3360efab5fd1d3129f5cc6d911f0d91"
   },
   "scope": {
     "screens": [
@@ -316,8 +317,9 @@
   ],
   "independence": {
     "distinct": true,
-    "auditor_session_id": "ses_e44094ddfffeZsHroFCFnDiUWh",
-    "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8"
+    "auditor_session_id": "ses_e3f4150e4ffeP7HiZlKJkvL0Wz",
+    "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8",
+    "note": "E0722 re-audit by a session distinct from the code author; same UI code as E1868 (hashes identical)."
   },
   "context": {
     "source": "orc_ctx",
@@ -329,10 +331,11 @@
     ]
   },
   "review_reaudit": {
-    "build": "9c1763c",
-    "image": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
-    "at": "2026-11-09T08:46:08Z",
-    "e2e": "30/30 on test2"
+    "build": "4347f16",
+    "image": "sha256:dda878c926b170c10a49052b70a6a0ddd175566c2c33a8b860f44ebce74ceb38",
+    "at": "2026-11-09T14:48:00Z",
+    "e2e": "30/30 on test2",
+    "execution_id": "E0722"
   },
-  "execution_id": "E1868"
+  "execution_id": "E0722"
 }
