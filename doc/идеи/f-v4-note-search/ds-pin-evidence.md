@@ -1,103 +1,114 @@
 # DS pin evidence — f-v4-note-search (s02a.ds_pin)
 
-- Execution: E0809, step `s02a.ds_pin`
-- Branch: `dev/f-v4-note-search-e2e`
-- Design system: **Notebook DS 1.0.0** (approved)
+- Execution: E6247, step `s02a.ds_pin`
+- Branch: `dev/path10-runner-07`, base `9e7fae3`; revalidated at `56c9f61`
+  (earlier record: E0809 / `dev/f-v4-note-search-e2e`)
+- Design system: **Notebook DS 1.0.1** (approved)
 - Pinned artifact: `doc/идеи/f-v4-note-search/ds-pin.json`
-- Verified at: 2026-11-08T14:02:32Z
-- DS source is **`web/`** (`web/app.css`, `web/app.js`, `web/index.html`). **Not** Kubiki. `frontend/src/ui/kit` was not read and is not a DS source for this feature.
+- Verified at: 2026-11-09 (E6247 revalidation of the 2026-11-08T18:32:32Z pin)
+- DS source is **`web/`** (`web/app.css`, `web/app.js`, `web/index.html`). **Not**
+  Kubiki. `frontend/src/ui/kit` was not read and is not a DS source for this feature.
 
 ## 1. Release manifest verification
 
-Source: `design/releases/1.0.0/manifest.json` (bytes hashed from the working tree; working tree is clean, so these equal the `ds/v1.0.0` blobs).
+Source: `design/releases/1.0.1/manifest.json` (bytes hashed from the evaluated
+tree; the pin, the manifest and the source hashes below were recomputed in this
+step).
 
 | Field | Manifest value | Observed / recomputed | Result |
 |---|---|---|---|
-| `release` | `1.0.0` | `1.0.0` | OK |
-| `tag` | `ds/v1.0.0` | tag `ds/v1.0.0` exists, resolves to `9f9c5d6aadebfb70a74bb9883817ac24975710d5` | OK |
-| `digest` | `sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d` | same string in manifest; used verbatim as `ds_digest` in the pin | OK (declared) |
-| `tokens.sha256` | `sha256:9cca3164b76bcc2d648143cbccfc563503df046563a3cb81044fede5e4964068` | `sha256sum design/tokens.json` = `9cca3164b76bcc2d648143cbccfc563503df046563a3cb81044fede5e4964068` | **OK — matches** |
-| `registry.sha256` | `sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1` | `sha256sum design/registry.json` = `c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1` | **OK — matches** |
-| `code.path` | `web` | `web/` exists; DS code path is web | OK |
-| `code.sha256` | `sha256:5f032e0a84204a04a5c83e92f32d29ebafef9ae4b8d42ae8742520b8fd44587b` | not reproducible from the `web/` tree: neither `cc4218a` nor `ds/v1.0.0` web trees, nor concatenations of their per-file sha256s, produce this value; no hashing formula for `code.sha256` is documented in the repo | NOTE — declared value, derivation undocumented |
-| `commit` | `cc4218a50ca9fb2065e634a8863174bd8cd16ffe` | commit `cc4218a` exists ("docs(f-v4-note-search): s03b human approval v1") and is the **parent** of the tag commit `9f9c5d6`; the tag commit itself modified `web/app.css` (+9/−6) | NOTE — factual: `commit` is the pre-tag snapshot, not the tag commit |
+| `release` | `1.0.1` | `1.0.1` | OK |
+| `tag` | `ds/v1.0.1` | tag `ds/v1.0.1` exists; `git rev-parse ds/v1.0.1` = `a392b105…` (tag object, target `773acb1`) | OK (tag exists; see note) |
+| `digest` | `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e` | same string in the manifest; used verbatim as `ds_digest` in the pin | OK (declared) |
+| `tokens.sha256` | `sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb` | `sha256sum design/tokens.json` = `436af169…` | **OK — matches** |
+| `registry.sha256` | `sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359` | `sha256sum design/registry.json` = `79d748c2…` | **OK — matches** |
+| `code.path` | `web/app.css` | file exists; DS code path is `web/app.css` | OK |
+| `code.sha256` | `sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced` | `sha256sum web/app.css` = `be611ba4…` | **OK — matches** (1.0.0 was not reproducible) |
+| `commit` | `41a1141f1d0649ae4ae272d9cd7fa7974c17d634` | tag `ds/v1.0.1` targets `773acb1`; the manifest `commit` is not the tagged commit | NOTE — declared snapshot, not the tag commit |
 | `kit.sha256` | `sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09` | S3 kit not fetched; not verifiable in this step | NOT VERIFIED (out of scope) |
 
 Raw file hashes observed:
 
 ```
-9cca3164b76bcc2d648143cbccfc563503df046563a3cb81044fede5e4964068  design/tokens.json
-c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1  design/registry.json
-72e26a2d354cb67b5d24c5974ee20442a5b607bf883ac4d89ebcc3549ef79bf2  design/releases/1.0.0/manifest.json
+436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb  design/tokens.json
+79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359  design/registry.json
+dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b  design/releases/1.0.1/manifest.json
+be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced  web/app.css
 ```
 
-The manifest's own file sha256 (`72e26a2d…`) is **not** the release `digest`. The release `digest` is an opaque release-level value: it is not `sha256` of the manifest bytes (whole or with the `digest` field removed), nor a canonical-JSON serialization, nor a concatenation of the `tokens`/`registry`/`kit`/`code` hashes. Its derivation is not documented in this repo. This does not block the pin: the pinned value is exactly the value declared in the approved manifest, and both component hashes that the s03 design work consumes (`tokens.json`, `registry.json`) verify byte-for-byte.
-
-Additional doc drift (non-blocking): `design/README.md` says the tag is `ds/notebook-1.0.0`, while the manifest and the actual git tag are `ds/v1.0.0`. `ds/v1.0.0` is what was verified and pinned.
+The manifest's own file sha256 (`dbc2983b…`) is **not** the release `digest`
+(`4e0ef105…`). The release digest is a declared release-level value; its
+derivation is not documented in this repo. This does not block the pin: the
+pinned value is exactly the value declared in the approved manifest, and every
+component hash consumed by the design work (`tokens.json`, `registry.json`,
+`web/app.css`) verifies byte-for-byte.
 
 ## 2. Pin
 
 `doc/идеи/f-v4-note-search/ds-pin.json`:
 
-- `design_system_version` = `1.0.0`
-- `ds_digest` = `sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d` (exact value observed in the manifest)
-- `approved_by` = `team-lead` (per step input)
+- `design_system_version` = `1.0.1`
+- `ds_digest` = `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`
+  (exact value observed in the manifest)
+- `approved_by` = `team-lead`, `pinned_at` = `2026-11-08T18:32:32Z`
 - `fallback_used` = `false`
-- one screen: `note-search`, platform `web`, profile `full`, same version/digest
+- normalized screens: one entry
+  - `screen_id` = `note-search`
+  - `platform` = `web`, `feature_profile` = `full`
+  - `design_system_version` / `ds_digest` equal the top-level pin
+  - `screen_brief` = owner-scoped note search over Notebook DS (search field,
+    clear, idle/results/empty/loading/error/offline, 390/1200, read-only list
+    with delete)
 
-## 3. Tokens vs `web/app.css` — factual comparison
+No duplicate `screen_id`; the fallback `screen_id=feature` was not used.
 
-Token values: `design/tokens.json`. CSS values: `web/app.css` (line references below). DS is extracted from `web/app.css`; CSS is the implementation under comparison.
+## 3. 1.0.1 token/source alignment
 
-### Colors
-
-| Token | Token value | CSS variable / usage | CSS value | Result |
-|---|---|---|---|---|
-| `color.bg` | `#F4F6F8` | `--bg` (L3), `body background` L30 | `#f4f6f8` | match (case only) |
-| `color.card` | `#FFFFFF` | `--card` (L4), L46/L77/L234 | `#ffffff` | match (case only) |
-| `color.text` | `#1F2328` | `--text` (L5), L31/L78 | `#1f2328` | match (case only) |
-| `color.muted` | `#5B6470` | `--muted` (L6), L141/L150/L169 | `#5b6470` | match (case only) |
-| `color.border` | `#8A837C` | `--border` (L7), card/input/borders L47/L75/L160/L176/L232/L251 | `#8a837c` | match (case only) |
-| `color.border_subtle` | `#D0D7DE` | `--border-subtle` (L8) | `#d0d7de` defined but **never referenced** | value match; **unused token** |
-| `color.accent` | `#1F6FEB` | `--accent` (L9), button L103, links L145 | `#1f6feb` | match (case only) |
-| `color.accent_hover` | `#1554B8` | `--accent-dark` (L10), `button:hover` L110 | `#1554b8` | value match; **name drift** (`accent_hover` vs `accent-dark`) |
-| `color.danger` | `#B42318` | `--danger` (L11), L91/L131/L134/L251/L252 | `#b42318` | match (case only) |
-| `color.danger_bg` | `#FEF3F2` | `--danger-bg` (L12), L92/L133/L256 | `#fef3f2` | match (case only) |
-| `color.focus` | `#1F6FEB` | `--focus` (L15), `:focus-visible` L119 | `#1f6feb` | match (case only) |
-
-### Radius / control / typography
+Token values: `design/tokens.json` (`version: 1.0.1`). CSS: `web/app.css`.
 
 | Token | Token value | CSS evidence | Result |
 |---|---|---|---|
-| `radius.md` | `10px` | `--radius: 10px` (L13), `.card` `border-radius: var(--radius)` (L48) | match |
-| `radius.sm` | `8px` | literal `border-radius: 8px` on input/textarea (L76), button (L102), `.error` (L132), `.note-item` (L233) | value match, but **not tokenized** (no `--radius-sm`; hard-coded 4×) |
-| `control.height` | `44px` | `--control-height: 44px` (L14), inputs (L73), buttons (L99) | match |
-| `focus.width` / `focus.offset` | `3px` / `2px` | `outline: 3px solid var(--focus)` (L119), `outline-offset: 2px` (L120) | match |
-| `font.family` | `system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` | `body { font-family: … }` (L29) | **exact match** |
-| `font.h1` | `22px` | `h1 { font-size: 1.4rem }` (L53) → 22.4px at 16px root; `.brand` is `1.2rem` (L164) → 19.2px | **DRIFT: 22.4px rendered vs 22px token** |
-| `font.body` | `15px` | no `font-size` on `body` (L28–33) → browser default 16px | **DRIFT: 16px rendered vs 15px token** |
-| `font.secondary` | `13px` | no `13px` font-size anywhere in `app.css` (only `1.4rem`, `1.2rem`) | **DRIFT: token not applied** |
-| `space.*` | `4/8/12/16/24/32px` | CSS uses off-scale values: `6px` (L60), `10px` (L74/L100/L130/L224/L231), `14px` (L60), `18px` (L125), `20px` (L49), `48px` (L38), `88px` (L83) | **DRIFT: off-scale spacing used; `space.1` (4px) has no usage found** |
+| `font.family` | `system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` | `body { font-family: … }` (L29) | match |
+| `font.h1` | `22.4px` | `h1 { font-size: 1.4rem }` (L54) → 22.4px at 16px root | match (1.0.0 drift fixed) |
+| `font.brand` | `19.2px` | `.brand { font-size: 1.2rem }` (L165) | match |
+| `font.body` | `16px` | `body { font-size: 16px }` (L30) | match (1.0.0 drift fixed) |
+| `control.height` | `44px` | `--control-height: 44px` (L14), inputs/buttons (L74, L100) | match |
+| `control.textarea` | `88px` | `textarea { min-height: 88px }` (L84) | match |
+| `radius.md` | `10px` | `--radius: 10px` (L13), `.card` (L49) | match |
+| `radius.sm` | `8px` | literal `border-radius: 8px` (not tokenized) | value match; not tokenized |
+| `color.accent_hover` | `#1554B8` | `--accent-dark: #1554b8` (L10, L111) | value match; CSS name differs |
+| `color.border_subtle` | `#D0D7DE` | `--border-subtle` defined (L8), no consumer found | defined but unused |
 
-## 4. Drift list (consolidated)
+## 4. Drift and supersession notes
 
-1. **Typography drift (real, visible):** tokens declare h1 `22px`, body `15px`, secondary `13px`; CSS renders h1 at `1.4rem` (22.4px), body at browser default 16px, and never applies 15px or 13px. `font.secondary` (`13px`) has no consumer in `web/app.css`.
-2. **`color.border_subtle` (`#D0D7DE`):** defined as `--border-subtle` but referenced nowhere. Declared-but-unapplied token.
-3. **`color.accent_hover` naming:** token key `accent_hover` maps to CSS `--accent-dark`; values are identical (`#1554B8` / `#1554b8`), only the name differs.
-4. **`radius.sm` not tokenized:** `8px` is correct but hard-coded in 4 rules; only `radius.md` is a CSS variable.
-5. **Spacing off-scale:** component padding/margins use 6/10/14/18/20/48/88px, outside the declared 4/8/12/16/24/32 scale.
-6. **Manifest `commit` vs tag commit:** `commit` is `cc4218a` (parent); the tag `ds/v1.0.0` points to `9f9c5d6`, which also edited `web/app.css`. The `commit` field is therefore a pre-tag snapshot, not the tag's commit.
-7. **Manifest `code.sha256` not reproducible** from either `web/` tree with any obvious concatenation; derivation undocumented. No formula stated in `design/`.
-8. **README tag name drift:** `design/README.md` says `ds/notebook-1.0.0`; actual/manifest tag is `ds/v1.0.0`.
-
-None of items 1–8 change the `ds_digest`, which is taken verbatim from the approved manifest, and none of them invalidate the pin. Items 1–5 are s03 mapping inputs: search UI must use the existing `web/app.css` values/styles and must not invent new tokens; token gaps go to DS as proposals rather than ad-hoc values.
+1. **Supersedes the E0809 / 1.0.0 record.** The previous evidence pinned 1.0.0
+   and listed typography drift (`h1 22px` vs 22.4px, body `15px` vs 16px,
+   `font.secondary` 13px). DS 1.0.1 updates the token file to the rendered
+   values (`h1 22.4px`, `brand 19.2px`, `body 16px`, `textarea 88px`), so that
+   drift is closed by the release, not by app code.
+2. **`code.sha256` is now reproducible:** 1.0.1 declares `web/app.css` and its
+   hash matches the file byte-for-byte (1.0.0 declared a `web/` tree hash with
+   no documented formula).
+3. **Remaining non-blocking notes:** `--border-subtle` is declared but unused;
+   `radius.sm` is hard-coded rather than tokenized; some spacing values are
+   outside the declared 4/8/12/16/24/32 scale. These are s22a/DS-proposal
+   inputs, not pin blockers.
+4. **Tag vs manifest commit:** the `commit` field is a declared snapshot, not
+   the commit the tag object points to. The pin uses the release `digest`, not
+   the tag commit, so this does not change `ds_digest`.
+5. **Release digest derivation is undocumented** (it is not the manifest file
+   sha256). The pin uses the declared value; component hashes verify.
 
 ## 5. Verification result
 
-**OK with drift notes.** `release=1.0.0`, `tag=ds/v1.0.0` present, `tokens.json` and `registry.json` sha256 match the manifest exactly, `code.path=web`. The pinned `ds_digest` observed in the manifest is exactly:
+**OK.** `release=1.0.1`, `tag=ds/v1.0.1` present, `tokens.json`,
+`registry.json` and `web/app.css` sha256 match the 1.0.1 manifest exactly, and
+`ds-pin.json` version/digest plus the normalized `note-search` screen match the
+manifest. Pinned digest:
 
 ```
-sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d
+sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e
 ```
 
-No files under `design/`, `web/` or application code were modified by this step. No commit was made, and no approval is claimed.
+No files under `design/`, `web/` or application code were modified by this
+step. The approved pin was revalidated, not re-signed.
