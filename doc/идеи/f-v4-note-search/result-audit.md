@@ -1,18 +1,34 @@
-# Result audit — f-v4-note-search (E1868)
+# Result audit — f-v4-note-search (E0722)
 
 - Verdict: **pass** (decision: **pass**)
-- Execution: **E1868** · step **s22.result_audit** · role **architect (independent)**
-- Branch: `dev/f-v4-note-search-fix` · base `865fd23` · audited result on stand `test2`
-- Deployed build: **`9c1763c`** (`9c1763c0b69f77c96889a26e9a07d9f5cd3fd37a`)
-- Stand image: `sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b`
-- Audited: E2E **30/30** (20 search + 7 auth + 3 CR), UI audit **24/24**, UX audit **22/22**, fault catalog **16/16 covered (0 gaps)**, 8 UI invariants active, DS 1.0.1 pins consistent.
+- Execution: **E0722** · step **s22.result_audit** · role **architect (independent)**
+- Branch: `dev/f-v4-note-search-clean-v2` · base `9e7fae3` · audited result on stand `test2`
+- Deployed build: **`4347f16`** (`4347f1612deb83c68a16d0d10768e107b207c9d6`)
+- Stand image: `sha256:dda878c926b170c10a49052b70a6a0ddd175566c2c33a8b860f44ebce74ceb38`
+- Audited: E2E **30/30** (20 search + 7 auth + 3 CR), scenario evidence **20/20**, UI audit **24/24**, UX audit **22/22**, fault catalog **16/16 covered (0 gaps)**, 19 active invariants + `INV-UI-E2E-PREVIEW` proposed, DS 1.0.1 pins consistent.
 - No code changes and no commit were made by this audit; only this artifact was written.
+
+## E0722 re-audit (current run)
+
+- Fresh host-runner E2E on test2 build `4347f16`: Playwright **30/30**, scenario-evidence
+  **20/20** with screenshots, evidence-manifest **24 files**, `preview-verdict` `pass/verified/ui`.
+- s20c strict gate (`/opt/gate-tools/tools/path1-gate.sh e2e-preview E0722`): **OK**, not PASS-NA.
+- s20a: build/vet/test green, **19/19** active invariant `test_ref`s executed; `INV-UI-E2E-PREVIEW`
+  remains `proposed` (not activated).
+- s21 graph re-actualized for build `4347f16`; `graph-actualized` PASS-NA (no UI delta), `ds-drift` PASS.
+- s22a UI/DS audit re-issued at build `4347f16`: 24 items A–L, 0 blockers, 0 DS violations;
+  `ds-token-drift` PASS (20 checks).
+- s22e UX audit re-issued at build `4347f16`: 22 items, 0 blockers, 0 critical/high, 2 accepted minors.
+- Fault catalog: **16/16 covered, 0 gaps**.
+- No new confirmed critical/high findings. Residual risks from the E1868 audit below are
+  documentation/evidence-hygiene items and the same two accepted UX minors; none changes the
+  product outcome.
 
 ## Verdict rationale
 
 The delivered result is accepted. Every claimed outcome was re-verified from the stored
-artifacts, from the live stand (`/healthz`, served `app.js`/`app.css`/`/login` byte-identical
-to commit `9c1763c`), and from the repository gates. No blocker and no open
+artifacts, from the live stand (`/healthz`, served assets byte-identical to commit `4347f16`),
+and from the repository gates. No blocker and no open
 critical/high finding was found. Residual risks below are documentation/evidence-hygiene
 items and two accepted UX minors; none changes the product outcome.
 
