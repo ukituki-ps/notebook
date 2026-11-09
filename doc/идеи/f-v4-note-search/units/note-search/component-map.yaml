@@ -1,5 +1,5 @@
 # note-search: node_id -> Notebook DS 1.0.1 registry_id
-# Source: doc/идеи/f-v4-note-search/units/note-search/proto.json nodes[] (17 nodes, post-UI-review)
+# Source: doc/идеи/f-v4-note-search/units/note-search/proto.json nodes[] (18 nodes, post-UI-review)
 # Registry: design/registry.json @ ds/v1.0.1 (sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359, 14 entries)
 # Rules:
 #   * registry_id is a verbatim id from design/registry.json — nothing invented.
@@ -13,6 +13,8 @@ unit_id: note-search
 ds_release: "1.0.1"
 ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
 registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
+proto_sha256: "sha256:ce496d1307b834954ceb877e9e221cfe6e6152d9f3da093247f1bd1c3671a59d"
+proto_states: [normal, idle, results, no-results, empty, loading, error, offline, offline-zero]
 
 nodes:
   # --- header ---
