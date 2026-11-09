@@ -95,9 +95,12 @@
     (function () {
       "use strict";
 
-      var STATES = ["idle", "results", "no-results", "empty", "loading", "error", "offline", "offline-zero"];
+      var STATES = ["idle", "results", "no-results", "empty", "loading", "error", "offline", "offline-empty", "locked"];
       var params = new URLSearchParams(window.location.search);
       var state = params.get("state");
+      // Spec core.md calls the zero-note offline variant "offline-zero"; the
+      // step brief calls it "offline-empty". Keep the old query as an alias.
+      if (state === "offline-zero") state = "offline-empty";
       if (STATES.indexOf(state) === -1) state = "idle";
 
       document.body.setAttribute("data-state", state);
@@ -125,8 +128,9 @@
       var offlineText = document.getElementById("notes-offline-text");
 
       var hasQuery = state === "results" || state === "no-results";
-      var offlineState = state === "offline" || state === "offline-zero";
-      var formDisabled = state === "loading" || state === "error" || offlineState;
+      var lockedState = state === "locked";
+      var offlineState = state === "offline" || state === "offline-empty";
+      var formDisabled = state === "loading" || state === "error" || offlineState || lockedState;
 
       function updateAddState() {
         if (!addButton) return;
@@ -144,7 +148,9 @@
 
       var showsList = state === "idle" || state === "results" || state === "offline";
       // empty is a dead control in the shipped app: searchBlocked includes notes.length === 0.
-      var searchDisabled = state === "loading" || state === "error" || offlineState || state === "empty";
+      // locked (401) also blocks search; the app removes aria-describedby because
+      // notes-empty is hidden in that window (web/app.js:352-363).
+      var searchDisabled = state === "loading" || state === "error" || offlineState || state === "empty" || lockedState;
       var query = state === "results" ? "план" : state === "no-results" ? "отпуск" : "";
 
       if (search) {
@@ -154,14 +160,20 @@
         if (searchDisabled) {
           search.setAttribute("aria-disabled", "true");
           // Never point at a hidden node; notes-empty is visible in empty and
-          // offline-zero, so it is a valid description target there.
-          search.setAttribute(
-            "aria-describedby",
-            offlineState ? "notes-offline"
-              : state === "loading" ? "notes-loading"
-                : state === "error" ? "notes-error"
-                  : "notes-empty"
-          );
+          // offline-empty, so it is a valid description target there. locked
+          // hides notes-empty, so it carries no description (parity with
+          // web/app.js syncNotesState).
+          if (lockedState) {
+            search.removeAttribute("aria-describedby");
+          } else {
+            search.setAttribute(
+              "aria-describedby",
+              offlineState ? "notes-offline"
+                : state === "loading" ? "notes-loading"
+                  : state === "error" ? "notes-error"
+                    : "notes-empty"
+            );
+          }
         } else {
           search.removeAttribute("aria-disabled");
           search.removeAttribute("aria-describedby");
@@ -170,6 +182,7 @@
 
       if (clear) {
         clear.hidden = !hasQuery;
+        clear.disabled = lockedState;
         clear.addEventListener("click", function () { go("idle"); });
       }
 
@@ -212,15 +225,20 @@
       }
 
       if (offlineText) {
-        offlineText.textContent = state === "offline-zero"
+        offlineText.textContent = state === "offline-empty"
           ? "Нет сети — нет загруженных заметок."
           : "Нет сети — показаны загруженные заметки.";
       }
 
+      var errorEl = byTestId("notes-error");
+      if (errorEl && lockedState) {
+        errorEl.textContent = "Сессия истекла. Перенаправление на вход...";
+      }
+
       setHidden("notes-loading", state !== "loading");
-      setHidden("notes-empty", state !== "empty" && state !== "offline-zero");
+      setHidden("notes-empty", state !== "empty" && state !== "offline-empty");
       setHidden("notes-search-empty", state !== "no-results");
-      setHidden("notes-error", state !== "error");
+      setHidden("notes-error", state !== "error" && state !== "locked");
       setHidden("notes-retry", state !== "error");
       setHidden("notes-offline", !offlineState);
       setHidden("notes-offline-check", !offlineState);

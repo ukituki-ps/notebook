@@ -14,7 +14,8 @@
     "loading",
     "error",
     "offline",
-    "offline-zero"
+    "offline-empty",
+    "locked"
   ],
   "state_matrix": [
     {
@@ -213,8 +214,11 @@
       "search_disabled": true
     },
     {
-      "state": "offline-zero",
-      "description": "Нет сети и нет загруженных заметок: баннер «Нет сети — нет загруженных заметок.», базовая пустая подсказка «Пока нет заметок. Добавьте первую выше.», поиск disabled, список/счётчик/очистка скрыты, форма disabled.",
+      "state": "offline-empty",
+      "aliases": [
+        "offline-zero"
+      ],
+      "description": "Нет сети и нет загруженных заметок (brief: offline-empty; spec core.md: offline-zero): баннер «Нет сети — нет загруженных заметок.», базовая пустая подсказка «Пока нет заметок. Добавьте первую выше.», поиск disabled, список/счётчик/очистка скрыты, форма disabled.",
       "visible": [
         "n-notes-header",
         "n-note-form",
@@ -237,6 +241,35 @@
       ],
       "search_disabled": true,
       "form_disabled": true
+    },
+    {
+      "state": "locked",
+      "description": "Сессия заблокирована (401 / session locked, web/app.js:481-501): alert «Сессия истекла. Перенаправление на вход...», форма и поиск disabled, кнопка Очистить disabled, счётчик и список скрыты, баннер сети и Повторить скрыты; через 200 мс — переход на /login. Query сброшен, чтобы следующий пользователь не увидел чужие данные.",
+      "visible": [
+        "n-notes-header",
+        "n-note-form",
+        "n-note-textarea",
+        "n-note-add",
+        "n-search-field",
+        "n-error"
+      ],
+      "hidden": [
+        "n-search-clear",
+        "n-count",
+        "n-notes-list",
+        "n-note-item",
+        "n-loading",
+        "n-empty",
+        "n-search-empty",
+        "n-retry",
+        "n-offline",
+        "n-offline-check"
+      ],
+      "search_disabled": true,
+      "search_clear_disabled": true,
+      "form_disabled": true,
+      "error_text": "Сессия истекла. Перенаправление на вход...",
+      "redirect": "/login"
     }
   ],
   "nodes": [
