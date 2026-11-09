@@ -1,5 +1,7 @@
 {
   "schema_version": "1.0",
+  "execution": "E4138",
+  "revalidated_at": "2026-11-09T22:07:00Z",
   "feature_id": "f-v4-note-search",
   "screens": [
     "note-search"

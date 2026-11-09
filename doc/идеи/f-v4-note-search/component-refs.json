@@ -1,5 +1,7 @@
 {
   "schema_version": "1.0",
+  "execution": "E4138",
+  "revalidated_at": "2026-11-09T22:07:00Z",
   "feature_id": "f-v4-note-search",
   "ds_release": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
