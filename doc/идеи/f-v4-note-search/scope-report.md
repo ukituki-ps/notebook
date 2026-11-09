@@ -1,10 +1,12 @@
 # Scope report — f-v4-note-search
 
-- Execution/step: **E0809** · `s02.architect_scope_analysis` · path-1.feature 3.2.2, path-10
-- Branch: `dev/f-v4-note-search`, base `406fa965`
-- Status: refresh for the DS 1.0.0 pilot. U01/U02 are already present in `main.go`,
-  `web/*`, `main_test.go`, `web_ui_test.go`; this report fixes scope, constraints,
-  conflicts, and design inputs. No code or design change is made at s02.
+- Execution/step: **E9108** · `s02.architect_scope_analysis` · path-1.feature 4.0.0, path-10
+- Branch: `dev/path10-runner-08`; execution base `9e7fae3`, step base (s01) `48b13a1`
+- Status: revalidated against the current tree at `48b13a1`. U01/U02 are already
+  present in `main.go`, `web/*`, `main_test.go`, `web_ui_test.go`; this report
+  fixes scope, constraints, conflicts, and design inputs. No code or design
+  change is made at s02. See §7 for the E9108 revalidation and the corrections
+  to two earlier claims (query persistence, E2E scenario count).
 - Sources: `feature-request.md`, `feature-brief.md`, `s01-product-discuss.md`,
   `plan.md`, `change-definition.md`, `invariants.json`, `main.go`, `main_test.go`,
   `web/*`, `design/` 1.0.0.
@@ -13,11 +15,11 @@
 
 | Domain / layer | Surface | Change / status |
 |---|---|---|
-| Web UI (`notebook-web`) | `web/index.html`, `web/app.js`, `web/app.css`, `web_ui_test.go` | `notes-search` input, `notes-search-clear`, `notes-search-empty`; client-side filter of the loaded owner-scoped list; one `renderNotes()` re-applies the active query after load/create/delete/reload; query kept in `sessionStorage["notebook.search"]`. |
+| Web UI (`notebook-web`) | `web/index.html`, `web/app.js`, `web/app.css`, `web_ui_test.go` | `notes-search` input, `notes-search-clear`, `notes-search-empty`; client-side filter of the loaded owner-scoped list; one `renderNotes()` re-applies the active query after load/create/delete/reload; query held in memory only (`searchQuery`), no sessionStorage/URL persistence (legacy `notebook.search` key is only removed). |
 | Notes API (`notebook-api`) | `main.go` (`handleNotes`, `ListNotes`) | Optional `q` on `GET /api/notes`: trim → empty means all; non-empty means case-insensitive substring; `maxQueryBytes=512`; empty result is `[]`, never `null`; JSON error envelope. |
 | Storage scope | In-memory `Store` | Read-only projection; owner predicate `note.UserID == session.UserID` in `ListNotes` before filtering; no schema/migration; `UserID` stays out of the wire payload. |
 | Auth | `requireAuth`, bearer parsing | Unchanged; `401` before method/query handling; no token, session, or TTL changes. |
-| Tests | `main_test.go`, `web_ui_test.go`, `web/e2e/notes-search.spec.js`, `web/e2e/auth-notes.spec.js` | Go search/isolation/encoding/512-cap tests; static UI oracle; 8 search E2E scenarios; user-B isolation remains in auth E2E-6. |
+| Tests | `main_test.go`, `web_ui_test.go`, `web/e2e/notes-search.spec.js`, `web/e2e/auth-notes.spec.js` | Go search/isolation/encoding/512-cap tests (`TestNotesSearch*`); static UI oracle; 20 numbered `SEARCH-E2E-*` scenarios plus 3 regression tests (`CR-01..03`) in `notes-search.spec.js`; user-B isolation remains in auth E2E-6 and is repeated in `SEARCH-E2E-20`. |
 | Deploy / docs | `deploy/path1/*`, `UI-GRAPH.yaml`, `design/*` | Preview on `test2` only; UI graph actualized at s21; DS pinned at s02a. |
 
 ## 2. Architecture constraints
@@ -44,13 +46,18 @@
    no notes at all.
 8. **Scope guard.** No unrelated refactors; production/main/stage and canary are
    out; `f-v3-auth-notes`, `E4312`, `E1320` are untouched.
+9. **Query is not persisted.** `searchQuery` lives in memory; `renderNotes()`
+   re-applies it after load/create/delete, but there is no reload restore, URL
+   parameter, or sessionStorage write. The legacy `notebook.search` key is only
+   removed (clear/logout/401/no-token). This matches the final brief's "Do not
+   persist the query across a reload or in the URL/hash".
 
 ## 3. Potential conflicts
 
 | Conflict | Evidence | Risk | Mitigation |
 |---|---|---|---|
 | Client-side filter vs server `q` | UI never sends `?q`; the API implements and tests it | Matching drift (Go `ToLower` vs JS `toLowerCase`, trim rules) and duplicate logic | Keep the UI filter authoritative for the screen; server `q` is the API contract for clients; share acceptance vectors; do not move to per-keystroke requests without OD-3. |
-| State duplication | `searchQuery`, input value, `sessionStorage`, and `notes[]` coexist | Stale/hidden query after reload, user switch, create/delete | Treat `searchQuery` as the single source, always sync the input, clear storage on logout/401/no token; cover reload and user-B in E2E. |
+| State duplication | `searchQuery`, input value, the legacy `SEARCH_KEY`, and `notes[]` coexist | Stale/hidden query after user switch, create/delete, or a leftover legacy key | Treat `searchQuery` as the single source, always sync the input, remove the legacy key on logout/401/no-token/clear, do not restore on reload; cover no-token and user-B in E2E (`SEARCH-E2E-8`, `SEARCH-E2E-20`). |
 | DS tokens vs current CSS | Tokens are extracted from `app.css`, but CSS uses off-scale 6/10/14/18/20/48px, does not apply body 15px/secondary 13px, and `.notes-search-empty` is dead (the element uses `.muted`); `--border-subtle` is unused | False "token-compliant" claim and visual drift | Pin DS by manifest; s03 maps states to existing tokens; gaps become DS proposals, not ad-hoc values; s22a audits rendered CSS. |
 | Empty-state precedence | Zero notes + non-empty `q` shows `notes-empty`; `web_ui_test.go` asserts `!noNotes` | Brief wording can be read as requiring `notes-search-empty` | Confirm OD-2; no code change at s02. |
 | Release snapshot | DS 1.0.0 manifest `code.sha256` is the release snapshot (`cc4218a`); current `web/` has feature edits | Manifest misread as a live hash of current code | Pin tag/digest; do not claim current `web/` equals release code; re-release only if DS changes. |
@@ -85,7 +92,7 @@
 | OD-1 | Whitespace-only `q` | all notes / `400` | All notes (trim → empty → all) | **Closed** by `feature-brief.md` and tests. |
 | OD-2 | Zero notes + non-empty `q` | base-empty / search-empty | Keep base-empty (current code and `web_ui_test.go`): "ничего не найдено" is misleading when the user has no notes. Confirm at s03; a change would be code/test work outside s02. | Open for s03. |
 | OD-3 | UI filtering source | client-only / debounced server `q` | Client-only for this feature: one in-memory owner-scoped list, no request per keystroke, create/delete stay consistent. Server `q` remains the API contract; revisit with pagination/large lists. | Open for s03. |
-| OD-4 | Query persistence across reload | restore via `sessionStorage` / reset | Keep restore (plan says reload re-applies the query; code clears it on logout/401/no token). Confirm product expectation. | Open for s03. |
+| OD-4 | Query persistence across reload | restore via `sessionStorage` / reset | **Memory-only.** Final brief forbids persistence; code never writes the query and removes the legacy key on logout/401/no-token/clear. `SEARCH-E2E-8` covers a leftover key. No reload restore. | **Closed** by the final brief and current code. |
 | OD-5 | DS empty-state drift | add `.notes-search-empty` to the element / remove the dead rule and rely on `.muted` | Normalize at s03/s22a; do not add a token for one state. | Open for s03/s22a. |
 | OD-6 | Unicode case-fold parity | accept Go/JS differences / define normalization | Accept and document: no locale-specific collation; test ASCII, Cyrillic, and special characters. | **Closed** by `feature-brief.md`. |
 
@@ -95,8 +102,41 @@ approval.
 
 ## 6. Trace note
 
-- `TestNotesSearchQueryTooLong` covers the 512-byte cap, but `invariants.json`
-  has no corresponding invariant id. Recommend adding `INV-SEARCH-Q-MAX`
-  (`400` before scan) at the next invariants refresh.
-- User-B isolation is covered by `web/e2e/auth-notes.spec.js` E2E-6, not by
-  `notes-search.spec.js`; s20c evidence must cite both suites.
+- `TestNotesSearchQueryTooLong` covers the 512-byte cap and `invariants.json`
+  now carries the matching `INV-SEARCH-Q-MAX` (`400` before scan); the earlier
+  recommendation is satisfied.
+- User-B isolation is covered by `web/e2e/auth-notes.spec.js` E2E-6 and repeated
+  in `SEARCH-E2E-20`; s20c evidence must cite both suites.
+
+## 7. E9108 revalidation (tree at `48b13a1`)
+
+Checked against the current tree; no code or design change is made by s02.
+
+| Claim | Evidence |
+|---|---|
+| `q` cap is 512 bytes, checked before any note scan | `main.go:33` (`maxQueryBytes = 512`), `main.go:542-543` (`400 {"error":"query too long"}`), before `ListNotes` at `main.go:546`. |
+| Owner predicate before text predicate | `main.go:195-206` (`ListNotes` filters `note.UserID == userID`); handler calls it before filtering at `main.go:544-552`. |
+| `UserID` never on the wire | `main.go:63`, `main.go:69` (`json:"-"`). |
+| Empty result is `[]`, not `null` | `main.go:196` (`make([]Note, 0)`) and `main.go:548` (`make([]Note, 0, len(notes))`). |
+| Trim + case-insensitive substring | `main.go:545` (`strings.ToLower(strings.TrimSpace(...))`), `main.go:552` (`strings.Contains` on lowered text). |
+| Client-side filter, no per-keystroke request | `web/app.js:443-451` (`filterNotes`), input handler at `web/app.js:725-729` calls `renderNotes` only. |
+| Query memory-only, no persistence | `web/app.js:335` (`searchQuery = ""`), `web/app.js:456-459` (in-memory update), comment `web/app.js:726`; `SEARCH_KEY` only removed (`web/app.js:487,596,607,733,792`), never written. |
+| Search-empty precedence and zero-note disable | `web/app.js:347` (`searchBlocked` includes `notes.length === 0`), `web/app.js:470-477` (search empty only when a non-empty query filters a non-empty list), base `notes-empty` wins at `web/app.js:469`. |
+| Count only for a non-empty query | `web/app.js:478-481`; markup `web/index.html:98` (`aria-live="polite"`, hidden by default). |
+| UI contract and testids | `web/index.html:79-108`: `role="search"`, `<label for="notes-search">`, `type="search"`, `aria-controls="notes-list"`, testids `notes-search`, `notes-search-clear`, `notes-search-empty`, `notes-search-count`, `notes-empty`, `notes-list`. |
+| Search test coverage | `main_test.go:934-1129`: `TestNotesSearchFinds/NotFound/CaseInsensitive/Isolation/AuthRequired/EmptyQuery/WhitespaceQuery/Encoding/QueryTooLong`; `web/e2e/notes-search.spec.js`: `SEARCH-E2E-1..20` + `CR-01..03`. |
+| DS 1.0.0 pin | `design/releases/1.0.0/manifest.json` digest `sha256:02f027a8…da3d`. |
+
+Corrections to the E0809 revision:
+
+1. **Query persistence:** the earlier text said the query was kept in
+   `sessionStorage["notebook.search"]`. Current code and the final brief are
+   memory-only; the storage key is legacy and only removed. §1, §2.9, §3, and
+   OD-4 are updated accordingly.
+2. **E2E scenario count:** the earlier "8 search E2E scenarios" was stale; the
+   suite now has 20 numbered search scenarios plus 3 regression tests.
+3. **`INV-SEARCH-Q-MAX`:** the earlier gap is closed; the invariant exists in
+   `invariants.json`.
+
+No open conflict blocks s02a/s03. OD-2, OD-3, and OD-5 stay open for s02a/s03
+confirmation; current code is evidence, not design approval.
