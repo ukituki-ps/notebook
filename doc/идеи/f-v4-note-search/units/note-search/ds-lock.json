@@ -7,6 +7,8 @@
   "design_system_version": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "constraint": "=1.0.1",
+  "proto_sha256": "sha256:26ce783a48db3dbf128b928bdd8609d25840c3f5b81b11faef8e907facf12959",
+  "proto_screen_id": "note-search",
   "source_of_truth": {
     "tokens": "design/tokens.json",
     "registry": "design/registry.json",
@@ -19,6 +21,46 @@
     "manifest_sha256": "sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b",
     "tag": "ds/v1.0.1",
     "code_path": "web/app.css"
+  },
+  "resolution": {
+    "resolution_kind": "exact",
+    "constraint": "=1.0.1",
+    "rejects": ["ranges", "latest", "main", "dev"],
+    "manifest_path": "design/releases/1.0.1/manifest.json",
+    "manifest_sha256": "sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b",
+    "manifest_version": "1.0.1",
+    "manifest_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+    "unit_params": {
+      "design_system_version": "1.0.1",
+      "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+    },
+    "version_matches_manifest": true,
+    "version_matches_unit_params": true,
+    "digest_matches_manifest": true,
+    "digest_matches_unit_params": true,
+    "verified_files": {
+      "design/tokens.json": {
+        "expected_sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb",
+        "actual_sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb",
+        "match": true
+      },
+      "design/registry.json": {
+        "expected_sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359",
+        "actual_sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359",
+        "match": true
+      },
+      "kit": {
+        "expected_sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+        "actual_sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+        "match": true
+      }
+    },
+    "design_tree_guard": {
+      "paths": ["design/**", "frontend/src/ui/**"],
+      "diff_base": "90a08cb388539cb280896264caaf52bccea48d24",
+      "changed": [],
+      "untouched": true
+    }
   },
   "tokens_sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb",
   "registry_sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359",

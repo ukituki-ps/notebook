@@ -3,6 +3,7 @@
   "screen_id": "note-search",
   "ds_release": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+  "proto_sha256": "sha256:26ce783a48db3dbf128b928bdd8609d25840c3f5b81b11faef8e907facf12959",
   "items": [
     {
       "id": "GAP-1",
