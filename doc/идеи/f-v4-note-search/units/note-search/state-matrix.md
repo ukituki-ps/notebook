@@ -19,6 +19,39 @@ The note form (`.note-form` with a visible `<label for="note-text">Новая з
 | `offline-zero` | Note form visible; offline banner «Нет сети — нет загруженных заметок.» and base empty message «Пока нет заметок. Добавьте первую выше.»; search disabled; count/list/clear hidden. | Re-check connectivity. | Distinct from `empty`: the offline banner explains why no notes are shown; `notes-empty` stays visible. |
 | `offline` | Note form visible; banner composed from DS `.note-item` `role="status"` with `.note-text.muted` text «Нет сети — показаны загруженные заметки.» and a single-line 44px `min-height` button «Проверить сеть»; search disabled with placeholder «Поиск недоступен без сети», `aria-disabled="true"`, `aria-describedby="notes-offline"`; count hidden; all 4 loaded notes with Удалить visible but disabled (DELETE needs the network). | Press «Проверить сеть» to re-check connectivity. | **«Проверить сеть» behavior:** re-check connectivity and return to the loaded list; the prototype simulates a successful re-check by switching to `idle`. The banner has a 16px DS spacing class above the list. Banner uses DS `note-item` border and `muted` text (no custom colors); `.note-text` lets the paragraph flex, and a non-breaking space (plus `aria-label="Проверить сеть"`) keeps the button on one line without local CSS; saved loaded notes remain readable. |
 
+## Brief coverage (screen_brief → proto)
+
+| screen_brief item | Proto state(s) | Nodes |
+|---|---|---|
+| search field | `normal`/`idle`, `results`, `no-results`, `loading`, `error`, `offline`, `offline-zero` | `n-search-field`, `n-search-clear` |
+| clear | `results`, `no-results` | `n-search-clear` |
+| idle | `normal`/`idle` | `n-notes-header`, `n-note-form`, `n-search-field`, `n-notes-list`, `n-note-item`, `n-delete` |
+| results | `results` | `n-search-field`, `n-search-clear`, `n-count`, `n-notes-list`, `n-note-item`, `n-delete` |
+| empty | `empty`, `offline-zero` | `n-empty` |
+| loading | `loading` | `n-loading` |
+| error | `error` | `n-error`, `n-retry` |
+| offline | `offline`, `offline-zero` | `n-offline`, `n-offline-check` |
+| read-only notes list with delete | `normal`/`idle`, `results`, `offline` | `n-notes-list`, `n-note-item`, `n-delete` |
+
+No unlabeled state: every `states[]` entry has a `state_matrix` row. `blocked` and
+`over-budget` do not apply to this screen (see `proto.json.domain_states`): auth
+failure redirects to login with no rendered blocked screen, and the only budget
+limit is the API `q` 512-byte cap (`400`, not a screen state). `offline` is an
+explicit domain state with two variants (`offline`, `offline-zero`).
+
+Every `nodes[]` entry has a `component-map.yaml` entry; `n-count` and `n-delete`
+are marked `path6_required: true` (no 1:1 DS registry id).
+
+## Breakpoints / exports
+
+| Width | Layout | Exports |
+|---|---|---|
+| 390 | Mobile: search row stacked, full-width 44px controls, no horizontal scroll; note rows wrap with delete aligned right. | `exports/export-390-{idle,results,no-results,empty,loading,error,offline}.png` |
+| 1200 | Desktop: centered column/card, inline search field + clear, count above the list. | `exports/export-1200-{idle,results,no-results,empty,loading,error,offline}.png` |
+
+`offline-zero` is renderable via `proto.html?state=offline-zero` but has no
+exported PNG in `units/note-search/exports/` (only `offline` is exported).
+
 ## Coverage notes
 
 - 8 renderable states (`idle`, `results`, `no-results`, `empty`, `loading`, `error`, `offline`, `offline-zero`) plus the `normal` alias of `idle`.
