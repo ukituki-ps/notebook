@@ -6,10 +6,12 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "9c1763c",
-    "build_ref": "9c1763c",
-    "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
-    "execution_id": "E1868"
+    "sha": "4347f16",
+    "build_ref": "4347f16",
+    "image_digest": "sha256:dda878c926b170c10a49052b70a6a0ddd175566c2c33a8b860f44ebce74ceb38",
+    "execution_id": "E0722",
+    "evaluated_sha": "4347f1612deb83c68a16d0d10768e107b207c9d6",
+    "gate_bundle_digest": "sha256:663b4a27edb3dde900d9724f62398a6ca3360efab5fd1d3129f5cc6d911f0d91"
   },
   "design_system": {
     "release": "1.0.1",
