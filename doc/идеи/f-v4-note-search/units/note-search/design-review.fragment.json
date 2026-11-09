@@ -406,5 +406,21 @@
       "UI findings UI-01..UI-17 all fixed or accepted; no open blocker",
       "state-matrix covers every screen_brief state and both viewports"
     ]
+  },
+  "revalidation_ux": {
+    "execution_id": "E4138-s03.proto_5fvisualize-u01",
+    "step_id": "s03.unit_ux_review",
+    "checked_session_id": "ses_e3dabdfe2ffeFhWH7x7epptFnG",
+    "checked_at": "2026-11-09T22:05:45Z",
+    "result": "revalidated",
+    "reviewer_independence": "reviewers.ux.session_id (ses_e438fdd7dffe6jwYOHgNxz6458) != author_session_id (ses_e44864e8affeXebq0BijhUo077); this execution only re-checked the accepted artifact, it did not author it",
+    "checks": [
+      "reviewers.ux.role=product-ux, verdict=accept, blockers=0",
+      "UX-01 blocker fixed: empty disables search (native disabled + aria-disabled + aria-describedby=notes-empty)",
+      "idle/results/no-results/empty/loading/error/offline/offline-zero flows present and labeled in proto.json/state-matrix",
+      "owner-scoped read-only list with delete: delete removes the row, re-applies query and updates count; last match -> no-results",
+      "recovery CTAs: clear -> idle, retry -> idle, offline-check -> idle",
+      "accepted UX residuals (offline copy, disabled-search visuals, offline-zero copy) documented, non-blocking"
+    ]
   }
 }
