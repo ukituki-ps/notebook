@@ -9,21 +9,21 @@
 schema: ui-graph/v1
 feature_id: f-v4-note-search
 status: actualized
-re-actualized: E0809 after s23 (build 7026b7e)
+re-actualized: E1868 after s23 (build 9c1763c)
 platform: web
-execution_id: E0809
+execution_id: E1868
 step: s21.graph_actualize
 source: code
 generated_from:
   kind: code
-  commit: "57896cc"
-  commit_full: "57896cca10994783d0aa2c5eb0276478b61622c9"
-  branch: dev/f-v4-note-search-e2e
-  generated_at: "2026-11-08"
+  commit: "6659eac"
+  commit_full: "6659eac9d33e56b99193d018fa850c2b550a5177"
+  branch: dev/f-v4-note-search-fix
+  generated_at: "2026-11-09"
   file_hashes:
     web/index.html: "sha256:322312eda21b5b4833d6904bb69621f6289d30eb8739f8ce2eb701bc0cdaef74"
-    web/app.js: "sha256:ba4580112464fa8f3e7026219189b6c6ae12c7bdb8fd207cf93d9c8277d8d85a"
-    web/app.css: "sha256:749b9108ccb7dc68b6603afa86b081dacaece382331a0638661a013cd5f53ee2"
+    web/app.js: "sha256:cdb8c4d07a1e9a25ac0ab74267c96a9710811e5a8a278dccff3e368662a14c0c"
+    web/app.css: "sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced"
 source_roots:
   - web
 source_files:

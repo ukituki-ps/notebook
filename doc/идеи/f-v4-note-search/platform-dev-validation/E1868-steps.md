@@ -5,3 +5,4 @@
 | s20a | accepted, 12/12 gates (gate base 865fd23) |
 | s20b | deployed test2 build 9c1763c, image sha256:cb2711… |
 | s20c | 30/30 E2E on test2; evidence regenerated |
+| s21 | UI-GRAPH re-actualized to 6659eac |
