@@ -6,6 +6,36 @@
   "design_system_version": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+  "reviewed_revision": {
+    "review_base_commit": "5ba8a206a1108a7b31867a23a35a8d2a50541397",
+    "proto_sha256": "sha256:ce496d1307b834954ceb877e9e221cfe6e6152d9f3da093247f1bd1c3671a59d",
+    "proto_html_sha256": "sha256:15d15f11901925a1eef6a05dd487750b95e27608a67e75191e8510d6d14165af",
+    "prototypes_v7_manifest_sha256": "sha256:12608ed77852b93f51f4473851b69408d046ed1718cb5d94ae7799550c6aea7d",
+    "unit_exports_sha256": {
+      "export-390-idle.png": "sha256:368de36ab23add8898f3cbe665e757dbd2e2ec9e1274be11da03db404ce13d52",
+      "export-390-results.png": "sha256:eaf07541d670bd64d502089ba46aa99001b946aefbcb979864a83699791891e9",
+      "export-390-no-results.png": "sha256:86f31d0afb1a2959898c1f4d41054763cfa7f6c7991d783c2f48a3622216735e",
+      "export-390-empty.png": "sha256:ab2c628cde575d20dde043634c3dab4ab74058adc83e716b4f584dc5849092bf",
+      "export-390-loading.png": "sha256:c785a04528e77a4daef2b5af0028e45606dcbad30f12a079ad7dd7cc31ad0cb7",
+      "export-390-error.png": "sha256:d1d5b09c1350515456d55b8f30ffe30ea55df7a0384a4ad5f0976d0e1d488e4b",
+      "export-390-offline.png": "sha256:58ba6517ae9bd954b68b1fe6a2af1335aaf14c9f962646e4731e9a661c224254",
+      "export-1200-idle.png": "sha256:25b29cfccba347e8e4fc02a57fbd1b02ff41251677f02a81d6547a38c71ee9e9",
+      "export-1200-results.png": "sha256:315ca0f8285430bed145e8048c4ec24b4e25fd064e9f2072723cc1215f47e5db",
+      "export-1200-no-results.png": "sha256:62f3dfbdc0a23bccd1f45fd76b9780431f732012255790c5ed7eef051a8999c3",
+      "export-1200-empty.png": "sha256:e9b3be11211028ebf52fe984ca0cd9ff95a09071bab42c1d22ac4df20798776a",
+      "export-1200-loading.png": "sha256:d652ed9a2453033fafd84fda386d04b841b945e0dba8630d6eefa36782bcdfce",
+      "export-1200-error.png": "sha256:4567632d25b0538cab61f88b182513a67168b36aad7bf3a5186501856059e769",
+      "export-1200-offline.png": "sha256:93b52914d86e8de42576218721f99c01fb24d4602577a0d30c783dd1a282868b"
+    },
+    "visuals_unchanged_since_review": true,
+    "revalidated_at": "2026-11-09T21:00:00Z",
+    "revalidation_scope": "s03.unit_ui_review replay: s03 proto changes were metadata-only (screen_brief/brief_coverage/breakpoints/domain_states); proto.html and all 14 unit exports are byte-identical to the reviewed DS 1.0.1 revision, so the independent UI verdict remains applicable.",
+    "independence": {
+      "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+      "ui_reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+      "distinct": true
+    }
+  },
   "reviewers": {
     "ui": {
       "role": "designer",
@@ -369,6 +399,16 @@
       "evidence": {
         "kind": "file",
         "ref": "units/note-search/proto.html:145; state-matrix.md:14; web/app.js:724"
+      }
+    },
+    {
+      "id": "UI-18",
+      "severity": "info",
+      "status": "accepted",
+      "text": "Revalidated on the s03.unit_ui_review replay without re-rendering: proto.html (sha256:15d15f11…) and all 14 unit exports are byte-identical to the reviewed DS 1.0.1 revision; the v7 manifest is unchanged (sha256:12608ed7…, 16 exports incl. offline-zero). The independent UI verdict (0 blockers, 0 majors) still applies; no new visual delta from the s03 metadata-only proto changes.",
+      "evidence": {
+        "kind": "file",
+        "ref": "units/note-search/proto.html; units/note-search/exports/*.png; prototypes/v7/manifest.json; git diff 5cf7812..HEAD -- units/note-search/proto.html (empty)"
       }
     }
   ],
