@@ -64,6 +64,7 @@ entry_points:
   start_from: s20a.unit_integrate
   required_context:
   - work_branch
+  - gate_base_ref
   skip_steps:
   - s24a.branch_fresh
   - s45.push_primary
