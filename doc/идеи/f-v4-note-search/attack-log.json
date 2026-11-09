@@ -93,11 +93,13 @@
     "passed": 10,
     "failed": 0
   },
-  "reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+  "reviewer_session_id": "ses_e407d9859ffe9jWpROLEJT2eYU",
   "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
   "independence": {
     "distinct": true
   },
   "verdict": "pass",
-  "findings": []
+  "findings": [],
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy"
 }

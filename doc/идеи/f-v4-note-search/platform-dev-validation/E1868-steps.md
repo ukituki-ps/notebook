@@ -14,3 +14,4 @@
 | s22b | red-team 10/10 attacks pass on test2 9c1763c |
 | s22b.retry | reviewer metadata folded into declared attack-log.json |
 | s22b.retry2 | declared red-team-review.json in result |
+| s22b.reviewer | registered ses_e407d9859ffe9jWpROLEJT2eYU qwen3.8-fast/llama-proxy |

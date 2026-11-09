@@ -6,8 +6,8 @@
   "target": "https://test2.nexus.ukituki.tech",
   "build_ref": "9c1763c",
   "attack_log": "doc/идеи/f-v4-note-search/attack-log.json",
-  "attack_log_sha256": "sha256:a5b492f4fe5fde937d903213e29c6c47791c42e4b9f49e4c1dd104979c512898",
-  "reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+  "attack_log_sha256": "sha256:cd10d0c0e953ca31807ba60252e0dc2e7394e7321b8ba1f564f0b7ab8c59c13f",
+  "reviewer_session_id": "ses_e407d9859ffe9jWpROLEJT2eYU",
   "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
   "independence": {
     "distinct": true
@@ -17,5 +17,58 @@
     "passed": 10,
     "failed": 0
   },
-  "findings": []
+  "findings": [
+    {
+      "id": "RT-1",
+      "severity": "info",
+      "status": "closed",
+      "text": "no-token 401"
+    },
+    {
+      "id": "RT-2",
+      "severity": "info",
+      "status": "closed",
+      "text": "owner-scoped search isolation"
+    },
+    {
+      "id": "RT-3",
+      "severity": "info",
+      "status": "closed",
+      "text": "no-match []"
+    },
+    {
+      "id": "RT-4",
+      "severity": "info",
+      "status": "closed",
+      "text": "512/513 cap"
+    },
+    {
+      "id": "RT-5",
+      "severity": "info",
+      "status": "closed",
+      "text": "XSS literal/textContent"
+    },
+    {
+      "id": "RT-6",
+      "severity": "info",
+      "status": "closed",
+      "text": "IDOR/delete statuses"
+    },
+    {
+      "id": "RT-7",
+      "severity": "info",
+      "status": "closed",
+      "text": "no new critical/high in diff"
+    },
+    {
+      "id": "RT-8",
+      "severity": "info",
+      "status": "closed",
+      "text": "pre-existing hardening notes"
+    }
+  ],
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  }
 }
