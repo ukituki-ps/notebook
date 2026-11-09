@@ -19,6 +19,25 @@ The note form (`.note-form` with a visible `<label for="note-text">Новая з
 | `offline-zero` | Note form visible; offline banner «Нет сети — нет загруженных заметок.» and base empty message «Пока нет заметок. Добавьте первую выше.»; search disabled; count/list/clear hidden. | Re-check connectivity. | Distinct from `empty`: the offline banner explains why no notes are shown; `notes-empty` stays visible. |
 | `offline` | Note form visible; banner composed from DS `.note-item` `role="status"` with `.note-text.muted` text «Нет сети — показаны загруженные заметки.» and a single-line 44px `min-height` button «Проверить сеть»; search disabled with placeholder «Поиск недоступен без сети», `aria-disabled="true"`, `aria-describedby="notes-offline"`; count hidden; all 4 loaded notes with Удалить visible but disabled (DELETE needs the network). | Press «Проверить сеть» to re-check connectivity. | **«Проверить сеть» behavior:** re-check connectivity and return to the loaded list; the prototype simulates a successful re-check by switching to `idle`. The banner has a 16px DS spacing class above the list. Banner uses DS `note-item` border and `muted` text (no custom colors); `.note-text` lets the paragraph flex, and a non-breaking space (plus `aria-label="Проверить сеть"`) keeps the button on one line without local CSS; saved loaded notes remain readable. |
 
+## Screen brief → proto state coverage
+
+`screen_brief`: _Owner-scoped note search over Notebook DS 1.0.1: search field, clear, idle/results/empty/loading/error/offline states, 390/1200 breakpoints, read-only notes list with delete._
+
+| screen_brief state | proto state(s) | Renderable |
+|---|---|---|
+| `idle` | `idle` (+ `normal` alias) | yes |
+| `results` | `results` | yes |
+| `empty` | `empty` | yes |
+| `loading` | `loading` | yes |
+| `error` | `error` | yes |
+| `offline` | `offline`, `offline-zero` | yes |
+
+- `clear` is a control (`n-search-clear`), visible in `results`/`no-results`, not a separate state.
+- `read-only notes list with delete` → `n-notes-list`/`n-note-item` are read-only rows; the only mutation is `n-delete` (`.delete-note`); no edit surface is prototyped.
+- Breakpoints `390`/`1200` are covered by the per-state exports (`exports/export-390-*.png`, `exports/export-1200-*.png`).
+- Domain states named by the gate are explicit: `offline` is covered; `blocked` and `over-budget` are **not applicable** (notebook notes have no approval/blocking domain and no budget/quota domain). This is recorded in `proto.json.domain_states_not_applicable`.
+- No unlabeled/unknown state is emitted by `proto.html`: its `STATES` list is exactly the eight renderable states above (`normal` exists only as an alias of `idle` in `proto.json`).
+
 ## Coverage notes
 
 - 8 renderable states (`idle`, `results`, `no-results`, `empty`, `loading`, `error`, `offline`, `offline-zero`) plus the `normal` alias of `idle`.

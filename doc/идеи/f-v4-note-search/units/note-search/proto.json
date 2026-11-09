@@ -16,6 +16,19 @@
     "offline",
     "offline-zero"
   ],
+  "breakpoints": [390, 1200],
+  "screen_brief_states": {
+    "idle": ["idle", "normal"],
+    "results": ["results"],
+    "empty": ["empty"],
+    "loading": ["loading"],
+    "error": ["error"],
+    "offline": ["offline", "offline-zero"]
+  },
+  "domain_states_not_applicable": {
+    "blocked": "N/A: notebook notes have no blocked/approval domain",
+    "over-budget": "N/A: notebook has no budget/quota domain"
+  },
   "state_matrix": [
     {
       "state": "normal",
