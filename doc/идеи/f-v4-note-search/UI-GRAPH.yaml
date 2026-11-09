@@ -1,4 +1,6 @@
 # UI-граф (actualized from code) — f-v4-note-search, экран note-search
+# Re-actualized: s21.graph_actualize (E0722, from-code) on build 4347f16;
+# file hashes re-verified against the evaluated tree (identical to the graph).
 # Источник: s21.graph_actualize (E0809, from-code) по фактическому коду:
 #   web/index.html, web/app.js, web/app.css, spec/core.md §3,
 #   units/notebook-search-ui/*, arch/frontend/pages/note-search.yaml,
@@ -9,16 +11,16 @@
 schema: ui-graph/v1
 feature_id: f-v4-note-search
 status: actualized
-re-actualized: E1868 after s23 (build 9c1763c)
+re-actualized: E0722 after s20c (build 4347f16)
 platform: web
-execution_id: E1868
+execution_id: E0722
 step: s21.graph_actualize
 source: code
 generated_from:
   kind: code
-  commit: "6659eac"
-  commit_full: "6659eac9d33e56b99193d018fa850c2b550a5177"
-  branch: dev/f-v4-note-search-fix
+  commit: "4347f16"
+  commit_full: "4347f1612deb83c68a16d0d10768e107b207c9d6"
+  branch: dev/f-v4-note-search-clean-v2
   generated_at: "2026-11-09"
   file_hashes:
     web/index.html: "sha256:322312eda21b5b4833d6904bb69621f6289d30eb8739f8ce2eb701bc0cdaef74"
