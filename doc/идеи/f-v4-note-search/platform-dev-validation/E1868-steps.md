@@ -22,3 +22,4 @@
 | s20a.reintegration | no code changes after s23; tests green |
 | s20a.oracles | UI invariants made gate-runnable (unit/semantics + scenario evidence) |
 | s20c.reverify | docs-only HEAD; test2 evidence still valid |
+| s24 | report written; awaiting signed owner approval |
