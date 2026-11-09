@@ -6,10 +6,10 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "7026b7e",
-    "build_ref": "7026b7e",
-    "image_digest": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee",
-    "execution_id": "E0809"
+    "sha": "9c1763c",
+    "build_ref": "9c1763c",
+    "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
+    "execution_id": "E1868"
   },
   "design_system": {
     "release": "1.0.1",
@@ -338,22 +338,24 @@
   ],
   "independence": {
     "auditor_session": "designer/s22a",
-    "author_session": "ses_e4433e6faffeDGXVi4lKO4t3W8",
+    "author_session": "ses_e442f30caffeDPkUiVd22i2lYu",
     "distinct": true
   },
   "context": {
     "source": "orc_ctx",
-    "tokens": 6200,
+    "tokens": 20000,
     "artifacts": [
       "doc/идеи/f-v4-note-search/ui-audit.json",
       "doc/идеи/f-v4-note-search/screenshots/",
+      "doc/идеи/f-v4-note-search/scenario-evidence.json",
       "doc/идеи/f-v4-note-search/component-refs.json"
     ]
   },
   "review_reaudit": {
-    "build": "7026b7e",
-    "image": "sha256:8302078ed3ea4d9273b4c7675c1ab4ededc62e0eeedd153e7bea5bb01f31fdee",
-    "at": "2026-11-08T16:53:01Z",
-    "e2e": "20/20"
-  }
+    "build": "9c1763c",
+    "image": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
+    "at": "2026-11-09T08:45:20Z",
+    "e2e": "30/30 on test2"
+  },
+  "execution_id": "E1868"
 }
