@@ -22,9 +22,27 @@ path6_requests: [n-count, n-delete]
 
 ## DS impact
 
-**None to the Design System.** This step creates feature-level design-contract artifacts only. No files under `design/`, `web/`, or any application code are modified; no commit is made. There is no new DS release: the feature is locked to Notebook DS 1.0.1 (`=1.0.1`), the current approved release. Kubiki is not used; `web/app.css` remains the DS implementation under comparison.
+**None to the Design System.** This step creates feature-level design-contract artifacts only. No files under `design/`, `web/`, or any application code are modified; the step commit contains design-contract artifacts only. There is no new DS release: the feature is locked to Notebook DS 1.0.1 (`=1.0.1`), the current approved release. Kubiki is not used; `web/app.css` remains the DS implementation under comparison.
 
 The unit (`note-search`) and the feature aggregate share `design_system_version = 1.0.1` and the same `ds_digest`; exactly one feature `ds.lock.json` is emitted.
+
+## Integration verification (E9108)
+
+Checked at commit `90a08cb` (execution base `9e7fae3`) across the feature
+aggregate and `units/note-search/`:
+
+| Gate criterion | Evidence | Result |
+|---|---|---|
+| Every `context.screens` entry has a design-unit result | `context.screens = [note-search]`; `units/note-search/proto.json` (`screen_id=note-search`, 18 nodes) | OK |
+| All units share one DS version/digest | feature and unit `ds-lock.json`, `component-refs.json`, `design-gaps.json`, `design-review.fragment.json`, `component-map.yaml` all `1.0.1` / `sha256:4e0ef105…c85e` | OK |
+| Exactly one feature `ds.lock.json`, no conflicting unit versions | feature `ds.lock.json` (`constraint =1.0.1`) plus the unit's matching lock; no divergent versions found | OK |
+| `component-refs.json` and `component-map.yaml` agree on `node_id`/`registry_id` | 18/18 nodes agree (including the `null` compositions `n-note-form`, `n-count`, `n-delete`) | OK |
+| `design-review.fragment.json` has UI and UX verdicts for the screen | `reviewers.ui` = designer `accept`, `reviewers.ux` = product-ux `accept`; different session ids | OK |
+| `design-impact.md` front matter matches `ds.lock` and `component-refs` | `ds_release=1.0.1`, digest `4e0ef105…`, `ds_lock`/`component_refs`/`component_map` file names | OK |
+| `design-gaps.json` matches `path6_required` in refs and `path6_requests` in impact | all three sets equal `[n-count, n-delete]`; GAP-1/GAP-3 accepted, `blocking=false`; GAP-2 is not path6-required | OK |
+
+Gate: `bash tools/path1-gate.sh design-integrate E9108` →
+`design-integrate: PASS`. No local instances (0), no new registry ids.
 
 ## Reused registry components
 
