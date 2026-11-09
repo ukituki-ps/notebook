@@ -1,128 +1,136 @@
 {
   "schema_version": "1.0",
-  "execution_id": "E1868",
+  "execution_id": "E0722",
   "step": "s22c.adversarial_code_review",
   "verdict": "pass",
+  "build_ref": "4347f16",
   "reviewer": {
     "model": "qwen3.8-fast",
     "provider": "llama-proxy"
   },
-  "reviewer_session_id": "ses_e4069bc69ffeuzOakOZHY4NZc4",
+  "reviewer_session_id": "ses_e3f30112fffeJjQ4O6A5NsyOJp",
   "reviewer_model": "qwen3.8-fast",
   "reviewer_provider": "llama-proxy",
   "author_model": "deepseek-flash",
   "author_provider": "deepseek",
-  "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
+  "author_session_id": "ses_e3f4150e4ffeP7HiZlKJkvL0Wz",
   "findings": [
     {
       "id": "CR-01",
-      "severity": "high",
+      "severity": "info",
       "status": "closed",
-      "text": "stale GET after DELETE cannot resurrect; generation guard + latestLoadGeneration busy release; CR-01 E2E passes",
-      "file": "web/app.js",
-      "line": 623
+      "verdict": "closed",
+      "text": "Auth-before-query: requireAuth (main.go:531) runs before r.URL.Query(); unauthenticated q (even 600 bytes) returns 401 with WWW-Authenticate: Bearer, never 400/200. TestNotesSearchAuthRequired + live probe.",
+      "file": "main.go",
+      "line": 531
     },
     {
       "id": "CR-02",
-      "severity": "medium",
+      "severity": "info",
       "status": "closed",
-      "text": "401 lock removes aria-describedby; never points at hidden notes-empty; CR-02 E2E passes",
-      "file": "web/app.js",
-      "line": 362
-    },
-    {
-      "id": "CR-03",
-      "severity": "medium",
-      "status": "closed",
-      "text": "clear enabled offline, disabled only on 401; CR-03 E2E passes",
-      "file": "web/app.js",
-      "line": 386
-    },
-    {
-      "id": "CR-04",
-      "severity": "low",
-      "status": "refuted",
-      "text": "512-byte cap boundary correct (512 accepted, 513 -> 400), auth-before-cap",
-      "file": "main.go",
-      "line": 542
-    },
-    {
-      "id": "CR-05",
-      "severity": "high",
-      "status": "refuted",
-      "text": "load/delete/create races guarded; no resurrection/lost update",
-      "file": "web/app.js",
-      "line": 402
-    },
-    {
-      "id": "CR-06",
-      "severity": "high",
-      "status": "refuted",
-      "text": "XSS: textContent only, no innerHTML/document.write",
-      "file": "web/app.js",
-      "line": 422
-    },
-    {
-      "id": "CR-07",
-      "severity": "high",
-      "status": "refuted",
-      "text": "owner scope applied before q; no cross-owner leak",
+      "verdict": "closed",
+      "text": "Owner-scope predicate order holds: ListNotes(session.UserID) (main.go:547) then q narrows only; foreign search returns []; foreign DELETE -> 404. TestNotesSearchIsolation/TestDeleteForeignNote.",
       "file": "main.go",
       "line": 547
     },
     {
-      "id": "CR-08",
-      "severity": "medium",
-      "status": "refuted",
-      "text": "all graph states have exits; no dead-end",
+      "id": "CR-03",
+      "severity": "info",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "q cap is 512 decoded bytes before trim/scan (main.go:541-545); 512 -> 200, 513 -> 400; multi-byte 512B accepted, 514B rejected. TestNotesSearchQueryTooLong.",
+      "file": "main.go",
+      "line": 542
+    },
+    {
+      "id": "CR-04",
+      "severity": "low",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "Case-insensitive substring via strings.ToLower on both sides (main.go:546,551); stored text unchanged. Residual: no locale-aware Unicode folding (documented non-goal).",
+      "file": "main.go",
+      "line": 546
+    },
+    {
+      "id": "CR-05",
+      "severity": "info",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "XSS closed: note text rendered only via textContent (app.js:421-422); zero innerHTML/insertAdjacentHTML/document.write/eval in web/*.js; SEARCH-E2E-15 asserts literal rendering.",
       "file": "web/app.js",
-      "line": 498
+      "line": 422
+    },
+    {
+      "id": "CR-06",
+      "severity": "info",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "Delete/IDOR/status: auth first (401), method (405 Allow: DELETE), id parse (400), owner-checked DeleteNote (404 foreign/missing). TestDeleteForeignNote/TestNotesMethodNotAllowed/TestNotesPrefixBoundary.",
+      "file": "main.go",
+      "line": 595
+    },
+    {
+      "id": "CR-07",
+      "severity": "low",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "UI load/delete race guarded by loadGeneration (app.js:623,634,525-532); stale load cannot resurrect a deleted note; busy affordances released. CR-01 E2E regression passes.",
+      "file": "web/app.js",
+      "line": 623
+    },
+    {
+      "id": "CR-08",
+      "severity": "low",
+      "status": "confirmed",
+      "verdict": "confirmed",
+      "text": "Residual: handleUnauthorized (app.js:484-501) clears storage/query and locks UI but does not clear the in-memory notes array or rendered list before the 200ms redirect to /login. Not cross-user exploitable in practice (session expiry = same user; login is a full reload). Low, accepted for s23 triage.",
+      "file": "web/app.js",
+      "line": 484
     },
     {
       "id": "CR-09",
-      "severity": "info",
-      "status": "refuted",
-      "text": "lazy session expiry is pre-existing f-v3 semantics, unchanged",
-      "file": "main.go",
-      "line": 186
+      "severity": "low",
+      "status": "confirmed",
+      "verdict": "confirmed",
+      "text": "Residual: logout is client-side only (app.js:789-794); no server token revocation, so a captured token remains valid up to sessionTTL=24h (main.go:31). invariants.json dont[0] keeps auth/session out of scope; accepted design boundary.",
+      "file": "web/app.js",
+      "line": 789
     },
     {
       "id": "CR-10",
-      "severity": "low",
-      "status": "closed",
-      "text": "UI-GRAPH/spec DS traceability updated to 1.0.1 (digest 4e0ef105, registry 79d748c2)",
-      "file": "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
-      "line": 742
+      "severity": "info",
+      "status": "refuted",
+      "verdict": "refuted",
+      "text": "Auth bypass via path normalization refuted: Go 1.22+ ServeMux 301-collapses '//' and '..' before the handler; canonical target still enforces requireAuth; no open redirect or traversal surface.",
+      "file": "main.go",
+      "line": 389
     },
     {
       "id": "CR-11",
+      "severity": "low",
+      "status": "confirmed",
+      "verdict": "confirmed",
+      "text": "Test/doc quality gaps: no Go test pins '+1'/'-1'/encoded-slash id forms or '//' 301 normalization; INV-UI-E2E-PREVIEW.test_ref points at scenario-evidence.json absent from the tree (invariant stays proposed); web_ui_test.go is a literal-string oracle. Safe but unregressed.",
+      "file": "doc/идеи/f-v4-note-search/invariants.json",
+      "line": 195
+    },
+    {
+      "id": "CR-12",
       "severity": "info",
-      "status": "refuted",
-      "text": "stale comment only, no behavior defect",
+      "status": "closed",
+      "verdict": "closed",
+      "text": "Info: PBKDF2-HMAC-SHA256 210000 iterations with 16B salt/32B key and dummy-hash timing equalization; below OWASP 600k but acceptable for this app; auth is out of scope for the feature.",
       "file": "main.go",
-      "line": 36
+      "line": 37
     }
   ],
   "proofs": [
-    {
-      "command": "go build ./...",
-      "result": "ok"
-    },
-    {
-      "command": "go vet ./...",
-      "result": "ok"
-    },
-    {
-      "command": "go test ./...",
-      "result": "ok"
-    },
-    {
-      "command": "node --check web/app.js",
-      "result": "ok"
-    },
-    {
-      "command": "python3 tools/check-ds-token-drift.py --root .",
-      "result": "ok"
-    }
-  ]
+    "go build ./... && go vet ./... -> clean (exit 0)",
+    "go test -count=1 ./... -> ok github.com/ukituki-ps/notebook",
+    "go test -count=1 -run 'TestAuthRequired|TestNotesSearchAuthRequired|TestNotesIsolation|TestNotesSearchIsolation|TestNotesSearchFinds|TestNotesSearchCaseInsensitive|TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery|TestNotesSearchNotFound|TestNotesSearchEncoding|TestNotesSearchQueryTooLong|TestWireContract|TestHTTPTransport|TestUISemantics|TestDeleteForeignNote|TestNotesMethodNotAllowed|TestNotesPrefixBoundary|TestAuthMethodOrder|TestDeleteInvalidID' ./... -> all PASS",
+    "grep -nE 'innerHTML|insertAdjacentHTML|document.write|eval\\(|new Function|dangerouslySetInnerHTML' web/*.js -> 0 matches",
+    "13 adversarial httptest probes against a /tmp copy of main.go: unauth 600B q -> 401; 512B -> 200; 513B -> 400; multi-byte 512B/514B boundary; delete +1 owner 204 / foreign 404 / -1 404; // path 301 to canonical with auth still enforced; mixed-case search match",
+    "git diff --stat 4347f16..HEAD -- main.go main_test.go web/ web_ui_test.go go.mod -> empty (docs-only commits; reviewed code identical to build 4347f16)"
+  ],
+  "notes": "Independent adversarial code review by qwen3.8-fast/llama-proxy. No confirmed critical/high finding. Residual low/accepted: stale notes during the 200ms 401 redirect, client-side-only logout with 24h token validity, 301-normalized // paths (no bypass), missing scenario-evidence.json for the still-proposed INV-UI-E2E-PREVIEW, and unregressed-but-safe edge id/path forms."
 }
