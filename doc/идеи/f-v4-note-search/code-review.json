@@ -1,148 +1,128 @@
 {
   "schema_version": "1.0",
-  "feature_id": "f-v4-note-search",
+  "execution_id": "E1868",
   "step": "s22c.adversarial_code_review",
+  "verdict": "pass",
   "reviewer": {
     "model": "qwen3.8-fast",
     "provider": "llama-proxy"
   },
+  "reviewer_session_id": "ses_e4069bc69ffeuzOakOZHY4NZc4",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy",
   "author_model": "deepseek-flash",
   "author_provider": "deepseek",
-  "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8",
-  "reviewer_session_id": "ses_e43f4a1f8ffeUtE51xTXmkTBp2",
-  "verdict": "pass",
-  "proofs": [
-    {
-      "id": "P1",
-      "command": "go build ./...",
-      "result": "OK exit 0"
-    },
-    {
-      "id": "P2",
-      "command": "go vet ./...",
-      "result": "OK exit 0"
-    },
-    {
-      "id": "P3",
-      "command": "go test -count=1 ./...",
-      "result": "ok 2.841s"
-    },
-    {
-      "id": "P4",
-      "command": "node --check web/app.js",
-      "result": "OK"
-    },
-    {
-      "id": "P5",
-      "command": "npx --no-install playwright test web/e2e/notes-search.spec.js --list",
-      "result": "20 tests"
-    },
-    {
-      "id": "P6",
-      "command": "git diff 5785dc0..HEAD -- main.go main_test.go web_ui_test.go web",
-      "result": "empty: product code identical to 20/20-verified deploy 5785dc0"
-    },
-    {
-      "id": "P7",
-      "command": "grep -rn innerHTML web/",
-      "result": "0 matches"
-    }
-  ],
+  "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
   "findings": [
     {
       "id": "CR-01",
-      "severity": "medium",
-      "verdict": "confirmed",
-      "file_line": "web/app.js:504-527,583-601,701-723",
-      "text": "Stale in-flight load can overwrite a concurrent successful delete (offline->Проверить сеть->Удалить); transient self-healing UI inconsistency, no data loss/security impact. Recommend generation counter or disable delete while busy."
+      "severity": "high",
+      "status": "closed",
+      "text": "stale GET after DELETE cannot resurrect; generation guard + latestLoadGeneration busy release; CR-01 E2E passes",
+      "file": "web/app.js",
+      "line": 623
     },
     {
       "id": "CR-02",
-      "severity": "low",
-      "verdict": "confirmed",
-      "file_line": "web/app.js:348-356,467-484,497",
-      "text": "401 mid-load sets aria-describedby to hidden notes-empty during locked window; cosmetic a11y edge."
+      "severity": "medium",
+      "status": "closed",
+      "text": "401 lock removes aria-describedby; never points at hidden notes-empty; CR-02 E2E passes",
+      "file": "web/app.js",
+      "line": 362
     },
     {
       "id": "CR-03",
-      "severity": "low",
-      "verdict": "confirmed",
-      "file_line": "web/app.js:337-339,367-370",
-      "text": "Query cannot be cleared while offline (search+clear disabled); resolves after reconnect."
+      "severity": "medium",
+      "status": "closed",
+      "text": "clear enabled offline, disabled only on 401; CR-03 E2E passes",
+      "file": "web/app.js",
+      "line": 386
     },
     {
       "id": "CR-04",
       "severity": "low",
-      "verdict": "accepted",
-      "file_line": "path1.project.json:22-31,76",
-      "text": "Portable skip-tag detector widened to whole tree; green current tree, keep in mind for non-test build tags."
+      "status": "refuted",
+      "text": "512-byte cap boundary correct (512 accepted, 513 -> 400), auth-before-cap",
+      "file": "main.go",
+      "line": 542
     },
     {
       "id": "CR-05",
-      "severity": "info",
-      "verdict": "refuted",
-      "file_line": "main.go:33,541-545; main_test.go:1116-1157",
-      "text": "512-byte cap is bytes, evaluated before trim; boundaries pinned."
+      "severity": "high",
+      "status": "refuted",
+      "text": "load/delete/create races guarded; no resurrection/lost update",
+      "file": "web/app.js",
+      "line": 402
     },
     {
       "id": "CR-06",
-      "severity": "info",
-      "verdict": "refuted",
-      "file_line": "web/app.js:400-415",
-      "text": "No XSS sink; textContent-only; E2E-15 proves literal rendering."
+      "severity": "high",
+      "status": "refuted",
+      "text": "XSS: textContent only, no innerHTML/document.write",
+      "file": "web/app.js",
+      "line": 422
     },
     {
       "id": "CR-07",
-      "severity": "info",
-      "verdict": "accepted",
-      "file_line": "web/app.js:417-424",
-      "text": "Client search includes note.title (undefined today); harmless future-proofing."
+      "severity": "high",
+      "status": "refuted",
+      "text": "owner scope applied before q; no cross-owner leak",
+      "file": "main.go",
+      "line": 547
     },
     {
       "id": "CR-08",
-      "severity": "info",
-      "verdict": "accepted",
-      "file_line": "web/app.js:701-711",
-      "text": "Error+offline overlap is a documented UI-GRAPH transition, exitable."
+      "severity": "medium",
+      "status": "refuted",
+      "text": "all graph states have exits; no dead-end",
+      "file": "web/app.js",
+      "line": 498
     },
     {
       "id": "CR-09",
       "severity": "info",
-      "verdict": "refuted",
-      "file_line": "code-review.json (E1546)",
-      "text": "E1546 findings closed; DELETE Atoi laxness is inherited/out of scope."
+      "status": "refuted",
+      "text": "lazy session expiry is pre-existing f-v3 semantics, unchanged",
+      "file": "main.go",
+      "line": 186
+    },
+    {
+      "id": "CR-10",
+      "severity": "low",
+      "status": "closed",
+      "text": "UI-GRAPH/spec DS traceability updated to 1.0.1 (digest 4e0ef105, registry 79d748c2)",
+      "file": "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
+      "line": 742
+    },
+    {
+      "id": "CR-11",
+      "severity": "info",
+      "status": "refuted",
+      "text": "stale comment only, no behavior defect",
+      "file": "main.go",
+      "line": 36
     }
   ],
-  "summary": {
-    "open_critical_high": 0,
-    "blockers": 0,
-    "medium_confirmed": 1
-  },
-  "context": {
-    "source": "orc_ctx",
-    "tokens": 24000,
-    "artifacts": [
-      "doc/идеи/f-v4-note-search/spec/core.md",
-      "doc/идеи/f-v4-note-search/invariants.json",
-      "doc/идеи/f-v4-note-search/ds.lock.json",
-      "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
-      "doc/идеи/f-v4-note-search/preview-verdict.json",
-      "web/app.js",
-      "web/index.html",
-      "main.go",
-      "main_test.go",
-      "web_ui_test.go",
-      "web/e2e/notes-search.spec.js",
-      "path1.project.json",
-      "audit/fault-catalog/notebook.yaml"
-    ]
-  },
-  "re_review": {
-    "build": "7026b7e",
-    "at": "2026-11-08T16:54:45Z",
-    "e2e": "20/20",
-    "product_delta_vs_deploy": "none",
-    "verdict": "pass",
-    "note": "post-s23 re-run; findings/CR-01 medium unchanged"
-  }
+  "proofs": [
+    {
+      "command": "go build ./...",
+      "result": "ok"
+    },
+    {
+      "command": "go vet ./...",
+      "result": "ok"
+    },
+    {
+      "command": "go test ./...",
+      "result": "ok"
+    },
+    {
+      "command": "node --check web/app.js",
+      "result": "ok"
+    },
+    {
+      "command": "python3 tools/check-ds-token-drift.py --root .",
+      "result": "ok"
+    }
+  ]
 }

@@ -737,13 +737,13 @@ path6:
       blocking: false
       resolution: "существующий DS-класс .delete-note (web/app.css:248-257), записи в registry нет"
 
-# DS registry mapping: фактические registry_id из design/registry.json 1.0.0.
+# DS registry mapping: фактические registry_id из design/registry.json 1.0.1.
 ds_registry:
-  release: "1.0.0"
-  digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
-  constraint: "=1.0.0"
+  release: "1.0.1"
+  digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  constraint: "=1.0.1"
   registry: design/registry.json
-  registry_sha256: "sha256:c2d4c3ae3ff5fb5293ecbd6e27444504fcb903c5be80b92df67a0ca9eed3d9d1"
+  registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
   mapping:
     n-notes-header: patterns/notes-header
     n-note-form: null
@@ -802,9 +802,9 @@ ds_registry:
 
 # Трассируемость артефакта.
 traceability:
-  ds_release: "1.0.0"
-  ds_digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
-  ds_constraint: "=1.0.0"
+  ds_release: "1.0.1"
+  ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  ds_constraint: "=1.0.1"
   ds_lock: doc/идеи/f-v4-note-search/ds.lock.json
   component_refs: doc/идеи/f-v4-note-search/component-refs.json
   component_map: doc/идеи/f-v4-note-search/component-map.yaml

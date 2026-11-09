@@ -16,3 +16,4 @@
 | s22b.retry2 | declared red-team-review.json in result |
 | s22b.reviewer | registered ses_e407d9859ffe9jWpROLEJT2eYU qwen3.8-fast/llama-proxy |
 | s22b | BLOCKED reviewer_model_mismatch (author model/provider unresolvable) |
+| s22c | code review pass, 11 findings closed/refuted; DS traceability fixed |

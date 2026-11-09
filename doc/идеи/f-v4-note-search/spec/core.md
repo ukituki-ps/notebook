@@ -3,8 +3,8 @@
 - Execution: **E0809**, step **s14.spec_generation**
 - Branch: `dev/f-v4-note-search-e2e`, base `e6aeb44e`
 - Process: `path-1.feature` **4.0.0** (entry `default`, platform `web`, profile `full`)
-- Design System: **Notebook DS 1.0.0** — tag `ds/v1.0.0`, digest
-  `sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d`
+- Design System: **Notebook DS 1.0.1** — tag `ds/v1.0.1`, digest
+  `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`
   (`02f027a8…da3d`), constraint `=1.0.0`
 - Change class: **plain**; `feature_profile=full`; `path1.ui.json.platform=web`
 - Normative inputs: [feature-brief.md](../feature-brief.md),
@@ -170,7 +170,7 @@ Notebook DS place the composer first.
 
 ### 3.5 Design System
 
-- Notebook DS **1.0.0** only (`ds/v1.0.0`, digest `02f027a8…da3d`): **12
+- Notebook DS **1.0.0** only (`ds/v1.0.1`, digest `02f027a8…da3d`): **12
   registry components** used, **0 local instances**, no local CSS, no second
   design system, no Kubiki, and no `frontend/src/ui/kit` usage.
 - path6 gaps stay accepted and non-blocking: **GAP-1** (`n-count`, missing
@@ -227,7 +227,7 @@ Active invariants from `invariants.json`:
 | UI states | loading has no `role=status`; no count/retry/offline; base empty wins | loading `role=status`; count/retry/offline/offline-zero; base empty precedence kept | additive / changed |
 | UI delete | visible `Delete`; `aria-label` set in `app.js` | visible `Удалить` + `aria-label="Удалить заметку #N"` | changed |
 | Query persistence | `sessionStorage["notebook.search"]` restore | in-memory only; cleared on login/logout/401/reload | changed |
-| DS | Notebook DS 1.0.0, 12 components, 0 local instances | same; gaps accepted; no DS edit | none |
+| DS | Notebook DS 1.0.1, 12 components, 0 local instances | same; gaps accepted; no DS edit | none |
 | data model / persistence | unchanged | unchanged | none |
 
 No removed/renamed wire field and no status-code change for existing requests
