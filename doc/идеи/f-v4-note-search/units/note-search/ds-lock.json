@@ -20,9 +20,24 @@
     "tag": "ds/v1.0.1",
     "code_path": "web/app.css"
   },
+  "verification": {
+    "manifest_resolves": true,
+    "resolved_manifest": "design/releases/1.0.1/manifest.json",
+    "resolved_release": "1.0.1",
+    "constraint_exact": "=1.0.1",
+    "checked_by_step": "s04a.unit_ds_resolve",
+    "hashes_vs_manifest": {
+      "tokens_sha256": "match",
+      "registry_sha256": "match",
+      "kit_sha256": "match (S3 object pinned by manifest; no local copy)",
+      "code_sha256": "match"
+    },
+    "branch_scope": "7bdd030..HEAD touches only doc/идеи/f-v4-note-search/units/note-search/** (no design/** or frontend/src/ui/** changes)"
+  },
   "tokens_sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb",
   "registry_sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359",
   "kit_sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+  "code_sha256": "sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced",
   "components": [
     {
       "registry_id": "primitives/button",
