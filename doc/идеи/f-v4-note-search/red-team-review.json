@@ -1,74 +1,88 @@
 {
   "schema_version": "1.0",
-  "execution_id": "E1868",
+  "execution_id": "E0722",
   "step": "s22b.red_team_audit",
   "verdict": "pass",
   "target": "https://test2.nexus.ukituki.tech",
-  "build_ref": "9c1763c",
+  "build_ref": "4347f16",
+  "image_digest": "sha256:dda878c926b170c10a49052b70a6a0ddd175566c2c33a8b860f44ebce74ceb38",
   "attack_log": "doc/идеи/f-v4-note-search/attack-log.json",
-  "attack_log_sha256": "sha256:cd10d0c0e953ca31807ba60252e0dc2e7394e7321b8ba1f564f0b7ab8c59c13f",
-  "reviewer_session_id": "ses_e407d9859ffe9jWpROLEJT2eYU",
-  "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
+  "attack_log_sha256": "sha256:e59b2e4f02cd688904c043ae3fc32a3e0476f0af0bb937e89bdc7a2037f7db4e",
+  "reviewer_session_id": "ses_e3f3490c9ffeR3J2cb07Y0u1Jk",
+  "author_session_id": "ses_e3f4150e4ffeP7HiZlKJkvL0Wz",
   "independence": {
     "distinct": true
   },
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  },
   "summary": {
-    "total": 10,
-    "passed": 10,
+    "total": 15,
+    "passed": 15,
     "failed": 0
   },
   "findings": [
     {
-      "id": "RT-1",
-      "severity": "info",
+      "id": "RT-AUTH-BEFORE-QUERY",
+      "severity": "high",
       "status": "closed",
-      "text": "no-token 401"
+      "text": "requireAuth() runs before method/query/id handling; live unauth GET/DELETE and q=513 all return 401; WWW-Authenticate: Bearer present."
     },
     {
-      "id": "RT-2",
-      "severity": "info",
+      "id": "RT-OWNER-SCOPE",
+      "severity": "high",
       "status": "closed",
-      "text": "owner-scoped search isolation"
+      "text": "ListNotes applies the owner predicate before the text filter; query narrows only; RT-IDOR-SEARCH returns 200 [] and TestNotesSearchIsolation passes."
     },
     {
-      "id": "RT-3",
-      "severity": "info",
+      "id": "RT-Q-CAP-512",
+      "severity": "high",
       "status": "closed",
-      "text": "no-match []"
+      "text": "Decoded q is capped at 512 bytes before trim/scan; 512 -> 200, 513 -> 400 query too long; byte-not-rune boundary pinned by TestNotesSearchQueryTooLong."
     },
     {
-      "id": "RT-4",
-      "severity": "info",
+      "id": "RT-CASE-INS-SEARCH",
+      "severity": "medium",
       "status": "closed",
-      "text": "512/513 cap"
+      "text": "strings.ToLower on query and note text; stored text unchanged; client filter mirrors with toLowerCase; SEARCH-E2E-3 passes."
     },
     {
-      "id": "RT-5",
-      "severity": "info",
+      "id": "RT-XSS-TEXTCONTENT",
+      "severity": "high",
       "status": "closed",
-      "text": "XSS literal/textContent"
+      "text": "Note text rendered only via textContent; zero innerHTML in web/; API returns the payload literally; SEARCH-E2E-15 proves no live nodes."
     },
     {
-      "id": "RT-6",
-      "severity": "info",
+      "id": "RT-IDOR-DELETE",
+      "severity": "high",
       "status": "closed",
-      "text": "IDOR/delete statuses"
+      "text": "Foreign/missing delete -> 404 with owner predicate; RT-IDOR-DELETE confirms; invalid id -> 400; prefix boundary tests pass."
     },
     {
-      "id": "RT-7",
-      "severity": "info",
+      "id": "RT-METHOD-STATUS",
+      "severity": "medium",
       "status": "closed",
-      "text": "no new critical/high in diff"
+      "text": "GET/POST collection and DELETE item only, else 405 with Allow; 204 empty on success; auth precedes method/id checks; error envelope has no internal detail."
     },
     {
-      "id": "RT-8",
-      "severity": "info",
+      "id": "RT-UI-FILTER",
+      "severity": "medium",
       "status": "closed",
-      "text": "pre-existing hardening notes"
+      "text": "Client-side filter over owner-scoped list; UI never sends q; query re-applied after create/delete/reload; cleared on 401/logout/login; zero-note disables search."
+    },
+    {
+      "id": "RT-EVIDENCE-INTEGRITY",
+      "severity": "medium",
+      "status": "closed",
+      "text": "attack-log.json internally consistent: 15/15 pass, E0722/build 4347f16, fresh run_at; invariant Go tests re-run locally PASS."
+    },
+    {
+      "id": "RT-Q-CAP-MULTIBYTE-LIVE",
+      "severity": "low",
+      "status": "closed",
+      "text": "Live attack log used ASCII only; multibyte byte-boundary is pinned by the passing TestNotesSearchQueryTooLong; cap uses Go len() on decoded bytes."
     }
   ],
-  "reviewer": {
-    "model": "qwen3.8-fast",
-    "provider": "llama-proxy"
-  }
+  "notes": "All 9 risk areas verified independently against the live test2 build 4347f16 and the code; no open critical/high findings. Cosmetic: attack log did not record the WWW-Authenticate header value (verified present live)."
 }
