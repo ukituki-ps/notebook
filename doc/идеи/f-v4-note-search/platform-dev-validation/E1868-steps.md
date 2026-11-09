@@ -10,3 +10,4 @@
 | s22e | ux-audit re-certified 9c1763c, 22 items, 0 critical/high |
 | s22.bookkeeping | 5 fault na->covered, 8 UI invariants proposed->active |
 | s22.result_audit | pending |
+| s22.result_audit | pass, 0 open critical/high; faults 16/16 covered; invariants active |
