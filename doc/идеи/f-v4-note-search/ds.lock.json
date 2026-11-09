@@ -2,6 +2,8 @@
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
   "artifact_path": "doc/идеи/f-v4-note-search/ds.lock.json",
+  "execution_id": "E8098",
+  "integrated_at": "2026-11-09T21:03:00Z",
   "design_system_version": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
   "constraint": "=1.0.1",

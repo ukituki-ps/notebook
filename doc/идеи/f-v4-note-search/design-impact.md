@@ -1,6 +1,7 @@
 ---
 schema_version: "1.0"
 feature_id: f-v4-note-search
+execution_id: "E8098"
 ds_release: "1.0.1"
 ds_digest: sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e
 ds_lock: ds.lock.json
@@ -14,6 +15,7 @@ path6_requests: [n-count, n-delete]
 # Design impact — f-v4-note-search
 
 - New run `path-1.feature@4.0.0` · step `s03a.design_integrate` · screen `note-search`
+- Execution **E8098** · design-unit `note-search` integrated · branch `dev/path10-runner-09` · base `9e7fae3`
 - Pinned Design System: **Notebook DS 1.0.1** (`ds/v1.0.1`); constraint `=1.0.1`
 - `ds_digest`: `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`
 - Release manifest: `design/releases/1.0.1/manifest.json` — `sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b`
