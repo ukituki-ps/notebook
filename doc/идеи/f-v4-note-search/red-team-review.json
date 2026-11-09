@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "execution_id": "E1868",
+  "step": "s22b.red_team_audit",
+  "verdict": "pass",
+  "target": "https://test2.nexus.ukituki.tech",
+  "build_ref": "9c1763c",
+  "attack_log": "doc/идеи/f-v4-note-search/attack-log.json",
+  "attack_log_sha256": "sha256:a5b492f4fe5fde937d903213e29c6c47791c42e4b9f49e4c1dd104979c512898",
+  "reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
+  "author_session_id": "ses_e42f307b6ffehnpMwLqYi5DJ6Q",
+  "independence": {
+    "distinct": true
+  },
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "findings": []
+}
