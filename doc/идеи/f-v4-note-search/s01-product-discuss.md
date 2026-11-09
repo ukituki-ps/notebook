@@ -23,3 +23,22 @@ Auth/session/storage changes; pagination, sorting, ranking, fuzzy matching, high
 ## Open questions
 
 None blocking. The request leaves whitespace-only `q` to the spec; decided as "all notes" and reflected in the brief and API contract.
+
+## Execution E9108 — path-10 replay (s01)
+
+- Re-confirmed the scope against `feature-request.md` (raw, immutable): all 45
+  request items still map to this feature; nothing added, nothing dropped.
+- The draft feature brief for this execution is the existing
+  `feature-brief.md` at base `9e7fae3`. It already reflects this scope and the
+  closed decisions from earlier path-1 runs, so it is not rewritten here; a
+  rewrite would regress finalized content rather than produce a new draft.
+- Decisions re-affirmed: absent/empty/whitespace `q` → all own notes; `q` capped
+  at 512 bytes; `[]` (never `null`) on no match; owner predicate before the text
+  predicate; client-side filtering in the notes view; stable `data-testid`
+  hooks; create/delete/reload, auth, and in-memory storage unchanged.
+- Out of scope unchanged: pagination/sorting/ranking/fuzzy/highlighting,
+  cross-user search, prod/main/stage deploy, canary, and rework of
+  `f-v3-auth-notes`/`E4312`/`E1320`; no title search (the model has only
+  `Note.Text`).
+- Output of this step: `draft-feature-brief` (existing `feature-brief.md`,
+  verified non-empty) plus this discussion record.
