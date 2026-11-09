@@ -151,7 +151,7 @@
       "status": "active",
       "statement": "UI показывает реальные данные API (GET /api/notes) и не содержит захардкоженных/фантомных заметок; после reload состояние совпадает с сервером.",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [
         "UI-LOADING-ERROR-STATES"
       ],
@@ -163,7 +163,7 @@
       "status": "active",
       "statement": "У поля поиска и кнопок есть видимая или aria-подпись; feature-копия на русском, Add/Logout остаются English по DS-term policy, Delete имеет видимый label «Удалить» и aria-label «Удалить заметку #N».",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [],
       "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23",
       "activation_evidence": "E1868 s20c: 30/30 E2E on test2 build 9c1763c; scenario-evidence 20/20; ui-audit/ux-audit pass"
@@ -173,7 +173,7 @@
       "status": "active",
       "statement": "У поля поиска есть доступное имя и корректная role; empty state и count используют aria-live=polite; ошибки выводятся в role=alert с aria-live=polite.",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [],
       "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23",
       "activation_evidence": "E1868 s20c: 30/30 E2E on test2 build 9c1763c; scenario-evidence 20/20; ui-audit/ux-audit pass"
@@ -183,7 +183,7 @@
       "status": "active",
       "statement": "У каждого критерия UI-аудита (блоки A-L) есть исполнимый оракул и evidence.",
       "enforcement": "s22a.ui_audit: ui-audit.json items[].oracle/evidence + gates gate-ui-audit-oracle, gate-ui-audit-machine",
-      "test_ref": "cmd:python3 tools/ui-audit-check.py --platform web",
+      "test_ref": "cmd:ORC_FEATURE_DIR=doc/идеи/f-v4-note-search python3 tools/ui-audit-check.py --root . --platform web",
       "covers": [],
       "activation_evidence": "E1868 s20c: 30/30 E2E on test2 build 9c1763c; scenario-evidence 20/20; ui-audit/ux-audit pass"
     },
@@ -192,7 +192,7 @@
       "status": "active",
       "statement": "UI-сценарии поиска проходят на стенде test2 и подтверждены e2e-report/screenshot.",
       "enforcement": "s20c.e2e_preview: E2E на test2 + Playwright web/e2e/notes-search.spec.js + pngdiff",
-      "test_ref": "cmd:bash deploy/path1/e2e-preview.sh",
+      "test_ref": "cmd:python3 tools/check-scenario-coverage.py --brief doc/идеи/f-v4-note-search/scenarios.json --evidence doc/идеи/f-v4-note-search/scenario-evidence.json",
       "covers": [
         "UI-E2E-PREVIEW"
       ],
@@ -211,7 +211,7 @@
       "status": "active",
       "statement": "Поле поиска фильтрует загруженный owner-scoped список; очистка возвращает полный список; create/delete/reload не ломаются и re-apply активный query.",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [
         "UI-FILTER-SERIALIZATION",
         "UI-EMPTY-STATE-CONTROLS"
@@ -224,7 +224,7 @@
       "status": "active",
       "statement": "При непустом trimmed q без совпадений показывается empty state data-testid=notes-search-empty; при пустом q он не показывается; при нуле заметок побеждает base notes-empty.",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [
         "UI-EMPTY-STATE-CONTROLS"
       ],
@@ -236,7 +236,7 @@
       "status": "active",
       "statement": "Поле поиска имеет data-testid=notes-search, empty state — data-testid=notes-search-empty, clear — data-testid=notes-search-clear.",
       "enforcement": "s20c.e2e_preview: Playwright 20 scenarios on test2; activate after s20b deploy",
-      "test_ref": "cmd:E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js --reporter=line",
+      "test_ref": "cmd:go test -count=1 -run TestUISemantics ./...",
       "covers": [],
       "activation": "after s20b preview deploy (test2), enforced at s20c and s22a/s23",
       "activation_evidence": "E1868 s20c: 30/30 E2E on test2 build 9c1763c; scenario-evidence 20/20; ui-audit/ux-audit pass"

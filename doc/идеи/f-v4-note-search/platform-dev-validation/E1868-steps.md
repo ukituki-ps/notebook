@@ -20,3 +20,4 @@
 | s22c | code review pass, 0 open high+ |
 | s23 | no code changes; CR-10 doc fixed |
 | s20a.reintegration | no code changes after s23; tests green |
+| s20a.oracles | UI invariants made gate-runnable (unit/semantics + scenario evidence) |
