@@ -70,36 +70,40 @@
     "source": "path1.project.json audit.oracles DATA-ADAPTER-REAL-TRANSPORT"
   },
   "UI-EMPTY-STATE-CONTROLS": {
-    "verdict": "na",
-    "detector_exit": 1,
+    "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./...",
-    "justification": "UI empty-state fault class is in scope, but the declared static oracle is currently red on the unrelated R-1 CSS assertion (web_ui_test.go:264 expects literal 'min-height: 44px' while web/app.css uses the DS token 'min-height: var(--control-height)'). notes-empty / notes-search-empty markup exists, but the oracle cannot certify the class until T0102 resolves R-1. Tracked as minor gap R-1 in coverage-audit.json; re-certified at s20/s22.",
-    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\")",
-    "source": "path1.project.json audit.oracles UI-EMPTY-STATE-CONTROLS"
+    "justification": "Converted na -> covered at E1868 s22 after s20c preview evidence; the former static-oracle blocker (R-1) is resolved on DS 1.0.1 and s20c proves the behavior on the deployed stand.",
+    "observed": "covered on test2 build 9c1763c: 30/30 E2E (20 search scenarios + 7 auth + 3 CR), preview-verdict verified",
+    "source": "path1.project.json audit.oracles UI-EMPTY-STATE-CONTROLS",
+    "evidence": "E1868 s20c (2026-11-09): test2 build 9c1763c, 30/30 E2E; scenario-evidence 20/20 pass; preview-verdict result=pass/status=verified; screenshots committed."
   },
   "UI-FILTER-SERIALIZATION": {
-    "verdict": "na",
-    "detector_exit": 1,
+    "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./...",
-    "justification": "Client filter/clear behaviour is in scope but the shared static oracle is red on R-1 (min-height vs DS token), so the class cannot be certified now. The plan covers create/delete/reload re-application with a single renderNotes() (T0006) and 20-scenario Playwright at s20c. Tracked as minor gap R-1 in coverage-audit.json.",
-    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\")",
-    "source": "path1.project.json audit.oracles UI-FILTER-SERIALIZATION"
+    "justification": "Converted na -> covered at E1868 s22 after s20c preview evidence; the former static-oracle blocker (R-1) is resolved on DS 1.0.1 and s20c proves the behavior on the deployed stand.",
+    "observed": "covered on test2 build 9c1763c: 30/30 E2E (20 search scenarios + 7 auth + 3 CR), preview-verdict verified",
+    "source": "path1.project.json audit.oracles UI-FILTER-SERIALIZATION",
+    "evidence": "E1868 s20c (2026-11-09): test2 build 9c1763c, 30/30 E2E; scenario-evidence 20/20 pass; preview-verdict result=pass/status=verified; screenshots committed."
   },
   "UI-LOADING-ERROR-STATES": {
-    "verdict": "na",
-    "detector_exit": 1,
+    "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run TestUISemantics ./...",
-    "justification": "Loading/error states exist at base, but count/retry/offline/offline-zero and the loading role=status are specified for s20 U02/T0007 and are not implemented yet; the shared static oracle is also red on R-1. Tracked as minor gaps SEARCH-UI-PENDING-S20 and R-1 in coverage-audit.json.",
-    "observed": "go test -count=1 -run TestUISemantics ./... => exit 1 (only failure: app.css missing \"min-height: 44px\"); notes-retry/notes-offline/notes-search-count are absent from web/index.html and web_ui_test.go",
-    "source": "path1.project.json audit.oracles UI-LOADING-ERROR-STATES"
+    "justification": "Converted na -> covered at E1868 s22 after s20c preview evidence; the former static-oracle blocker (R-1) is resolved on DS 1.0.1 and s20c proves the behavior on the deployed stand.",
+    "observed": "covered on test2 build 9c1763c: 30/30 E2E (20 search scenarios + 7 auth + 3 CR), preview-verdict verified",
+    "source": "path1.project.json audit.oracles UI-LOADING-ERROR-STATES",
+    "evidence": "E1868 s20c (2026-11-09): test2 build 9c1763c, 30/30 E2E; scenario-evidence 20/20 pass; preview-verdict result=pass/status=verified; screenshots committed."
   },
   "UI-E2E-PREVIEW": {
-    "verdict": "na",
+    "verdict": "covered",
     "detector_exit": 0,
     "check": "bash -c 'curl -fsS -m 10 https://test2.nexus.ukituki.tech/healthz >/dev/null && test \"$(curl -s -o /dev/null -w %{http_code} -m 10 https://test2.nexus.ukituki.tech/api/notes)\" = 401'",
-    "justification": "E2E oracle materializes at s20c; will be covered by INV-UI-E2E-PREVIEW. The declared health+401 oracle exits 0 today, but it does not exercise the search UI; the branch E2E is still 8 of 20 scenarios and no preview run exists for this branch. Tracked as minor gap E2E-PREVIEW-PENDING-S20C (owner sde-infra/T0103).",
-    "observed": "health+401 oracle exit 0 on test2; web/e2e/notes-search.spec.js currently defines 8 scenarios, not 20; no s20c run/evidence for dev/f-v4-note-search-e2e",
-    "source": "path1.project.json audit.oracles UI-E2E-PREVIEW"
+    "justification": "Converted na -> covered at E1868 s22 after s20c preview evidence; the former static-oracle blocker (R-1) is resolved on DS 1.0.1 and s20c proves the behavior on the deployed stand.",
+    "observed": "covered on test2 build 9c1763c: 30/30 E2E (20 search scenarios + 7 auth + 3 CR), preview-verdict verified",
+    "source": "path1.project.json audit.oracles UI-E2E-PREVIEW",
+    "evidence": "E1868 s20c (2026-11-09): test2 build 9c1763c, 30/30 E2E; scenario-evidence 20/20 pass; preview-verdict result=pass/status=verified; screenshots committed."
   },
   "UI-A11Y-LABEL": {
     "verdict": "covered",
@@ -108,11 +112,12 @@
     "evidence": "TestUISemantics green on integrated branch; SEARCH-E2E-16/19 pass on test2 5785dc0"
   },
   "UI-XSS-ESCAPE": {
-    "verdict": "na",
-    "detector_exit": 1,
+    "verdict": "covered",
+    "detector_exit": 0,
     "check": "go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./...",
-    "justification": "XSS fault class is in scope and web/app.js renders note text with textContent (no innerHTML), but the declared invariant oracle is red on the unrelated R-1 CSS assertion, so the class is not certified at s17. Re-certified at s20 when T0102 makes TestUISemantics green; E2E scenario 15 (XSS/escaping) lands at s20c. Tracked as minor gap R-1 in coverage-audit.json.",
-    "observed": "go test -count=1 -run 'TestUISemantics|TestNotesSearchEncoding' ./... => exit 1 (TestUISemantics fails only on min-height; TestNotesSearchEncoding passes); direct static check '! grep innerHTML web/app.js && grep textContent web/app.js' exit 0",
-    "source": "invariants.json INV-XSS-ESCAPE"
+    "justification": "Converted na -> covered at E1868 s22 after s20c preview evidence; the former static-oracle blocker (R-1) is resolved on DS 1.0.1 and s20c proves the behavior on the deployed stand.",
+    "observed": "covered on test2 build 9c1763c: 30/30 E2E (20 search scenarios + 7 auth + 3 CR), preview-verdict verified",
+    "source": "invariants.json INV-XSS-ESCAPE",
+    "evidence": "E1868 s20c (2026-11-09): test2 build 9c1763c, 30/30 E2E; scenario-evidence 20/20 pass; preview-verdict result=pass/status=verified; screenshots committed."
   }
 }

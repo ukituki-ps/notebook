@@ -8,3 +8,5 @@
 | s21 | UI-GRAPH re-actualized to 6659eac |
 | s22a | ui-audit re-certified DS 1.0.1, build 9c1763c |
 | s22e | ux-audit re-certified 9c1763c, 22 items, 0 critical/high |
+| s22.bookkeeping | 5 fault na->covered, 8 UI invariants proposed->active |
+| s22.result_audit | pending |
