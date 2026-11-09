@@ -391,5 +391,20 @@
       "web/app.css"
     ]
   },
-  "notes": "Independent UI/UX sessions are distinct from the author and from each other. First round requested changes; the reworked prototype was re-reviewed and accepted with 0 blockers/0 majors; accepted minors/residuals are listed per finding."
+  "notes": "Independent UI/UX sessions are distinct from the author and from each other. First round requested changes; the reworked prototype was re-reviewed and accepted with 0 blockers/0 majors; accepted minors/residuals are listed per finding.",
+  "revalidation": {
+    "execution_id": "E4138-s03.proto_5fvisualize-u01",
+    "step_id": "s03.unit_ui_review",
+    "checked_session_id": "ses_e3dabdfe2ffeFhWH7x7epptFnG",
+    "checked_at": "2026-11-09T22:04:30Z",
+    "result": "revalidated",
+    "reviewer_independence": "reviewers.ui.session_id (ses_e438fe495ffeZDD7et9kGib3D1) != author_session_id (ses_e44864e8affeXebq0BijhUo077); this execution only re-checked the accepted artifact, it did not author it",
+    "checks": [
+      "reviewers.ui.verdict=accept, blockers=0, role=designer",
+      "8 states x 390/1200 = 16 v7 exports present (incl. offline-zero)",
+      "proto.html uses Notebook DS 1.0.1 classes only: no <style>, no style=, no local CSS",
+      "UI findings UI-01..UI-17 all fixed or accepted; no open blocker",
+      "state-matrix covers every screen_brief state and both viewports"
+    ]
+  }
 }
