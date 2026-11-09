@@ -13,3 +13,14 @@ node_modules/
 
 # Playwright per-run output (not committed).
 test-results/
+
+# F-RUN-02/E7141: per-run evidence lives in execution root, never in git
+doc/**/scenario-evidence.json
+doc/**/evidence-manifest.json
+doc/**/preview-verdict.json
+doc/**/preview-deploy.json
+doc/**/review-verdict.json
+doc/**/mobile-evidence.json
+doc/**/screenshots/**
+preview-deploy.json
+review-verdict.json
