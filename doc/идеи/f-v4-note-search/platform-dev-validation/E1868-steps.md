@@ -11,3 +11,4 @@
 | s22.bookkeeping | 5 fault na->covered, 8 UI invariants proposed->active |
 | s22.result_audit | pending |
 | s22.result_audit | pass, 0 open critical/high; faults 16/16 covered; invariants active |
+| s22b | red-team 10/10 attacks pass on test2 9c1763c |

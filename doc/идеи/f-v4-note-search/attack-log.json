@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "execution_id": "E1868",
+  "target": "https://test2.nexus.ukituki.tech",
+  "build_ref": "9c1763c",
+  "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
+  "run_at": "2026-11-09T08:50:29Z",
+  "client": "curl, bearer header",
+  "attacks": [
+    {
+      "id": "RT-AUTH-1",
+      "description": "GET /api/notes without bearer",
+      "expected": 401,
+      "actual": 401,
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"}\n"
+    },
+    {
+      "id": "RT-SETUP",
+      "description": "A creates secret note",
+      "expected": 201,
+      "actual": 201,
+      "status": "pass",
+      "evidence": "{\"id\":53,\"text\":\"secretA_45c8680e\"}\n"
+    },
+    {
+      "id": "RT-IDOR-SEARCH",
+      "description": "B searches A secret",
+      "expected": 200,
+      "actual": 200,
+      "status": "pass",
+      "evidence": "[]\n"
+    },
+    {
+      "id": "RT-NOTFOUND",
+      "description": "no match returns empty",
+      "expected": 200,
+      "actual": 200,
+      "status": "pass",
+      "evidence": "[]\n"
+    },
+    {
+      "id": "RT-QMAX-512",
+      "description": "512 bytes accepted",
+      "expected": 200,
+      "actual": 200,
+      "status": "pass",
+      "evidence": "[]\n"
+    },
+    {
+      "id": "RT-QMAX-513",
+      "description": "513 bytes rejected",
+      "expected": 400,
+      "actual": 400,
+      "status": "pass",
+      "evidence": "{\"error\":\"query too long\"}\n"
+    },
+    {
+      "id": "RT-XSS-STORE",
+      "description": "XSS note stored literally",
+      "expected": 201,
+      "actual": 201,
+      "status": "pass",
+      "evidence": "stored text equals input literally (True); response JSON escapes < as \\u003c"
+    },
+    {
+      "id": "RT-DELETE-MISSING",
+      "description": "delete missing note",
+      "expected": 404,
+      "actual": 404,
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"}\n"
+    },
+    {
+      "id": "RT-DELETE-INVALID",
+      "description": "delete invalid id",
+      "expected": 400,
+      "actual": 400,
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"}\n"
+    },
+    {
+      "id": "RT-IDOR-DELETE",
+      "description": "B deletes A note",
+      "expected": 404,
+      "actual": 404,
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"}\n"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  }
+}
