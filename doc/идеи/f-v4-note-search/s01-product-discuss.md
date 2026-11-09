@@ -1,5 +1,11 @@
 # s01 — Product discuss: f-v4-note-search
 
+Execution: **E8098** · step **s01.product_discuss** · role **product** ·
+process `path-1.feature@4.0.0` · branch `dev/path10-runner-09`.
+
+Output of this step: draft [`feature-brief.md`](./feature-brief.md) (DRAFT,
+s01 — to be finalised at `s06.feature_brief_final`).
+
 Source: `feature-request.md` (raw, immutable). Scope is owner-scoped note search only; nothing beyond the request is added.
 
 ## Problem
