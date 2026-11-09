@@ -16,3 +16,7 @@
 ## E2727 continuation
 
 - s20a rerun on deploy 905993c2 with gate-base fallback; test2 lease `f2f58b83…`.
+
+## E1868 continuation
+
+- gate base = context.base_sha (865fd23); tools unchanged vs 9b972e6.
