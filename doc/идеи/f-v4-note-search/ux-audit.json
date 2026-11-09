@@ -6,8 +6,9 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "7026b7ecc40a12660afe1dfc155b7e3982ef2f22",
-    "build_ref": "7026b7e"
+    "sha": "9c1763c0b69f77c96889a26e9a07d9f5cd3fd37a",
+    "build_ref": "9c1763c",
+    "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b"
   },
   "scope": {
     "screens": [
@@ -320,23 +321,18 @@
   },
   "context": {
     "source": "orc_ctx",
-    "tokens": 7600,
+    "tokens": 20000,
     "artifacts": [
-      "doc/идеи/f-v4-note-search/feature-brief.md",
-      "doc/идеи/f-v4-note-search/spec/core.md",
-      "doc/идеи/f-v4-note-search/UI-GRAPH.yaml",
-      "doc/идеи/f-v4-note-search/prototypes/v6",
+      "doc/идеи/f-v4-note-search/ux-audit.json",
       "doc/идеи/f-v4-note-search/scenario-evidence.json",
-      "doc/идеи/f-v4-note-search/preview-verdict.json",
-      "doc/идеи/f-v4-note-search/screenshots/",
-      "web/index.html",
-      "web/app.js"
+      "doc/идеи/f-v4-note-search/screenshots/"
     ]
   },
   "review_reaudit": {
-    "build": "7026b7e",
-    "at": "2026-11-08T16:53:22Z",
-    "e2e": "20/20",
-    "verdict": "pass"
-  }
+    "build": "9c1763c",
+    "image": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
+    "at": "2026-11-09T08:46:08Z",
+    "e2e": "30/30 on test2"
+  },
+  "execution_id": "E1868"
 }

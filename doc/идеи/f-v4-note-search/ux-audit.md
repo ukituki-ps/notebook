@@ -1,7 +1,7 @@
-# UX audit — note-search (E0809, s22e)
+# UX audit — note-search (E1868, s22e)
 
 - Stand: test2 (`https://test2.nexus.ukituki.tech`), build `5785dc0`,
-  commit `5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6`, execution E0809.
+  commit `5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6`, execution E1868.
 - Scope: `note-search`, viewports 390x844 and 1200x900.
 - Audit role: product/UX auditor independent of the UI author
   (`ses_e4433e6faffeDGXVi4lKO4t3W8`); auditor session
@@ -71,5 +71,5 @@ Scenario contract: `scenario-evidence.json` (20/20 pass on test2, 5785dc0) and
 `web/e2e/notes-search.spec.js` scenarios and repo-level `grep` checks; the audit
 JSON records one oracle and one existing evidence ref per item.
 
-## Re-audit (after s23, build 7026b7e)
+## Re-audit (after s23, build 9c1763c)
 - E2E 20/20 re-run; UX product unchanged; verdict pass, 0 blockers, 2 accepted minors remain.
