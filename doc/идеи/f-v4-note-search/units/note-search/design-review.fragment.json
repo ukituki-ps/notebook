@@ -34,6 +34,14 @@
       "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
       "ui_reviewer_session_id": "ses_e438fe495ffeZDD7et9kGib3D1",
       "distinct": true
+    },
+    "ux_revalidated_at": "2026-11-09T20:35:10Z",
+    "ux_revalidation_scope": "s03.unit_ux_review replay: the UX surface (states, controls, copy, 390/1200 layouts) is unchanged since the reviewed revision; only proto.json metadata and review bookkeeping changed. All 14 unit exports and 16 v7 exports are byte-identical, so the independent UX verdict remains applicable.",
+    "ux_independence": {
+      "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
+      "ux_reviewer_session_id": "ses_e438fdd7dffe6jwYOHgNxz6458",
+      "distinct": true,
+      "distinct_from_ui_reviewer": true
     }
   },
   "reviewers": {
@@ -409,6 +417,16 @@
       "evidence": {
         "kind": "file",
         "ref": "units/note-search/proto.html; units/note-search/exports/*.png; prototypes/v7/exports; git diff 49ec90e..HEAD -- units/note-search/proto.html (empty)"
+      }
+    },
+    {
+      "id": "UX-18",
+      "severity": "info",
+      "status": "accepted",
+      "text": "Revalidated on the s03.unit_ux_review replay: UX surface unchanged since the reviewed DS 1.0.1 revision — proto.html and all exports byte-identical; state coverage (idle/results/no-results/empty/loading/error/offline/offline-zero), read-only list with delete, clear/retry/offline-check flows, and 390/1200 layouts all remain as reviewed. Independent UX verdict (0 blockers, 0 majors) still applies.",
+      "evidence": {
+        "kind": "file",
+        "ref": "units/note-search/proto.html; units/note-search/state-matrix.md; units/note-search/exports/*.png; prototypes/v7/exports (16); git diff 49ec90e..HEAD -- units/note-search/proto.html units/note-search/exports (empty)"
       }
     }
   ],
