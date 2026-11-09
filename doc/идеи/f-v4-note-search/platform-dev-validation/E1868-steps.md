@@ -19,3 +19,4 @@
 | s22c | code review pass, 11 findings closed/refuted; DS traceability fixed |
 | s22c | code review pass, 0 open high+ |
 | s23 | no code changes; CR-10 doc fixed |
+| s20a.reintegration | no code changes after s23; tests green |
