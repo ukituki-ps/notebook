@@ -19,6 +19,32 @@ The note form (`.note-form` with a visible `<label for="note-text">Новая з
 | `offline-zero` | Note form visible; offline banner «Нет сети — нет загруженных заметок.» and base empty message «Пока нет заметок. Добавьте первую выше.»; search disabled; count/list/clear hidden. | Re-check connectivity. | Distinct from `empty`: the offline banner explains why no notes are shown; `notes-empty` stays visible. |
 | `offline` | Note form visible; banner composed from DS `.note-item` `role="status"` with `.note-text.muted` text «Нет сети — показаны загруженные заметки.» and a single-line 44px `min-height` button «Проверить сеть»; search disabled with placeholder «Поиск недоступен без сети», `aria-disabled="true"`, `aria-describedby="notes-offline"`; count hidden; all 4 loaded notes with Удалить visible but disabled (DELETE needs the network). | Press «Проверить сеть» to re-check connectivity. | **«Проверить сеть» behavior:** re-check connectivity and return to the loaded list; the prototype simulates a successful re-check by switching to `idle`. The banner has a 16px DS spacing class above the list. Banner uses DS `note-item` border and `muted` text (no custom colors); `.note-text` lets the paragraph flex, and a non-breaking space (plus `aria-label="Проверить сеть"`) keeps the button on one line without local CSS; saved loaded notes remain readable. |
 
+## Viewports (390 / 1200)
+
+Both widths render every state above from the same DOM; only DS responsive classes differ (`web/app.css`, `@media (max-width: 640px)`).
+
+| Viewport | Layout |
+|---|---|
+| `390` (mobile) | Card padding 16px, page padding 16px 12px 32px. `.notes-search-row` stacks: search input full width, «Очистить» full-width underneath when visible. Each `.note-item` stacks: `.note-text` wraps (`overflow-wrap: anywhere`), «Удалить» full-width below it. Offline banner text then full-width «Проверить сеть». |
+| `1200` (desktop) | Card centered in `.app`; `.notes-search-row` is one row (input flexes, «Очистить» fixed to the right). `.note-item` is one row: text flexes left, «Удалить» right-aligned; the offline banner keeps its button on one line. |
+
+`390` and `1200` exports for every state live in `units/note-search/exports/export-<width>-<state>.png`.
+
+## Screen-brief coverage
+
+| screen_brief item | Where covered |
+|---|---|
+| search field | `n-search-field` (`.notes-search`, `role="search"`), visible in all 8 states |
+| clear | `n-search-clear`, visible in `results` / `no-results` only |
+| idle | row `normal` / `idle` (`normal` is an alias of `idle`) |
+| results | row `results` (query «план», «Найдено 2») |
+| empty | row `empty` (server returned no notes) |
+| loading | row `loading` |
+| error | row `error` (alert + «Повторить») |
+| offline | rows `offline` (loaded notes) and `offline-zero` (nothing cached) |
+| 390 / 1200 | «Viewports» section + per-width exports |
+| read-only list with delete | `n-notes-list` / `n-note-item` rows plus `n-delete` («Удалить»); no edit affordance on rows |
+
 ## Coverage notes
 
 - 8 renderable states (`idle`, `results`, `no-results`, `empty`, `loading`, `error`, `offline`, `offline-zero`) plus the `normal` alias of `idle`.
