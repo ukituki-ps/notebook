@@ -1,29 +1,45 @@
 {
-  "execution": "E6177",
+  "execution": "E6636",
   "step": "s17.coverage_audit",
-  "branch": "dev/f-v4-note-search-fix",
+  "branch": "dev/path10-runner-13",
+  "base_sha": "9e7fae353c61e717505dc40019627a1d7ab48820",
   "feature": "f-v4-note-search",
   "verdict": "pass_with_gaps",
   "coverage": {
-    "total": 16,
-    "resolved": 16,
-    "covered": 10,
-    "na_with_justification": 6
+    "total": 45,
+    "resolved": 45,
+    "covered": 45,
+    "na_with_justification": 0,
+    "unresolved": 0
+  },
+  "areas": {
+    "process": ["R01", "R11", "R41", "R45"],
+    "api": ["R12", "R18"],
+    "backend_tests": ["R19", "R23"],
+    "ui": ["R24", "R30"],
+    "deploy_e2e": ["R31", "R40"]
   },
   "gaps": [
-    {
-      "id": "SEARCH-UI-PENDING-S20",
-      "severity": "minor",
-      "owner": "sde-frontend/T0102",
-      "description": "Search UI deltas are implemented on the branch; official verification lands at s20c preview."
-    },
     {
       "id": "E2E-PREVIEW-PENDING-S20C",
       "severity": "minor",
       "owner": "sde-infra/T0103",
-      "description": "30 local E2E pass; official 20+ scenario evidence on test2 lands at s20c."
+      "check": "s20c preview verify on test2",
+      "description": "20 Playwright scenarios + CR-01..CR-03 are defined; official evidence on test2 lands at s20c."
+    },
+    {
+      "id": "GRAPH-ACTUALIZATION-PENDING-S21",
+      "severity": "minor",
+      "owner": "graph-builder/s21",
+      "check": "s21 gate-graph-actualized",
+      "description": "UI-GRAPH.yaml is actualized from code at s21; the planned graph (s04) is the current input."
     }
   ],
   "gaps_has_blocking": false,
-  "notes": "R-1 and DS-TOKEN-DRIFT closed on DS 1.0.1: go test ./... is green and ds-token-drift PASS (20 checks). Remaining gaps are s20/s20c verification pendings, not defects."
+  "fault_catalog": {
+    "total": 16,
+    "covered": 16,
+    "na_with_justification": 0
+  },
+  "notes": "45/45 raw-request items resolved. Backend contract and UI surface already satisfy spec/core.md at base 9e7fae35; R-1 closed on --control-height. Remaining gaps are s20c/s21 verification pendings (minor), not defects. OpenAPI not used in this app repo; contract parity drift 0."
 }
