@@ -1,64 +1,39 @@
 Unit: notebook-search-api (f-v4-note-search)
-Worktree: /workspace/projects/notebook-ae079e5c-u01
-Branch: orc-exec-E8895-s20.sde_5fexecution-u01
-Commit: 326ae62
-Execution: E8895
-Toolchain: go1.24.4 linux/amd64
-Date: 2026-11-06
+Execution: E6636 / E6636-s20.sde_5fexecution-u01
+Branch: orc-exec-E6636-s20.sde_5fexecution-u01
+Base: 1722a1e5 (s10 plan commit 98ee914)
+Step: s11.unit_execution (sde-backend)
+Evidence: PR-4156a0a04232 (sha256:cb8a65d493d6d50a4719d4f2507ab131f4bf23981780ed947dc5e12e5cde2d0e)
 
-All commands were run from the worktree root with GOWORK=off.
+All commands run from the worktree root.
 
-$ GOWORK=off gofmt -l .
-(no output)
-GOFMT_EXIT=0
-
-$ GOWORK=off go build ./...
-(no output)
-BUILD_EXIT=0
+$ test -z "$(gofmt -l main.go main_test.go)"
+FMT_EXIT=0 (clean)
 
 $ GOWORK=off go vet ./...
-(no output)
 VET_EXIT=0
 
-$ GOWORK=off go test -count=1 -v ./...
---- PASS count: 32
---- FAIL count: 0
-ok  	github.com/ukituki-ps/notebook	2.840s
-TEST_EXIT=0
+$ GOWORK=off go build ./...
+BUILD_EXIT=0
 
-$ GOWORK=off go test -count=1 -v -run 'TestNotesSearch' ./...
---- PASS count: 8
---- FAIL count: 0
-ok  	github.com/ukituki-ps/notebook	0.381s
+$ GOWORK=off go test -count=1 -run 'TestNotesSearch' -v ./...
+--- PASS 12/12 (9 existing + 3 added)
 SUBSET_EXIT=0
 
-Summary: gofmt clean, build PASS, vet PASS, full test suite PASS
-(1 package, 32 passing tests, 0 failures), search subset PASS
-(8/8 tests, 0 failures).
+$ GOWORK=off go test -count=1 ./...
+ok  github.com/ukituki-ps/notebook  8.888s
+TEST_EXIT=0
 
-New search tests (all PASS):
-- TestNotesSearchFinds
-- TestNotesSearchNotFound
-- TestNotesSearchCaseInsensitive
-- TestNotesSearchIsolation
-- TestNotesSearchAuthRequired
-- TestNotesSearchEmptyQuery
-- TestNotesSearchWhitespaceQuery
-- TestNotesSearchEncoding
+Added tests (gap analysis, no product changes):
+- TestNotesSearchTrimsQuery          — q trimmed around a real term
+- TestNotesSearchEmptyStore          — non-empty q, zero notes => []
+- TestNotesSearchDoesNotMatchOtherOwner — term only in another owner's note => []
 
-Existing required tests (all PASS, unchanged):
-- TestAuthRequired
-- TestNotesIsolation
-- TestDeleteNote
-- TestNotesMethodNotAllowed
-- TestWireContract
+Existing search tests (all PASS, unchanged):
+- TestNotesSearchFinds, TestNotesSearchNotFound, TestNotesSearchCaseInsensitive,
+  TestNotesSearchIsolation, TestNotesSearchAuthRequired, TestNotesSearchEmptyQuery,
+  TestNotesSearchWhitespaceQuery, TestNotesSearchEncoding, TestNotesSearchQueryTooLong
 
-Reviewed behavior in main.go (GET /api/notes):
-- q trimmed via strings.TrimSpace; empty/whitespace-only => all own notes.
-- Case-insensitive substring match (strings.ToLower on query and note text).
-- Filter applied after owner-scoped ListNotes(session.UserID): can only
-  narrow, never widen, the owner scope.
-- Filtered slice built with make([]Note, 0, ...) so empty results serialize
-  as [] (never null).
-- Note.UserID remains json:"-" (not serialized).
-- requireAuth still runs before method dispatch; auth order unchanged.
+main.go unchanged: owner-scoped ListNotes first, then case-insensitive filter;
+make([]Note,0) => [], Note.UserID json:"-", maxQueryBytes=512 checked before scan,
+auth before query handling.
