@@ -1155,3 +1155,50 @@ func TestNotesSearchQueryTooLong(t *testing.T) {
 		t.Fatalf("over max bytes multibyte query body: %q", got)
 	}
 }
+
+func TestNotesSearchTrimsQuery(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchtrim")
+	ts.seedNote(token, "buy bread")
+	ts.seedNote(token, "call mom")
+
+	for _, path := range []string{
+		"/api/notes?q=%20bread%20",
+		"/api/notes?q=%09bread",
+	} {
+		res := ts.authed(http.MethodGet, path, "", token)
+		if res.code != http.StatusOK {
+			t.Fatalf("trimmed q %q: %d %s", path, res.code, res.body)
+		}
+		assertNoteTexts(t, decodeNotes(t, res.body), "buy bread")
+	}
+}
+
+func TestNotesSearchEmptyStore(t *testing.T) {
+	ts := newTestServer(t)
+	token := ts.seedUser("searchemptystore")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=anything", "", token)
+	if res.code != http.StatusOK {
+		t.Fatalf("search on empty store: %d %s", res.code, res.body)
+	}
+	if got := strings.TrimSpace(res.body); got != "[]" {
+		t.Fatalf("search on empty store body: %q (want [])", got)
+	}
+}
+
+func TestNotesSearchDoesNotMatchOtherOwner(t *testing.T) {
+	ts := newTestServer(t)
+	tokenA := ts.seedUser("searchownera")
+	tokenB := ts.seedUser("searchownerb")
+	ts.seedNote(tokenA, "alpha only")
+	ts.seedNote(tokenB, "secret beta")
+
+	res := ts.authed(http.MethodGet, "/api/notes?q=beta", "", tokenA)
+	if res.code != http.StatusOK {
+		t.Fatalf("cross-owner search: %d %s", res.code, res.body)
+	}
+	if got := strings.TrimSpace(res.body); got != "[]" {
+		t.Fatalf("cross-owner search body: %q (want [])", got)
+	}
+}

@@ -201,12 +201,14 @@ Active invariants from `invariants.json`:
 
 - `INV-AUTH-REQUIRED` — `TestNotesSearchAuthRequired` (401 before query);
 - `INV-USER-ISOLATION` / `INV-SEARCH-OWNER-SCOPE` —
-  `TestNotesSearchIsolation` (owner predicate before text predicate);
+  `TestNotesSearchIsolation`, `TestNotesSearchDoesNotMatchOtherOwner`
+  (owner predicate before text predicate);
 - `INV-SEARCH-CASE-INSENSITIVE` — `TestNotesSearchFinds`,
   `TestNotesSearchCaseInsensitive`;
 - `INV-SEARCH-EMPTY-Q` — `TestNotesSearchEmptyQuery`,
-  `TestNotesSearchWhitespaceQuery`;
-- `INV-SEARCH-NOT-FOUND` — `TestNotesSearchNotFound`;
+  `TestNotesSearchWhitespaceQuery`, `TestNotesSearchTrimsQuery`;
+- `INV-SEARCH-NOT-FOUND` — `TestNotesSearchNotFound`,
+  `TestNotesSearchEmptyStore`;
 - `INV-SEARCH-ENCODING` — `TestNotesSearchEncoding`;
 - `INV-SEARCH-Q-MAX` — `TestNotesSearchQueryTooLong` (including the
   exactly-512 accept case);
