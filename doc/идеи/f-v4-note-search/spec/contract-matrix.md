@@ -2,8 +2,8 @@
 
 | endpoint | method | status | envelope | test |
 |---|---|---|---|---|
-| /api/notes | GET | 200 | `[]Note` (never null) | `go test ./... -run TestNotesList` |
-| /api/notes?q= | GET | 200 | `[]Note` filtered by owner + case-insensitive substring | `go test ./... -run 'TestNotesSearchFinds|TestNotesSearchCaseInsensitive'` |
+| /api/notes | GET | 200 | `[]Note` (never null) | `go test ./... -run TestNotesLifecycle` |
+| /api/notes?q= | GET | 200 | `[]Note` filtered by owner + case-insensitive substring | `go test ./... -run 'TestNotesSearchFinds|TestNotesSearchCaseInsensitive|TestNotesSearchTrimsQuery'` |
 | /api/notes?q= (empty/whitespace) | GET | 200 | `[]Note`, all own notes | `go test ./... -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery'` |
 | /api/notes?q=<exactly 512 bytes> | GET | 200 | `[]Note` filtered (512 accepted) | `go test ./... -run TestNotesSearchQueryTooLong` |
 | /api/notes?q=<513+ bytes> | GET | 400 | `{"error":"query too long"}` | `go test ./... -run TestNotesSearchQueryTooLong` |
@@ -16,9 +16,12 @@
 ## Edge cases
 
 - Other users' notes are never returned — `go test ./... -run TestNotesSearchIsolation`.
+- A term present only in another owner's note returns `[]` (owner predicate before text predicate) — `go test ./... -run TestNotesSearchDoesNotMatchOtherOwner`.
 - Empty/whitespace q returns all own notes — `go test ./... -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery'`.
+- q is trimmed around a real term — `go test ./... -run TestNotesSearchTrimsQuery`.
 - URL-encoded/special chars decode safely — `go test ./... -run TestNotesSearchEncoding`.
 - Non-matching q returns 200 + `[]` — `go test ./... -run TestNotesSearchNotFound`.
+- Non-empty q on a store with zero notes returns 200 + `[]` (never null) — `go test ./... -run TestNotesSearchEmptyStore`.
 - Exactly 512 bytes is accepted; 513 bytes is 400 — `go test ./... -run TestNotesSearchQueryTooLong`.
 
 ## UI contract
