@@ -6,10 +6,10 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "6503f66",
-    "build_ref": "6503f66",
-    "image_digest": "sha256:c7d0ae7203a281411f6f96c61feb52c1bb545840fdf2c790c828cbea1184c626",
-    "build_args_hash": "sha256:8c29b443e5345174a45c1888c9ae91f0ff6b37621fe07ce56932d7d8fa93610a",
+    "sha": "c988c08",
+    "build_ref": "c988c08",
+    "image_digest": "sha256:1981fae5ae690c7a4c16e14d6b4c6a416db6a808ed5ac4749a05fd94855bf200",
+    "build_args_hash": "sha256:da0bb24225a10c8b4ae7d55553f9b24fe15386115c330f0d05fbb6181502a1cd",
     "gate_bundle_digest": "sha256:042082ac96b6f5f705919f851425d618a73e99710bcb573a13397e65d95aca2d",
     "execution_id": "E6636",
     "preview_verdict": ".orc-eval/E6636/preview-verdict.json"
@@ -317,7 +317,7 @@
     {
       "id": "L1",
       "block": "L",
-      "criterion": "Screenshots captured from deployed build 6503f66 at both widths",
+      "criterion": "Screenshots captured from deployed build c988c08 at both widths",
       "verdict": "ok",
       "severity": "cosmetic",
       "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js --workers=1",
@@ -357,16 +357,16 @@
       "doc/идеи/f-v4-note-search/component-refs.json"
     ],
     "stand_checks": {
-      "healthz": "200, build_ref=6503f66, commit=6503f661…, image_digest=sha256:c7d0ae72…",
+      "healthz": "200, build_ref=c988c08, commit=c988c082…, image_digest=sha256:1981fae5…",
       "dom_index": "https://test2.nexus.ukituki.tech/ (26 assertions, s22a live check)",
       "assets": ["/app.js", "/app.css"]
     }
   },
   "review_reaudit": {
-    "build": "6503f66",
-    "image": "sha256:c7d0ae7203a281411f6f96c61feb52c1bb545840fdf2c790c828cbea1184c626",
-    "at": "2026-11-10T11:09:20Z",
-    "e2e": "30/30 on test2 (E6636 s20c)",
+    "build": "c988c08",
+    "image": "sha256:1981fae5ae690c7a4c16e14d6b4c6a416db6a808ed5ac4749a05fd94855bf200",
+    "at": "2026-11-10T11:31:33Z",
+    "e2e": "30/30 on test2 (E6636, redeploy c988c08)",
     "execution_id": "E6636",
     "step": "s22a.ui_audit",
     "session": "ses_ci_notebook_path10_15",
@@ -379,7 +379,8 @@
       "pngdiff": "OK (20 screenshots, no near-duplicates, thresh 0.005)",
       "go_test_ui": "ok TestUISemantics + search/auth/isolation suite"
     },
-    "orc_evidence": ["PR-8a1b2c45e639", "PR-727c42e9b6e8"],
+    "orc_evidence": ["PR-8a1b2c45e639", "PR-727c42e9b6e8", "PR-32b5b8f5b623", "PR-fa35089b5707"],
+    "evidence_manifest_sha256": "f40df89a010334f86cad116d2c2b3bf1ecd1d6dfe09749b6dd2b8914192f7bee",
     "e2e_report": "doc/идеи/f-v4-note-search/platform-dev-validation/E6636-s20c-e2e.md"
   },
   "execution_id": "E6636"
