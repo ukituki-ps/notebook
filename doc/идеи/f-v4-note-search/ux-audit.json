@@ -6,9 +6,13 @@
   "stand": {
     "name": "test2",
     "url": "https://test2.nexus.ukituki.tech",
-    "sha": "9c1763c0b69f77c96889a26e9a07d9f5cd3fd37a",
-    "build_ref": "9c1763c",
-    "image_digest": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b"
+    "sha": "c988c0828830ffb2d43a9008f6344a001687d21d",
+    "build_ref": "c988c08",
+    "image_digest": "sha256:1981fae5ae690c7a4c16e14d6b4c6a416db6a808ed5ac4749a05fd94855bf200",
+    "build_args_hash": "sha256:da0bb24225a10c8b4ae7d55553f9b24fe15386115c330f0d05fbb6181502a1cd",
+    "gate_bundle_digest": "sha256:042082ac96b6f5f705919f851425d618a73e99710bcb573a13397e65d95aca2d",
+    "execution_id": "E6636",
+    "preview_verdict": ".orc-eval/E6636/preview-verdict.json"
   },
   "scope": {
     "screens": [
@@ -24,7 +28,10 @@
     "blockers": 0,
     "open_critical_high": 0,
     "majors": 0,
-    "minors": 2
+    "minors": 1,
+    "resolved_since_prev_audit": [
+      "offline clear with an active query now works: Очистить stays enabled offline (only a 401 lock disables it) — CR-03"
+    ]
   },
   "items": [
     {
@@ -316,7 +323,7 @@
   ],
   "independence": {
     "distinct": true,
-    "auditor_session_id": "ses_e44094ddfffeZsHroFCFnDiUWh",
+    "auditor_session_id": "ses_ci_notebook_path10_15",
     "author_session_id": "ses_e4433e6faffeDGXVi4lKO4t3W8"
   },
   "context": {
@@ -329,10 +336,20 @@
     ]
   },
   "review_reaudit": {
-    "build": "9c1763c",
-    "image": "sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b",
-    "at": "2026-11-09T08:46:08Z",
-    "e2e": "30/30 on test2"
+    "build": "c988c08",
+    "image": "sha256:1981fae5ae690c7a4c16e14d6b4c6a416db6a808ed5ac4749a05fd94855bf200",
+    "at": "2026-11-10T11:31:33Z",
+    "e2e": "30/30 on test2 (E6636, redeploy c988c08)",
+    "execution_id": "E6636",
+    "step": "s22e.ux_audit",
+    "session": "ses_ci_notebook_path10_15",
+    "ux_checks": {
+      "copy_vs_spec": "PASS — Очистить / Найдено N / Ничего не найдено… / Пока нет заметок… / Нет сети… / Проверить сеть / Сессия истекла…",
+      "texts_live": "verified against deployed / and /app.js",
+      "flow_states": "idle/results/no-results/empty/loading/error/offline/offline-empty/offline-query (CR-03)",
+      "dead_ends": 0
+    },
+    "orc_evidence": ["PR-8a1b2c45e639", "PR-bb1294d81916"]
   },
-  "execution_id": "E1868"
+  "execution_id": "E6636"
 }

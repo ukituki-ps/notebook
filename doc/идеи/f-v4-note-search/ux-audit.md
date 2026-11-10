@@ -1,75 +1,71 @@
-# UX audit — note-search (E1868, s22e)
+# UX audit — note-search (E6636, s22e)
 
-- Stand: test2 (`https://test2.nexus.ukituki.tech`), build `5785dc0`,
-  commit `5785dc0aefbb2ba3e46f42095e5c8d34d6e052f6`, execution E1868.
+- Stand: test2 (`https://test2.nexus.ukituki.tech`), build **`c988c08`**,
+  commit `c988c0828830ffb2d43a9008f6344a001687d21d`, image
+  `sha256:1981fae5…`, execution E6636. Код идентичен проверенному на s20c
+  (`6503f66..c988c08` — только docs/arch), E2E перепрогнан на `c988c08`:
+  **30/30**, сценарии **20/20**.
 - Scope: `note-search`, viewports 390x844 and 1200x900.
-- Audit role: product/UX auditor independent of the UI author
-  (`ses_e4433e6faffeDGXVi4lKO4t3W8`); auditor session
-  `ses_e44094ddfffeZsHroFCFnDiUWh`.
+- Audit role: product/UX auditor независим от автора UI-кода
+  (`ses_e4433e6faffeDGXVi4lKO4t3W8`); сессия аудитора
+  `ses_ci_notebook_path10_15`.
 - Result: **pass** — 22 items, 0 blockers, 0 open critical/high, 0 majors,
-  2 residual minors.
+  **1 residual minor** (было 2).
 
 ## What was verified
 
-- **Task fit** — an authenticated user can locate a note by text without scanning
-  the full list; the filter is owner-scoped and user B cannot surface user A's
-  note (SEARCH-E2E-1, SEARCH-E2E-20).
-- **IA** — the final order is composer -> search -> count -> list (AOD-7);
-  search sits directly above its results and the count sits between them.
+- **Task fit** — аутентифицированный пользователь находит заметку по тексту,
+  не просматривая весь список; фильтр owner-scoped, B не видит заметку A
+  (SEARCH-E2E-1, SEARCH-E2E-20).
+- **IA** — итоговый порядок composer → search → count → list (AOD-7); поиск
+  прямо над результатами, счётчик между ними.
 - **State truth** — idle, results, no-results, zero-notes, loading, error,
-  offline-loaded, and offline-zero are visually and semantically distinct.
-  The base empty state wins for a zero-note collection; offline-zero does not
-  masquerade as search-empty.
-- **Recovery** — Очистить restores the full list and returns focus; Повторить
-  reloads after an error; Проверить сеть re-checks connectivity and restores the
-  online state.
-- **Texts and clarity** — Russian product copy for search, clear, count, both
-  empty states, offline, and retry; per-row `Удалить` with a note-specific
-  accessible name; `Add`/`Logout` retained by the documented DS-term policy.
-- **Count semantics** — `Найдено N` is hidden for empty/whitespace queries,
-  shown for a non-empty trimmed query, includes `Найдено 0`, and is a polite
-  live region.
-- **Responsive hierarchy** — 390px stacks the search row with 44px controls and
-  no horizontal overflow; 1200px uses an inline search + clear row in a centered
-  card.
-- **Keyboard/focus** — visible label and accessible name, `type=search`,
-  `aria-controls`, visible focus ring, Tab from the input reaches Очистить, and
-  count/search-empty/error/loading carry the intended live-region roles.
-- **512-byte cap** — the UI never sends `q`; it filters the already loaded
-  owner-scoped list client-side, so the server cap creates no hidden UI limit,
-  no 400 path, and no dead end for long input (SEARCH-E2E-17 covers the server
-  contract separately).
-- **No dead ends** — no-results keeps the search field, Очистить, and composer
-  usable; zero and error states expose a visible next action.
+  offline-loaded, offline-zero различимы визуально и семантически; базовый
+  empty выигрывает при пустой коллекции; offline-zero не маскируется под
+  search-empty.
+- **Recovery** — `Очистить` возвращает полный список и фокус; `Повторить`
+  перезагружает после ошибки; `Проверить сеть` восстанавливает online.
+  CR-03: `Очистить` работает офлайн при активном запросе (disabled только при
+  401-блокировке) — прежний minor снят.
+- **Texts and clarity** — русские тексты совпадают со `spec/core.md §3`
+  (`Очистить`, `Найдено N`, `Ничего не найдено. Сократите запрос или очистите
+  поиск.`, `Пока нет заметок. Добавьте первую выше.`, `Нет сети — показаны
+  загруженные заметки.` / `…нет загруженных заметок.`, `Проверить сеть`,
+  `Сессия истекла. Перенаправление на вход...`); у `Удалить` доступное имя с
+  номером заметки; `Add`/`Logout` сохранены по DS-term policy.
+- **Count semantics** — `Найдено N` скрыт для пустого/whitespace-запроса,
+  показан для непустого trimmed, включает `Найдено 0`, `aria-live=polite`.
+- **Responsive hierarchy** — 390px: стек composer/search/clear (44px), без
+  горизонтального скролла; 1200px: центрированная карточка, inline-поиск+clear.
+- **Keyboard/focus** — видимый label и accessible name, `type=search`,
+  `aria-controls`, видимый focus ring, Tab до `Очистить`, live-region роли.
+- **512-byte cap** — UI не отправляет `q`, фильтрует уже загруженный список;
+  серверный cap не создаёт скрытого лимита/400/тупика (SEARCH-E2E-17).
+- **No dead ends** — no-results оставляет поле, `Очистить` и композер; zero и
+  error состояния дают видимое следующее действие.
 
-## Residual minors
+## Residual minor (accepted)
 
-1. **Offline transition with an active query (minor).** If the user goes offline
-   while a query is active, the offline banner appears and both the search field
-   and Очистить are disabled, so the loaded list stays filtered until the network
-   returns. This follows the mandated "search disabled offline" rule and the
-   loaded notes are real, but the active filter cannot be cleared offline. It is
-   an infrequent transient state, not a blocker; reconnect or reload recovers.
-2. **Weak disabled styling at zero notes (minor).** A zero-note collection
-   correctly disables the search field and shows the base empty state, but the
-   disabled input differs from enabled mainly by muted text/border (the accepted
-   GAP-2 for `primitives/input` has no disabled visual state). The base empty
-   text explains why, so users are not left without context; the affordance is
-   still easy to miss.
+1. **Слабое disabled-оформление при пустой коллекции.** При нуле заметок поле
+   поиска корректно disabled, но отличается от активного в основном muted
+   текстом/бордером (принятый GAP-2: у `primitives/input` нет disabled-стейта).
+   Базовый empty-текст объясняет причину, поэтому контекста не теряется;
+   аффорданс всё же легко пропустить. Не блокер.
 
-Cosmetic observations, not counted as minors: the native `type=search` cancel
-"x" coexists with the visible Очистить button (two clear affordances); the
-no-results state shows both `Найдено 0` and the explanatory empty copy, which is
-explicitly required by AOD-5 and reads as confirmation rather than duplication.
+Cosmetic: нативный `type=search` крестик сосуществует с `Очистить`; no-results
+показывает и `Найдено 0`, и поясняющий empty-текст — требование AOD-5, читается
+как подтверждение, не дубль.
 
 ## Evidence
 
-Screenshots: `doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-1.png`,
-`-2`, `-9`, `-10`, `-12`, `-13`, `-14`, `-16`, `-18`, `-19`, `-20`.
-Scenario contract: `scenario-evidence.json` (20/20 pass on test2, 5785dc0) and
-`preview-verdict.json` (pass, evaluated_sha 5785dc0...). Executable oracles are
-`web/e2e/notes-search.spec.js` scenarios and repo-level `grep` checks; the audit
-JSON records one oracle and one existing evidence ref per item.
+Скриншоты (per-run, вне git): `.orc-eval/E6636/doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-{1,2,9,10,12,13,14,16,18,19,20}.png`
++ CR-03; `scenario-evidence.json` (20/20 pass, `c988c08`), `preview-verdict.json`
+(pass, evaluated_sha `c988c08…`), evidence-manifest `sha256:f40df89a…`.
+Исполнимые oracle — сценарии `web/e2e/notes-search.spec.js` и repo-level `grep`;
+в JSON у каждого item один oracle и существующая evidence-ссылка.
 
-## Re-audit (after s23, build 9c1763c)
-- E2E 20/20 re-run; UX product unchanged; verdict pass, 0 blockers, 2 accepted minors remain.
+## Re-audit history
+
+- E1868 (build `9c1763c`): pass, 2 minors — offline clear и disabled-стейл.
+- **E6636 (build `c988c08`)**: pass, offline-clear снят (CR-03), остаётся
+  1 accepted minor (disabled-оформление, GAP-2).
