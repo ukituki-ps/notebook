@@ -19,6 +19,26 @@ The note form (`.note-form` with a visible `<label for="note-text">Новая з
 | `offline-zero` | Note form visible; offline banner «Нет сети — нет загруженных заметок.» and base empty message «Пока нет заметок. Добавьте первую выше.»; search disabled; count/list/clear hidden. | Re-check connectivity. | Distinct from `empty`: the offline banner explains why no notes are shown; `notes-empty` stays visible. |
 | `offline` | Note form visible; banner composed from DS `.note-item` `role="status"` with `.note-text.muted` text «Нет сети — показаны загруженные заметки.» and a single-line 44px `min-height` button «Проверить сеть»; search disabled with placeholder «Поиск недоступен без сети», `aria-disabled="true"`, `aria-describedby="notes-offline"`; count hidden; all 4 loaded notes with Удалить visible but disabled (DELETE needs the network). | Press «Проверить сеть» to re-check connectivity. | **«Проверить сеть» behavior:** re-check connectivity and return to the loaded list; the prototype simulates a successful re-check by switching to `idle`. The banner has a 16px DS spacing class above the list. Banner uses DS `note-item` border and `muted` text (no custom colors); `.note-text` lets the paragraph flex, and a non-breaking space (plus `aria-label="Проверить сеть"`) keeps the button on one line without local CSS; saved loaded notes remain readable. |
 
+## Screen brief coverage
+
+Screen brief: `Owner-scoped note search over Notebook DS: search field, clear, idle/results/empty/loading/error/offline, 390/1200, read-only list with delete.`
+
+| Brief item | Covered by | Evidence |
+|---|---|---|
+| search field | `n-search-field` (`.notes-search`, `patterns/search-field`, `role="search"`) | proto.html:34-44; component-map.yaml:43-47 |
+| clear | `n-search-clear` (`.notes-search-clear`, `patterns/search-clear`); visible in `results` / `no-results`, resets to `idle` | proto.html:40-42,171-174 |
+| idle | state `idle` (alias `normal`) | proto.json state_matrix; row above |
+| results | state `results` (query «план», «Найдено 2») | proto.json state_matrix; row above |
+| empty | state `empty` (search disabled, «Пока нет заметок…») | proto.json state_matrix; row above |
+| loading | state `loading` (`aria-busy="true"`, «Загрузка…») | proto.json state_matrix; row above |
+| error | state `error` (`role="alert"` + «Повторить») | proto.json state_matrix; row above |
+| offline | states `offline` and `offline-zero` (both explicit domain states) | proto.json state_matrix; rows above |
+| 390/1200 | both breakpoints via Notebook DS 1.0.1 `web/app.css` media queries; 8 states × 2 viewports = 16 exports | `prototypes/v7/exports/export-{390,1200}-*.png`; `prototypes/v7/manifest.json` |
+| read-only list with delete | `n-notes-list` / `n-note-item` with per-row `n-delete` (`.delete-note`, `path6_required` GAP-3); no inline editing | proto.html:65-90; component-refs.json `path6_required` |
+| owner-scoped | list contains only the authenticated owner's notes; no cross-owner rows in the dataset | user-name in `.notes-header`; dataset of 4 owner notes |
+
+Extra states beyond the brief (`no-results`, `offline-zero`) are labelled and mapped in `proto.json.state_matrix`; they refine `results` / `offline` rather than introduce unknown states.
+
 ## Coverage notes
 
 - 8 renderable states (`idle`, `results`, `no-results`, `empty`, `loading`, `error`, `offline`, `offline-zero`) plus the `normal` alias of `idle`.

@@ -5,6 +5,46 @@
   "platform": "web",
   "design_system_version": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+  "screen_brief": "Owner-scoped note search over Notebook DS: search field, clear, idle/results/empty/loading/error/offline, 390/1200, read-only list with delete.",
+  "screen_brief_coverage": {
+    "search_field": {
+      "node_id": "n-search-field",
+      "selector": ".notes-search",
+      "region": "role=\"search\" aria-label=\"Поиск заметок\"",
+      "request_model": "client-side filter over the loaded owner notes; q capped at 512 bytes upstream; no request per keystroke"
+    },
+    "clear": {
+      "node_id": "n-search-clear",
+      "selector": ".notes-search-clear",
+      "visible_in_states": ["results", "no-results"],
+      "hidden_in_states": ["idle", "normal", "empty", "loading", "error", "offline", "offline-zero"],
+      "behavior": "resets the query and returns to idle"
+    },
+    "states": {
+      "idle": "idle",
+      "results": "results",
+      "no-results": "no-results",
+      "empty": "empty",
+      "loading": "loading",
+      "error": "error",
+      "offline": "offline",
+      "offline-zero": "offline-zero"
+    },
+    "domain_states_explicit": {
+      "offline": "network unavailable, loaded notes shown read-only with network-bound delete disabled",
+      "offline-zero": "network unavailable and zero loaded notes; offline banner plus base empty message",
+      "error": "load failed; role=alert plus «Повторить» retry"
+    },
+    "owner_scope": "Only the authenticated owner's notes are rendered; the proto dataset has no cross-owner rows.",
+    "read_only_list_with_delete": {
+      "list_node": "n-notes-list",
+      "row_node": "n-note-item",
+      "delete_node": "n-delete",
+      "note": "The list has no inline editing; the only mutating control per row is the DS danger button .delete-note (path6_required GAP-3)."
+    },
+    "viewports": ["390", "1200"],
+    "viewport_note": "Both breakpoints come from Notebook DS 1.0.1 web/app.css media queries; no local CSS. Exports: prototypes/v7/exports/export-{390,1200}-<state>.png."
+  },
   "states": [
     "normal",
     "idle",
