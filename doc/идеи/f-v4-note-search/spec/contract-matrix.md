@@ -4,6 +4,8 @@
 |---|---|---|---|---|
 | /api/notes | GET | 200 | `[]Note` (never null) | `go test ./... -run TestNotesList` |
 | /api/notes?q= | GET | 200 | `[]Note` filtered by owner + case-insensitive substring | `go test ./... -run 'TestNotesSearchFinds|TestNotesSearchCaseInsensitive'` |
+| /api/notes?q= (empty/whitespace) | GET | 200 | `[]Note`, all own notes | `go test ./... -run 'TestNotesSearchEmptyQuery|TestNotesSearchWhitespaceQuery'` |
+| /api/notes?q=<exactly 512 bytes> | GET | 200 | `[]Note` filtered (512 accepted) | `go test ./... -run TestNotesSearchQueryTooLong` |
 | /api/notes?q=<513+ bytes> | GET | 400 | `{"error":"query too long"}` | `go test ./... -run TestNotesSearchQueryTooLong` |
 | /api/notes | GET (no bearer) | 401 | `{"error":"unauthorized"}` | `go test ./... -run 'TestAuthRequired|TestNotesSearchAuthRequired'` |
 | /api/notes | POST | 201 | `Note` | `go test ./... -run TestAddNote` |

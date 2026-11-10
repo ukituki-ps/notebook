@@ -1,28 +1,31 @@
 # f-v4-note-search — spec/core (s14)
 
-- Execution: **E0809**, step **s14.spec_generation**
-- Branch: `dev/f-v4-note-search-e2e`, base `e6aeb44e`
+- Execution: **E6636**, step **s14.spec_generation**
+- Branch: `dev/path10-runner-13`, base `9e7fae353c61e717505dc40019627a1d7ab48820`
 - Process: `path-1.feature` **4.0.0** (entry `default`, platform `web`, profile `full`)
 - Design System: **Notebook DS 1.0.1** — tag `ds/v1.0.1`, digest
   `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`
-  (`02f027a8…da3d`), constraint `=1.0.0`
+  (`4e0ef105…c85e`), constraint `=1.0.1`
+- Prototype: `prototypes/v7` (`approved`, decision `2026-11-08T20:51:13Z`)
 - Change class: **plain**; `feature_profile=full`; `path1.ui.json.platform=web`
 - Normative inputs: [feature-brief.md](../feature-brief.md),
   [change-definition.md](../change-definition.md), [plan.md](../plan.md),
-  [scope-report.md](../scope-report.md), [invariants.json](../invariants.json),
-  [ds.lock.json](../ds.lock.json), [component-refs.json](../component-refs.json),
+  [intent-brief.md](../intent-brief.md), [scope-report.md](../scope-report.md),
+  [invariants.json](../invariants.json), [ds.lock.json](../ds.lock.json),
+  [component-refs.json](../component-refs.json),
   [component-map.yaml](../component-map.yaml), [design-gaps.json](../design-gaps.json),
+  [UI-GRAPH.planned.yaml](../UI-GRAPH.planned.yaml),
   `main.go`, `main_test.go`, `web/index.html`, `web/app.js`, `web/app.css`,
   `web_ui_test.go`.
 - Matrix: [contract-matrix.md](./contract-matrix.md).
-- Step boundary: specs only; no code/`web/`/`design/` change at s14, no commit.
-- Base-code note: at `e6aeb44e`, `main.go` already implements the `q` contract in
-  §1; the UI in §3 is the E0809 target. The base UI already has
-  `notes-search`, `notes-search-clear`, `notes-search-empty`, `notes-empty`,
-  `notes-loading`, `notes-error`, and a per-row Delete control, but not the
-  count/retry/offline treatments, the `loading` status role, the final Russian
-  copy, or the in-memory-only query rule. s20 (U02/T0005–T0008) implements those
-  deltas; this spec does not claim they already exist.
+- Step boundary: specs only; no code/`web/`/`design/` change at s14.
+- Base-code note: at `9e7fae35`, `main.go` already implements the `q` contract in
+  §1 and the UI already carries `notes-search`, `notes-search-clear`,
+  `notes-search-count`, `notes-search-empty`, `notes-empty`, `notes-loading`,
+  `notes-error`, `notes-retry`, `notes-offline`, `notes-offline-check`, the
+  Russian `Очистить`/`Удалить` labels, and the in-memory-only query rule. This
+  spec fixes the normative target; s20 validates/aligns the base against it
+  rather than re-implementing from scratch.
 
 ## 0. OpenAPI
 
@@ -104,7 +107,7 @@ No migration, no new field, no persistence.
 
 The notes screen keeps the composer-first order: header → notes error region →
 note composer form → search field → notes list. Search stays above the list.
-The s03 search-first ASCII sketch is superseded by AOD-7; the v6 prototype and
+The s03 search-first ASCII sketch is superseded by AOD-7; the v7 prototype and
 Notebook DS place the composer first.
 
 ### 3.2 Search controls and copy
@@ -151,8 +154,8 @@ Notebook DS place the composer first.
   send `q` per keystroke and does not add a server round-trip for filtering.
 - The active query is in-memory only: it is not persisted in a URL/hash or in
   `sessionStorage`/`localStorage`, and it is cleared on login/logout/`401` and
-  on reload (AOD-3). Base code currently restores it from
-  `sessionStorage["notebook.search"]`; s20 removes that persistence.
+  on reload (AOD-3). Base code no longer restores it; `SEARCH_KEY` is only
+  removed on login/logout/401/clear.
 - One `renderNotes()` path re-applies the active query after load, create,
   delete, and reload.
 - Search is disabled when the collection is empty, while loading, in the error
@@ -170,27 +173,27 @@ Notebook DS place the composer first.
 
 ### 3.5 Design System
 
-- Notebook DS **1.0.0** only (`ds/v1.0.1`, digest `02f027a8…da3d`): **12
+- Notebook DS **1.0.1** only (`ds/v1.0.1`, digest `4e0ef105…c85e`): **12
   registry components** used, **0 local instances**, no local CSS, no second
   design system, no Kubiki, and no `frontend/src/ui/kit` usage.
 - path6 gaps stay accepted and non-blocking: **GAP-1** (`n-count`, missing
   count pattern), **GAP-3** (`n-delete`, registry omission for the danger
   delete variant), **GAP-2** (missing disabled visual state for
-  `primitives/input`).
+  `primitives/input`), **GAP-4** (utility-class registry omissions).
 - No `design/` or DS-file edit; the pinned digest does not change.
 
-### 3.6 Base gaps to close at s20
+### 3.6 Base state and s20 checks
 
-- Base `web/index.html`/`web/app.js` still use visible `Clear`/`Delete`, the
-  shorter `Ничего не найдено.` copy, and sessionStorage query persistence; U02
-  must align them to §3.2–§3.3.
-- Known base blocker **R-1:** `TestUISemantics` currently fails at
-  `web_ui_test.go:264` because the oracle expects a literal
-  `min-height: 44px` while `web/app.css` uses
-  `min-height: var(--control-height)` (`--control-height: 44px`). U02/T0008
-  must align the oracle to the DS token (or add a DS-compliant 44px height);
-  no DS edit. The same UI oracle must add `notes-search-count`,
-  `notes-retry`, `notes-offline`, and `notes-offline-check` references.
+- Base `web/index.html`/`web/app.js` already carry the final `Очистить` /
+  `Удалить` labels, the full search-empty copy, count/retry/offline elements,
+  and the in-memory-only query rule. U02 re-checks them against §3.2–§3.3 and
+  fixes drift only.
+- **R-1 is closed at base:** `web_ui_test.go:360-365` asserts the DS token
+  `min-height: var(--control-height)` and `--control-height: 44px`
+  (`web/app.css:14`). U02/T0008 keeps the token form; no DS edit and no literal
+  `min-height: 44px` oracle. The UI oracle already references
+  `notes-search-count`, `notes-retry`, `notes-offline`, and
+  `notes-offline-check`.
 
 ## 4. Invariants and oracles
 
@@ -205,8 +208,8 @@ Active invariants from `invariants.json`:
   `TestNotesSearchWhitespaceQuery`;
 - `INV-SEARCH-NOT-FOUND` — `TestNotesSearchNotFound`;
 - `INV-SEARCH-ENCODING` — `TestNotesSearchEncoding`;
-- `INV-SEARCH-Q-MAX` — `TestNotesSearchQueryTooLong` (the exactly-512 accept
-  case is added at s20 per plan T0003);
+- `INV-SEARCH-Q-MAX` — `TestNotesSearchQueryTooLong` (including the
+  exactly-512 accept case);
 - `INV-WIRE-CASING` — `TestWireContract`;
 - `INV-REAL-TRANSPORT` — `TestHTTPTransport`, `TestNotesSearchEncoding`;
 - `INV-NO-SKIP-TAGS` — no `integration`/`e2e`/`manual` build tags on invariant
@@ -214,32 +217,30 @@ Active invariants from `invariants.json`:
 - `INV-UI-TRUTH`, `INV-UI-LABEL`, `INV-UI-A11Y-NAME`, `INV-XSS-ESCAPE`,
   `INV-SEARCH-UI-FILTER`, `INV-SEARCH-UI-EMPTY`, `INV-SEARCH-UI-TESTIDS` —
   `TestUISemantics` plus `web/e2e/notes-search.spec.js`;
-- proposed `INV-UI-ORACLE` and `INV-UI-E2E-PREVIEW` materialize at s22a and
-  s20c.
+- `INV-UI-ORACLE` is active (`tools/ui-audit-check.py` oracle); proposed
+  `INV-UI-E2E-PREVIEW` materializes at s20c.
 
-## 5. Contract diff vs base (`e6aeb44e`)
+## 5. Contract diff vs base (`9e7fae35`)
 
-| Surface | Before (base `e6aeb44e`) | After (E0809 target) | Kind |
+| Surface | Before (base `9e7fae35`) | After (E6636 target) | Kind |
 |---|---|---|---|
 | `GET /api/notes?q` | trim, empty/whitespace → all, case-insensitive substring, owner-first, 512-byte cap, `[]` not `null` already in `main.go` | same contract, pinned by this spec and tested | none |
-| `GET /api/notes?q` > 512 bytes | `400 {"error":"query too long"}` before scan; 512 accepted | same; exactly-512 oracle added at s20 | none |
-| UI search/clear/search-empty | present; clear visible `Clear`, search-empty copy `Ничего не найдено.` | visible `Очистить`, final search-empty copy, count, retry, offline | changed / additive |
-| UI states | loading has no `role=status`; no count/retry/offline; base empty wins | loading `role=status`; count/retry/offline/offline-zero; base empty precedence kept | additive / changed |
-| UI delete | visible `Delete`; `aria-label` set in `app.js` | visible `Удалить` + `aria-label="Удалить заметку #N"` | changed |
-| Query persistence | `sessionStorage["notebook.search"]` restore | in-memory only; cleared on login/logout/401/reload | changed |
+| `GET /api/notes?q` > 512 bytes | `400 {"error":"query too long"}` before scan; 512 accepted | same; exactly-512 oracle present | none |
+| UI search/clear/search-empty | present; `Очистить`, final search-empty copy | same; count, retry, offline, offline-zero | none / additive |
+| UI states | count/retry/offline present; loading `role=status`; base empty wins | same; gaps accepted | none |
+| UI delete | visible `Удалить` + `aria-label="Удалить заметку #N"` | same | none |
+| Query persistence | in-memory only, cleared on login/logout/401/reload | same | none |
 | DS | Notebook DS 1.0.1, 12 components, 0 local instances | same; gaps accepted; no DS edit | none |
 | data model / persistence | unchanged | unchanged | none |
 
 No removed/renamed wire field and no status-code change for existing requests
 without `q`. `contract_parity.drift_count = 0`, `items = []` (no OpenAPI
-modules; the API contract matches `main.go` at the base). The UI deltas above
-are the planned s20 target, not parity drift in the API contract.
+modules; the API contract matches `main.go` at the base and this spec). The UI
+surface already matches §3 at `9e7fae35`; s20 re-verifies and fixes drift only.
 
-Matrix delta for this revision (relative to the previous E9294 draft):
-**added 14, removed 0, changed 6** rows. The added rows are the 512-byte
-`400`/accepted cases, the wire row, and the ten `web /notes` UI rows; the six
-changed rows refine the existing `q` envelopes (trim, owner-first, auth-before-q,
-decoding wording).
+Matrix delta for this revision (relative to the previous E0809 draft):
+**added 2, removed 0, changed 0** (explicit empty/whitespace `q` and
+exactly-512-accepted rows). No rows removed.
 
 ## 6. Out of scope
 
