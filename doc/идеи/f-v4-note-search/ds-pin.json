@@ -7,6 +7,8 @@
   "approved_by": "team-lead",
   "pinned_at": "2026-11-08T18:32:32Z",
   "fallback_used": false,
+  "execution": "E6636",
+  "revalidated_at": "2026-11-10T07:41:30Z",
   "screens": [
     {
       "screen_id": "note-search",
