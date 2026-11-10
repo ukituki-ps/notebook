@@ -4,17 +4,17 @@ domain: notebook-e2e
 sde: sde-infra
 change_class: plain
 scope:
-  - "expand web/e2e/notes-search.spec.js to 20 scenarios (existing 8 + 12 listed below); no skips/fixmes"
+  - "expand web/e2e/notes-search.spec.js to 20 scenarios (existing 8 + 12 listed below) + CR-01..CR-03 regressions; no skips/fixmes"
   - "API smoke in deploy/path1/e2e-preview.sh incl. 512-byte q -> 400 'query too long' and 512 accepted; then Playwright entry"
   - "scenarios.json: 20 entries (SEARCH-E2E-1..20); scenario-evidence.json: 20/20 per-scenario screenshot + sha256/pngdiff"
-  - "test2 only under the E0809 lease; no prod/main/test1/canary; platform and DS frozen until s24"
+  - "test2 only under the E6636 lease; no prod/main/test1/canary; platform and DS frozen until s24"
 files:
   - web/e2e/notes-search.spec.js
   - deploy/path1/e2e-preview.sh
   - scenarios.json
   - scenario-evidence.json
 ---
-# T0103 — notebook-search-deploy-e2e (U03)
+# T0103 — notebook-search-deploy-e2e (U03, E6636)
 
 `scenarios.json` / `scenario-evidence.json` live in the feature dir
 (`doc/идеи/f-v4-note-search/`).
@@ -42,34 +42,43 @@ per-scenario evidence, with no skips or fabricated results.
    - 18 390/1200 viewports: no horizontal overflow, stacked/inline search row;
    - 19 clear returns focus to the input and restores the full list;
    - 20 owner-scope B: user B never sees user A's notes.
-2. `web/e2e/notes-search.spec.js`: exactly 20 tests, unique per-scenario
-   screenshots, no `test.skip`, `fixme`, `only`, or fake evidence.
-3. `deploy/path1/e2e-preview.sh`: keep health + auth smoke; add API search smoke
+2. Keep the `CR-01..CR-03` regressions already in the spec: stale GET cannot
+   resurrect a deleted note; a 401 lock never points `aria-describedby` at
+   hidden `notes-empty`; offline clear then reconnect.
+3. `web/e2e/notes-search.spec.js`: exactly 20 search tests + CR regressions,
+   unique per-scenario screenshots, no `test.skip`, `fixme`, `only`, or fake
+   evidence.
+4. `deploy/path1/e2e-preview.sh`: keep health + auth smoke; add API search smoke
    (owner-scope, 512-byte `400`, 512 accept) before the Playwright run; fail-close
    when node/npx/browsers are missing; `E2E_BASE_URL` required.
-4. `scenarios.json`: 20 entries with `id`, `given/when/then`, `e2e_ref`.
+5. `scenarios.json`: 20 entries with `id`, `given/when/then`, `e2e_ref`.
    `scenario-evidence.json`: 20 pass entries with screenshot path + sha256 and
-   `pngdiff` OK; no stale E8895 data.
-5. Run **only** on `test2` under the E0809 lease; no prod/main/test1/canary;
+   `pngdiff` OK; no stale prior-run data.
+6. Run **only** on `test2` under the E6636 lease; no prod/main/test1/canary;
    platform and DS frozen until s24; do not edit `design/**`.
 
 ## Oracles
 
-`npx playwright test web/e2e/notes-search.spec.js` → 20 passed;
+`npx playwright test web/e2e/notes-search.spec.js` → 20 passed + CR regressions;
 `bash deploy/path1/e2e-preview.sh` exit 0; scenario manifest = 20; evidence =
 20/20 with distinct screenshots and `pngdiff` OK; scope check `test2` only.
+
 ## DS constraints
-No UI/code styling change; Notebook DS 1.0.0 stays pinned and untouched; no
-Kubiki/local CSS; 390/1200 assertions read the DS-rendered UI as-is.
+
+No UI/code styling change; Notebook DS **1.0.1** (`ds/v1.0.1`) stays pinned and
+untouched; no Kubiki/local CSS; 390/1200 assertions read the DS-rendered UI
+as-is.
+
 ## Out of scope
+
 `main.go`, `web/index.html`, `web/app.js`, `web/app.css`, `web_ui_test.go`,
 auth/persistence, prod/main/stage/test1/canary, s45/s46, DS/platform changes.
 
 ## Acceptance
 
-20/20 Playwright scenarios pass on `test2`; API smoke incl. 512-byte `400` and
-512 accept; 20/20 scenario evidence with screenshots/`pngdiff`; no skips/fixmes;
-run confined to `test2`.
+20/20 Playwright search scenarios pass on `test2`; API smoke incl. 512-byte
+`400` and 512 accept; 20/20 scenario evidence with screenshots/`pngdiff`; no
+skips/fixmes; run confined to `test2`.
 
 ## Evidence required
 

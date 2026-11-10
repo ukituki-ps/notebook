@@ -8,18 +8,20 @@ scope:
   - "owner predicate (ListNotes(session.UserID)) before the text predicate; q narrows, never widens; UserID never serialized"
   - "512-byte cap on decoded q before any note scan: >512 -> 400 {\"error\":\"query too long\"}; exactly 512 accepted; bytes not runes"
   - "auth (401 + WWW-Authenticate: Bearer) before method/query handling"
-  - "add missing Go tests (esp. exactly-512 accept); do not change auth, sessions, persistence or wire schema"
+  - "verify the base contract and add only missing Go tests (esp. exactly-512 accept); do not change auth, sessions, persistence or wire schema"
 files:
   - main.go
   - main_test.go
 ---
-# T0101 — notebook-search-api (U01)
+# T0101 — notebook-search-api (U01, E6636)
 
 ## Goal
 
-Ship the owner-scoped `GET /api/notes?q=` contract exactly as `spec/core.md` §1
-defines it, with executable Go coverage, without touching authentication,
-session/token handling, storage or note lifecycle.
+Verify and pin the owner-scoped `GET /api/notes?q=` contract exactly as
+`spec/core.md` §1 defines it, with executable Go coverage, without touching
+authentication, session/token handling, storage or note lifecycle. At base
+`9e7fae35` the handler already implements this contract; the unit confirms it
+and closes any test gap.
 
 ## Task list
 
@@ -33,7 +35,7 @@ session/token handling, storage or note lifecycle.
    `200 []`, never `null`; wire keys stay `id`/`text` and `UserID` is not
    serialized.
 4. Add only missing tests in `main_test.go`; required gap: exactly-512-byte
-   accept (T0003). Do not weaken/rename existing tests or add build tags.
+   accept. Do not weaken/rename existing tests or add build tags.
 5. Do not change auth, register/login, POST/DELETE notes, persistence, or the
    response envelope.
 
@@ -48,8 +50,8 @@ session/token handling, storage or note lifecycle.
 
 ## DS constraints
 
-Backend unit: no UI/CSS. Notebook DS 1.0.0 remains pinned and untouched; do not
-edit `design/**`, `web/**`, DS files, or add dependencies.
+Backend unit: no UI/CSS. Notebook DS **1.0.1** (`ds/v1.0.1`) remains pinned and
+untouched; do not edit `design/**`, `web/**`, DS files, or add dependencies.
 
 ## Out of scope
 
