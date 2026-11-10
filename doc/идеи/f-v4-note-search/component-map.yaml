@@ -7,6 +7,7 @@
 #     maps 1:1 to a registry pattern (n-offline -> patterns/note-item).
 #   * path6_required: no DS registry match; tracked in design-gaps.json.
 #   * No local CSS / no local_instances: nodes are styled by DS classes only.
+# execution: E6636 (s03a revalidation 2026-11-10; DS 1.0.1 contract unchanged)
 schema_version: "1.0"
 feature_id: f-v4-note-search
 screen_id: note-search
