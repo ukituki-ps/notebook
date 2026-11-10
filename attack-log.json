@@ -1,0 +1,467 @@
+{
+  "schema_version": "1.0",
+  "execution_id": "E6636",
+  "target": "https://test2.nexus.ukituki.tech",
+  "build_ref": "c988c08",
+  "image_digest": "",
+  "client": "curl, bearer header (two-user model: attacker/victim)",
+  "run_at": "2026-11-10T11:45Z",
+  "attacks": [
+    {
+      "id": "RT-AUTH-NONE",
+      "description": "GET /api/notes without Authorization",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-AUTH-JUNK",
+      "description": "GET /api/notes with junk bearer",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-AUTH-EMPTY",
+      "description": "GET /api/notes with empty bearer",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-AUTH-ONEWORD",
+      "description": "GET /api/notes 'Bearer' alone (no token)",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-AUTH-BASIC",
+      "description": "GET /api/notes with Basic scheme",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-AUTH-TAMPER",
+      "description": "GET /api/notes with tampered token",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-SETUP-A",
+      "description": "A lists own notes (sees A note)",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[{\"id\":44,\"text\":\"secretA_rt2049433011\"}] "
+    },
+    {
+      "id": "RT-IDOR-DEL",
+      "description": "B deletes A's note (cross-owner)",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-IDOR-SEARCH",
+      "description": "B searches A secret marker",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-IDOR-LIST",
+      "description": "B lists own notes",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[{\"id\":45,\"text\":\"secretB_rt2049433011\"}] "
+    },
+    {
+      "id": "RT-WIDEN",
+      "description": "A q= cannot widen to B note",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-DEL-EXIST",
+      "description": "A deletes own note -> 204",
+      "expected": "204",
+      "actual": "204",
+      "status": "pass",
+      "evidence": ""
+    },
+    {
+      "id": "RT-DEL-AGAIN",
+      "description": "repeat delete missing -> 404",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-DEL-MISSING",
+      "description": "delete missing id",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-DEL-ALPHA",
+      "description": "delete /api/notes/abc",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-DEL-MIXED",
+      "description": "delete /api/notes/1abc",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-DEL-NEG",
+      "description": "delete /api/notes/-1",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-DEL-SLASH",
+      "description": "delete /api/notes/1/2",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-DEL-TRAIL",
+      "description": "delete /api/notes/ (empty id)",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-DEL-HUGE",
+      "description": "delete /api/notes/99999999999999999999",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-DEL-DOTS",
+      "description": "delete /api/notes/1..2",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid id\"} "
+    },
+    {
+      "id": "RT-METHOD-GET",
+      "description": "GET /api/notes/{id} (DELETE only)",
+      "expected": "405",
+      "actual": "405",
+      "status": "pass",
+      "evidence": "{\"error\":\"method not allowed\"} "
+    },
+    {
+      "id": "RT-METHOD-POST",
+      "description": "POST /api/notes/{id}",
+      "expected": "405",
+      "actual": "405",
+      "status": "pass",
+      "evidence": "{\"error\":\"method not allowed\"} "
+    },
+    {
+      "id": "RT-UNK-API",
+      "description": "GET /api/bogus",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-ROOT",
+      "description": "GET / -> 302 /login",
+      "expected": "302",
+      "actual": "302",
+      "status": "pass",
+      "evidence": "<a href=\"/login\">Found</a>.  "
+    },
+    {
+      "id": "RT-Q-512",
+      "description": "q=512 bytes accepted",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-Q-513",
+      "description": "q=513 bytes rejected",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"query too long\"} "
+    },
+    {
+      "id": "RT-Q-REGEX",
+      "description": "q with regex metachars is literal",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-Q-UNI",
+      "description": "q unicode",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-Q-NUL",
+      "description": "q with NUL byte",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-Q-WHITESPACE",
+      "description": "q whitespace-only = no filter",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "[] "
+    },
+    {
+      "id": "RT-NOTES-BADJSON",
+      "description": "POST notes bad JSON",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid request body\"} "
+    },
+    {
+      "id": "RT-NOTES-NUM",
+      "description": "POST notes text=number",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid request body\"} "
+    },
+    {
+      "id": "RT-NOTES-EMPTY",
+      "description": "POST notes empty text",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"text required\"} "
+    },
+    {
+      "id": "RT-NOTES-WS",
+      "description": "POST notes whitespace text",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"text required\"} "
+    },
+    {
+      "id": "RT-NOTES-4096",
+      "description": "POST notes text=4096 bytes ok",
+      "expected": "201",
+      "actual": "201",
+      "status": "pass",
+      "evidence": "{\"id\":46,\"text\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "id": "RT-NOTES-4097",
+      "description": "POST notes text=4097 bytes rejected",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"text required\"} "
+    },
+    {
+      "id": "RT-NOTES-OVERSIZE",
+      "description": "POST notes >1MiB body rejected",
+      "expected": "400",
+      "actual": "",
+      "status": "pass",
+      "evidence": "first pass: empty code (harness: inline 1MiB body via --data not delivered); retest PR-af53020ed0ce file-based --data-binary: junk token 401 / valid token 400 {\"error\":\"invalid request body\"} — MaxBytesReader enforced | first-pass body: {\"error\":\"text required\"} "
+    },
+    {
+      "id": "RT-XSS-STORE",
+      "description": "POST note with <script> stored literally",
+      "expected": "201",
+      "actual": "201",
+      "status": "pass",
+      "evidence": "{\"id\":47,\"text\":\"\\u003cscript\\u003ealert(1)\\u003c/script\\u003e\"} "
+    },
+    {
+      "id": "RT-XSS-IMG",
+      "description": "POST note with img onerror",
+      "expected": "201",
+      "actual": "201",
+      "status": "pass",
+      "evidence": "{\"id\":48,\"text\":\"\\\"\\u003e\\u003cimg src=x onerror=alert(2)\\u003e\"} "
+    },
+    {
+      "id": "RT-REG-SHORT",
+      "description": "register 2-char username",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid username\"} "
+    },
+    {
+      "id": "RT-REG-LONG",
+      "description": "register 33-char username",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid username\"} "
+    },
+    {
+      "id": "RT-REG-BADCHAR",
+      "description": "register username with space",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid username\"} "
+    },
+    {
+      "id": "RT-REG-UNI",
+      "description": "register unicode username",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid username\"} "
+    },
+    {
+      "id": "RT-REG-PWSHORT",
+      "description": "register 7-char password",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid password\"} "
+    },
+    {
+      "id": "RT-REG-PWLONG",
+      "description": "register 129-char password",
+      "expected": "400",
+      "actual": "400",
+      "status": "pass",
+      "evidence": "{\"error\":\"invalid password\"} "
+    },
+    {
+      "id": "RT-REG-DUP",
+      "description": "register duplicate username",
+      "expected": "409",
+      "actual": "409",
+      "status": "pass",
+      "evidence": "{\"error\":\"username taken\"} "
+    },
+    {
+      "id": "RT-LOGIN-BADPW",
+      "description": "login wrong password",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-LOGIN-UNK",
+      "description": "login unknown user",
+      "expected": "401",
+      "actual": "401",
+      "status": "pass",
+      "evidence": "{\"error\":\"unauthorized\"} "
+    },
+    {
+      "id": "RT-TRAVERSAL1",
+      "description": "GET /../etc/passwd",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-TRAVERSAL2",
+      "description": "GET /app.js/../../etc/passwd",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-ENC-TRAV",
+      "description": "GET /%2e%2e/etc/passwd",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-STATIC-JS",
+      "description": "GET /app.js",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "(function () {   \"use strict\";    var TOKEN_KEY = \"notebook.token\";   var USER_KEY = \"notebook.user\";   var PREFILL_KEY = \"notebook.prefill\";   var SEARCH_KEY = \"notebook.search\";   var SCREENS = [\"login\", \"register\", \"notes\"];    function byTestId(id) {     return document.querySelector('[data-test"
+    },
+    {
+      "id": "RT-STATIC-CSS",
+      "description": "GET /app.css",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": ":root {   color-scheme: light;   --bg: #f4f6f8;   --card: #ffffff;   --text: #1f2328;   --muted: #5b6470;   --border: #8a837c;   --border-subtle: #d0d7de;   --accent: #1f6feb;   --accent-dark: #1554b8;   --danger: #b42318;   --danger-bg: #fef3f2;   --radius: 10px;   --control-height: 44px;   --focus"
+    },
+    {
+      "id": "RT-PAGE-LOGIN",
+      "description": "GET /login (index)",
+      "expected": "200",
+      "actual": "200",
+      "status": "pass",
+      "evidence": "<!doctype html> <html lang=\"ru\"> <head>   <meta charset=\"utf-8\">   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">   <title>Notebook</title>   <link rel=\"stylesheet\" href=\"/app.css\"> </head> <body>   <main class=\"app\">     <!-- /login -->     <section class=\"screen\" data-screen="
+    },
+    {
+      "id": "RT-PAGE-404",
+      "description": "GET /nope",
+      "expected": "404",
+      "actual": "404",
+      "status": "pass",
+      "evidence": "{\"error\":\"not found\"} "
+    },
+    {
+      "id": "RT-CONC-DEL",
+      "description": "concurrent double delete no 500/panic",
+      "expected": "204/404",
+      "actual": "204/404",
+      "status": "pass",
+      "evidence": "no 5xx observed"
+    }
+  ]
+}

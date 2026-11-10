@@ -105,7 +105,7 @@ if [ -z "${TEST_DATABASE_URL:-}" ] && [ -n "$RUN_ID" ] && [ -n "${NEXUS_TOKEN:-$
   _ref="$(curl -fsS -m 10 -H "Authorization: Bearer ${NEXUS_TOKEN:-${ORC_NEXUS_TOKEN}}" \
       "${NEXUS_BASE_URL:-http://nexus:9182}/api/v1/stands/leases?execution_id=${RUN_ID}" 2>/dev/null \
     | python3 -c 'import sys,json;print((json.load(sys.stdin).get("lease") or {}).get("stand_dsn_ref",""))' 2>/dev/null || true)"
-  case "$_ref" in env:*) TEST_DATABASE_URL="${!_ref#env:}";; "") : ;; *) TEST_DATABASE_URL="$_ref";; esac
+  case "$_ref" in env:*) _dsn_var="${_ref#env:}"; TEST_DATABASE_URL="${!_dsn_var:-}";; "") : ;; *) TEST_DATABASE_URL="$_ref";; esac
 fi
 # Fallback-дефолт УБРАН (E8141): он молча подставлял чужую БД и глушил DB-детекторы.
 if [ "$REQUIRE_DSN" = "true" ] && [ -z "${TEST_DATABASE_URL:-}" ]; then

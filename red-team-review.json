@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "execution_id": "E6636",
+  "step": "s22b.red_team_audit",
+  "verdict": "pass",
+  "target": "https://test2.nexus.ukituki.tech",
+  "build_ref": "c988c08",
+  "attack_log": "attack-log.json",
+  "attack_log_sha256": "sha256:344544c40f148a2f97115c6eb13cb89cbac354f4e4229820f3bb37b0d15a6460",
+  "reviewer_session_id": "ses_ci_notebook_path10_15",
+  "author_session_id": "ses_e3b38ba39ffe7063QvD0d1xGxK",
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "independence": {
+    "distinct": true
+  },
+  "summary": {
+    "total": 57,
+    "passed": 57,
+    "failed": 0
+  },
+  "findings": [
+    {
+      "id": "RT-1",
+      "severity": "info",
+      "status": "closed",
+      "text": "auth: no/junk/empty/one-word/Basic/tampered bearer → 401 unauthorized"
+    },
+    {
+      "id": "RT-2",
+      "severity": "info",
+      "status": "closed",
+      "text": "IDOR: cross-owner delete → 404 (no read/mutate leak); search q cannot widen owner scope; list owner-scoped"
+    },
+    {
+      "id": "RT-3",
+      "severity": "info",
+      "status": "closed",
+      "text": "id parsing: abc/1abc/1/2/1..2/trailing/99999…9 → 400; -1 → 404; GET/POST on DELETE route → 405"
+    },
+    {
+      "id": "RT-4",
+      "severity": "info",
+      "status": "closed",
+      "text": "search cap: q=512B 200 / 513B 400; regex metachars, unicode, NUL byte — literal, no 5xx"
+    },
+    {
+      "id": "RT-5",
+      "severity": "info",
+      "status": "closed",
+      "text": "write caps: text 4096B ok / 4097B 400; body >1MiB → 400 invalid request body; bad JSON / wrong type / empty → 400"
+    },
+    {
+      "id": "RT-6",
+      "severity": "info",
+      "status": "closed",
+      "text": "XSS: <script>/<img onerror> stored literally; web/ has zero DOM sinks (0 innerHTML/document.write/insertAdjacentHTML/outerHTML, 12 textContent)"
+    },
+    {
+      "id": "RT-7",
+      "severity": "info",
+      "status": "closed",
+      "text": "register/login: short/long/odd usernames 400, dup 409, weak pw 400, bad pw 401; static traversal /../ /app.js/../ /%2e%2e → 404; /healthz 200"
+    },
+    {
+      "id": "RT-8",
+      "severity": "info",
+      "status": "closed",
+      "text": "concurrent double delete → 204/404, no 5xx/panic"
+    },
+    {
+      "id": "RT-9",
+      "severity": "low",
+      "status": "fixed",
+      "text": "tools/canary-run.sh:108 — ${!_ref#env:} is broken in bash 5.2 (prefix-strip not applied to indirect name; 'env:STAND_TEST2_DSN: invalid variable name' aborts DSN resolution, gate G1 fail-close). Fixed: two-step indirection _dsn_var=${_ref#env:}; TEST_DATABASE_URL=${!_dsn_var:-}. Repro PR-bff7c4206186, fix verified PR-f09a6969af13"
+    },
+    {
+      "id": "RT-10",
+      "severity": "info",
+      "status": "closed",
+      "text": "GOWORK=off go build/vet/test pass; L1 gates 5/5 pass (canary-run reuse ok, canary verify 3/3, fault-catalog 16/16 covered, fault-catalog-exec 16/16 ok, catalog-invariants ok) with ORC_FEATURE_DIR=doc/идеи/f-v4-note-search"
+    }
+  ],
+  "evidence": {
+    "attack_battery": "PR-7389ca11d38a (57 probes)",
+    "oversize_retest": "PR-af53020ed0ce",
+    "gofmt_build_vet_test": "PR-c08a4a725d62",
+    "gates_5_of_5": "PR-3b8ac64fad02",
+    "gate_g1_bug_repro": "PR-bff7c4206186",
+    "indirection_syntax_probe": "PR-a6bde3dda2c9, PR-c519a98a3a4d"
+  },
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  }
+}
