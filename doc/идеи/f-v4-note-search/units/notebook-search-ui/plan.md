@@ -1,14 +1,15 @@
 # Unit plan — notebook-search-ui (U02)
 
 - unit_id: notebook-search-ui · domain: notebook-web · sde: sde-frontend
-- change_class: plain · brief: T0102/brief.md · parent: E0809 s20 U02
+- change_class: plain · brief: T0102/brief.md · parent: `E6636-s20.sde_5fexecution-u02` (historical origin: E0809 s20 U02)
 - files (4): web/index.html, web/app.js, web/app.css, web_ui_test.go
-- base: branch `orc-exec-E0809-s20.sde_5fexecution-u02`; no commit at this step
+- base: `1722a1e51b3734284c6a9103a4ed2e5ab5793386`; branch `orc-exec-E6636-s20.sde_5fexecution-u02`
 
 ## Goal
 
-Finish the notes-search UI deltas on Notebook DS 1.0.0 only and make
-`TestUISemantics` truthful and green (R-1 closed).
+Keep the notes-search UI on Notebook DS 1.0.1 only and keep
+`TestUISemantics` truthful and green (R-1 closed). At this base the UI is
+already present, so the unit is **verify-only** (fix drift only).
 
 ## Tasks (порядок)
 
@@ -28,10 +29,10 @@ Finish the notes-search UI deltas on Notebook DS 1.0.0 only and make
    and in loading/error/offline; Delete visible "Удалить" + per-row
    `aria-label="Удалить заметку #N"` (Add/Logout English); 390 stacked /
    1200 inline, no horizontal overflow.
-4. **T0008** — R-1 fix in `web/app.css`, `web_ui_test.go`: oracle expects
-   literal `min-height: 44px` while CSS uses `min-height: var(--control-height)`
-   (44px). Align the oracle to the DS token (or add a DS-compliant 44px rule)
-   without editing `design/**`; extend it with count/retry/offline testids.
+4. **T0008** — R-1 / DS token in `web/app.css`, `web_ui_test.go`: the base
+   already uses `min-height: var(--control-height)` (44px) and the oracle
+   asserts the token form (`web_ui_test.go:359-372`); keep it that way without
+   editing `design/**`; oracle already covers count/retry/offline testids.
 
 ## Oracles
 
@@ -47,10 +48,10 @@ path, then count/retry/offline states, then the R-1 oracle alignment.
 ## DoD
 
 - `go test -count=1 ./...` green including `TestUISemantics`; R-1 closed.
-- DS-only: Notebook DS 1.0.0, 12 registry components, 0 local instances, no
+- DS-only: Notebook DS 1.0.1, 12 registry components, 0 local instances, no
   local CSS; no `design/**` edit, pinned digest unchanged.
-- 390/1200 no horizontal overflow; `git diff` limited to the four files; no
-  commit at this step.
+- 390/1200 no horizontal overflow; `git diff` limited to the four files for
+  code; process artifacts committed per execution.
 
 ## Out of scope
 
