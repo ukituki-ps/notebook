@@ -129,3 +129,15 @@ parent receives only summary/diff/verdict. Each unit brief ≤8 files.
 Auth/session/token/persistence, pagination/ranking/fuzzy/highlighting, new
 runtime deps/bundler/DS release, prod/main/stage/test1/canary, s45/s46, changes
 to `f-v3-auth-notes`, E4312 or E1320.
+
+## Saved artifact (s13)
+
+- Plan saved to `doc/идеи/f-v4-note-search/plan.md` at **s13.plan_save**.
+- Registry artifact: `f-v4-note-search/plan.md` (type `decision`, owner
+  `planner`, milestone M01, units U01/U02/U03).
+- Execution **E6636** · branch `dev/path10-runner-13` · base `9e7fae35` ·
+  Notebook DS **1.0.1**.
+- Inputs: `change-definition.md` (s10, model v2 approved),
+  `UI-GRAPH.planned.yaml` (s04, 19 nodes / 69 edges).
+- Next: **s14** spec generation, **s15/s16** milestones/tasks, **s17** coverage
+  audit, then **s19** stand lease and **s20** fan-out.
