@@ -1,18 +1,24 @@
-# Unit check — notebook-search-api (E1546 s20, u01)
+# Unit check — notebook-search-api (E6636 s20, u01)
 
 - **Step:** s12.unit_check (sde-backend)
-- **Commit under check:** af8a3364d64c1de35fbb8c034f0c569b75fc3f78
+- **Commit under check:** af7db2ef58981b2c46a539361087b9303280bd42
+- **Evidence:** PR-e2bc2c8e97e9 (exit 0)
 
 ## Checks
 
 | Check | Result |
 |---|---|
-| build | OK |
+| gofmt | OK (no output) |
 | vet | OK |
-| unit tests | green (2.808s) |
-| owner scope test present | yes (`TestNotesSearchIsolation`) |
+| build | OK |
+| full test suite | green (8.926s) |
+| TestNotesSearch subset | 12/12 PASS |
+| skips / focus | none (`t.Skip` count = 0) |
+| main.go changed vs base | no (test-only change) |
+| owner scope test present | yes (`TestNotesSearchIsolation`, `TestNotesSearchDoesNotMatchOtherOwner`) |
 | auth-required test present | yes (`TestNotesSearchAuthRequired`) |
-| empty/whitespace tests present | yes |
+| empty/whitespace/trim tests present | yes |
+| 512-byte cap tests present | yes (exact 512 accepted, >512 → 400) |
 | encoding test present | yes |
 
 fixed_confirmed: **true** — no defect left in the unit slice.
