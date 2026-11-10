@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "execution_id": "E6636",
+  "step": "s22c.adversarial_code_review",
+  "verdict": "pass",
+  "reviewer": {
+    "model": "qwen3.8-fast",
+    "provider": "llama-proxy"
+  },
+  "reviewer_session_id": "ses_e3a5df502ffeOfxCWNlP6gbC74",
+  "reviewer_model": "qwen3.8-fast",
+  "reviewer_provider": "llama-proxy",
+  "author_model": "deepseek-flash",
+  "author_provider": "deepseek",
+  "author_session_id": "ses_e3b38ba39ffe7063QvD0d1xGxK",
+  "findings": [
+    {
+      "id": "CR-12",
+      "severity": "low",
+      "status": "refuted",
+      "text": "q cap is 512 bytes, not runes: 256 two-byte runes (512B) accepted, 257 runes (514B) rejected; documented boundary, intentional, not a defect (TestNotesSearchQueryTooLong multibyte cases)",
+      "file": "main.go",
+      "line": 542
+    },
+    {
+      "id": "CR-13",
+      "severity": "low",
+      "status": "refuted",
+      "text": "4096-byte text cap (maxTextBytes) counts bytes not runes; symmetric with the q cap; request body additionally bounded by MaxBytesReader; no extra DoS vector",
+      "file": "main.go",
+      "line": 311
+    },
+    {
+      "id": "CR-14",
+      "severity": "medium",
+      "status": "refuted",
+      "text": "search is an unindexed O(n*m) substring scan; bounded by the in-memory single-process store and the 512B q cap; not a defect at this deployment scale",
+      "file": "main.go",
+      "line": 551
+    },
+    {
+      "id": "CR-15",
+      "severity": "info",
+      "status": "refuted",
+      "text": "DELETE /api/notes/{id} parses via Atoi: leading zeros normalize ('01' -> 1), same int namespace, no bypass; non-numeric/empty/oversized -> 400, negative -> 400/404 (TestDeleteInvalidID, TestDeleteForeignNote)",
+      "file": "main.go",
+      "line": 590
+    },
+    {
+      "id": "CR-16",
+      "severity": "medium",
+      "status": "closed",
+      "text": "owner scope applied before the q filter: ListNotes(session.UserID) first, filter after; cross-owner leak probes pass and no user_id appears in filtered responses (TestNotesSearchIsolation, TestNotesSearchDoesNotMatchOtherOwner)",
+      "file": "main.go",
+      "line": 547
+    },
+    {
+      "id": "CR-17",
+      "severity": "medium",
+      "status": "closed",
+      "text": "PBKDF2-HMAC-SHA256 with 210k iterations and per-user random 16B salt (uniqueness verified), known-answer test vector; unknown user runs the dummy hash so timing is equalized (TestPasswordHashed, TestLoginInvalid)",
+      "file": "main.go",
+      "line": 271
+    },
+    {
+      "id": "CR-18",
+      "severity": "medium",
+      "status": "closed",
+      "text": "auth ordering: unauthenticated oversized q -> 401, never 400; malformed/multi-field bearer rejected; sessions expire lazily after 24h and are cleaned on access (TestNotesSearchAuthRequired, TestAuthRequired, TestTokenExpiry)",
+      "file": "main.go",
+      "line": 542
+    },
+    {
+      "id": "CR-19",
+      "severity": "info",
+      "status": "refuted",
+      "text": "whitespace-only q trims to '' and yields a body byte-identical to no-filter; matching is case-insensitive on both sides (TestNotesSearchWhitespaceQuery, TestNotesSearchEmptyQuery, TestNotesSearchCaseInsensitive)",
+      "file": "main.go",
+      "line": 546
+    },
+    {
+      "id": "CR-20",
+      "severity": "low",
+      "status": "refuted",
+      "text": "delete splices noteOrder preserving remaining insertion order; list-after-delete verified, including prefix-boundary and foreign-note cases (TestListAfterDelete, TestNotesPrefixBoundary)",
+      "file": "main.go",
+      "line": 228
+    },
+    {
+      "id": "CR-21",
+      "severity": "info",
+      "status": "refuted",
+      "text": "advisory (gate/tooling, not code): the branch modifies tools/canary-run.sh (5215e32, after base 9e7fae35), a protected-path diff; the s22c gate chain runs F12 check-tools-untouched, which requires a signed .orc-trust/tools-allowlist.yaml entry covering this branch; no allowlist present at origin/main (ff9b8e1f) yet",
+      "file": "tools/check-tools-untouched.sh",
+      "line": 388
+    }
+  ],
+  "proofs": [
+    {
+      "command": "GOWORK=off go build ./... && GOWORK=off go vet ./... && GOWORK=off go test -count=1 ./...",
+      "result": "ok (exit 0, ORC evidence PR-5bb367b05ea1)"
+    },
+    {
+      "command": "bash tools/check-code-review.sh && bash tools/path1-gate.sh catalog-invariants",
+      "result": "ok (L1 gate chain, ORC proof_run at s22c)"
+    }
+  ]
+}
