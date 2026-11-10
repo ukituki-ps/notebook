@@ -1,8 +1,12 @@
 {
   "feature": "f-v4-note-search",
-  "execution_id": "E0809",
+  "execution_id": "E6636",
   "step": "s06.feature_brief_final",
-  "branch": "dev/f-v4-note-search-e2e",
+  "branch": "dev/path10-runner-13",
+  "revalidated_at": "2026-11-10T08:47:00Z",
+  "design_system_version": "1.0.1",
+  "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+  "prototype": "v7",
   "change_class": "plain",
   "do": [
     "Extend GET /api/notes with an optional trimmed, case-insensitive substring q over the current user's notes.",
@@ -10,7 +14,7 @@
     "Cap the decoded q at 512 bytes and return 400 before scanning; return 200 [] when nothing matches.",
     "Add a labelled search input, a clear control, a result count, and a search empty state to the notes screen.",
     "Filter the already loaded owner-scoped list client-side and re-apply the query after create/delete/reload.",
-    "Show Найдено N only for a non-empty trimmed query with aria-live=polite.",
+    "Show Найдено N only for a non-empty trimmed query on a non-empty, non-blocked collection, with aria-live=polite.",
     "Render note text with textContent (no innerHTML).",
     "Cover the API with existing Go tests and the UI with web/e2e/notes-search.spec.js on test2."
   ],

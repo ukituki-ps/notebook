@@ -1,7 +1,13 @@
-# Feature brief — f-v4-note-search (FINAL, s06)
+# Feature brief — f-v4-note-search (FINAL, s06, E6636)
 
-- Execution: **E0809** · step **s06.feature_brief_final**
-- Branch: `dev/f-v4-note-search-e2e`
+- Execution: **E6636** · step **s06.feature_brief_final** · role `product`
+- Branch: `dev/path10-runner-13` · base `9e7fae353c61e717505dc40019627a1d7ab48820`
+- Notebook DS **1.0.1** (`=1.0.1`, digest
+  `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`)
+- Prototype: **`prototypes/v7`** (`approved`, decision `2026-11-08T20:51:13Z`)
+- Planned UI graph: `UI-GRAPH.planned.yaml` (s04 E6636); from-code graph at s21:
+  `UI-GRAPH.yaml`
+- Finalized against `expertise-report.md` (s05 E6636, commit `8638e63`)
 - `change_class`: **plain**
 - Machine-readable result fields: `invariants[]`, `do[]`, `dont[]`,
   `out_of_scope[]`, `change_class` (`invariants.json`; this file carries the
@@ -43,8 +49,9 @@ web view, without changing authentication, storage, or note lifecycle semantics.
   (`data-testid="notes-search-empty"`) to the notes screen.
 - Filter the already loaded owner-scoped list client-side, with no request per
   keystroke; re-apply the active query after create, delete, and reload.
-- Show `Найдено N` only for a non-empty trimmed query, with `aria-live="polite"`;
-  hide the count when the query is empty.
+- Show `Найдено N` only for a non-empty trimmed query on a non-empty,
+  non-blocked collection, with `aria-live="polite"`; hide the count when the
+  query is empty or the collection is empty.
 - Render note text with `textContent` (no `innerHTML`).
 - Cover the backend contract with existing Go tests and the UI behaviour with
   `web/e2e/notes-search.spec.js` on the `test2` preview.
@@ -64,7 +71,7 @@ web view, without changing authentication, storage, or note lifecycle semantics.
 - Do not show the search empty state for a zero-note collection; the base
   `notes-empty` state wins and search is disabled when `notes.length == 0`.
 - Do not invent a second design system, local CSS, a new dependency, a CDN, or a
-  bundler; use Notebook DS 1.0.0 and the existing `web/app.css`.
+  bundler; use Notebook DS 1.0.1 and the existing `web/app.css`.
 - Do not touch `design/`, code, or `web/` at s06; this step finalizes the brief
   and invariants only.
 
@@ -115,7 +122,7 @@ Search semantics:
 
 - The notes screen keeps the existing order: note composer above the search
   field, then the list (AOD-7). This matches the current app, the
-  `prototypes/v6` export, and the Notebook DS; the search-first s03 ASCII
+  `prototypes/v7` export, and the Notebook DS; the search-first s03 ASCII
   wireframe is the earlier reference that deviates from this final order.
 - The notes screen gains a labelled search input above the list.
 - Typing filters the rendered list client-side against the notes already loaded
@@ -145,7 +152,7 @@ Search semantics:
 ## Wireframes (s03, ASCII)
 
 > Historical s03 sketches. The final vertical order is set by **AOD-7**: the
-> note composer stays above the search field (current app, `prototypes/v6`
+> note composer stays above the search field (current app, `prototypes/v7`
 > export, and Notebook DS). The s03 ASCII wireframes below drew search first and
 > are superseded by AOD-7; this is the documented layout deviation.
 
@@ -228,8 +235,8 @@ Interaction and accessibility notes:
 
 ## Invariants
 
-The machine-readable list is `invariants.json` (20 invariants: 18 active +
-2 proposed). Core search invariants:
+The machine-readable list is `invariants.json` (20 invariants: 19 active +
+1 proposed `INV-UI-E2E-PREVIEW`). Core search invariants:
 
 - `INV-AUTH-REQUIRED` — no/bad bearer → `401` before method/query handling.
 - `INV-USER-ISOLATION` — a user never sees another user's notes.
@@ -246,14 +253,14 @@ The machine-readable list is `invariants.json` (20 invariants: 18 active +
 - `INV-UI-LABEL` — search/clear/delete controls keep labels.
 - `INV-UI-A11Y-NAME` — the search field and states have accessible names/roles.
 - `INV-XSS-ESCAPE` — note text is rendered via `textContent`, never `innerHTML`.
+- `INV-UI-ORACLE` — every UI-audit criterion has an executable oracle and
+  evidence (active; `tools/ui-audit-check.py` oracle).
 - `INV-SEARCH-UI-FILTER` — the UI filters the loaded list and clears correctly.
 - `INV-SEARCH-UI-EMPTY` — a non-empty query with no matches shows the search
   empty state; a zero-note collection keeps the base empty state.
 - `INV-SEARCH-UI-TESTIDS` — `notes-search` and `notes-search-empty` stay stable.
-- `INV-UI-ORACLE` (proposed) — every UI-audit criterion has an executable oracle
-  and evidence at s22a.
 - `INV-UI-E2E-PREVIEW` (proposed) — the search scenarios pass on `test2` at
-  s20c with an e2e report/screenshot.
+  s20c with an e2e report/screenshot; its oracle materializes at s20c.
 
 Existing auth/isolation/UI invariants remain active and unchanged.
 
@@ -341,24 +348,29 @@ rule and makes the action unambiguous for screen-reader users.
 
 **Decision:** keep the current app order (note composer above the search field)
 to match the Notebook DS. This is the documented deviation from the earlier
-search-first reference (the s03 ASCII wireframe / v6 design-brief layout); the
-current `prototypes/v6` export already shows composer-first, so the final layout
-is consistent with both the app and the refreshed v6 reference.
+search-first reference (the s03 ASCII wireframe / v7 design-brief layout); the
+current `prototypes/v7` export already shows composer-first, so the final layout
+is consistent with both the app and the refreshed v7 reference.
 
-**Rationale:** the composer is the primary create action and the current app/DS/v6
+**Rationale:** the composer is the primary create action and the current app/DS/v7
 place it first; moving search above it would change the screen structure and the
 existing tests beyond the feature scope. Search remains above the list, so the
 filter and its results stay adjacent. Recording the deviation from the earlier
-search-first sketch (and its resolution in the refreshed v6 export) prevents s22a
+search-first sketch (and its resolution in the refreshed v7 export) prevents s22a
 from "fixing" the order to match a superseded outline.
 
 ## Finalization note (s06)
 
-Finalized against `expertise-report.md` (`c1cf18c`). AOD-1..AOD-7 are closed in
-"Final decisions (s06)" above. Machine-readable invariants:
-**18 active + 2 proposed** (`INV-UI-ORACLE` and `INV-UI-E2E-PREVIEW`, whose
-oracles materialize at s22a/s20c). No auth, isolation, or persistence invariant
-is relaxed by this feature; `change_class` stays `plain`.
+Finalized against `expertise-report.md` (s05 **E6636**, commit `8638e63`) and
+the approved `prototypes/v7` on Notebook DS 1.0.1. AOD-1..AOD-7 are closed in
+"Final decisions (s06)" above; s05 E6636 left AOD-6 (language policy) and AOD-7
+(390 order) open, and s06 closes them per the human-approved v7 and the shipped
+app (English `Notebook`/`Add`/`Logout`, Russian feature copy including the
+`Удалить` delete label; composer above search, search above the list). No
+auth, isolation, or persistence invariant is relaxed by this feature;
+`change_class` stays `plain`. Machine-readable invariants:
+**19 active + 1 proposed** (`INV-UI-E2E-PREVIEW`, whose oracle materializes at
+s20c); `INV-UI-ORACLE` is active with the `tools/ui-audit-check.py` oracle.
 
 ## Risks
 
@@ -369,3 +381,16 @@ is relaxed by this feature; `change_class` stays `plain`.
   independently.
 - Breaking create/delete/reload wiring — covered by the existing Go UI tests and
   the E2E regression scenarios.
+- Offline delete parity (architect `R-4`): the approved v7 disables per-row
+  delete while offline, while the current app leaves rows enabled and the
+  DELETE then fails. s20 aligns code to v7 or records an explicit design change;
+  s22a/s22e verify.
+- Offline clear parity (architect `R-5`): v7 hides the clear control in
+  `offline`; the app keeps it enabled so the local query can always be cleared.
+  Decide at s20/s22a; no security or scope impact.
+- DS 1.0.1 residuals (architect `R-1`/`R-2`): hardcoded `radius.sm`, off-scale
+  spacing, rendered control heights 45/92px, and the accepted GAP-1..GAP-4
+  registry omissions remain non-blocking and are audited at s22a.
+- Spec/history drift (architect `R-6`): `spec/core.md` and `visualized-brief.md`
+  are historical DS 1.0.0 snapshots; s14 regenerates specs from this brief and
+  the active 1.0.1 artifacts.
