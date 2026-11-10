@@ -1,6 +1,13 @@
 {
   "schema_version": "1.0",
   "feature_id": "f-v4-note-search",
+  "execution_id": "E6636",
+  "step": "s07.requirements_reconcile",
+  "revalidated_at": "2026-11-10T08:50:00Z",
+  "work_branch": "dev/path10-runner-13",
+  "base_sha": "9e7fae353c61e717505dc40019627a1d7ab48820",
+  "design_system_version": "1.0.1",
+  "prototype": "v7",
   "request_path": "doc/идеи/f-v4-note-search/feature-request.md",
   "source_items_total": 45,
   "items": [
@@ -13,21 +20,23 @@
     {
       "item_id": "R02",
       "raw_quote": "2. Process: `path-1.feature` 3.2.2, entry point `default`, platform `web`, feature_profile `full`.",
-      "our_interpretation": "Reinterpreted: run path-1.feature@4.0.0 (current canon) instead of 3.2.2; entry default for the build run and entry prototype for the post-platform-fix s03b run.",
+      "our_interpretation": "Reinterpreted: run path-1.feature@4.0.0 (current canon; 3.2.2 is superseded) with entry point `default`, platform `web`, feature_profile `full`; E6636 starts at s01.product_discuss.",
       "verdict": "reinterpreted",
+      "decision_ref": "ORC execution E6636 process_version=4.0.0; owner brief/task",
       "confirmed_by_human": "yes"
     },
     {
       "item_id": "R03",
       "raw_quote": "3. Base branch `dev/f-v3-auth-notes`, base SHA `406fa965480025f452781ca864f7b1c44491ed28`.",
-      "our_interpretation": "Covered by the final feature brief/spec and the current run; no scope change.",
+      "our_interpretation": "Matched in lineage: E6636 runs on base 9e7fae353c61e717505dc40019627a1d7ab48820, which descends from the requested SHA 406fa9654800 (verified with git merge-base --is-ancestor); no scope change.",
       "verdict": "match"
     },
     {
       "item_id": "R04",
       "raw_quote": "4. Work branch `dev/f-v4-note-search`; feature dir `doc/идеи/f-v4-note-search`.",
-      "our_interpretation": "Reinterpreted: work branch is dev/f-v4-note-search-fix (fix package), feature dir unchanged.",
+      "our_interpretation": "Reinterpreted: work branch is the harness-assigned path-10 A/B run branch dev/path10-runner-13; feature dir unchanged. The requested feature lineage is preserved on the base (descendant of 406fa9654800).",
       "verdict": "reinterpreted",
+      "decision_ref": "path-10 A/B run notebook-path10-15, work_branch dev/path10-runner-13",
       "confirmed_by_human": "yes"
     },
     {
@@ -111,8 +120,9 @@
     {
       "item_id": "R18",
       "raw_quote": "18. Whitespace-only `q` — must be fixed in the spec as either all notes or 400.",
-      "our_interpretation": "Reinterpreted: whitespace-only q is fixed as \"all notes\" in spec §3.1; confirmed by the owner brief.",
+      "our_interpretation": "Reinterpreted: fixed as \"all notes\" (trim → empty → all) in the final feature brief and spec; enforced by TestNotesSearchWhitespaceQuery and INV-SEARCH-EMPTY-Q.",
       "verdict": "reinterpreted",
+      "decision_ref": "feature-brief.md §API contract; scope-report OD-1; INV-SEARCH-EMPTY-Q",
       "confirmed_by_human": "yes"
     },
     {
@@ -277,5 +287,10 @@
       "our_interpretation": "Matched: test2 only; prod/main/stage/canary out of scope.",
       "verdict": "match"
     }
+  ],
+  "open_questions": [
+    "s08 human check: confirm AOD-6 (English DS terms Notebook/Add/Logout + Russian feature copy, Delete label «Удалить») and AOD-7 (note composer above search, search above the list), closed by s06 per the human-approved prototype v7.",
+    "s08 human check: confirm the run-level reinterpretations R02 (path-1.feature@4.0.0) and R04 (work branch dev/path10-runner-13 assigned by the path-10 A/B harness).",
+    "s20 conformance (not a product question): align offline delete/clear affordances with approved v7 or record an explicit design change (architect R-4/R-5)."
   ]
 }
