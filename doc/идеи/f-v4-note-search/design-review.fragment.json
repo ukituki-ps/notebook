@@ -5,6 +5,29 @@
   "artifact": "prototypes/v7 + units/note-search/proto.html",
   "design_system_version": "1.0.1",
   "ds_digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+  "review_revalidation": {
+    "execution_id": "E6636-s03.proto_5fvisualize-u01",
+    "step_id": "s03.unit_ui_review",
+    "revalidated_at": "2026-11-10T07:48:00Z",
+    "revalidated_by_session_id": "ses_e3b976747ffeoXiF8SnQYg901C",
+    "review_independence": "verdict independence unchanged: UI reviewer ses_e438fe495ffeZDD7et9kGib3D1 != proto author ses_e44864e8affeXebq0BijhUo077; this pass only re-checks the accepted review against current bytes and does not re-issue the verdict",
+    "reviewed_state_sha256": {
+      "units/note-search/proto.html": "sha256:15d15f11901925a1eef6a05dd487750b95e27608a67e75191e8510d6d14165af",
+      "units/note-search/proto.json": "sha256:15d5b2e6695d062d4d972f9fc9bb2189d881f93a4ce379556d438282ce428325",
+      "units/note-search/state-matrix.md": "sha256:8fcdd68921ed0af47751b59f6174223f9aecce08f931ac08cf34991d84122fc3"
+    },
+    "checks": [
+      "proto.html last changed by 49ec90e (the DS 1.0.1 pin that also updated the review findings) and is untouched by s03/s04a",
+      "0 local <style> tags and 0 style= attributes; external CSS is only /web/app.css",
+      "all 13 screen classes resolve in web/app.css 1.0.1 (.notes-search, .notes-search-clear, .delete-note, .note-item, .notes-list, .notes-header, .note-form, .muted, .brand, .user-name, .notes-search-row, .note-text, .error)",
+      "all [data-testid=…] selectors declared in proto.json exist in proto.html",
+      "16 v7 exports exist with 16 distinct sha256 (8 states x 390/1200)",
+      "aria-live x4, role=status x3, role=alert x1 intact",
+      "no open blocker finding (all blocker/major findings are fixed or accepted)"
+    ],
+    "delta_since_review": "metadata only: s03 added screen_brief_coverage to proto.json/state-matrix.md; s04a added ds-lock verification and artifact cross-links. No change to proto.html markup or DS classes.",
+    "result": "accepted UI review stands (0 blockers, 0 majors); no new UI finding"
+  },
   "author_session_id": "ses_e44864e8affeXebq0BijhUo077",
   "reviewers": {
     "ui": {
@@ -369,6 +392,16 @@
       "evidence": {
         "kind": "file",
         "ref": "units/note-search/proto.html:145; state-matrix.md:14; web/app.js:724"
+      }
+    },
+    {
+      "id": "UI-18",
+      "severity": "info",
+      "status": "accepted",
+      "text": "E6636 s03/s04a revalidation (no new verdict): reviewed artifacts re-checked against current bytes — proto.html unchanged since 49ec90e (markup sha256 15d15f11…), 0 local <style>/style=, external CSS only /web/app.css, all 13 DS classes resolve in web/app.css 1.0.1, all data-testid selectors from proto.json exist in the markup, 16 v7 exports present with 16 distinct sha256, aria-live/status/alert nodes intact. s03/s04a deltas are metadata-only (screen_brief_coverage, ds-lock verification, artifact cross-links), so there is no visual delta and no new UI finding; accepted review stands (0 blockers / 0 majors).",
+      "evidence": {
+        "kind": "file",
+        "ref": "units/note-search/proto.html; proto.json; state-matrix.md; prototypes/v7/exports; web/app.css; ds-lock.json"
       }
     }
   ],
