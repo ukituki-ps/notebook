@@ -168,10 +168,10 @@
       "id": "C7",
       "screen_id": "note-search",
       "block": "C",
-      "criterion": "Offline with loaded notes states what is shown, keeps the loaded rows visible, disables search, and hides both false-empty states (AOD-4).",
+      "criterion": "Offline with loaded notes states what is shown, keeps the loaded rows visible, disables search, hides both false-empty states (AOD-4), and keeps Очистить usable so the active filter can be dropped offline (CR-03).",
       "verdict": "ok",
-      "severity": "minor",
-      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-13'",
+      "severity": "cosmetic",
+      "oracle": "cmd:npx playwright test web/e2e/notes-search.spec.js -g 'SEARCH-E2E-13|CR-03'",
       "evidence": {
         "kind": "command",
         "ref": "web/e2e/notes-search.spec.js"
