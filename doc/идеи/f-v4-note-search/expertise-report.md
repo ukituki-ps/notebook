@@ -1,134 +1,167 @@
 ---
 schema_version: "1.0"
 feature_id: f-v4-note-search
-execution_id: E0809
+execution_id: E6636
 step: s05.architect_validation
-ds_release: "1.0.0"
-ds_digest: sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d
+ds_release: "1.0.1"
+ds_digest: sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e
+prototype: v7
+planned_graph: doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml
 verdict: approve_with_open_decisions
 blockers: 0
-open_decisions_count: 7
+open_decisions_count: 2
+closed_decisions_count: 5
+risks_count: 8
 ---
 
-# Expertise report — f-v4-note-search (s05 architect validation)
+# Expertise report — f-v4-note-search (s05 architect validation, E6636)
 
 ## 1. Verdict: design vs architecture constraints
 
-**Approve with open decisions. 0 blockers.** The v6 design is compatible with
-the path-10 architecture: no new origin, dependency, storage field, endpoint,
-or auth path is introduced. The open decisions in §5 must be resolved at
-s06/s08; the implementation items in §6 belong to s20.
+**Approve with open decisions. 0 blockers.** The approved design (prototype v7
+on Notebook DS 1.0.1, planned graph `UI-GRAPH.planned.yaml` of E6636) is
+compatible with the path-10 architecture: no new origin, dependency, storage
+field, endpoint, auth path, or persistence is introduced. The tree already
+contains the U01/U02 implementation (`main.go`, `web/*`, `main_test.go`,
+`web_ui_test.go`, `web/e2e/*`); it is used here as the implementation baseline
+for validation, and s05 changes no code, design, or DS file. The open decisions
+in §5 must be resolved at s07/s08; the conformance items in §6 belong to s20/s21.
 
 | Constraint | Design / implementation evidence | Result |
 |---|---|---|
-| Same-origin static only | `web/index.html`, `web/app.js`, `web/app.css` are embedded (`main.go:22-25`); no CDN/CORS/framework/bundler; DS code path is `web`; prototype is local. | PASS |
-| No new dependencies | `go.mod` unchanged (Go stdlib only); Playwright stays test-only at 1.64.1 (`package.json:9`); DS is vanilla. | PASS |
-| Owner-scope (q narrows only) | UI filters the already loaded owner-scoped list (`web/app.js:362-368`); API calls `ListNotes(session.UserID)` before text matching (`main.go:537-556`); `UserID` is `json:"-"` (`main.go:67-71`). | PASS |
-| `q` ≤ 512 bytes | API caps the decoded value before scanning (`main.go:541-545`, `maxQueryBytes=512`); 512 exactly is accepted. UI never sends `q` (`web/app.js:415`), so the cap is API-only today; `spec/core.md` omits the 400 row (R-3). | PASS with spec gap |
-| Text-only notes | `Note{ID,Text}`; design adds no title field; `noteSearchText()` tolerates a future `title` without requiring one (`web/app.js:355-360`). | PASS |
-| Auth guard unchanged | `requireAuth` runs before method/query handling (`main.go:530-534`); login/register screens are unchanged; UI clears storage and redirects on 401 (`web/app.js:392-401`). | PASS |
-| No scope creep | No pagination/ranking/highlighting/title; design adds search, clear, count, and offline/retry states only. | PASS |
+| Same-origin static only | UI embedded via `//go:embed web/index.html web/app.js web/app.css` (`main.go:24-25`), served at `/`, `/app.js`, `/app.css` (`main.go:420-434`); no CDN/CORS/framework/bundler; DS code path is `web/app.css`. | PASS |
+| No new dependencies | `go.mod` is stdlib-only (`module github.com/ukituki-ps/notebook`, `go 1.23`); `package.json` has only `@playwright/test 1.64.1` as a test-only devDependency; vanilla JS/CSS. | PASS |
+| Owner-scope (`q` narrows only) | `ListNotes` applies `note.UserID == userID` before any text match (`main.go:195-207`); `handleNotes` filters the already owner-scoped slice (`main.go:548-556`); `UserID` is `json:"-"` (`main.go:67-71`). | PASS |
+| `q` ≤ 512 bytes | `maxQueryBytes = 512` (`main.go:33`); decoded overflow → `400 {"error":"query too long"}` before scanning (`main.go:542-543`); exactly 512 accepted (`TestNotesSearchQueryTooLong`, `main_test.go:1107`). | PASS |
+| Text-only notes | `Note{ID, Text}` (`main.go:67-71`); design adds no title field; `noteSearchText()` tolerates a future `title` without requiring one (`web/app.js:436-442`); API filters `note.Text` only. | PASS |
+| Auth guard unchanged | `requireAuth` runs before method/query handling (`main.go:531`); 401 clears storage and redirects (`web/app.js:484-500`); login/register screens unchanged. | PASS |
+| No query persistence | Query lives in `searchQuery` in memory (`web/app.js:335`); `sessionStorage["notebook.search"]` is only defensively removed, never read/written (`web/app.js:177,487,596,733`); reset on login/logout/401/user switch. | PASS |
+| UI contract / testids | `notes-search`, `notes-search-clear`, `notes-search-count`, `notes-search-empty`, `notes-offline`, `notes-offline-check`, `notes-retry` in `web/index.html:67,79-107`; enforced by `TestUISemantics` (`web_ui_test.go:13`) and the search E2E suite. | PASS |
+| No scope creep | Only search, clear, count, empty/search-empty, offline/retry states; no pagination, ranking, highlighting, or title field. Delete/create/reload unchanged. | PASS |
+| No code/design change at s05 | `git status` shows only the s04 artifacts committed; this report is the only s05 artifact. | PASS |
 
 ## 2. DS validation
 
-- **Non-disk exactness:** Notebook DS `1.0.0` only (`=1.0.0`); `ds_digest`
-  `sha256:02f027a8…da3d` matches `ds.lock.json`, `design-impact.md`,
-  `visualized-brief.md`, `UI-GRAPH.yaml`, and `proto.json`.
-- **Hashes recomputed:** `design/tokens.json` = `9cca3164…4068`,
-  `design/registry.json` = `c2d4c3ae…d9d1`, release manifest = `72e26a2d…9bf2`;
-  all match `ds.lock.json` and the manifest. `kit_sha256` matches.
-- **12 registry components** used verbatim from 14 in `design/registry.json`;
+- **Pinned release:** Notebook DS **1.0.1** (`=1.0.1`), `ds_digest`
+  `sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e`,
+  identical in `ds.lock.json`, `ds-pin.json`, `design-impact.md`, `UI-GRAPH.planned.yaml`,
+  `component-refs.json`, `component-map.yaml`, and `design-gaps.json`.
+- **Hashes recomputed and matching `ds.lock.json`:**
+  `design/tokens.json` = `sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb`;
+  `design/registry.json` = `sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359`;
+  `design/releases/1.0.1/manifest.json` = `sha256:dbc2983b548da8fbce8c860e8c6cff745b517dfd44caaf564a077a913c93e29b`;
+  `web/app.css` = `sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced`.
+- **Registry:** 12 registry ids used verbatim of 14 in `design/registry.json`;
   `primitives/card` and `primitives/button-secondary` are correctly not counted
-  (no node id, no state dependency). `n-note-form` is a composition
+  (no node id / no state dependency). `n-note-form` is a composition
   (`primitives/textarea` + `primitives/button`); `n-offline` is a second
-  `patterns/note-item` occurrence. **0 local instances** (no local `<style>`,
-  CSS, or instance classes).
-- **Path-6 gaps non-blocking:** `GAP-1` (`n-count`, missing pattern),
-  `GAP-3` (`n-delete`, registry omission; `.delete-note` exists at
-  `web/app.css:248-257`), `GAP-2` (input `disabled` state missing). All are
+  `patterns/note-item` occurrence; `n-retry`/`n-offline-check` reuse
+  `primitives/button`.
+- **0 local instances:** the prototype links only `/web/app.css`; no local
+  `<style>`, `style=`, instance classes, Kubiki, `frontend/src/ui/kit`, or v6 imports.
+- **Path-6 gaps non-blocking:** `GAP-1` (`n-count`, missing pattern), `GAP-3`
+  (`n-delete`, registry omission; `.delete-note` exists at `web/app.css:248-257`),
+  `GAP-2` (`primitives/input` has no visual `disabled` state), `GAP-4` (utility
+  classes `.brand/.user-name/.note-text/.notes-search-row/.muted`). All
   `blocking=false`, `status=accepted`; `path6_required=[n-count,n-delete]`.
-- **Code path / no Kubiki:** DS implementation is `web/app.css`; no Kubiki,
-  `frontend/src/ui/kit`, or v6 imports. Caveat: manifest `code.sha256` is the
-  release snapshot, not the current working tree; do not claim live equality.
+- **Provenance caveat:** manifest `code.sha256` is the release snapshot and the
+  manifest `commit` is pre-tag (`design-impact.md` residual 6); do not claim
+  live equality between the manifest hash and the current `web/` tree.
 
-## 3. UI graph check
+## 3. UI graph check (planned, E6636)
 
-- `UI-GRAPH.yaml` has **18 nodes** and **43 edges** (7 `contains`, 12 `renders`,
-  8 `uses`, 16 `state-transition`), `status: planned`, `source: prototype`.
-- **States:** all 7 renderable states are covered — `idle` (+`normal` alias),
-  `results`, `no-results`, `empty`, `loading`, `error`, `offline`; 8 state names
-  in total, as in `proto.json`.
-- **No orphan nodes:** every node has at least one edge. `n-search-field`,
-  `n-search-clear`, `n-count`, `n-notes-list`, `n-note-item`, `n-note-text`,
-  `n-delete`, each state node, `n-error`, `n-retry`, and `n-offline` are all
-  reachable from `note-search` or a state node.
-- **Traceability:** delete = `n-note-item → n-delete` (`renders`) +
+- `UI-GRAPH.planned.yaml`: **19 nodes** = 1 page (`note-search`) + **18 UI nodes**;
+  the 18 identities now match `units/note-search/proto.json` and
+  `component-refs.json` **exactly** (the E0809 caveat about a page node,
+  `n-note-text`, the missing `n-offline-check`, and the identity mismatch is
+  resolved; `n-button` is the registry anchor with `abstract: true`).
+- **69 edges:** `contains` 17, `renders` 12, `uses` 8, `state-transition` 22,
+  `instance-of` 3, `reveals` 1, `filters` 1, `updates` 1, `mutates` 2,
+  `offers` 2. Every node has at least one edge; the page node has 11 outgoing
+  `contains` edges, and the remaining leaves are UI leaves (`n-button`,
+  `n-empty`, `n-loading`, `n-note-textarea`, `n-notes-header`, `n-search-clear`,
+  `n-search-empty`).
+- **States:** 8 renderable states (`idle`, `results`, `no-results`, `empty`,
+  `loading`, `error`, `offline`, `offline-zero`) plus the normalized alias
+  `normal = idle`; `visible`/`hidden` node sets are 1:1 with `proto.json`
+  `state_matrix`.
+- **Traceability:** delete = `n-note-item → n-delete` (`contains`/`renders`) +
   `n-delete → web/app.css:248-257` (`uses`) + `GAP-3`; search =
-  `note-search → n-search-field` + `n-search-field → n-search-clear` +
-  `n-search-field → primitives/input` + idle/results/no-results transitions;
-  count = `note-search → n-count` + `n-count → design/tokens.json#--muted` +
-  `visible/zero/hidden` + `GAP-1`; offline = `state-any → state-offline` +
-  `state-offline → n-offline` + `n-offline → patterns/note-item`/`primitives/button`.
-- **Caveat (non-blocking):** the graph's 18 node identities differ from the 18
-  in `proto.json`/`component-refs.json`: the graph adds the page node and
-  `n-note-text`, and omits `n-button` and `n-offline-check` (documented as
-  composition/reuse). Counts agree; identities must be reconciled at s21.
+  `n-search-field → n-search-clear`/`n-notes-list`/`n-count`
+  (`reveals`/`filters`/`updates`) + `n-search-field → primitives/input` +
+  idle/results/no-results transitions; count = `state-results/state-no-results
+  → n-count` + `GAP-1`; offline = `state-any → state-offline|state-offline-zero`
+  + `state-offline* → n-offline` + `n-offline → patterns/note-item`/`primitives/button`.
+- **Planned vs actualized:** `UI-GRAPH.yaml` (E1868 s21, from-code) additionally
+  models `n-note-text` and the transient `locked` (401) state and has no abstract
+  `n-button`; this is an expected design-vs-code granularity difference, not a
+  contradiction. s21 remains mandatory to re-actualize from the code of this run.
+- `arch/frontend/pages/note-search.yaml` mirrors the planned graph: `status:
+  planned`, `execution_id: E6636`, prototype v7, DS 1.0.1, 18 components,
+  `offline-zero`, `path6_required=[n-count,n-delete]`.
 
 ## 4. Explicit B* decisions (no silent resolution)
 
 | id | Decision | Trace |
 |---|---|---|
-| B-1 | Search is a read-only projection of the existing owner-scoped list; no auth/storage/lifecycle change. | request 12–18, 41 |
-| B-2 | `q` is trimmed; empty/whitespace-only `q` returns all own notes (OD-1 closed). | request 13, 17, 18; `spec/core.md` §1.1 |
-| B-3 | Matching is case-insensitive substring via `strings.ToLower`; no locale collation promised. | request 14; `spec/core.md` §1.1 |
-| B-4 | Owner predicate is applied before the text predicate; `q` narrows only; `UserID` is never serialized. | request 15; `spec/core.md` §1.1/§2 |
-| B-5 | `q` is decoded by `net/http`; decoded length >512 bytes → `400 {"error":"query too long"}` before any scan. | request 23; `feature-brief.md` API; `main.go:541-545` |
-| B-6 | UI filters the already loaded owner-scoped list client-side; no request per keystroke. | request 24–26; `spec/core.md` §3 |
-| B-7 | `notes-search-empty` only for a non-empty trimmed query on a non-empty collection; base `notes-empty` wins for zero notes. | request 27; `spec/core.md` §3; scope-report OD-2 |
-| B-8 | Create/delete/reload re-apply the active query; query is restored from `sessionStorage` and cleared on logout/401/no token. | request 28; `spec/core.md` §3; scope-report OD-4 |
-| B-9 | Stable testids `notes-search`, `notes-search-clear`, `notes-search-empty`; labelled search/clear with live status. | request 29; `spec/core.md` §3 |
-| B-10 | Preview only on `test2`; Playwright 1.64.1; no package/lock rollback; no prod/main/stage/canary; s45/s46 skipped. | request 31, 38, 39, 5, 8, 45 |
-| B-11 | Notebook DS 1.0.0 only; 12 registry components; 0 local instances; accepted gaps non-blocking; no Kubiki. | request 42; `ds.lock.json`, `design-impact.md` |
-| B-12 | UI graph is planned at s04 and actualized from code at s21. | request 30; `UI-GRAPH.yaml` |
+| B-1 | Search is a read-only projection of the existing owner-scoped list; no auth/storage/lifecycle change. | request 12–18, 41; `main.go:195-207,548-556` |
+| B-2 | `q` is trimmed; empty/whitespace-only `q` returns all own notes. | request 13,17,18; `spec/core.md` §1.1; `main.go:545` |
+| B-3 | Matching is case-insensitive substring (`strings.ToLower` server, `toLowerCase` UI); no locale collation promised. | request 14; `INV-SEARCH-CASE-INSENSITIVE` |
+| B-4 | Owner predicate before text predicate; `q` narrows only; `UserID` never serialized. | request 15; `INV-SEARCH-OWNER-SCOPE`; `main.go:67-71` |
+| B-5 | Decoded `q` >512 bytes → `400 {"error":"query too long"}` before scan; exactly 512 accepted; bytes not runes. | request 23; `main.go:33,542-543`; `INV-SEARCH-Q-MAX` |
+| B-6 | UI filters the already loaded owner-scoped list client-side; no request per keystroke. | request 24–26; `spec/core.md` §3; `web/app.js:436-450` |
+| B-7 | `notes-search-empty` only for a non-empty trimmed query on a non-empty collection; base `notes-empty` wins for zero notes and search is disabled. | request 27; `spec/core.md` §3; `web/app.js:444-479`; scope-report OD-2 |
+| B-8 | Create/delete/reload re-apply the active query; query is not persisted across reload and is cleared on logout/401/no token/user switch. | request 28; scope-report OD-4; `web/app.js:335,487,596,733` |
+| B-9 | Stable testids for search/clear/count/search-empty/offline/offline-check/retry; labelled search with live status. | request 29; `spec/core.md` §3; `INV-SEARCH-UI-TESTIDS` |
+| B-10 | Preview only on `test2`; Playwright 1.64.1; no package/lock rollback; no prod/main/stage/canary; s45/s46 skipped. | request 31,38,39,5,8,45 |
+| B-11 | Notebook DS 1.0.1 only; 12 registry components; 0 local instances; GAP-1..GAP-4 accepted non-blocking; no Kubiki. | request 42; `ds.lock.json`, `design-impact.md` |
+| B-12 | Planned UI graph at s04 (`UI-GRAPH.planned.yaml`, 19 nodes/69 edges) and mandatory actualization from code at s21 (`UI-GRAPH.yaml`). | request 30; s04 E6636; §3 above |
+| B-13 | Offline data source is the in-memory already loaded list only; no SW/localStorage cache and no persistence promise; `offline` and `offline-zero` are separate states. | request 41–42; prototype v7 UX-04; `design-impact.md`; scope-report §2 |
+| B-14 | Result count is visible only for a non-empty query on a non-empty, non-blocked collection, with `aria-live=polite`; value is `visible.length`. | request 24–27; prototype v7 UI-08/UX-13; `web/app.js:477-479` |
+| B-15 | Design is authoritative for offline affordances: per-row delete is disabled while offline (DELETE needs the network); s20 must align code to v7 or record an explicit design change. | prototype v7 UX-03/state-matrix `offline`; §6 R-4 |
+| B-16 | No title field: the future-looking `title` join in `noteSearchText()` is tolerated but no title is added, emitted, or required. | request 15; `main.go:67-71`; scope-report §3 |
 
 Earlier OD-1 (whitespace `q`) and OD-6 (Unicode parity) remain closed by
-`feature-brief.md`. Scope-report OD-2/OD-3/OD-4/OD-5 map to AOD-1/AOD-2/AOD-3/AOD-4
-below and are deliberately **not** silently accepted.
+`feature-brief.md`, `TestNotesSearchWhitespaceQuery`, and
+`TestNotesSearchEncoding`. Scope-report OD-2/OD-3/OD-4 are closed by AOD-1/AOD-2/AOD-3
+below; OD-5 is closed by the accepted DS gaps (GAP-1..GAP-4).
 
-## 5. Open decisions (status: open)
+## 5. Open and closed decisions
 
 ```yaml
 open_decisions:
-  - {id: AOD-1, question: "Zero notes + non-empty q: which empty state wins?", options: ["base notes-empty wins (current code/test)", "search-empty wins", "disable/hide search when notes.length == 0"], recommendation: "Keep base notes-empty; additionally disable search when the loaded collection is empty.", decision_ref: "feature-request.md #27 vs #24-25; spec/core.md §3; scope-report OD-2; UX-05", status: open}
-  - {id: AOD-2, question: "Client-side filter or server q (per-keystroke/debounced)?", options: ["client-only over the loaded list", "debounced GET /api/notes?q=", "hybrid"], recommendation: "Client-only for this feature; server q stays the API contract and is revisited with pagination/large lists.", decision_ref: "feature-request.md #24-26; feature-brief.md UX; spec/core.md §3; scope-report OD-3", status: open}
-  - {id: AOD-3, question: "Does the query persist across reload?", options: ["restore from sessionStorage (current)", "reset on reload", "put q in the URL/hash"], recommendation: "Restore via sessionStorage, always sync the input, clear on logout/401/no token/user switch.", decision_ref: "feature-request.md #28; spec/core.md §3; scope-report OD-4; web/app.js:451-456", status: open}
-  - {id: AOD-4, question: "What is the offline data source?", options: ["in-memory already loaded list only", "real cache (SW/localStorage)", "no offline state in this feature"], recommendation: "In-memory loaded list only and label it «загруженные заметки»; add an offline-zero variant if offline ships; otherwise defer the state out of s20.", decision_ref: "feature-request.md #41-42; feature-brief.md out-of-scope persistence; UX-02/UI-10", status: open}
-  - {id: AOD-5, question: "When is the result count visible?", options: ["only for a non-empty query (results/no-results)", "always", "never"], recommendation: "Visible only in results/no-results with aria-live=polite; implement as visible.length at s20 (currently absent from web/).", decision_ref: "feature-request.md #24-27; visualized-brief.md states; UX-01", status: open}
-  - {id: AOD-6, question: "Language policy for the notes UI?", options: ["full Russian", "keep technical English terms (Add/Logout) with an explicit policy", "bilingual"], recommendation: "Russian user-facing copy for the feature; localize Add/Logout to «Добавить»/«Выйти» or record an explicit English-term policy.", decision_ref: "feature-request.md #27; UX-08; web/index.html:63,72,105", status: open}
-  - {id: AOD-7, question: "390px order: composer before search or search before composer?", options: ["keep composer/Logout first (current prototype)", "put search first per s03 wireframe", "collapsible composer"], recommendation: "Put search first on the notes screen; at minimum confirm the deviation, because the primary feature control is currently below the composer.", decision_ref: "feature-brief.md wireframes (lines 79-103); UX-10; visualized-brief.md layout", status: open}
+  - {id: AOD-6, question: "Language policy for the notes UI?", options: ["full Russian", "keep technical English terms (Add/Logout/Notebook) with an explicit policy", "bilingual"], recommendation: "Record an explicit English-term policy (Notebook brand, Add, Logout) or localize Add/Logout to «Добавить»/«Выйти» consistently across code and prototype.", decision_ref: "feature-request.md #27; UX-08; web/index.html:63,73,105; prototypes/v7/exports", status: open}
+  - {id: AOD-7, question: "390px order: composer before search or search before composer?", options: ["keep composer/Logout first (approved v7 prototype and current code)", "put search first per the s03 wireframe", "collapsible composer"], recommendation: "Confirm the approved v7 order (composer first, search above the list) or switch to search-first at 390; the deviation must be explicit because the primary feature control sits below the composer.", decision_ref: "feature-brief.md wireframes (lines 79-103); UX-10; export-390-idle.png; web/index.html:69-89", status: open}
+closed_decisions:
+  - {id: AOD-1, resolution: "Base notes-empty wins for zero notes; search is disabled when the loaded collection is empty (no phantom search-empty).", evidence: "scope-report OD-2; web/app.js:346,479; web_ui_test.go:13; v7 UX-01", status: closed}
+  - {id: AOD-2, resolution: "Client-only filter over the loaded owner-scoped list; server q remains the API contract, no per-keystroke requests.", evidence: "scope-report OD-3; web/app.js:436-450; INV-SEARCH-UI-FILTER", status: closed}
+  - {id: AOD-3, resolution: "No query persistence: in-memory only, reset on reload/login/logout/401/user switch; the earlier sessionStorage-restore recommendation is superseded.", evidence: "scope-report OD-4; web/app.js:335,487,596,733", status: closed}
+  - {id: AOD-4, resolution: "Offline uses the in-memory loaded list only, labeled «загруженные заметки»; offline-zero is part of the approved v7; real cache/persistence stays out of scope.", evidence: "scope-report §2/§3; v7 UX-04; web/app.js:342,514,764", status: closed}
+  - {id: AOD-5, resolution: "Count is visible only in results/no-results (non-empty query, non-empty collection), aria-live=polite, value = visible matches.", evidence: "v7 UI-08/UX-13; web/app.js:477-479; INV-SEARCH-UI-EMPTY", status: closed}
 ```
 
 ## 6. Risks and mitigations
 
 | id | Risk | Mitigation / owner |
 |---|---|---|
-| R-1 | **DS token drift:** `font.h1` 22px vs CSS `1.4rem` (22.4px); `font.body` 15px token vs 16px browser default; `font.secondary` 13px unused; `border_subtle` never referenced; `radius.sm` hardcoded; spacing 6/10/14/18/20/48/88px off-scale. | Recorded, non-blocking; DS 1.x cleanup, s22a audits rendered CSS. Do not edit `design/` at s05. |
-| R-2 | **Registry omissions:** `.delete-note` absent from `design/registry.json`; no count pattern; no visual input `disabled`. | Use existing DS class as-is; GAP-1/2/3 accepted; propose `button-danger`, `count-label`, input disabled for DS 1.x. |
-| R-3 | **Client filter vs API q cap:** UI never sends `q`; spec/core and contract-matrix omit the 512-byte/400 contract; `invariants.json` has no `INV-SEARCH-Q-MAX`. | Keep client-only (AOD-2); add the cap row and invariant before s14; never use `maxlength=512` (UTF-16 units, not UTF-8 bytes); map 400 if server q is later used. |
-| R-4 | **Offline is not implemented:** `web/app.js` has no `navigator.onLine`, cache, or listener; a fetch rejection goes to the generic error path. | Resolve AOD-4 before s20; if implemented, source is the in-memory loaded list and an offline-zero variant is required; no persistence promise. |
-| R-5 | **Count is not implemented:** no `notes-search-count` in `web/index.html`/`web/app.js`; design promises «Найдено N» with `aria-live`. | s20: `visible.length`, hidden for an empty trimmed query, keep polite live region; UX-01. |
-| R-6 | **390 density:** composer (label + 3-row textarea + Add) precedes search; idle 926px / offline 1067px at 844px viewport; full-width Delete; search starts below the fold. | Resolve AOD-7; consider compact trailing Delete in a later DS pass; no horizontal overflow already verified. |
-| R-7 | **Design states vs current app:** app lacks count, retry button, offline banner, and visible «Удалить»; error copy lacks «Попробуйте ещё раз.»; search is enabled with zero notes. | s20 checklist from P-10/UX-01/03/05/08/14/18; s21 reconciles graph to code. |
-| R-8 | **Spec drift:** `spec/core.md` and `contract-matrix.md` predate v6 and omit count/offline/retry/512; `UI-GRAPH` node identities differ from `proto.json`. | s14 must regenerate specs from feature-brief + this report; s21 reconciles node ids. |
+| R-1 | **DS residual drift (1.0.1):** typography drift is fixed in 1.0.1, but `radius.sm` is hardcoded in four rules, spacing still uses off-scale 6/10/14/18/20/48px, and Chromium renders controls at 45/92px against the 44/88px tokens. | Recorded, non-blocking; no `design/` edit at s05; s22a audits rendered CSS and ds-token-drift. |
+| R-2 | **Registry omissions:** `.delete-note` (GAP-3), count label (GAP-1), input `disabled` state (GAP-2), utility classes (GAP-4). | Use existing DS class/tokens as-is; gaps accepted; proposals `button-danger`, `count-label`, input disabled for DS 1.x. |
+| R-3 | **Two matchers (JS vs Go):** `toLowerCase`/`indexOf` versus `strings.ToLower`/`strings.Contains`; duplicate logic and potential divergence if server `q` is later used by the UI. | Keep the UI filter authoritative for the screen; server `q` stays the API contract; share acceptance vectors; do not move to per-keystroke requests without a new decision. |
+| R-4 | **Offline delete parity:** approved v7 disables per-row delete while offline (UX-03), but `web/app.js` leaves rows enabled offline and the DELETE then fails. | B-15: align code to v7 at s20 or record an explicit design change; verify at s22a/s22e. |
+| R-5 | **Offline clear parity:** v7 hides the clear control in `offline`; code keeps it enabled offline by design (CR-03) so the local query can always be cleared. | Decide at s20/s22a whether this intentional deviation is acceptable or v7 should show clear; no security or scope impact. |
+| R-6 | **Spec/history drift:** `spec/core.md` and `visualized-brief.md` are historical DS 1.0.0 snapshots (UX-08); old contract text omits count/offline/retry. | s14 regenerates specs from `feature-brief.md` + this report + the active 1.0.1 artifacts; do not treat the historical snapshots as the design contract. |
+| R-7 | **Static prototype:** the state-per-render prototype is not live-wired (UX-17), so interaction truth comes from code/E2E, not from `proto.html`. | E2E on `test2` (s20c) and the s21 from-code graph are the oracles; prototype is the visual/state contract only. |
+| R-8 | **Graph granularity planned vs actualized:** planned graph has an abstract `n-button` and no `n-note-text`/`locked`; the actualized E1868 graph differs. | s21 re-actualizes from this run's code; difference is expected, not a blocker. |
 
 ## 7. Evidence
 
 | id | Evidence |
 |---|---|
-| EV-1 | `orc_ctx` (`s05.architect_validation`, project `f41f0adb-…`) and `orc_status E0809`: s04 done, s05 pending. |
-| EV-2 | `sha256sum design/tokens.json design/registry.json design/releases/1.0.0/manifest.json` matches `ds.lock.json`. |
+| EV-1 | `orc_ctx`/`orc_status E6636`: s04 done (`a9fcba2`), s05 running; base `9e7fae35`. |
+| EV-2 | `sha256sum design/tokens.json design/registry.json design/releases/1.0.1/manifest.json web/app.css` matches `ds.lock.json` (tokens `436af169…`, registry `79d748c2…`, manifest `dbc2983b…`, css `be611ba4…`). |
 | EV-3 | `design/registry.json` has 14 components; 12 used; 0 local instances; `path6_required=[n-count,n-delete]`. |
-| EV-4 | `UI-GRAPH.yaml`: 18 nodes, 43 edges, 7 states + `normal` alias, every node has an edge. |
-| EV-5 | `main.go:541-545` implements the 512-byte cap; `web/app.js:362-368` filters client-side; `web/app.js:415` never sends `q`. |
-| EV-6 | `grep notes-search-count web/ main.go` returns none; `grep notes-offline web/` returns none: count and offline are design-only until s20. |
-| EV-7 | `git status` clean at `c7d82eb`; s04 graph commit present; no code/design/web change made by s05. |
+| EV-4 | `UI-GRAPH.planned.yaml`: 19 nodes (page + 18 = `proto.json` identities), 69 edges, 8 renderable states + `normal` alias, no orphan nodes. |
+| EV-5 | `main.go:24-25,33,67-71,195-207,531,548-556` implement embed, 512-cap, owner scope, auth-first; `web/app.js:335,342,436-450,477-479` implement in-memory query, offline detection, filter, count. |
+| EV-6 | `main_test.go:934-1131` covers find/not-found/case/isolation/auth/empty/whitespace/encoding/512-cap; `web_ui_test.go:13` `TestUISemantics`; `web/e2e/notes-search.spec.js` + `web/e2e/auth-notes.spec.js`. |
+| EV-7 | `invariants.json`: `INV-SEARCH-OWNER-SCOPE`, `CASE-INSENSITIVE`, `EMPTY-Q`, `NOT-FOUND`, `ENCODING`, `Q-MAX`, `INV-SEARCH-UI-FILTER/EMPTY/TESTIDS` (active). |
+| EV-8 | `git status`: only untracked runner helpers; s04 artifacts committed at `a9fcba2`; s05 adds this report only. |
