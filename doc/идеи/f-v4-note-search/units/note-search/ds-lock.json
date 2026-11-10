@@ -23,6 +23,33 @@
   "tokens_sha256": "sha256:436af169ef28b64cac108288fae69d4ad6819330ac21ff048936a38af7265afb",
   "registry_sha256": "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359",
   "kit_sha256": "sha256:d0867da377fb1cf09da93003f2e9cff1aad70041e17f44ef24c1cf81feea7a09",
+  "code_sha256": "sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced",
+  "release_commit": "41a1141f1d0649ae4ae272d9cd7fa7974c17d634",
+  "artifact_paths": {
+    "proto": "doc/идеи/f-v4-note-search/units/note-search/proto.json",
+    "component_map": "doc/идеи/f-v4-note-search/units/note-search/component-map.yaml",
+    "component_refs": "doc/идеи/f-v4-note-search/units/note-search/component-refs.json",
+    "design_gaps": "doc/идеи/f-v4-note-search/units/note-search/design-gaps.json"
+  },
+  "verification": {
+    "resolved_from": "design/releases/1.0.1/manifest.json",
+    "constraint_exact": true,
+    "digests_recomputed": true,
+    "checks": [
+      "manifest release == design_system_version == 1.0.1",
+      "manifest tag == ds/v1.0.1",
+      "manifest digest == ds_digest (sha256:4e0ef105…)",
+      "tokens_sha256 == manifest.tokens.sha256 (436af169…)",
+      "registry_sha256 == manifest.registry.sha256 (79d748c2…)",
+      "kit_sha256 == manifest.kit.sha256 (d0867da3…)",
+      "code_sha256 == manifest.code.sha256 (be611ba4…) at web/app.css",
+      "all 12 referenced registry ids exist in design/registry.json (14 entries)",
+      "no unregistered/local CSS instance on the screen (local_instances = 0)"
+    ],
+    "branch_guard": "no changes to design/** or frontend/src/ui/** on the execution branch relative to base f24ee36f3df60a516ded9fec3b2f275996952440",
+    "verified_at": "2026-11-10T07:45:20Z",
+    "verified_by": "designer"
+  },
   "components": [
     {
       "registry_id": "primitives/button",
