@@ -1,25 +1,41 @@
 # UI-граф (actualized from code) — f-v4-note-search, экран note-search
-# Источник: s21.graph_actualize (E0809, from-code) по фактическому коду:
+# Источник: s21.graph_actualize (E6636, from-code) по фактическому коду:
 #   web/index.html, web/app.js, web/app.css, spec/core.md §3,
 #   units/notebook-search-ui/*, arch/frontend/pages/note-search.yaml,
 #   design/registry.json, design-gaps.json, ui-audit.json, component-refs.json.
 # Схема/стиль: arch/structure/ui-pages/UI-GRAPH.yaml (pages/components/edges),
 # детализация узлов — id/kind/label/selector/data_testids/states/source_refs.
 # Плановый граф s04 (status: planned) заменён фактическим графом по коду.
+# E6636: повторная актуализация on-code после s20c — код web/** байт-в-байт тот же,
+# что и в предыдущей актуализации (file_hashes совпадают); обновлена привязка к
+# выкаченному билду 6503f66 и сверка с E2E-прогоном (30/30, 20/20 сценариев).
 schema: ui-graph/v1
 feature_id: f-v4-note-search
 status: actualized
-re-actualized: E1868 after s23 (build 9c1763c)
+re-actualized: E6636 after s20c (build 6503f66)
 platform: web
-execution_id: E1868
+execution_id: E6636
 step: s21.graph_actualize
 source: code
 generated_from:
   kind: code
-  commit: "6659eac"
-  commit_full: "6659eac9d33e56b99193d018fa850c2b550a5177"
-  branch: dev/f-v4-note-search-fix
-  generated_at: "2026-11-09"
+  commit: "6503f66"
+  commit_full: "6503f66117f74cd012205543fd7405e56708ef6c"
+  branch: dev/path10-runner-13
+  generated_at: "2026-11-10"
+  previous_actualization:
+    execution_id: E1868
+    commit: "6659eac9d33e56b99193d018fa850c2b550a5177"
+  proof_of_truth:
+    deployed_build_ref: "6503f66"
+    stand: test2
+    e2e:
+      execution_id: E6636
+      step: s20c.preview_verify
+      playwright: "30/30 passed"
+      scenarios: "20/20 pass"
+      scenario_evidence: doc/идеи/f-v4-note-search/platform-dev-validation/E6636-s20c-e2e.md
+    unit_tests: "go test -count=1 ./... (TestUISemantics)"
   file_hashes:
     web/index.html: "sha256:322312eda21b5b4833d6904bb69621f6289d30eb8739f8ce2eb701bc0cdaef74"
     web/app.js: "sha256:cdb8c4d07a1e9a25ac0ab74267c96a9710811e5a8a278dccff3e368662a14c0c"
@@ -802,6 +818,12 @@ ds_registry:
 
 # Трассируемость артефакта.
 traceability:
+  execution_id: E6636
+  step: s21.graph_actualize
+  code_commit: "6503f66117f74cd012205543fd7405e56708ef6c"
+  deployed_build_ref: "6503f66"
+  stand: test2
+  e2e_proof: doc/идеи/f-v4-note-search/platform-dev-validation/E6636-s20c-e2e.md
   ds_release: "1.0.1"
   ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
   ds_constraint: "=1.0.1"

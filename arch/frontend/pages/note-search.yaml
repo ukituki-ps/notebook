@@ -1,24 +1,52 @@
-# Frontend page entry (planned) — note-search
+# Frontend page entry — note-search
 # Источник: s04.graph_builder_design (E6636, from-design; revalidated на prototypes/v7 + DS 1.0.1).
 # Плановый реестр страниц: mirror-стиль arch/structure/ui-pages/*.yaml
 # (id/title/status/platform/route/screen/source_files/components/states/selectors).
 # Детальный плановый граф — doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml;
-# фактический граф актуализируется по коду на s21 — doc/идеи/f-v4-note-search/UI-GRAPH.yaml.
+# фактический граф актуализирован по коду на s21 — doc/идеи/f-v4-note-search/UI-GRAPH.yaml.
+# E6636 s21: статус переведён planned → actualized по фактическому коду web/**,
+# выкаченному на test2 (build 6503f66) и проверенному E2E 30/30 (20/20 сценариев).
 schema_version: "1.0"
 operation: create_or_update
 feature_id: f-v4-note-search
 id: ui-page-note-search
 title: "Note search"
-status: planned
+status: actualized
 platform: web
 route: /
 screen: note-search
 screen_attr: notes
-source: prototype
+source: code
 execution_id: E6636
-step: s04.graph_builder_design
+step: s21.graph_actualize
 graph_ref: doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml
 actualized_graph_ref: doc/идеи/f-v4-note-search/UI-GRAPH.yaml
+actualized_from:
+  kind: code
+  execution_id: E6636
+  step: s21.graph_actualize
+  branch: dev/path10-runner-13
+  commit: "6503f66"
+  commit_full: "6503f66117f74cd012205543fd7405e56708ef6c"
+  generated_at: "2026-11-10"
+  planned_at:
+    execution_id: E6636
+    step: s04.graph_builder_design
+    prototype: v7
+  proof_of_truth:
+    deployed_build_ref: "6503f66"
+    stand: test2
+    e2e:
+      execution_id: E6636
+      step: s20c.preview_verify
+      playwright: "30/30 passed"
+      scenarios: "20/20 pass"
+      report: doc/идеи/f-v4-note-search/platform-dev-validation/E6636-s20c-e2e.md
+    unit_tests: "go test -count=1 ./... (TestUISemantics)"
+  file_hashes:
+    web/index.html: "sha256:322312eda21b5b4833d6904bb69621f6289d30eb8739f8ce2eb701bc0cdaef74"
+    web/app.js: "sha256:cdb8c4d07a1e9a25ac0ab74267c96a9710811e5a8a278dccff3e368662a14c0c"
+    web/app.css: "sha256:be611ba4cfcb39f122255e38d101150516f619dd3a97327793832248da7baced"
 
 prototype:
   version: v7
@@ -236,6 +264,11 @@ selectors:
     purpose: "кнопка «Проверить сеть» внутри offline-баннера"
 
 traceability:
+  execution_id: E6636
+  step: s21.graph_actualize
+  code_commit: "6503f66117f74cd012205543fd7405e56708ef6c"
+  deployed_build_ref: "6503f66"
+  e2e_proof: doc/идеи/f-v4-note-search/platform-dev-validation/E6636-s20c-e2e.md
   ds_release: "1.0.1"
   ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
   ds_constraint: "=1.0.1"
