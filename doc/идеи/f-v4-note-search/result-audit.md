@@ -1,120 +1,73 @@
-# Result audit — f-v4-note-search (E1868)
+# Result audit — f-v4-note-search (E6636)
 
-- Verdict: **pass** (decision: **pass**)
-- Execution: **E1868** · step **s22.result_audit** · role **architect (independent)**
-- Branch: `dev/f-v4-note-search-fix` · base `865fd23` · audited result on stand `test2`
-- Deployed build: **`9c1763c`** (`9c1763c0b69f77c96889a26e9a07d9f5cd3fd37a`)
-- Stand image: `sha256:cb271106a129bb151b893333c600d61d40d5fe708bcbb7d173af068644cc1c1b`
-- Audited: E2E **30/30** (20 search + 7 auth + 3 CR), UI audit **24/24**, UX audit **22/22**, fault catalog **16/16 covered (0 gaps)**, 8 UI invariants active, DS 1.0.1 pins consistent.
-- No code changes and no commit were made by this audit; only this artifact was written.
+- Verdict: **pass**
+- Execution: **E6636** · step **s22.result_audit** · role **architect (independent)**
+- Branch: `dev/path10-runner-13` · base `9e7fae3` · audited result on stand `test2`
+- Audited build: **`c988c08`** (`c988c0828830ffb2d43a9008f6344a001687d21d`)
+- Stand image: `sha256:1981fae5ae690c7a4c16e14d6b4c6a416db6a808ed5ac4749a05fd94855bf200`
+- Gate bundle: `sha256:042082ac96b6f5f705919f851425d618a73e99710bcb573a13397e65d95aca2d`
+- Audited: E2E **30/30** (20 search + 7 auth + 3 CR), UI audit **24/24 ok**, UX
+  audit **22/22 ok**, fault catalog **16/16 covered (0 gaps)**, **19 active
+  invariants** green, DS 1.0.1 pins consistent, UI graph actualized.
+- This audit changed no product code; only the audit artifact is written.
 
 ## Verdict rationale
 
-The delivered result is accepted. Every claimed outcome was re-verified from the stored
-artifacts, from the live stand (`/healthz`, served `app.js`/`app.css`/`/login` byte-identical
-to commit `9c1763c`), and from the repository gates. No blocker and no open
-critical/high finding was found. Residual risks below are documentation/evidence-hygiene
-items and two accepted UX minors; none changes the product outcome.
+Результат принимается. Каждое заявленное свойство перепроверено по сохранённым
+артефактам, по живому стенду и по репозиторным гейтам. Живой стенд отдаёт
+`/app.js`, `/app.css`, `/` байт-в-байт как `HEAD` (sha256 совпадают), `/healthz`
+подтверждает `build_ref=c988c08`, `commit=c988c082…`, тот же image digest,
+`build_args_hash` и gate bundle, что в `preview-deploy.json`. Блокеров и
+открытых critical/high нет. Остаточный риск — один принятый UX-minor (слабый
+disabled-стейт поля при пустой коллекции, GAP-2) и документационная природа
+части доказательств; на продуктовый результат не влияет.
 
 ## Acceptance criteria and oracles
 
 | ID | Criterion | Oracle | Proof |
 |---|---|---|---|
-| AC-1 | Search E2E passes on the deployed preview stand | `E2E_BASE_URL=https://test2.nexus.ukituki.tech npx playwright test web/e2e/notes-search.spec.js` | `scenario-evidence.json`: 20/20 pass, `pngdiff=OK`; `preview-verdict.json`: `result=pass`, `status=verified` |
-| AC-2 | Deployed artifact identity is bound to the audited result | `curl -fsS https://test2.nexus.ukituki.tech/healthz` + `git merge-base --is-ancestor 9c1763c HEAD` | healthz returns `build_ref=9c1763c`, image `1990befb…`, `build_args_hash=3f74c563…`, `gate_bundle_digest=42f4ba6f…`; ancestor exit 0 |
-| AC-3 | Served UI is the committed build, not a drifting stand | `sha256sum` of live `/app.js`, `/app.css`, `/login` vs `git show 9c1763c:web/...` | all three hashes identical (`ba458011…`, `749b9108…`, `322312ed…`) |
-| AC-4 | API query cap and auth path hold on the stand | `doc/идеи/f-v4-note-search/e2e-api-smoke.log`; `go test -run 'TestNotesSearchQueryTooLong|TestNotesSearchAuthRequired'` | `q48 200`, `q512 200`, `q513 400 {"error":"query too long"}`, no-token `401`; tests green |
-| AC-5 | Screenshots are real, distinct, and match the recorded evidence | `python3` sha256 compare + `python3 tools/pngdiff.py --thresh 0.005` | 20/20 PNG present and sha256 match `scenario-evidence.json`; pngdiff `OK` (no near-duplicates) |
-| AC-6 | UI audit covers blocks A–L with 0 DS violations | `ORC_FEATURE_DIR=… python3 tools/ui-audit-check.py --root . --platform web --expect-sha 9c1763c` | gate `PASS` (exit 0); `ui-audit.json` 24/24 `ok`, 0 blockers, 0 DS violations; designer review `ACCEPT` |
-| AC-7 | UX result is accepted with no blocking defects | `doc/идеи/f-v4-note-search/ux-audit.json` (independent product/UX audit) | 22/22 `ok`, 0 blockers, 0 critical/high, 0 majors, 2 residual minors; verdict `pass` |
-| AC-8 | Every fault-catalog class has a verdict with proof | `python3 tools/fault-catalog-check.py --mode verdicts --require-proof --catalog audit/fault-catalog --verdicts …/fault-verdicts.json` | `PASS`: items=16, covered=10, gaps=0; 6 `na` with justification; catalog validate `PASS` 16 unique ids |
-| AC-9 | Active invariants execute green | `GOWORK=off go test -count=1 ./...` + `go test -list '.*'` + build-tag grep | `ok` exit 0 (3.450s); all named invariant tests exist; 0 `integration|e2e|manual` build tags |
-| AC-10 | UI runtime invariants are evidenced before activation | Playwright 20 scenarios (s20c) + `invariants.json` | 8 UI invariants remain `proposed` (activation bookkeeping) and are evidenced by SEARCH-E2E-1..20; no untested claim |
-| AC-11 | Design System pins and usage are consistent | `check-design-gates.py ds-usage|design-integrate|ds-drift` | all three gates `PASS`; release 1.0.1, digest `4e0ef105…`; 14/14 registry components, 0 local instances, 0 Kubiki imports in delivered UI |
-| AC-12 | UI graph and integration inputs are actualized | `ORC_FEATURE_DIR=… bash tools/path1-gate.sh graph-actualized E1868` | `gate-graph-actualized: OK`; integrated units 3/3, no conflict markers, full Go suite green |
+| AC-1 | Поиск owner-scoped, регистронезависимый, пустой `q` — no-op, 401 без токена | `go test -count=1 -run 'TestNotesSearch|TestAuthRequired|TestNotesSearchAuthRequired' ./...` | `ok` (полный suite 8.955s); 20/20 SEARCH-E2E |
+| AC-2 | UI поиска: input/clear/empty, повторное применение фильтра на load/create/delete/reload | `npx playwright test web/e2e/notes-search.spec.js` | 20/20 сценариев + CR-01..03, 0 skipped |
+| AC-3 | Фича проверена на выкаченном стенде test2 | `curl /healthz` + `preview-verdict.json` | `build_ref=c988c08`, `result=pass`, `status=verified`, ref/дigest совпадают с deploy |
+| AC-4 | Нет регрессий существующих тестов | `GOWORK=off go build ./... && go vet ./... && go test -count=1 ./...` | `ok`; E2E auth-notes 7/7 |
+| AC-5 | UI-граф актуализирован по коду (19 узлов / 66 рёбер) | `GRAPH_BASE=9e7fae3… bash tools/path1-gate.sh graph-actualized E6636` | `PASS-NA` (нет UI-дельты vs base); против `origin/main`: `OK` |
+| AC-6 | UI-аудит A–L без DS-нарушений | `python3 tools/ui-audit-check.py --root . --platform web --expect-sha c988c08` | `PASS`; 24/24 `ok`, 0 blockers, 0 DS-usage violations |
+| AC-7 | UX-результат принят без блокеров | `bash tools/path1-gate.sh ux-audit E6636` | `PASS`; 22/22 `ok`, verdict `pass`, 1 accepted minor |
+| AC-8 | По каждому классу каталога отказов есть вердикт с доказательством | `bash tools/path1-gate.sh fault-catalog E6636` | `PASS: items=16, covered=16, gaps=0` |
+| AC-9 | Активные инварианты исполняются и зелены | `go test -count=1 ./...`, `git grep` build-тегов | 19 active инвариантов, suite `ok`; ни один `*_test.go` не несёт `integration/e2e/manual` build-тег |
+| AC-10 | UI-инварианты подтверждены до активации | `invariants.json` + Playwright + `test_ref` | 19 active (включая INV-UI-TRUTH/LABEL/A11Y-NAME/ORACLE, INV-XSS-ESCAPE, INV-SEARCH-UI-*); 1 proposed (INV-UI-E2E-PREVIEW) с `test_ref` на scenario-coverage |
+| AC-11 | DS-пины и usage согласованы | `bash tools/path1-gate.sh ds-usage\|ds-drift\|ds-token-drift E6636` | все три `PASS`; DS 1.0.1, digest `4e0ef105…`, 14/14 registry, 0 local, 0 Kubiki, 20 token checks |
+| AC-12 | Скреплённые артефакты аудита существуют и связаны с билдом | `git cat-file -e` + json-parse + `sha256sum` | `ui-audit.json` (stand `c988c08`), `ux-audit.json` (stand `c988c08…`), `UI-GRAPH.yaml` (generated_from `6503f66`, code hashes совпадают), commit `e84dcea` в origin |
 
 ## Findings
 
 - Open confirmed **critical/high**: **0**
 - **Blockers**: **0**
+- **Majors open**: **0**
 - New findings from this result audit: **0**
-- Prior E1546 review findings in the folder are `low`/`info` only (8 code-review, 7 red-team),
-  verdict `pass`; none is critical/high and none is a blocker for E1868.
+- Принятый UX-minor: 1 (disabled-стейт `primitives/input` при пустой
+  коллекции, GAP-2; базовый empty-текст объясняет состояние).
+- Записи реестра вне scope исполнения: 5 (execution_open=0, critical/high=0) —
+  не относятся к результату E6636.
 
 ## Evidence
 
 | ID | Command | File |
 |---|---|---|
-| EV-1 | `python3 tools/fault-catalog-check.py --mode verdicts --require-proof --catalog audit/fault-catalog --verdicts doc/идеи/f-v4-note-search/fault-verdicts.json` | `fault-verdicts.json`, `audit/fault-catalog/notebook.yaml` |
-| EV-2 | `ORC_FEATURE_DIR="doc/идеи/f-v4-note-search" bash tools/path1-gate.sh fault-catalog E1868` | `fault-verdicts.json` |
-| EV-3 | `ORC_FEATURE_DIR="doc/идеи/f-v4-note-search" python3 tools/ui-audit-check.py --root . --platform web --expect-sha 9c1763c` | `ui-audit.json` |
-| EV-4 | `python3 tools/check-design-gates.py ds-usage --root . --feature-dir "doc/идеи/f-v4-note-search"` | `ds.lock.json`, `ds-pin.json`, `component-refs.json` |
-| EV-5 | `python3 tools/check-design-gates.py design-integrate --root .` | `design-gaps.json` |
-| EV-6 | `python3 tools/check-design-gates.py ds-drift --root .` | `ds.lock.json` |
-| EV-7 | `GOWORK=off go test -count=1 ./...` | `main_test.go`, `web_ui_test.go` |
-| EV-8 | `go test -list '.*'` and `grep -R -E '^//go:build.*(integration|e2e|manual)' --include='*_test.go' .` | invariant tests |
-| EV-9 | Python sha256 comparison of 20 screenshots vs `scenario-evidence.json` | `screenshots/SEARCH-E2E-1..20.png` |
-| EV-10 | `python3 tools/pngdiff.py --thresh 0.005 doc/идеи/f-v4-note-search/screenshots/SEARCH-E2E-*.png` | `screenshots/` |
-| EV-11 | `curl -fsS https://test2.nexus.ukituki.tech/healthz` | live stand provenance |
-| EV-12 | `sha256sum` of live `/app.js`, `/app.css`, `/login` vs `git show 9c1763c:web/...` | deployed assets |
-| EV-13 | `git merge-base --is-ancestor 9c1763c HEAD` + `git diff --stat 9c1763c..HEAD -- web main.go main_test.go web_ui_test.go` | deployed SHA lineage (no code delta) |
-| EV-14 | `sha256sum doc/идеи/f-v4-note-search/scenario-evidence.json` | `preview-verdict.json` (digest `7fe1559f…` matches) |
-| EV-15 | `ORC_FEATURE_DIR="doc/идеи/f-v4-note-search" bash tools/path1-gate.sh graph-actualized E1868` | `UI-GRAPH.yaml` |
+| EV-1 | `bash tools/path1-gate.sh fault-catalog E6636` | `fault-verdicts.json`, `audit/fault-catalog/notebook.yaml` |
+| EV-2 | `GOWORK=off go build ./... && go vet ./... && go test -count=1 ./...` | `main.go`, `main_test.go`, `web_ui_test.go` |
+| EV-3 | `python3 tools/ui-audit-check.py --root . --platform web --expect-sha c988c08` | `ui-audit.json` |
+| EV-4 | `bash tools/path1-gate.sh ux-audit E6636` | `ux-audit.json` |
+| EV-5 | `bash tools/path1-gate.sh ds-usage / ds-drift / ds-token-drift E6636` | `ds.lock.json`, `ds-pin.json`, `design/tokens.json` |
+| EV-6 | live stand identity: `/healthz` + sha256(`/app.js`,`/app.css`,`/`) vs `git show HEAD:` | `.orc-eval/E6636/preview-deploy.json`, `preview-verdict.json` |
+| EV-7 | scenario evidence: 20/20 + sha256 каждого скриншота + `pngdiff` | `.orc-eval/E6636/doc/идеи/f-v4-note-search/{scenario-evidence,evidence-manifest}.json` |
+| EV-8 | `GRAPH_BASE=9e7fae3… bash tools/path1-gate.sh graph-actualized E6636` | `doc/идеи/f-v4-note-search/UI-GRAPH.yaml` |
 
-## Residual risks
+## Artifacts
 
-1. **Fault verdicts are stale for six UI classes (low, documentation).** `fault-verdicts.json`
-   still marks `UI-EMPTY-STATE-CONTROLS`, `UI-FILTER-SERIALIZATION`, `UI-LOADING-ERROR-STATES`,
-   `UI-E2E-PREVIEW`, `UI-A11Y-LABEL`, `UI-XSS-ESCAPE` as `na` with s17-era justification. The
-   gate passes (16/16 verdicts, 0 gaps), and the classes are now independently proven by
-   s20c/s22a, but the file should be upgraded to `covered` with the new proof in a later revision.
-2. **Legacy `evidence-manifest.json` is stale (low).** It lists only 6 screenshots with hashes
-   from an older E1546/E8363 run. The authoritative chain is intact: `preview-verdict.json`
-   binds `scenario-evidence.json` (`sha256:7fe1559f…`), and all 20 current screenshot hashes
-   match that file. The stale manifest is misleading, not load-bearing.
-3. **No local `preview-deploy.json` (low).** Deployment provenance was re-checked from the live
-   `/healthz` (build/image/build-args/gate-bundle) and from `preview-verdict.json`; the
-   `bundle` field is empty. No separate preview-deploy artifact exists in the repo.
-4. **SEARCH-E2E-11/12 screenshots do not depict the loading/error state they evidence (low).**
-   The `shot()` call runs after the state is released/recovered; the states themselves are
-   proven by the passing assertions (`role=status`/`role=alert`, disabled search). Recapture is
-   recommended, but it is an evidence-artifact defect, not a UI defect.
-5. **Legacy Kubiki kit remains in the repo but is not shipped (low).** `frontend/src/ui/kit/**`
-   (31 tracked files) still carries `@kubiki/ui` naming; nothing under `web/` imports it,
-   `package.json` has no such dependency, and the Go binary embeds only `web/*`. “0 Kubiki
-   imports” is accurate for the delivered UI.
-6. **Deploy note SHA differs from the build SHA (low).** `s20b-deploy.md` names source commit
-   `20e0fe9`; the deployed/verified build is `9c1763c`. `git diff 20e0fe9 9c1763c` is docs-only,
-   so the deployed code is byte-identical and the `9c1763c` binding holds.
-7. **Accepted DS token drift (low, DS 1.0.1 backlog).** Only two literal values are not
-   `var(--…)` (`border-radius: 8px`, `color:#fff`), both documented and accepted in
-   `design-impact.md` / `coverage-audit.json`; the pinned DS 1.0.0 digest is unchanged.
-8. **Viewport declaration vs stored PNG (low, evidence precision).** `scope.viewports` declares
-   `1200x900`, while most stored PNGs are 1280×720; E2E-18 still executes the 1200/900 overflow
-   and row-layout assertions, and `.app{max-width:640px}` makes 1200 and 1280 render identically.
-9. **Accepted UX minors (non-blocking).** Offline with an active query cannot clear the filter
-   until reconnect, and the zero-note disabled input relies on UA styling (GAP-2); both are
-   documented in `ux-audit.md`, recoverable, and consistent with the mandated rules.
-10. **UI runtime invariants remain `proposed` (process bookkeeping).** 8 UI invariants are still
-    `status=proposed`; their enforcement evidence exists at s20c/s22a, but activation has not
-    been recorded. This is bookkeeping, not a missing check.
-11. **Prior E1546 review artifacts are stale (low).** `code-review.json` and
-    `red-team-review.json` reference E1546/`a95876d`; their findings are low/info only. They do
-    not describe E1868 and should not be cited as E1868 evidence.
-
-## Independence
-
-- UI audit reviewer `ses_e440dc342ffe0cyPYnyr57Rk2D` / UX auditor
-  `ses_e44094ddfffeZsHroFCFnDiUWh` are distinct from the UI author
-  `ses_e4433e6faffeDGXVi4lKO4t3W8`; `ui-audit.json` and `ux-audit.json` both record
-  `distinct=true`.
-- This result audit is performed by the `architect` role at `s22.result_audit`, after the
-  independent s22a/s22e reviews, and re-runs the gates rather than trusting the author's claims.
-
-## Re-audit after s23 (build 7026b7e)
-
-- Reason: s23 refinement invalidated integration; no product changes, but process requires re-deploy/verify.
-- Re-deployed HEAD 7026b7e to test2 (image sha256:8302078e…, build_args sha256:d16f8c44…).
-- E2E re-run: 20/20 pass; API smoke 512→200, 513→400, no-token 401.
-- UI/UX audits re-run and pass (stand.sha 7026b7e); canaries 3/3 genuinely detected after detector fix.
-- Verdict remains **pass**; residuals unchanged (CR-01 medium, CR-02/03 low, DS token drift).
+- `doc/идеи/f-v4-note-search/result-audit.md` (этот отчёт)
+- `doc/идеи/f-v4-note-search/ui-audit.{md,json}`, `ux-audit.{md,json}`
+- `doc/идеи/f-v4-note-search/UI-GRAPH.yaml`, `arch/frontend/pages/note-search.yaml`
+- `doc/идеи/f-v4-note-search/fault-verdicts.json`, `invariants.json`, `ds.lock.json`
+- per-run (вне git): `.orc-eval/E6636/preview-deploy.json`, `preview-verdict.json`,
+  `scenario-evidence.json`, `screenshots/`, `evidence-manifest.json`
