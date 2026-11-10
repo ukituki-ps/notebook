@@ -1,8 +1,9 @@
 # Frontend page entry (planned) — note-search
-# Источник: s04.graph_builder_design (E0809, from-design).
+# Источник: s04.graph_builder_design (E6636, from-design; revalidated на prototypes/v7 + DS 1.0.1).
 # Плановый реестр страниц: mirror-стиль arch/structure/ui-pages/*.yaml
 # (id/title/status/platform/route/screen/source_files/components/states/selectors).
-# Единственный источник детального графа — doc/идеи/f-v4-note-search/UI-GRAPH.yaml.
+# Детальный плановый граф — doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml;
+# фактический граф актуализируется по коду на s21 — doc/идеи/f-v4-note-search/UI-GRAPH.yaml.
 schema_version: "1.0"
 operation: create_or_update
 feature_id: f-v4-note-search
@@ -14,27 +15,30 @@ route: /
 screen: note-search
 screen_attr: notes
 source: prototype
-execution_id: E0809
+execution_id: E6636
 step: s04.graph_builder_design
-graph_ref: doc/идеи/f-v4-note-search/UI-GRAPH.yaml
+graph_ref: doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml
+actualized_graph_ref: doc/идеи/f-v4-note-search/UI-GRAPH.yaml
 
 prototype:
-  version: v6
-  manifest: doc/идеи/f-v4-note-search/prototypes/v6/manifest.json
-  review: doc/идеи/f-v4-note-search/prototypes/v6/prototype-review.json
+  version: v7
+  manifest: doc/идеи/f-v4-note-search/prototypes/v7/manifest.json
+  review: doc/идеи/f-v4-note-search/prototypes/v7/prototype-review.json
   review_verdict: approved
+  review_decided_at: "2026-11-08T20:51:13Z"
   proto_json: doc/идеи/f-v4-note-search/units/note-search/proto.json
   breakpoints: [390, 1200]
-  states: [normal, idle, results, no-results, empty, loading, error, offline]
+  states: [normal, idle, results, no-results, empty, loading, error, offline, offline-zero]
   state_aliases:
     normal: idle
 
 design_system:
-  release: "1.0.0"
-  constraint: "=1.0.0"
-  digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
+  release: "1.0.1"
+  constraint: "=1.0.1"
+  digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
   tokens: design/tokens.json
   registry: design/registry.json
+  registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
   lock: doc/идеи/f-v4-note-search/ds.lock.json
 
 source_files:
@@ -54,20 +58,21 @@ components:
     label: "Новая заметка"
     registry_id: null
     composition: [primitives/textarea, primitives/button]
+    proto_registry_id_rejected: patterns/note-form
     selector: ".note-form"
-    states: [default, focus, invalid]
+    states: [default, disabled]
   - id: n-note-textarea
     kind: textarea
     label: "Текст заметки"
     registry_id: primitives/textarea
     selector: "textarea"
-    states: [default, focus, invalid]
+    states: [default, focus, invalid, disabled]
   - id: n-note-add
     kind: button
-    label: "Add"
+    label: "Add (submit)"
     registry_id: primitives/button
     selector: "[data-testid=add-note]"
-    states: [default, hover, focus, disabled]
+    states: [default, hover, focus, disabled, busy]
   - id: n-search-field
     kind: input
     label: "Поиск заметок"
@@ -102,12 +107,6 @@ components:
     registry_id: patterns/note-item
     selector: ".note-item"
     states: [default, pending]
-  - id: n-note-text
-    kind: text
-    label: "#<id> <text>"
-    registry_id: null
-    selector: ".note-text"
-    states: [default]
   - id: n-delete
     kind: button
     label: "Delete (aria-label=«Удалить заметку #<id>»)"
@@ -116,7 +115,7 @@ components:
     design_gap: GAP-3
     selector: ".delete-note"
     existing_css: "web/app.css:248-257"
-    states: [default, hover, focus, disabled]
+    states: [default, hover, focus, disabled, pending]
   - id: n-loading
     kind: state
     label: "Загрузка..."
@@ -146,14 +145,34 @@ components:
     label: "Нет сети — показаны загруженные заметки."
     registry_id: patterns/note-item
     composition: [patterns/note-item, primitives/button]
+    path6_resolution: composition
     selector: "[data-testid=notes-offline]"
-    states: [offline]
+    states: [offline, offline-zero]
+    copy_variants:
+      offline: "Нет сети — показаны загруженные заметки."
+      offline-zero: "Нет сети — нет загруженных заметок."
+  - id: n-offline-check
+    kind: button
+    label: "Проверить сеть"
+    registry_id: primitives/button
+    path6_resolution: reuse
+    selector: "[data-testid=notes-offline-check]"
+    states: [default, hover, focus]
   - id: n-retry
     kind: button
     label: "Повторить"
     registry_id: primitives/button
+    path6_resolution: reuse
     selector: "[data-testid=notes-retry]"
     states: [default, hover, focus, disabled]
+  - id: n-button
+    kind: primitive
+    abstract: true
+    label: "primitives/button — реестровый примитив кнопок экрана"
+    registry_id: primitives/button
+    selector: "button"
+    states: [default, hover, focus, disabled]
+    note: "Конкретные экземпляры — n-note-add, n-retry, n-offline-check; собственного DOM-узла нет."
 
 path6_required:
   - n-count
@@ -175,6 +194,12 @@ design_gaps:
     kind: registry-omission
     blocking: false
     status: accepted
+  - id: GAP-4
+    node_id: n-utility-classes
+    kind: registry-omission
+    blocking: false
+    status: accepted
+    classes: [.brand, .user-name, .note-text, .notes-search-row, .muted]
 
 states:
   - id: idle
@@ -184,13 +209,15 @@ states:
   - id: no-results
     detail: "Непустой запрос, 0 совпадений при непустой коллекции: notes-search-empty."
   - id: empty
-    detail: "GET 200 [] при пустом запросе: notes-empty."
+    detail: "GET 200 [] при пустом запросе: notes-empty, поиск disabled (нечего фильтровать)."
   - id: loading
-    detail: "notes-loading, поиск disabled, count/list скрыты."
+    detail: "notes-loading, поиск и форма disabled, список aria-busy=true, count/list скрыты."
   - id: error
-    detail: "notes-error + notes-retry, поиск disabled."
+    detail: "notes-error + notes-retry, поиск и форма disabled."
   - id: offline
-    detail: "offline-banner + «Проверить сеть», поиск disabled, загруженные заметки видны."
+    detail: "offline-banner + «Проверить сеть», поиск/форма/delete disabled, загруженные заметки видны."
+  - id: offline-zero
+    detail: "Нет сети и загруженных заметок нет: offline-banner + базовая пустая подсказка, форма/поиск disabled."
 
 selectors:
   - testid: notes-search
@@ -209,12 +236,24 @@ selectors:
     purpose: "кнопка «Проверить сеть» внутри offline-баннера"
 
 traceability:
-  ds_release: "1.0.0"
-  ds_digest: "sha256:02f027a86bbf8993bd1c14bbb91d5c3ba4453f47e886be73487a28d2044dda3d"
-  prototype: v6
+  ds_release: "1.0.1"
+  ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  ds_constraint: "=1.0.1"
+  prototype: v7
+  prototype_review: doc/идеи/f-v4-note-search/prototypes/v7/prototype-review.json
   screen: note-search
   breakpoints: [390, 1200]
+  nodes_total: 18
+  states_total: 9
+  states_renderable: 8
+  state_aliases:
+    normal: idle
+  path6_required: [n-count, n-delete]
+  path6_resolved_by_reuse: [n-retry, n-offline-check]
+  path6_resolved_by_composition: [n-offline]
   design_impact: doc/идеи/f-v4-note-search/design-impact.md
   component_refs: doc/идеи/f-v4-note-search/component-refs.json
   component_map: doc/идеи/f-v4-note-search/component-map.yaml
   design_gaps: doc/идеи/f-v4-note-search/design-gaps.json
+  planned_graph: doc/идеи/f-v4-note-search/UI-GRAPH.planned.yaml
+  actualized_graph: doc/идеи/f-v4-note-search/UI-GRAPH.yaml

@@ -1,138 +1,752 @@
+# UI-граф (planned, from-design) — f-v4-note-search, экран note-search
+# Источник: s04.graph_builder_design (graph-builder from-design), execution E6636.
+# База дизайна: одобренный прототип prototypes/v7 (verdict approved) + Notebook DS 1.0.1
+#   (digest sha256:4e0ef105…, constraint =1.0.1), ds.lock/component-refs/component-map/design-gaps
+#   перевалидированы в E6636. visualized-brief.md и spec/core.md остаются историческими
+#   снимками 1.0.0 (design-review UX-08) и в качестве источника графа не используются.
+# Граф спекулятивен (status: planned); обязательна последующая актуализация по коду — s21
+#   (фактический граф: doc/идеи/f-v4-note-search/UI-GRAPH.yaml).
+# Node-модель: 18 UI-узлов units/note-search/proto.json 1:1 (n-*), без изобретённых id.
+#   Реестр: только registry_id из design/registry.json 1.0.1 (12 используемых), local_instances = 0.
 schema: ui-graph/v1
 feature_id: f-v4-note-search
 screen_id: note-search
 status: planned
-execution_id: E6177
+platform: web
+execution_id: E6636
 step: s04.graph_builder_design
 source: design
+route: /
+screen_attr: notes
+
 design_system:
-  version: "1.0.1"
+  release: "1.0.1"
+  constraint: "=1.0.1"
   digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  lock: doc/идеи/f-v4-note-search/ds.lock.json
+  tokens: design/tokens.json
+  registry: design/registry.json
+  registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
+  release_manifest: design/releases/1.0.1/manifest.json
   code: web/app.css
-prototype: prototypes/v7
+
+prototype:
+  version: v7
+  manifest: doc/идеи/f-v4-note-search/prototypes/v7/manifest.json
+  manifest_sha256: "sha256:12608ed77852b93f51f4473851b69408d046ed1718cb5d94ae7799550c6aea7d"
+  review: doc/идеи/f-v4-note-search/prototypes/v7/prototype-review.json
+  review_verdict: approved
+  review_decided_at: "2026-11-08T20:51:13Z"
+  proto_json: doc/идеи/f-v4-note-search/units/note-search/proto.json
+  proto_html: doc/идеи/f-v4-note-search/units/note-search/proto.html
+  state_matrix: doc/идеи/f-v4-note-search/units/note-search/state-matrix.md
+  exports_dir: doc/идеи/f-v4-note-search/prototypes/v7/exports
+
+breakpoints: [390, 1200]
+viewports:
+  - width: 390
+    mode: stacked
+    css: "max-width: 640px"
+    detail: "Одна центрированная колонка; поле поиска и clear в столбик, строки заметок в столбик, full-width delete."
+  - width: 1200
+    mode: desktop-inline
+    css: "max-width: 640px не применяется"
+    detail: "Центрированная колонка/карточка 640px; search-row inline (input + clear), note-row inline (text + delete)."
+
+pages:
+  - id: note-search
+    page_id: ui-page-note-search
+    route: /
+    screen_attr: notes
+    status: planned
+    source: prototype
+    graph_ref: arch/frontend/pages/note-search.yaml
+    page_file: arch/frontend/pages/note-search.yaml
+    breakpoints: [390, 1200]
+    source_files:
+      - web/index.html
+      - web/app.js
+      - web/app.css
+    states: [idle, results, no-results, empty, loading, error, offline, offline-zero]
+
+# Узлы экрана: page + 18 UI-узлов (units/note-search/proto.json).
+# states — состояния, в которых узел видим/доступен по state_matrix.
 nodes:
-  - id: app-shell
-    kind: layout
-    selector: .app
-    component_ref: layout/app-shell
-  - id: notes-header
-    kind: region
-    selector: .topbar
+  - id: note-search
+    kind: page
+    label: "Экран поиска заметок (data-state, route /)"
+    component: page
+    registry_id: null
+    selector: "[data-state]"
+    data_testids: []
+    states: [idle, results, no-results, empty, loading, error, offline, offline-zero]
+    proto_refs: ["units/note-search/proto.html:10-11"]
+    exports: ["export-390-idle.png", "export-1200-idle.png"]
+
+  - id: n-notes-header
+    kind: header
+    label: "Шапка (Notebook, username, Logout)"
+    component: patterns/notes-header
+    registry_id: patterns/notes-header
+    selector: ".notes-header"
+    data_testids: [notes-header]
     states: [default]
-  - id: brand
-    kind: text
-    selector: .brand
-    label: Notebook
-  - id: logout
-    kind: action
-    selector: .logout
-    label: Выйти
-  - id: note-form
-    kind: form
-    selector: .note-form
-    states: [idle, disabled]
-  - id: note-input
-    kind: input
-    selector: "#note-text"
-    data_testids: [note-input]
-    states: [default, focus, disabled]
-  - id: add-note
+    proto_refs: ["units/note-search/proto.html:12-16"]
+    exports: ["export-390-idle.png"]
+
+  - id: n-error
+    kind: alert
+    label: "Не удалось загрузить заметки. Попробуйте ещё раз."
+    component: primitives/error
+    registry_id: primitives/error
+    selector: ".error"
+    data_testids: [notes-error]
+    states: [error]
+    proto_refs: ["units/note-search/proto.html:18-20"]
+    exports: ["export-390-error.png", "export-1200-error.png"]
+
+  - id: n-retry
     kind: button
-    selector: "#add-note"
+    label: "Повторить"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: "[data-testid=notes-retry]"
+    data_testids: [notes-retry]
+    states: [default, hover, focus, disabled]
+    path6_resolution: reuse
+    proto_refs: ["units/note-search/proto.html:22-24"]
+    exports: ["export-390-error.png"]
+
+  - id: n-note-form
+    kind: form
+    label: "Новая заметка"
+    component: composition
+    registry_id: null
+    composition: [primitives/textarea, primitives/button]
+    proto_registry_id_rejected: patterns/note-form
+    selector: ".note-form"
+    data_testids: [note-form]
+    states: [default, disabled]
+    proto_refs: ["units/note-search/proto.html:26-32"]
+    exports: ["export-390-idle.png"]
+
+  - id: n-note-textarea
+    kind: textarea
+    label: "Текст заметки"
+    component: primitives/textarea
+    registry_id: primitives/textarea
+    selector: "textarea"
+    data_testids: [note-input]
+    states: [default, focus, invalid, disabled]
+    proto_refs: ["units/note-search/proto.html:28-29", "units/note-search/proto.html:129"]
+    exports: ["export-390-idle.png", "export-390-offline.png"]
+
+  - id: n-note-add
+    kind: button
+    label: "Add (submit)"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: "[data-testid=add-note]"
     data_testids: [add-note]
-    states: [default, disabled, pending]
-  - id: search-field
+    states: [default, hover, focus, disabled, busy]
+    proto_refs: ["units/note-search/proto.html:30-31"]
+    exports: ["export-390-idle.png"]
+
+  - id: n-search-field
     kind: input
-    selector: "#notes-search"
+    label: "Поиск заметок (role=search, input[type=search])"
+    component: patterns/search-field
+    registry_id: patterns/search-field
+    composed_primitives: [primitives/input]
+    selector: ".notes-search"
     data_testids: [notes-search]
     states: [default, focus, disabled]
-  - id: search-clear
+    design_gap: GAP-2
+    proto_refs: ["units/note-search/proto.html:34-38"]
+    exports: ["export-390-results.png", "export-390-offline.png"]
+
+  - id: n-search-clear
     kind: button
-    selector: ".notes-search-row button"
+    label: "Очистить поиск (Clear)"
+    component: patterns/search-clear
+    registry_id: patterns/search-clear
+    selector: ".notes-search-clear"
     data_testids: [notes-search-clear]
-    states: [default, hidden, disabled]
-  - id: search-count
+    states: [default, focus, hidden]
+    proto_refs: ["units/note-search/proto.html:40-42"]
+    exports: ["export-390-results.png", "export-390-no-results.png"]
+
+  - id: n-offline
+    kind: banner
+    label: "Нет сети — показаны загруженные заметки."
+    component: composition
+    registry_id: patterns/note-item
+    composition: [patterns/note-item, primitives/button]
+    path6_resolution: composition
+    selector: "[data-testid=notes-offline]"
+    data_testids: [notes-offline]
+    states: [offline, offline-zero]
+    copy_variants:
+      offline: "Нет сети — показаны загруженные заметки."
+      offline-zero: "Нет сети — нет загруженных заметок."
+    proto_refs: ["units/note-search/proto.html:46-51", "units/note-search/proto.html:98"]
+    exports: ["export-390-offline.png", "export-390-offline-zero.png"]
+
+  - id: n-offline-check
+    kind: button
+    label: "Проверить сеть"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: "[data-testid=notes-offline-check]"
+    data_testids: [notes-offline-check]
+    states: [default, hover, focus]
+    path6_resolution: reuse
+    proto_refs: ["units/note-search/proto.html:49-50"]
+    exports: ["export-390-offline.png", "export-390-offline-zero.png"]
+
+  - id: n-count
     kind: text
-    selector: "#notes-search-count"
+    label: "Найдено N (aria-live=polite)"
+    component: null
+    registry_id: null
+    selector: "[data-testid=notes-search-count]"
     data_testids: [notes-search-count]
-    states: [visible, hidden]
-  - id: notes-list
+    states: [visible, zero, hidden]
+    path6: true
+    design_gap: GAP-1
+    proto_refs: ["units/note-search/proto.html:53"]
+    exports: ["export-390-results.png", "export-390-no-results.png"]
+
+  - id: n-loading
+    kind: status
+    label: "Загрузка..."
+    component: states/loading
+    registry_id: states/loading
+    selector: "[data-testid=notes-loading]"
+    data_testids: [notes-loading]
+    states: [loading]
+    proto_refs: ["units/note-search/proto.html:55-56"]
+    exports: ["export-390-loading.png", "export-1200-loading.png"]
+
+  - id: n-empty
+    kind: message
+    label: "Пока нет заметок. Добавьте первую выше."
+    component: states/empty
+    registry_id: states/empty
+    selector: "[data-testid=notes-empty]"
+    data_testids: [notes-empty]
+    states: [empty, offline-zero]
+    proto_refs: ["units/note-search/proto.html:57-59"]
+    exports: ["export-390-empty.png", "export-390-offline-zero.png"]
+
+  - id: n-search-empty
+    kind: message
+    label: "Ничего не найдено. Сократите запрос или очистите поиск."
+    component: states/search-empty
+    registry_id: states/search-empty
+    selector: "[data-testid=notes-search-empty]"
+    data_testids: [notes-search-empty]
+    states: [no-results]
+    proto_refs: ["units/note-search/proto.html:60-63"]
+    exports: ["export-390-no-results.png", "export-1200-no-results.png"]
+
+  - id: n-notes-list
     kind: list
-    selector: "#notes-list"
+    label: "Список заметок (role=list)"
+    component: patterns/notes-list
+    registry_id: patterns/notes-list
+    selector: ".notes-list"
     data_testids: [notes-list]
-    states: [visible, hidden, busy]
-  - id: note-item
+    states: [default, busy, hidden]
+    proto_refs: ["units/note-search/proto.html:65-91"]
+    exports: ["export-390-idle.png", "export-390-results.png"]
+
+  - id: n-note-item
     kind: list-item
+    label: "Заметка: #<id> <text> (role=listitem)"
+    component: patterns/note-item
+    registry_id: patterns/note-item
     selector: ".note-item"
     data_testids: [note-item]
-    states: [default, hidden]
-  - id: delete-note
+    states: [default, pending]
+    proto_refs: ["units/note-search/proto.html:66-91"]
+    exports: ["export-390-idle.png", "export-390-results.png"]
+
+  - id: n-delete
     kind: button
+    label: "Удалить (aria-label=«Удалить заметку #<id>»)"
+    component: null
+    registry_id: null
     selector: ".delete-note"
-    states: [default, pending, disabled, hidden]
-  - id: loading
-    kind: status
-    selector: "#notes-loading"
-    data_testids: [notes-loading]
-    states: [visible, hidden]
-  - id: base-empty
-    kind: message
-    selector: "#notes-empty"
-    data_testids: [notes-empty]
-    states: [visible, hidden]
-  - id: search-empty
-    kind: message
-    selector: "#notes-search-empty"
-    data_testids: [notes-search-empty]
-    states: [visible, hidden]
-  - id: error
-    kind: alert
-    selector: "#notes-error"
-    data_testids: [notes-error]
-    states: [visible, hidden]
-  - id: retry
-    kind: button
-    selector: "#notes-retry"
-    data_testids: [notes-retry]
-    states: [visible, hidden]
-  - id: offline
-    kind: banner
-    selector: "#notes-offline"
-    data_testids: [notes-offline]
-    states: [visible, hidden]
-  - id: offline-check
-    kind: button
-    selector: "#notes-offline-check"
-    data_testids: [notes-offline-check]
-    states: [visible, hidden]
-edges:
-  - from: note-input
-    to: add-note
-    kind: enables
-  - from: search-field
-    to: search-clear
-    kind: reveals
-  - from: search-field
-    to: notes-list
-    kind: filters
-  - from: search-field
-    to: search-count
-    kind: updates
-  - from: note-item
-    to: delete-note
-    kind: contains
-  - from: error
-    to: retry
-    kind: offers
-  - from: offline
-    to: offline-check
-    kind: offers
+    data_testids: [delete-note]
+    states: [default, hover, focus, disabled, pending]
+    path6: true
+    design_gap: GAP-3
+    existing_css: "web/app.css:248-257"
+    proto_refs: ["units/note-search/proto.html:69-70", "units/note-search/proto.html:185"]
+    exports: ["export-390-idle.png", "export-390-offline.png"]
+
+  - id: n-button
+    kind: primitive
+    abstract: true
+    label: "primitives/button — реестровый примитив кнопок экрана"
+    component: primitives/button
+    registry_id: primitives/button
+    selector: button
+    data_testids: []
+    states: [default, hover, focus, disabled]
+    note: >-
+      Реестровый якорь primitives/button (ds.lock.nodes: n-button, n-retry,
+      n-offline-check, n-note-add). Конкретные экземпляры — n-note-add, n-retry,
+      n-offline-check; собственного DOM-узла n-button не имеет.
+
+# Состояния экрана — 8 рендеримых + нормализованный алиас normal = idle.
+# visible/hidden — из units/note-search/proto.json state_matrix (1:1).
 states:
-  idle: [notes-header, note-form, search-field, notes-list]
-  results: [search-field, search-clear, search-count, notes-list]
-  no-results: [search-field, search-clear, search-count, search-empty]
-  empty: [note-form, base-empty]
-  loading: [loading]
-  error: [error, retry]
-  offline: [offline, offline-check, notes-list]
-  offline-zero: [offline, offline-check, base-empty]
+  - id: idle
+    alias: normal
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-notes-list, n-note-item]
+    hidden: [n-search-clear, n-count, n-loading, n-empty, n-search-empty, n-error, n-retry, n-offline, n-offline-check]
+    search_enabled: true
+    form_enabled: true
+    description: "Пустой запрос: форма заметки, поиск и все загруженные заметки; clear/count скрыты."
+    exports: ["export-390-idle.png", "export-1200-idle.png"]
+
+  - id: results
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-search-clear, n-count, n-notes-list, n-note-item]
+    hidden: [n-loading, n-empty, n-search-empty, n-error, n-retry, n-offline, n-offline-check]
+    search_enabled: true
+    form_enabled: true
+    description: "Непустой запрос с совпадениями: отфильтрованный список, clear и «Найдено 2»."
+    exports: ["export-390-results.png", "export-1200-results.png"]
+
+  - id: no-results
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-search-clear, n-count, n-search-empty]
+    hidden: [n-notes-list, n-note-item, n-loading, n-empty, n-error, n-retry, n-offline, n-offline-check]
+    search_enabled: true
+    form_enabled: true
+    description: "Непустой запрос без совпадений при непустой коллекции: «Найдено 0», notes-search-empty, список скрыт."
+    exports: ["export-390-no-results.png", "export-1200-no-results.png"]
+
+  - id: empty
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-empty]
+    hidden: [n-notes-list, n-note-item, n-search-clear, n-count, n-loading, n-search-empty, n-error, n-retry, n-offline, n-offline-check]
+    search_enabled: false
+    search_disabled_reason: "Нечего фильтровать (notes.length == 0)"
+    form_enabled: true
+    description: "GET 200 []: форма заметки видима, поиск disabled, «Пока нет заметок. Добавьте первую выше.», список и счётчик скрыты."
+    exports: ["export-390-empty.png", "export-1200-empty.png"]
+
+  - id: loading
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-loading]
+    hidden: [n-search-clear, n-count, n-notes-list, n-note-item, n-empty, n-search-empty, n-error, n-retry, n-offline, n-offline-check]
+    search_enabled: false
+    list_busy: true
+    form_enabled: false
+    description: "Загрузка заметок: «Загрузка...» (role=status), поиск и форма disabled, список aria-busy=true."
+    exports: ["export-390-loading.png", "export-1200-loading.png"]
+
+  - id: error
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-error, n-retry]
+    hidden: [n-search-clear, n-count, n-notes-list, n-note-item, n-loading, n-empty, n-search-empty, n-offline, n-offline-check]
+    search_enabled: false
+    form_enabled: false
+    description: "Ошибка загрузки: alert + «Повторить», поиск и форма disabled, count/list скрыты."
+    exports: ["export-390-error.png", "export-1200-error.png"]
+
+  - id: offline
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-offline, n-offline-check, n-notes-list, n-note-item]
+    hidden: [n-search-clear, n-count, n-loading, n-empty, n-search-empty, n-error, n-retry]
+    search_enabled: false
+    form_enabled: false
+    delete_enabled: false
+    description: "Нет сети при загруженных заметках: offline-баннер, «Проверить сеть», поиск/форма/delete disabled, заметки видны."
+    exports: ["export-390-offline.png", "export-1200-offline.png"]
+
+  - id: offline-zero
+    visible: [n-notes-header, n-note-form, n-note-textarea, n-note-add, n-search-field, n-offline, n-offline-check, n-empty]
+    hidden: [n-notes-list, n-note-item, n-search-clear, n-count, n-loading, n-search-empty, n-error, n-retry]
+    search_enabled: false
+    form_enabled: false
+    description: "Нет сети и нет загруженных заметок: баннер «Нет сети — нет загруженных заметок.» + базовая пустая подсказка."
+    exports: ["export-390-offline-zero.png", "export-1200-offline-zero.png"]
+
+# Рёбра: contains (DOM-структура), renders (условный рендер), uses (DS-составляющие),
+# state-transition (переходы состояний экрана), instance-of (реестровый примитив).
+edges:
+  # --- contains ---
+  - from: note-search
+    to: n-notes-header
+    kind: contains
+  - from: note-search
+    to: n-error
+    kind: contains
+  - from: note-search
+    to: n-retry
+    kind: contains
+  - from: note-search
+    to: n-note-form
+    kind: contains
+  - from: n-note-form
+    to: n-note-textarea
+    kind: contains
+  - from: n-note-form
+    to: n-note-add
+    kind: contains
+  - from: note-search
+    to: n-search-field
+    kind: contains
+  - from: n-search-field
+    to: n-search-clear
+    kind: contains
+  - from: note-search
+    to: n-offline
+    kind: contains
+  - from: n-offline
+    to: n-offline-check
+    kind: contains
+  - from: note-search
+    to: n-count
+    kind: contains
+  - from: note-search
+    to: n-loading
+    kind: contains
+  - from: note-search
+    to: n-empty
+    kind: contains
+  - from: note-search
+    to: n-search-empty
+    kind: contains
+  - from: note-search
+    to: n-notes-list
+    kind: contains
+  - from: n-notes-list
+    to: n-note-item
+    kind: contains
+  - from: n-note-item
+    to: n-delete
+    kind: contains
+
+  # --- instance-of (реестровый примитив) ---
+  - from: n-note-add
+    to: n-button
+    kind: instance-of
+    trigger: "submit-кнопка формы — экземпляр primitives/button"
+  - from: n-retry
+    to: n-button
+    kind: instance-of
+    trigger: "«Повторить» — экземпляр primitives/button"
+  - from: n-offline-check
+    to: n-button
+    kind: instance-of
+    trigger: "«Проверить сеть» — экземпляр primitives/button"
+
+  # --- renders / interaction ---
+  - from: n-notes-list
+    to: n-note-item
+    kind: renders
+    trigger: "по одному note-item на каждую видимую заметку (state-matrix)"
+  - from: n-note-item
+    to: n-delete
+    kind: renders
+    trigger: "кнопка удаления в каждой строке (proto.html:69-70); disabled в loading/error/offline"
+  - from: n-search-field
+    to: n-search-clear
+    kind: reveals
+    trigger: "clear видим при непустом trimmed query (results/no-results)"
+  - from: n-search-field
+    to: n-notes-list
+    kind: filters
+    trigger: "клиентская фильтрация загруженного owner-scoped списка по {id,text}; без запроса на каждый ввод"
+  - from: n-search-field
+    to: n-count
+    kind: updates
+    trigger: "«Найдено N» при непустом query, N = число совпадений (0 → no-results)"
+  - from: n-error
+    to: n-retry
+    kind: offers
+    trigger: "error-состояние предлагает «Повторить»"
+  - from: n-offline
+    to: n-offline-check
+    kind: offers
+    trigger: "offline-баннер предлагает «Проверить сеть»"
+  - from: n-note-add
+    to: n-notes-list
+    kind: mutates
+    trigger: "POST 201 → append строки; count/фильтр пересчитываются"
+  - from: n-delete
+    to: n-notes-list
+    kind: mutates
+    trigger: "DELETE 204 → строка удаляется, активный query переприменяется (последнее совпадение → no-results)"
+
+  # --- state renders ---
+  - from: state-results
+    to: n-count
+    kind: renders
+    trigger: "count виден при непустом query (results/no-results)"
+  - from: state-no-results
+    to: n-count
+    kind: renders
+    trigger: "«Найдено 0»"
+  - from: state-no-results
+    to: n-search-empty
+    kind: renders
+    trigger: "role=status, aria-live=polite"
+  - from: state-loading
+    to: n-loading
+    kind: renders
+    trigger: "role=status, aria-live=polite; notes-list aria-busy=true"
+  - from: state-empty
+    to: n-empty
+    kind: renders
+  - from: state-error
+    to: n-error
+    kind: renders
+    trigger: "role=alert"
+  - from: state-error
+    to: n-retry
+    kind: renders
+  - from: state-offline
+    to: n-offline
+    kind: renders
+    trigger: "копия «Нет сети — показаны загруженные заметки.»"
+  - from: state-offline-zero
+    to: n-offline
+    kind: renders
+    trigger: "копия «Нет сети — нет загруженных заметок.»"
+  - from: state-offline-zero
+    to: n-empty
+    kind: renders
+    trigger: "базовая пустая подсказка сохраняется"
+
+  # --- uses (DS-составляющие) ---
+  - from: n-note-form
+    to: primitives/textarea
+    kind: uses
+    to_kind: component
+  - from: n-note-form
+    to: primitives/button
+    kind: uses
+    to_kind: component
+  - from: n-search-field
+    to: primitives/input
+    kind: uses
+    to_kind: component
+    trigger: "input внутри .notes-search (patterns/search-field)"
+  - from: n-offline
+    to: patterns/note-item
+    kind: uses
+    to_kind: component
+    trigger: "второе вхождение .note-item, не отдельный паттерн"
+  - from: n-offline
+    to: primitives/button
+    kind: uses
+    to_kind: component
+  - from: n-delete
+    to: "web/app.css:248-257"
+    kind: uses
+    to_kind: css
+    trigger: "GAP-3: danger-вариант .delete-note есть в DS-коде, нет записи в registry"
+  - from: n-count
+    to: "design/tokens.json#--muted"
+    kind: uses
+    to_kind: token
+    trigger: "GAP-1: .muted на --card, скрытие [hidden]"
+  - from: n-offline
+    to: "design/tokens.json#--muted"
+    kind: uses
+    to_kind: token
+
+  # --- state-transition ---
+  - from: state-idle
+    to: state-results
+    kind: state-transition
+    trigger: "непустой trimmed query, ≥1 совпадение"
+  - from: state-idle
+    to: state-no-results
+    kind: state-transition
+    trigger: "непустой query, непустая коллекция, 0 совпадений"
+  - from: state-results
+    to: state-no-results
+    kind: state-transition
+    trigger: "запрос сужается до 0 совпадений (или удалено последнее совпадение)"
+  - from: state-no-results
+    to: state-results
+    kind: state-transition
+    trigger: "запрос расширяется / появляются совпадения"
+  - from: state-results
+    to: state-idle
+    kind: state-transition
+    trigger: "clear / пустой query"
+  - from: state-no-results
+    to: state-idle
+    kind: state-transition
+    trigger: "clear / пустой query"
+  - from: state-idle
+    to: state-empty
+    kind: state-transition
+    trigger: "GET 200 [] при пустом query"
+  - from: state-any
+    to: state-loading
+    kind: state-transition
+    trigger: "старт загрузки/перезагрузки GET /api/notes (init/retry/offline-check)"
+  - from: state-loading
+    to: state-idle
+    kind: state-transition
+    trigger: "GET 200 [..] при пустом query"
+  - from: state-loading
+    to: state-results
+    kind: state-transition
+    trigger: "GET 200 при активном непустом query с совпадениями"
+  - from: state-loading
+    to: state-no-results
+    kind: state-transition
+    trigger: "GET 200 при активном непустом query без совпадений"
+  - from: state-loading
+    to: state-empty
+    kind: state-transition
+    trigger: "GET 200 [] при пустом query"
+  - from: state-loading
+    to: state-error
+    kind: state-transition
+    trigger: "ошибка запроса при доступной сети"
+  - from: state-loading
+    to: state-offline
+    kind: state-transition
+    trigger: "offline при загрузке и notes.length > 0"
+  - from: state-loading
+    to: state-offline-zero
+    kind: state-transition
+    trigger: "offline при загрузке и notes.length == 0"
+  - from: state-any
+    to: state-offline
+    kind: state-transition
+    trigger: "window offline при notes.length > 0"
+  - from: state-any
+    to: state-offline-zero
+    kind: state-transition
+    trigger: "window offline при notes.length == 0"
+  - from: state-error
+    to: state-loading
+    kind: state-transition
+    trigger: "«Повторить» при доступной сети"
+  - from: state-offline
+    to: state-loading
+    kind: state-transition
+    trigger: "«Проверить сеть» при доступной сети"
+  - from: state-offline-zero
+    to: state-loading
+    kind: state-transition
+    trigger: "«Проверить сеть» при доступной сети"
+  - from: state-idle
+    to: state-idle
+    kind: state-transition
+    trigger: "create 201 / delete 204 → re-render, state сохраняется"
+  - from: state-results
+    to: state-results
+    kind: state-transition
+    trigger: "create 201 / delete 204 → re-render с активным query"
+
+# Path 6: узлы без 1:1 registry-паттерна.
+path6:
+  required: [n-count, n-delete]
+  items:
+    - node_id: n-count
+      selector: "[data-testid=notes-search-count]"
+      kind: missing-pattern
+      gap: GAP-1
+      accepted: true
+      blocking: false
+      resolution: "текст на --muted, скрытие [hidden]; локального CSS нет"
+    - node_id: n-delete
+      selector: ".delete-note"
+      kind: registry-omission
+      gap: GAP-3
+      accepted: true
+      blocking: false
+      existing_css: "web/app.css:248-257"
+      resolution: "существующий DS-класс .delete-note как есть, без локального CSS"
+  resolved_by_reuse: [n-retry, n-offline-check]
+  resolved_by_composition: [n-offline]
+
+# DS registry mapping — фактические registry_id из design/registry.json 1.0.1.
+ds_registry:
+  release: "1.0.1"
+  digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  constraint: "=1.0.1"
+  registry: design/registry.json
+  registry_sha256: "sha256:79d748c28c931af99fda53368d7217ac8ad1d838da7f99d5cd17104a7017c359"
+  components_used:
+    - primitives/button
+    - primitives/input
+    - primitives/textarea
+    - primitives/error
+    - patterns/notes-header
+    - patterns/notes-list
+    - patterns/note-item
+    - patterns/search-field
+    - patterns/search-clear
+    - states/loading
+    - states/empty
+    - states/search-empty
+  components_count: 12
+  not_counted:
+    - primitives/card
+    - primitives/button-secondary
+  local_instances: 0
+  design_gaps:
+    - id: GAP-1
+      node_id: n-count
+      kind: missing-pattern
+      blocking: false
+      status: accepted
+    - id: GAP-2
+      node_id: n-search-field
+      kind: missing-state
+      blocking: false
+      status: accepted
+    - id: GAP-3
+      node_id: n-delete
+      kind: registry-omission
+      blocking: false
+      status: accepted
+    - id: GAP-4
+      node_id: n-utility-classes
+      kind: registry-omission
+      blocking: false
+      status: accepted
+      classes: [.brand, .user-name, .note-text, .notes-search-row, .muted]
+
+# Трассируемость артефакта.
+traceability:
+  execution_id: E6636
+  revalidated_at: "2026-11-10T08:38:00Z"
+  ds_release: "1.0.1"
+  ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+  ds_constraint: "=1.0.1"
+  ds_lock: doc/идеи/f-v4-note-search/ds.lock.json
+  design_impact: doc/идеи/f-v4-note-search/design-impact.md
+  component_refs: doc/идеи/f-v4-note-search/component-refs.json
+  component_map: doc/идеи/f-v4-note-search/component-map.yaml
+  design_gaps_file: doc/идеи/f-v4-note-search/design-gaps.json
+  design_review: doc/идеи/f-v4-note-search/design-review.fragment.json
+  prototype_review: doc/идеи/f-v4-note-search/prototypes/v7/prototype-review.json
+  proto_json: doc/идеи/f-v4-note-search/units/note-search/proto.json
+  state_matrix: doc/идеи/f-v4-note-search/units/note-search/state-matrix.md
+  scope_report: doc/идеи/f-v4-note-search/scope-report.md
+  visualized_brief: doc/идеи/f-v4-note-search/visualized-brief.md
+  visualized_brief_note: "исторический снимок DS 1.0.0/v6 (design-review UX-08); источником графа не является"
+  screen: note-search
+  route: /
+  breakpoints: [390, 1200]
+  nodes_total: 19
+  ui_nodes: 18
+  registry_components_count: 12
+  local_instances: 0
+  states_total: 9
+  states_renderable: 8
+  state_aliases:
+    normal: idle
+  path6_required: [n-count, n-delete]
+  design_gaps: [GAP-1, GAP-2, GAP-3, GAP-4]
+  exports_total: 16
