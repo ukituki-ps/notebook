@@ -1,0 +1,378 @@
+schema: design.template-map/v1
+feature_id: f-v5-sverka
+execution_id: E7135
+step: s02c.design_intent
+phase: pre-code
+templates: [tpl-sverka-launch, tpl-sverka-result]
+ui_graph_target:
+  - arch/structure/ui-pages/sverka.yaml
+  - arch/structure/ui-pages/sverka-result.yaml
+note: >
+  Это карта намерения до кода. Селекторы — предлагаемые testid/классы из DS;
+  фактические узлы фиксируются на s04/s21 (ui-graph actualize).
+
+maps:
+  - template: tpl-sverka-launch
+    route: /sverka
+    screen_attr: sverka
+    content_spec: design/content-specs/tpl-sverka-launch.md
+    route_intent: design/intents/sverka.md
+    fixtures:
+      - design/fixtures/run-form.json
+      - design/fixtures/history.json
+    nodes:
+      - id: sverka-page
+        selector: '[data-testid=sverka-page]'
+        role: main-region
+        content: h1 + подзаголовок
+        states: [S-GLOBAL-*]
+      - id: sverka-form
+        selector: '[data-testid=sverka-form]'
+        role: form
+        ds: [primitives/card]
+        content: «Новая сверка»
+        states: [S-RUN-DEFAULT, S-RUN-GK-SELECTED, S-RUN-FILE-SELECTED, S-RUN-VALIDATING, S-RUN-SUBMITTING, S-RUN-SUBMIT-ERROR]
+      - id: sverka-gk
+        selector: '[data-testid=sverka-gk]'
+        role: select
+        ds: [] 
+        ds_gap: GAP-02-select
+        content: «Группа компаний *»
+        states: [S-RUN-DEFAULT, S-RUN-GK-SELECTED]
+      - id: sverka-sk
+        selector: '[data-testid=sverka-sk]'
+        role: select
+        ds_gap: GAP-02-select
+        content: «Страховая компания *»
+        states: [S-RUN-DEFAULT, S-RUN-SK-LOADING, S-RUN-SK-EMPTY, S-RUN-SK-ERROR, S-RUN-GK-SELECTED]
+      - id: sverka-template
+        selector: '[data-testid=sverka-template]'
+        role: button
+        ds: [primitives/button-secondary]
+        content: «Скачать шаблон»
+        states: [S-RUN-DEFAULT]
+      - id: sverka-upload
+        selector: '[data-testid=sverka-upload]'
+        role: file-input-region
+        ds_gap: GAP-04-upload
+        content: «Файл сверки *»
+        states: [S-RUN-DEFAULT, S-RUN-FILE-SELECTED, S-RUN-FILE-INVALID]
+      - id: sverka-file-chip
+        selector: '[data-testid=sverka-file-chip]'
+        role: group
+        ds_gap: GAP-04-upload
+        content: имя файла + размер + «Заменить»/«Удалить»
+        states: [S-RUN-FILE-SELECTED]
+      - id: sverka-error
+        selector: '[data-testid=sverka-error]'
+        role: alert
+        ds: [primitives/error]
+        content: E1/E2, ошибка сети
+        states: [S-RUN-FILE-INVALID, S-RUN-SUBMIT-ERROR]
+      - id: sverka-errors
+        selector: '[data-testid=sverka-errors]'
+        role: alert-region
+        ds_gap: GAP-14-metadata-list
+        content: «Файл не принят…» + таблица «Строка / Колонка / Ошибка»
+        states: [S-RUN-VALIDATION-ERRORS]
+      - id: sverka-submit
+        selector: '[data-testid=sverka-submit]'
+        role: button
+        ds: [primitives/button]
+        content: «Запустить сверку» / «Запускаем сверку…»
+        states: [S-RUN-DEFAULT, S-RUN-VALIDATING, S-RUN-SUBMITTING]
+      - id: sverka-history
+        selector: '[data-testid=sverka-history]'
+        role: section
+        ds: [primitives/card]
+        content: «История сверок»
+        states: [S-HIST-*]
+      - id: sverka-history-filters
+        selector: '[data-testid=sverka-history-filters]'
+        role: filter-region
+        ds: []
+        ds_gap: GAP-02-select
+        content: ГК / СК / Статус / «Сбросить фильтры»
+        states: [S-HIST-READY, S-HIST-FILTER-EMPTY]
+      - id: sverka-history-loading
+        selector: '[data-testid=sverka-history-loading]'
+        role: status
+        ds: [states/loading]
+        content: «Загружаем историю сверок…»
+        states: [S-HIST-LOADING]
+      - id: sverka-history-empty
+        selector: '[data-testid=sverka-history-empty]'
+        role: status
+        ds: [states/empty]
+        content: «Сверок пока нет»
+        states: [S-HIST-EMPTY]
+      - id: sverka-history-no-results
+        selector: '[data-testid=sverka-history-no-results]'
+        role: status
+        ds: [states/search-empty]
+        content: «По выбранным фильтрам сверок нет»
+        states: [S-HIST-FILTER-EMPTY]
+      - id: sverka-history-error
+        selector: '[data-testid=sverka-history-error]'
+        role: alert
+        ds: [primitives/error, primitives/button]
+        content: «Не удалось загрузить историю сверок» + «Повторить»
+        states: [S-HIST-ERROR]
+      - id: sverka-history-row
+        selector: '[data-testid=sverka-history-row]'
+        role: row
+        ds_gap: GAP-01-table
+        content: 8 колонок списка
+        states: [S-HIST-READY]
+      - id: sverka-history-open
+        selector: '[data-testid=sverka-history-open]'
+        role: link
+        ds_gap: GAP-07-link
+        content: «Открыть сверку от <дата>»
+        states: [S-HIST-READY]
+      - id: sverka-history-file
+        selector: '[data-testid=sverka-history-file]'
+        role: link
+        ds_gap: GAP-07-link
+        content: имя исходного файла
+        states: [S-HIST-READY]
+      - id: sverka-history-repeat
+        selector: '[data-testid=sverka-history-repeat]'
+        role: button
+        ds: [primitives/button-secondary]
+        content: «Повторить» / «Запускаем…»
+        states: [S-HIST-REPEAT-PENDING, S-HIST-REPEAT-ERROR]
+    scenario_map:
+      SVERKA-E2E-01: [sverka-template, sverka-upload, sverka-errors]
+      SVERKA-E2E-02: [sverka-errors]
+      SVERKA-E2E-03: [sverka-errors]
+      SVERKA-E2E-11: [sverka-history-row, sverka-history-open, sverka-history-file, sverka-history-repeat]
+      SVERKA-E2E-12: [sverka-history-empty]
+      SVERKA-E2E-16: [sverka-page, S-GLOBAL-HR-FORBIDDEN]
+      SVERKA-E2E-17: [sverka-history-repeat, sverka-history-open]
+
+  - template: tpl-sverka-result
+    route: /sverka/{runId}
+    screen_attr: sverka-result
+    content_spec: design/content-specs/tpl-sverka-result.md
+    route_intent: design/intents/sverka-result.md
+    fixtures:
+      - design/fixtures/result-ready.json
+      - design/fixtures/result-empty.json
+      - design/fixtures/result-states.json
+      - design/fixtures/big-table.json
+    nodes:
+      - id: sverka-result-page
+        selector: '[data-testid=sverka-result-page]'
+        role: main-region
+        content: back-link + h1 «Результат сверки»
+        states: [S-RES-*]
+      - id: sverka-result-header
+        selector: '[data-testid=sverka-result-header]'
+        role: group
+        ds: [primitives/card]
+        ds_gap: GAP-14-metadata-list
+        content: ГК/СК/дата/автор/статус/файл
+        states: [S-RES-LOADING, S-RES-PROCESSING, S-RES-ERROR, S-RES-READY]
+      - id: sverka-result-status
+        selector: '[data-testid=sverka-result-status]'
+        role: status-text
+        ds_gap: GAP-05-status-chip
+        content: «Обрабатывается» / «Готова» / «Ошибка обработки»
+        states: [S-RES-PROCESSING, S-RES-READY, S-RES-ERROR]
+      - id: sverka-export
+        selector: '[data-testid=sverka-export]'
+        role: button
+        ds: [primitives/button]
+        content: «Выгрузить в Excel» / «Готовим файл…»
+        states: [S-RES-EXPORT-DISABLED, S-RES-EXPORT-PENDING, S-RES-EXPORT-ERROR]
+      - id: sverka-result-processing
+        selector: '[data-testid=sverka-result-processing]'
+        role: status
+        ds: [states/loading]
+        ds_gap: GAP-12-progress
+        content: «Сверка выполняется. Результат появится автоматически»
+        states: [S-RES-PROCESSING]
+      - id: sverka-result-error
+        selector: '[data-testid=sverka-result-error]'
+        role: alert
+        ds: [primitives/error]
+        content: «Сверка завершилась ошибкой обработки»
+        states: [S-RES-ERROR]
+      - id: sverka-result-no-data
+        selector: '[data-testid=sverka-result-no-data]'
+        role: status
+        ds: [states/empty]
+        content: «Результат сверки недоступен»
+        states: [S-RES-NO-DATA]
+      - id: sverka-warnings
+        selector: '[data-testid=sverka-warnings]'
+        role: region
+        ds_gap: GAP-06-inline-notice
+        content: W1/W2
+        states: [W1, W2]
+      - id: sverka-summary
+        selector: '[data-testid=sverka-summary]'
+        role: table
+        ds_gap: GAP-01-table
+        content: «Свод по договорам»
+        states: [S-RES-READY, S-RES-EMPTY]
+      - id: sverka-summary-total
+        selector: '[data-testid=sverka-summary-total]'
+        role: total
+        ds_gap: GAP-01-table
+        content: «Итого расхождений»
+        states: [S-RES-READY, S-RES-EMPTY]
+      - id: sverka-filters
+        selector: '[data-testid=sverka-filters]'
+        role: filter-region
+        ds_gap: GAP-03-multiselect-checkbox
+        content: категория/договор/ФИО/справка/сброс
+        states: [S-RES-READY, S-RES-FILTER-EMPTY]
+      - id: sverka-filter-category
+        selector: '[data-testid=sverka-filter-category]'
+        role: checkbox-group
+        ds_gap: GAP-03-multiselect-checkbox
+        content: 10 категорий расхождений + «В процессе у нас»; «Совпало» и маркер «Переход между ЮЛ» не фильтруются
+        states: [S-RES-READY]
+      - id: sverka-filter-contract
+        selector: '[data-testid=sverka-filter-contract]'
+        role: select
+        ds_gap: GAP-02-select
+        content: «Все договоры»
+        states: [S-RES-READY]
+      - id: sverka-filter-search
+        selector: '[data-testid=sverka-filter-search]'
+        role: search
+        ds: [patterns/search-field, patterns/search-clear, primitives/input]
+        content: «Поиск по ФИО»
+        states: [S-RES-READY]
+      - id: sverka-filter-reference
+        selector: '[data-testid=sverka-filter-reference]'
+        role: checkbox
+        ds_gap: GAP-03-multiselect-checkbox
+        content: «Показывать для справки»
+        states: [S-RES-READY]
+      - id: sverka-deviations
+        selector: '[data-testid=sverka-deviations]'
+        role: table
+        ds_gap: GAP-01-table
+        content: «Расхождения», 15 колонок
+        states: [S-RES-READY, S-RES-BIG-TABLE, S-RES-LONG-VALUES]
+      - id: sverka-deviation-row
+        selector: '[data-testid=sverka-deviation-row]'
+        role: row
+        ds_gap: GAP-01-table
+        content: строка расхождения
+        states: [S-RES-READY]
+      - id: sverka-diff
+        selector: '[data-testid=sverka-diff]'
+        role: cell-marker
+        ds_gap: GAP-10-small-type
+        content: подсветка пары значений
+        states: [S-RES-READY]
+      - id: sverka-no-deviations
+        selector: '[data-testid=sverka-no-deviations]'
+        role: status
+        ds: [states/empty]
+        content: «Расхождений не найдено»
+        states: [S-RES-EMPTY]
+      - id: sverka-filter-empty
+        selector: '[data-testid=sverka-filter-empty]'
+        role: status
+        ds: [states/search-empty]
+        content: «По выбранным фильтрам расхождений нет»
+        states: [S-RES-FILTER-EMPTY]
+      - id: sverka-zx-contracts
+        selector: '[data-testid=sverka-zx-contracts]'
+        role: links
+        ds_gap: GAP-07-link
+        content: «Договоры ЗХ»
+        states: [S-RES-ZX-NO-CONTRACTS]
+      - id: sverka-zx-requests
+        selector: '[data-testid=sverka-zx-requests]'
+        role: list
+        ds_gap: GAP-07-link
+        content: «Заявки ЗХ» (3 + «еще N»)
+        states: [S-RES-READY, S-RES-ZX-NO-ACTIONS]
+      - id: sverka-zx-more
+        selector: '[data-testid=sverka-zx-more]'
+        role: button
+        ds: [primitives/button-secondary]
+        ds_gap: GAP-13-incremental-list
+        content: «еще N» / «Свернуть»
+        states: [S-RES-READY]
+      - id: sverka-zx-actions
+        selector: '[data-testid=sverka-zx-actions]'
+        role: cell
+        ds_gap: GAP-05-status-chip
+        content: «Есть заявки» / «Действий с нашей стороны не найдено»
+        states: [S-RES-ZX-NO-ACTIONS]
+      - id: sverka-show-more
+        selector: '[data-testid=sverka-show-more]'
+        role: button
+        ds: [primitives/button-secondary]
+        ds_gap: GAP-13-incremental-list
+        content: «Показать ещё 200»
+        states: [S-RES-BIG-TABLE]
+    scenario_map:
+      SVERKA-E2E-04: [sverka-result-header, sverka-result-processing, sverka-result-status]
+      SVERKA-E2E-05: [sverka-deviations, sverka-diff, sverka-deviation-row]
+      SVERKA-E2E-06: [sverka-filters, sverka-diff, sverka-filter-reference]
+      SVERKA-E2E-07: [sverka-no-deviations, sverka-summary]
+      SVERKA-E2E-08: [sverka-warnings]
+      SVERKA-E2E-09: [sverka-export, sverka-result-header]
+      SVERKA-E2E-10: [sverka-export, S-RES-EXPORT-DISABLED]
+      SVERKA-E2E-13: [sverka-zx-contracts, sverka-zx-requests, sverka-zx-more, sverka-zx-actions]
+      SVERKA-E2E-14: [sverka-zx-contracts, sverka-zx-requests, sverka-zx-actions]
+      SVERKA-E2E-15: [sverka-export]
+
+reverse_maps:
+  route_to_template:
+    /sverka: tpl-sverka-launch
+    /sverka/{runId}: tpl-sverka-result
+  scenario_to_template:
+    SVERKA-E2E-01: tpl-sverka-launch
+    SVERKA-E2E-02: tpl-sverka-launch
+    SVERKA-E2E-03: tpl-sverka-launch
+    SVERKA-E2E-04: tpl-sverka-result
+    SVERKA-E2E-05: tpl-sverka-result
+    SVERKA-E2E-06: tpl-sverka-result
+    SVERKA-E2E-07: tpl-sverka-result
+    SVERKA-E2E-08: tpl-sverka-result
+    SVERKA-E2E-09: tpl-sverka-result
+    SVERKA-E2E-10: tpl-sverka-result
+    SVERKA-E2E-11: tpl-sverka-launch
+    SVERKA-E2E-12: tpl-sverka-launch
+    SVERKA-E2E-13: tpl-sverka-result
+    SVERKA-E2E-14: tpl-sverka-result
+    SVERKA-E2E-15: tpl-sverka-result
+    SVERKA-E2E-16: tpl-sverka-launch
+    SVERKA-E2E-17: tpl-sverka-launch
+  state_to_template:
+    S-RUN-*: tpl-sverka-launch
+    S-HIST-*: tpl-sverka-launch
+    S-RES-*: tpl-sverka-result
+    S-GLOBAL-*: both
+
+coverage:
+  scenarios_total: 17
+  scenarios_mapped: 17
+  templates_total: 2
+  routes_total: 2
+  ds_reused_ids:
+    - primitives/card
+    - primitives/button
+    - primitives/button-secondary
+    - primitives/input
+    - primitives/error
+    - patterns/notes-header
+    - patterns/search-field
+    - patterns/search-clear
+    - states/loading
+    - states/empty
+    - states/search-empty
+  ds_unused_ids:
+    - primitives/textarea
+    - patterns/notes-list
+    - patterns/note-item

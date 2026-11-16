@@ -1,0 +1,108 @@
+{
+  "schema": "design.fixture/v1",
+  "fixture": "result-states",
+  "feature_id": "f-v5-sverka",
+  "purpose": "Не-готовые состояния экрана результата: загрузка, обработка, ошибка обработки, нет данных",
+  "loading": {
+    "state": "S-RES-LOADING",
+    "header": {
+      "run_id": "SV-2026-11-16-0043",
+      "gk": "ООО «Северная логистика»",
+      "sk": "СК «АльфаСтрахование»",
+      "started_at_display": "16.11.2026, 10:05",
+      "started_by": "Иванова Мария Сергеевна",
+      "status": null,
+      "source_file": {
+        "name": "Сверка_застрахованных_СЗЛ_Альфа_2026-11-16.xlsx",
+        "available": true
+      }
+    },
+    "text": "Загружаем результат сверки…"
+  },
+  "processing": {
+    "state": "S-RES-PROCESSING",
+    "header": {
+      "run_id": "SV-2026-11-16-0043",
+      "gk": "ООО «Северная логистика»",
+      "sk": "СК «АльфаСтрахование»",
+      "started_at": "2026-11-16T10:05:00+03:00",
+      "started_at_display": "16.11.2026, 10:05",
+      "started_by": "Иванова Мария Сергеевна",
+      "status": "Обрабатывается",
+      "source_file": {
+        "name": "Сверка_застрахованных_СЗЛ_Альфа_2026-11-16.xlsx",
+        "size_human": "212 КБ",
+        "available": true
+      },
+      "export": {
+        "enabled": false,
+        "helper": "Доступно после завершения сверки."
+      }
+    },
+    "heading": "Сверка выполняется",
+    "text": "Сверка выполняется. Результат появится автоматически",
+    "hidden_sections": ["warnings", "kpi", "summary", "filters", "deviations"],
+    "polling": {
+      "interval_seconds": 3,
+      "backoff": "до 10 секунд при повторных ошибках",
+      "pause_when_hidden": true,
+      "refetch_on_focus": true
+    },
+    "on_ready_announce": "Сверка готова. Расхождений: 43",
+    "on_ready_transition": "S-RES-READY"
+  },
+  "processing_error": {
+    "state": "S-RES-ERROR",
+    "header": {
+      "run_id": "SV-2026-11-15-0038",
+      "gk": "ООО «Северная логистика»",
+      "sk": "СК «Ингосстрах»",
+      "started_at": "2026-11-15T17:40:00+03:00",
+      "started_at_display": "15.11.2026, 17:40",
+      "started_by": "Петров Пётр Петрович",
+      "status": "Ошибка обработки",
+      "source_file": {
+        "name": "Сверка_Ингос_2026-11-15.xlsx",
+        "size_human": "2,4 МБ",
+        "available": true
+      },
+      "export": {
+        "enabled": false,
+        "helper": "Доступно после завершения сверки."
+      }
+    },
+    "heading": "Сверка завершилась ошибкой обработки",
+    "reason": "Не удалось прочитать лист «Лист1»: файл повреждён или защищён паролем.",
+    "hint": "Загрузите файл заново или обратитесь к администратору.",
+    "hidden_sections": ["warnings", "kpi", "summary", "filters", "deviations"],
+    "ui_retry": false,
+    "policy": "OD-12: явный статус + причина; автоматического ретрая из UI нет. «Повторить» доступна в истории и создаёт новую сверку."
+  },
+  "no_data": {
+    "state": "S-RES-NO-DATA",
+    "header": {
+      "run_id": "SV-2025-12-01-0007",
+      "gk": "ООО «Северная логистика»",
+      "sk": "СК «Согаз»",
+      "started_at_display": "01.12.2025, 12:00",
+      "started_by": "Сидоров Алексей Николаевич",
+      "status": "Готова",
+      "source_file": {
+        "name": "sverka_2025_12_01.xlsx",
+        "available": false
+      },
+      "export": {
+        "enabled": false,
+        "helper": "Доступно после завершения сверки."
+      }
+    },
+    "title": "Результат сверки недоступен",
+    "hint": "Файл и результат хранятся ограниченное время.",
+    "back_link": "← К списку сверок"
+  },
+  "not_found": {
+    "state": "S-GLOBAL-NOT-FOUND",
+    "title": "Сверка не найдена.",
+    "back_link": "← К списку сверок"
+  }
+}

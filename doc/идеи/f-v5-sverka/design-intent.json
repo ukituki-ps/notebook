@@ -1,0 +1,609 @@
+{
+  "schema_version": "design.intent/v1",
+  "feature_id": "f-v5-sverka",
+  "execution_id": "E7135",
+  "step_id": "s02c.design_intent",
+  "phase": "ideation",
+  "created_at": "2026-11-16T11:38:00Z",
+  "author": {
+    "role": "product",
+    "role_contract": "product@1.3.0",
+    "contract_digest": "sha256:4fcdd911de47913e2ce17a2ec25187a618abbb93291862dc4d1c9f9ff13beb32"
+  },
+  "status": "proposed",
+  "platform": "web",
+  "stack": {
+    "ui": "vanilla JS",
+    "css": "plain CSS",
+    "forbidden": [
+      "React",
+      "Tailwind",
+      "CSS-in-JS",
+      "icon libraries"
+    ]
+  },
+  "design_system": {
+    "name": "Notebook DS",
+    "release": "1.0.1",
+    "lock": "=1.0.1",
+    "digest": "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e",
+    "registry": "design/registry.json",
+    "tokens": "design/tokens.json",
+    "components_count": 14,
+    "release_manifest": "design/releases/1.0.1/manifest.json",
+    "new_components": 0,
+    "new_tokens": 0,
+    "policy": "DS 1.0.1 pinned; gaps recorded in design/ds-gaps.md, not invented as components"
+  },
+  "routes": [
+    {
+      "id": "route-sverka-launch",
+      "route": "/sverka",
+      "title": "Сверка застрахованных",
+      "template": "tpl-sverka-launch",
+      "content_spec": "design/content-specs/tpl-sverka-launch.md",
+      "purpose": "Запуск сверки по файлу СК и история сверок",
+      "surfaces": [
+        "run-form",
+        "validation-errors",
+        "history-filters",
+        "history-list"
+      ],
+      "key_states": [
+        "S-RUN-DEFAULT",
+        "S-RUN-VALIDATION-ERRORS",
+        "S-HIST-EMPTY",
+        "S-HIST-READY",
+        "S-HIST-FILTER-EMPTY"
+      ],
+      "scenarios": [
+        "SVERKA-E2E-01",
+        "SVERKA-E2E-02",
+        "SVERKA-E2E-03",
+        "SVERKA-E2E-11",
+        "SVERKA-E2E-12",
+        "SVERKA-E2E-16",
+        "SVERKA-E2E-17"
+      ]
+    },
+    {
+      "id": "route-sverka-result",
+      "route": "/sverka/{runId}",
+      "title": "Результат сверки",
+      "template": "tpl-sverka-result",
+      "content_spec": "design/content-specs/tpl-sverka-result.md",
+      "purpose": "Предупреждения W1/W2, свод, расхождения, фильтры, ЗХ-колонки, экспорт",
+      "surfaces": [
+        "result-header",
+        "warnings",
+        "summary",
+        "filters",
+        "deviations",
+        "zx-columns"
+      ],
+      "key_states": [
+        "S-RES-PROCESSING",
+        "S-RES-READY",
+        "S-RES-EMPTY",
+        "S-RES-FILTER-EMPTY",
+        "S-RES-ERROR"
+      ],
+      "scenarios": [
+        "SVERKA-E2E-04",
+        "SVERKA-E2E-05",
+        "SVERKA-E2E-06",
+        "SVERKA-E2E-07",
+        "SVERKA-E2E-08",
+        "SVERKA-E2E-09",
+        "SVERKA-E2E-10",
+        "SVERKA-E2E-13",
+        "SVERKA-E2E-14",
+        "SVERKA-E2E-15"
+      ]
+    }
+  ],
+  "artifacts": {
+    "design_intent_manifest": "design-intent.json",
+    "templates": "design/templates.yaml",
+    "template_map": "design/template-map.yaml",
+    "ds_gaps": "design/ds-gaps.md",
+    "design_language": "design/design-language.md",
+    "state_matrix": "state-matrix.json",
+    "content_specs": [
+      "design/content-specs/tpl-sverka-launch.md",
+      "design/content-specs/tpl-sverka-result.md"
+    ],
+    "fixtures": [
+      "design/fixtures/run-form.json",
+      "design/fixtures/history.json",
+      "design/fixtures/result-ready.json",
+      "design/fixtures/result-empty.json",
+      "design/fixtures/result-states.json",
+      "design/fixtures/big-table.json"
+    ],
+    "route_intents": [
+      "design/intents/sverka.md",
+      "design/intents/sverka-result.md"
+    ]
+  },
+  "references": [
+    {
+      "id": "REF-1",
+      "kind": "in-product",
+      "title": "Notebook — экран Notes (текущий UI)",
+      "source": [
+        "web/index.html",
+        "web/app.js",
+        "web/app.css",
+        "arch/structure/ui-pages/notes.yaml"
+      ],
+      "why": "Единственный существующий экран продукта на том же стеке: оболочка .app 640 px, карточка, шапка, list/loading/empty/error, aria-live, testid-конвенция.",
+      "borrowed": [
+        "карточка + одноколоночная оболочка для /sverka",
+        "разделение loading / empty / search-empty / error",
+        "aria-live и testid-конвенция",
+        "нативные контролы и системный шрифт"
+      ],
+      "not_borrowed": [
+        "in-memory хранилище заметок",
+        "логика заметок"
+      ]
+    },
+    {
+      "id": "REF-2",
+      "kind": "external-pattern",
+      "title": "GOV.UK Design System — Error summary",
+      "url": "https://design-system.service.gov.uk/components/error-summary/",
+      "why": "Ошибки файла E3–E7 показываются все сразу и требуют сводки, связанной с полями/строками.",
+      "borrowed": [
+        "сводка ошибок над формой, фокус на сводку после ответа",
+        "все ошибки одновременно, а не первая",
+        "в тексте ошибки — что не так и что сделать"
+      ],
+      "not_borrowed": [
+        "визуальный стиль GOV.UK",
+        "постраничная навигация"
+      ]
+    },
+    {
+      "id": "REF-3",
+      "kind": "external-pattern",
+      "title": "Carbon Design System — Data table",
+      "url": "https://carbondesignsystem.com/components/data-table/usage/",
+      "why": "Свод и список расхождений — большие таблицы с числовыми колонками, sticky header и горизонтальным скроллом.",
+      "borrowed": [
+        "sticky header и закреплённая первая колонка",
+        "плотность строк и выравнивание чисел",
+        "поведение больших таблиц: порционный рендер, счётчик показанного"
+      ],
+      "not_borrowed": [
+        "batch actions",
+        "inline edit",
+        "toolbar-иконки",
+        "виртуализация"
+      ]
+    }
+  ],
+  "three_second_test": {
+    "method": {
+      "participants": 5,
+      "viewport": "360x640, mobile emulation",
+      "moderation": "unmoderated, 3-second exposure, затем вопросы",
+      "pass_threshold": ">= 4/5 участников отвечают правильно на целевой вопрос"
+    },
+    "tests": [
+      {
+        "id": "TST-1",
+        "route": "/sverka",
+        "state": "S-RUN-DEFAULT",
+        "question": "Что нужно сделать, чтобы запустить сверку?",
+        "expected": "Выбрать ГК, затем СК, затем файл .xlsx; кнопка «Запустить сверку» пока неактивна.",
+        "pass_signals": [
+          "называет три обязательных входа",
+          "видит неактивную кнопку и причину",
+          "не ищет кнопку запуска в другом месте"
+        ],
+        "fail_signals": [
+          "думает, что файл необязателен",
+          "не замечает, что СК зависит от ГК",
+          "ищет «Загрузить» вместо «Запустить сверку»"
+        ]
+      },
+      {
+        "id": "TST-2",
+        "route": "/sverka/{runId}",
+        "state": "S-RES-READY",
+        "question": "Сверка прошла? Сколько расхождений и есть ли предупреждения?",
+        "expected": "«Готова», «Итого расхождений: 43», W1 и W2 видны над сводом.",
+        "pass_signals": [
+          "называет статус «Готова»",
+          "называет число 43",
+          "замечает хотя бы одно предупреждение"
+        ],
+        "fail_signals": [
+          "принимает W1/W2 за ошибку",
+          "не находит итог",
+          "думает, что данные не загрузились"
+        ]
+      },
+      {
+        "id": "TST-3",
+        "route": "/sverka/{runId}",
+        "state": "S-RES-PROCESSING",
+        "question": "Что сейчас происходит и нужно ли что-то делать?",
+        "expected": "Сверка выполняется, результат появится автоматически; делать ничего не нужно.",
+        "pass_signals": [
+          "говорит «идёт сверка»",
+          "понимает, что обновление автоматическое",
+          "не ищет кнопку «Обновить»"
+        ],
+        "fail_signals": [
+          "думает, что экран завис",
+          "перезагружает страницу",
+          "ищет экспорт"
+        ]
+      },
+      {
+        "id": "TST-4",
+        "route": "/sverka",
+        "state": "S-HIST-EMPTY",
+        "question": "Есть ли уже сверки и что делать дальше?",
+        "expected": "Сверок пока нет; запустить первую формой выше.",
+        "pass_signals": [
+          "понимает, что список пуст, а не сломан",
+          "возвращается к форме"
+        ],
+        "fail_signals": [
+          "думает, что ошибка загрузки",
+          "не видит форму"
+        ]
+      }
+    ]
+  },
+  "mobile_first": {
+    "breakpoints_px": [
+      360,
+      768,
+      1024,
+      1280
+    ],
+    "primary_viewport": "360x640",
+    "above_fold_360": {
+      "/sverka": [
+        "h1 «Сверка застрахованных»",
+        "поле ГК",
+        "поле СК (disabled)",
+        "метка зоны файла"
+      ],
+      "/sverka/{runId} ready": [
+        "«← К списку сверок»",
+        "h1 «Результат сверки»",
+        "«ГК — СК»",
+        "статус «Готова» + «Итого расхождений: N»",
+        "W1/W2, если есть"
+      ],
+      "/sverka/{runId} processing": [
+        "«← К списку сверок»",
+        "h1",
+        "статус «Обрабатывается»",
+        "«Сверка выполняется. Результат появится автоматически»"
+      ]
+    },
+    "rules": [
+      "Форма запуска — одна колонка, кнопки на всю ширину, тап-цели >= 44 px",
+      "История на < 768 px — карточки, не горизонтальная таблица",
+      "Свод на < 768 px — горизонтальный скролл с закреплённым «Договором»",
+      "Расхождения на < 768 px — карточки строк; второстепенные поля под «Подробнее»",
+      "Фильтры на < 768 px — <details>, открыт при активном фильтре",
+      "Никакой горизонтальный скролл страницы: скроллится только контейнер таблицы"
+    ]
+  },
+  "design_language": {
+    "path": "design/design-language.md",
+    "principles": [
+      "Сначала ответ (статус, итог, предупреждения), потом данные",
+      "Ошибка рядом с причиной и с действием",
+      "Данные не сокращаются; сокращается только имя файла",
+      "Цвет не единственный признак смысла",
+      "Мобильный — самостоятельная раскладка, не уменьшенный desktop",
+      "URL — состояние фильтров",
+      "Пусто ≠ ошибка ≠ нет результатов фильтра"
+    ],
+    "tokens_reused": [
+      "--bg",
+      "--card",
+      "--text",
+      "--muted",
+      "--border",
+      "--border-subtle",
+      "--accent",
+      "--accent-dark",
+      "--danger",
+      "--danger-bg",
+      "--focus",
+      "--radius",
+      "--control-height",
+      "--space-1..6"
+    ],
+    "color_semantics": {
+      "deviation": "danger + danger-bg",
+      "reference": "neutral (text on bg, border-subtle)",
+      "match": "neutral",
+      "warning": "neutral notice, not danger",
+      "link": "accent",
+      "missing": "muted «—»"
+    },
+    "typography": {
+      "h1": "font.h1 22.4px",
+      "body": "font.body 16px",
+      "numeric": "font-variant-numeric: tabular-nums",
+      "no_small_token": "14px не вводится до DS 1.x (GAP-10)"
+    },
+    "layout": {
+      "launch_max_width_px": 640,
+      "result_max_width_px": 1120,
+      "table_lines": "--border-subtle",
+      "sticky": [
+        "table header",
+        "first column",
+        "result summary contract column"
+      ]
+    },
+    "motion": "none beyond native; prefers-reduced-motion respected"
+  },
+  "design_decisions": [
+    {
+      "id": "DD-01",
+      "decision": "Два маршрута и два шаблона: /sverka (форма + история) и /sverka/{runId} (результат).",
+      "rationale": "У экранов разная ширина, разные состояния и разные сценарии; объединение в один шаблон ухудшает 3-second test."
+    },
+    {
+      "id": "DD-02",
+      "decision": "Результат — широкая колонка 1120 px; запуск и история — 640 px.",
+      "rationale": "15 колонок не читаются в 640 px; форма и история, наоборот, лучше в узкой колонке.",
+      "gap": "GAP-09"
+    },
+    {
+      "id": "DD-03",
+      "decision": "Фильтры результата хранятся в URL: category (repeat), contract, q, ref.",
+      "rationale": "Ссылку на выборку можно передать; «назад» и перезагрузка сохраняют состояние; свод фильтрует список обычными ссылками."
+    },
+    {
+      "id": "DD-04",
+      "decision": "Числа в своде — ссылки, а не JS-кнопки.",
+      "rationale": "Работает без JS-обработчиков, доступно с клавиатуры, состояние воспроизводимо.",
+      "gap": "GAP-07"
+    },
+    {
+      "id": "DD-05",
+      "decision": "Список расхождений не показывает строки «Совпало»; они учитываются только в своде.",
+      "rationale": "Иначе список дублирует свод сотнями совпавших строк. Требует подтверждения на s05/s07.",
+      "open_question": "OQ-D3"
+    },
+    {
+      "id": "DD-06",
+      "decision": "Данные ЗХ читаются на момент открытия экрана; на экране явное примечание о свежести.",
+      "rationale": "INV-05; пользователь должен понимать, почему заявка после сверки видна."
+    },
+    {
+      "id": "DD-07",
+      "decision": "На < 768 px строки таблиц превращаются в карточки; свод остаётся таблицей с горизонтальным скроллом.",
+      "rationale": "15 колонок в 360 px нечитаемы; суммарный свод нельзя терять, он аналитический.",
+      "gap": "GAP-01"
+    },
+    {
+      "id": "DD-08",
+      "decision": "Никаких toast: E8, «Сверка запущена», W1/W2 — inline-регионы.",
+      "rationale": "Сообщение остаётся в контексте, не исчезает, доступно скринридеру; toast-компонента в DS нет.",
+      "gap": "GAP-06"
+    },
+    {
+      "id": "DD-09",
+      "decision": "Два тона категорий: нейтральный и «внимание»; всегда есть текст категории.",
+      "rationale": "13 цветов неразличимы, не проходят контраст и нарушают 1.4.1; семантических токенов нет.",
+      "gap": "GAP-08"
+    },
+    {
+      "id": "DD-10",
+      "decision": "Значения данных не обрезаются; только имя файла сокращается посередине с полным title.",
+      "rationale": "Обрезанное ФИО/программа/номер нельзя сравнить; ошибка сравнения дороже плотности."
+    },
+    {
+      "id": "DD-11",
+      "decision": "Большие таблицы рендерятся порциями по 200 строк с кнопкой «Показать ещё 200»; фильтры — по полному снимку.",
+      "rationale": "Vanilla JS без виртуализации; 200 строк — безопасный первый рендер. OD-10: клиентская фильтрация.",
+      "gap": "GAP-13"
+    },
+    {
+      "id": "DD-12",
+      "decision": "Автообновление «Обрабатывается → Готова» — polling 3 с, пауза при скрытой вкладке, обновление при возврате фокуса.",
+      "rationale": "Без перезагрузки (I1); не тратим запросы в фоне; фокус не перехватывается."
+    },
+    {
+      "id": "DD-13",
+      "decision": "Вместо отсутствующих DS-компонентов — нативные контролы (select, checkbox, file, details), оформленные токенами.",
+      "rationale": "A11y и мобильные пикеры важнее кастомного вида; компоненты не выдумываются.",
+      "gap": "GAP-02/03/04/11"
+    },
+    {
+      "id": "DD-14",
+      "decision": "Экспорт disabled до «Готова» + постоянный helper; E8 не показывается как отдельное всплывающее уведомление.",
+      "rationale": "Пользователь видит причину заранее; E8 остаётся защитой от гонки, но не основным каналом.",
+      "open_question": "OQ-D5"
+    },
+    {
+      "id": "DD-15",
+      "decision": "Клик по строке истории открывает результат через растянутую ссылку «Открыть сверку от <дата>» в первой ячейке.",
+      "rationale": "Строка кликабельна мышью, но клавиатура и скринридер получают нормальную ссылку; ссылка файла и «Повторить» не открывают строку."
+    },
+    {
+      "id": "DD-16",
+      "decision": "«Показывать для справки» скрывает справочную категорию «В процессе у нас» и маркер «Переход между ЮЛ»; строка-расхождение с маркером остаётся, маркер скрывается.",
+      "rationale": "Иначе выключение справки скрывало бы реальные расхождения.",
+      "open_question": "OQ-D4"
+    }
+  ],
+  "ds_gaps_summary": {
+    "total": 14,
+    "blocking_high": [
+      "GAP-01-table",
+      "GAP-04-upload"
+    ],
+    "blocking_medium": [
+      "GAP-02-select",
+      "GAP-03-multiselect-checkbox",
+      "GAP-05-status-chip",
+      "GAP-06-inline-notice",
+      "GAP-07-link",
+      "GAP-09-layout-wide"
+    ],
+    "blocking_low": [
+      "GAP-08-semantic-colors",
+      "GAP-10-small-type",
+      "GAP-11-disclosure",
+      "GAP-12-progress",
+      "GAP-13-incremental-list",
+      "GAP-14-metadata-list"
+    ],
+    "invented_components": 0,
+    "od8": "Рекомендуется minor-релиз DS (table/select/multiselect/upload/badge) до s03; иначе — временные композиции из ds-gaps.md с явным принятием на s03/s22a."
+  },
+  "non_goals": [
+    "Новые DS-компоненты или токены в рамках фичи",
+    "Изменение design/registry.json, design/tokens.json, design/releases/*",
+    "React/Tailwind/CSS-in-JS/иконочные библиотеки",
+    "Модальные окна, toast, тултипы, кастомные dropdown и datepicker",
+    "Пользовательская сортировка колонок",
+    "Редактирование строк результата, комментарии пользователя, отметки «обработано»",
+    "Создание заявок и переходы в карточки из результата (только ссылки)",
+    "Загрузка ответа СК, отправка запроса в СК из системы",
+    "Удаление и сравнение сверок",
+    "Тёмная тема, кастомные шрифты, печатная версия/PDF",
+    "Виртуализация таблиц, серверная пагинация (OD-10 — клиентская фильтрация)",
+    "Дизайн Excel-файла (FR-04) сверх контентных требований: стили листов — вне этого шага"
+  ],
+  "open_design_questions": [
+    {
+      "id": "OQ-D1",
+      "topic": "Лимит размера файла (E2)",
+      "issue": "В постановке нет числа; текст E2 «Файл больше лимита» без значения.",
+      "proposal": "Не показывать число в UI до решения; лимит задаётся конфигурацией и участвует в helper только после фиксации.",
+      "owner": "architect"
+    },
+    {
+      "id": "OQ-D2",
+      "topic": "Код I1 перегружен",
+      "issue": "I1 = «Сверка выполняется…», «Сверок пока нет», «Действий с нашей стороны не найдено» в трёх постановках.",
+      "proposal": "В UI использовать тексты и S-ids; в спеке переименовать коды (I1a/I1b/I1c) или убрать коды.",
+      "owner": "product + architect"
+    },
+    {
+      "id": "OQ-D3",
+      "topic": "Показывать ли «Совпало» в списке",
+      "issue": "Категория «Совпало» есть в своде, но список расхождений не должен дублировать сотни совпадений.",
+      "proposal": "Список = расхождения + справочные; «Совпало» — только в своде. Подтвердить на s05/s07.",
+      "owner": "product"
+    },
+    {
+      "id": "OQ-D4",
+      "topic": "Семантика «Показывать для справки» для строки-расхождения с маркером",
+      "issue": "«Переход между ЮЛ» — маркер, а не категория; при выключенной справке нельзя терять расхождение.",
+      "proposal": "Скрывать маркер, но не строку-расхождение; скрывать только справочные категории и строки, значимые исключительно как справка.",
+      "owner": "product"
+    },
+    {
+      "id": "OQ-D5",
+      "topic": "E8: toast или inline",
+      "issue": "Постановка говорит «всплывающее уведомление», DS не имеет toast.",
+      "proposal": "Disabled-кнопка + постоянный helper; E8 — только как защита от гонки, inline.",
+      "owner": "product + designer"
+    },
+    {
+      "id": "OQ-D6",
+      "topic": "Статусы и типы заявок ЗХ",
+      "issue": "Названия статусов/типов в системе могут отличаться; источника нет.",
+      "proposal": "Показывать значения как есть; маппинг и локализацию сделать после груминга с разработкой.",
+      "owner": "product + development"
+    },
+    {
+      "id": "OQ-D7",
+      "topic": "Адреса карточек договора/заявки (OD-7)",
+      "issue": "Ссылки обязательны, но URL-шаблоны не заданы.",
+      "proposal": "Рендерить ссылку только при настроенном шаблоне; иначе номер как текст + пояснение. Не блокировать экран.",
+      "owner": "architect + development"
+    },
+    {
+      "id": "OQ-D8",
+      "topic": "Часовой пояс даты/времени",
+      "issue": "Не задан в постановке.",
+      "proposal": "Показывать в локальном поясе пользователя; в API/URL — ISO-8601 с зоной.",
+      "owner": "architect"
+    },
+    {
+      "id": "OQ-D9",
+      "topic": "DS minor release по OD-8",
+      "issue": "table/select/multiselect/upload/badge отсутствуют; s03 зависит от решения.",
+      "proposal": "Решить до s03: minor-релиз DS или явное принятие временных композиций.",
+      "owner": "architect + designer"
+    },
+    {
+      "id": "OQ-D10",
+      "topic": "«3 последние заявки»: по какому полю",
+      "issue": "В постановке «3 последние» без поля сортировки.",
+      "proposal": "По дате заявки (desc), при равенстве — по номеру (desc).",
+      "owner": "product"
+    }
+  ],
+  "traceability": {
+    "requirements": {
+      "FR-01-upload": [
+        "tpl-sverka-launch",
+        "S-RUN-*",
+        "E1–E7"
+      ],
+      "FR-02-matching": [
+        "tpl-sverka-result",
+        "summary categories",
+        "diffs"
+      ],
+      "FR-03-result": [
+        "tpl-sverka-result",
+        "S-RES-*",
+        "W1/W2",
+        "I2"
+      ],
+      "FR-04-export": [
+        "tpl-sverka-result",
+        "S-RES-EXPORT-*"
+      ],
+      "HIST-FR-01": [
+        "tpl-sverka-launch",
+        "S-HIST-*",
+        "I1_history"
+      ],
+      "ZX-FR-01": [
+        "tpl-sverka-result",
+        "S-RES-ZX-*",
+        "I1_zx"
+      ],
+      "ZX-FR-02": [
+        "tpl-sverka-result",
+        "export columns (content spec §8)"
+      ]
+    },
+    "scenarios_total": 17,
+    "scenarios_mapped": 17,
+    "scenario_map": "design/template-map.yaml#reverse_maps.scenario_to_template"
+  },
+  "verification": {
+    "intent_gate": "python3 tools/design_gate.py intent --execution E7135 --root . --feature-dir doc/идеи/f-v5-sverka",
+    "self_checks": [
+      "design-intent.json — валидный JSON",
+      "state-matrix.json — валидный JSON, все состояния S-* имеют копирайт или fixture",
+      "content-specs покрывают 100% текстов E1–E8, W1/W2, I1/I2 и обоих шаблонов",
+      "template-map покрывает все 17 сценариев",
+      "в артефактах нет новых DS-компонентов",
+      "артефакты не меняют web/, tools/, design/"
+    ]
+  }
+}

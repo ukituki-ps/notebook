@@ -1,0 +1,104 @@
+{
+  "schema": "design.fixture/v1",
+  "fixture": "big-table",
+  "feature_id": "f-v5-sverka",
+  "purpose": "Стресс-данные для больших таблиц: 240 расхождений, 3 договора, длинные значения, распределение категорий",
+  "kind": "generator",
+  "note": "Это design-фикстура, а не контракт API. Рантайм-генератор стенда может собрать 240 строк из row_template и распределения; снимок результата на этой поставке фильтруется клиентски (OD-10).",
+  "header": {
+    "run_id": "SV-2026-11-13-0024",
+    "gk": "ООО «Северная логистика»",
+    "sk": "СК «АльфаСтрахование»",
+    "started_at_display": "13.11.2026, 19:02",
+    "started_by": "Иванова Мария Сергеевна",
+    "status": "Готова",
+    "source_file": {
+      "name": "Сверка_застрахованных_СЗЛ_Альфа_2026-11-13.xlsx",
+      "size_human": "3,8 МБ",
+      "available": true
+    }
+  },
+  "generator": {
+    "seed": 20261116,
+    "rows": 240,
+    "contracts": [
+      { "number": "0330R/045/5466/26", "legal_entity": "ООО «Северная логистика»", "rows": 120 },
+      { "number": "0330R/045/5467/26", "legal_entity": "ООО «Северная логистика»", "rows": 85 },
+      { "number": "0770M/012/3311/25", "legal_entity": "ООО «Северная логистика-2»", "rows": 35 }
+    ],
+    "category_distribution": {
+      "Есть в СК, нет в системе": 48,
+      "Есть в системе, нет в СК": 46,
+      "Другое ЮЛ": 14,
+      "Расхождение в ФИО": 42,
+      "Расхождение в дате рождения": 16,
+      "Расхождение по программе": 38,
+      "Доп. программа в СК": 12,
+      "Дубль в списке СК": 10,
+      "Задвоение у СК": 6,
+      "Дубль в системе": 8
+    },
+    "reference_rows": {
+      "В процессе у нас": 8,
+      "Переход между ЮЛ (маркер)": 6
+    },
+    "row_template": {
+      "id": "DEV-GEN-{n}",
+      "category": "{category}",
+      "reference": "{is_reference}",
+      "marker": "{marker_or_null}",
+      "contract": "{contract}",
+      "legal_entity": "{legal_entity}",
+      "fio_sk": "Застрахованный {n} Тестович",
+      "fio_system": "Застрахованный {n} Тестович",
+      "dob_sk": "01.01.19{yy}",
+      "dob_system": "01.01.19{yy}",
+      "program_sk": "Москва",
+      "program_system": "Москва",
+      "policy": "123456789{n:04d}",
+      "zx_status": "Прикреплен",
+      "comment": "—",
+      "diffs": [],
+      "zx": {
+        "contracts": ["{contract}"],
+        "requests_total": "{n_mod_4}",
+        "requests": [],
+        "actions": "Есть заявки"
+      }
+    },
+    "deterministic_rules": [
+      "n % 17 == 0 → длинное ФИО (59 символов)",
+      "n % 19 == 0 → длинная программа (108 символов)",
+      "n % 23 == 0 → 5 заявок у ЗХ (3 + «еще 2»)",
+      "n % 29 == 0 → fio_sk = null (строка «Есть в системе, нет в СК»)"
+    ]
+  },
+  "expected_ui": {
+    "initial_render_rows": 200,
+    "show_more_chunk": 200,
+    "count_text": "Показано 200 из 240",
+    "show_more_label": "Показать ещё 200",
+    "summary_visible": true,
+    "filters_over_full_snapshot": true,
+    "sticky": {
+      "header": true,
+      "first_column": "Категория",
+      "second_column": "Договор"
+    },
+    "mobile": {
+      "mode": "stacked-card-rows",
+      "details_toggle_for_secondary_fields": true
+    }
+  },
+  "kpi": {
+    "total_deviations": 240,
+    "contracts": 3,
+    "file_rows": 1240,
+    "total_label": "Итого расхождений: 240"
+  },
+  "performance_notes": [
+    "Рендер порциями по 200 строк; фильтры и поиск — по полному массиву, не по DOM",
+    "content-visibility: auto для строк; никакой виртуализации в этой поставке",
+    "summary и KPI считаются по снимку целиком и не зависят от фильтров"
+  ]
+}

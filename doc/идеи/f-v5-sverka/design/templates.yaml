@@ -1,0 +1,278 @@
+schema: design.templates/v1
+feature_id: f-v5-sverka
+execution_id: E7135
+step: s02c.design_intent
+platform: web
+stack: vanilla-js
+ds_release: "1.0.1"
+ds_digest: "sha256:4e0ef1052a1401a928588445f921f7d231b7c0e7c9b10c181fdbbb439108c85e"
+status: proposed
+
+templates:
+  - id: tpl-sverka-launch
+    title: Сверка застрахованных — запуск и история
+    route: /sverka
+    route_params: []
+    purpose: >
+      Дать сотруднику ГК запустить сверку по файлу СК и вернуться к любой
+      сохранённой сверке: открыть результат, скачать исходный файл, повторить.
+    content_spec: design/content-specs/tpl-sverka-launch.md
+    route_intent: design/intents/sverka.md
+    layout:
+      mode: single-column
+      max_width_px: 640
+      container: app
+      note: >
+        Сохраняет текущую оболочку Notebook (web/app.css .app max-width 640).
+        Широкая таблица здесь не нужна; форма и история читаются в одну колонку.
+    surfaces:
+      - run-form
+      - validation-errors
+      - history-filters
+      - history-list
+    sections:
+      - id: sec-run
+        order: 1
+        heading: Новая сверка
+        blocks: [gk-select, sk-select, template-download, file-upload, submit, file-errors]
+      - id: sec-history
+        order: 2
+        heading: История сверок
+        blocks: [history-count, history-filters, history-list]
+    states:
+      - S-RUN-DEFAULT
+      - S-RUN-GK-SELECTED
+      - S-RUN-SK-LOADING
+      - S-RUN-SK-EMPTY
+      - S-RUN-SK-ERROR
+      - S-RUN-FILE-SELECTED
+      - S-RUN-FILE-INVALID
+      - S-RUN-VALIDATING
+      - S-RUN-VALIDATION-ERRORS
+      - S-RUN-SUBMITTING
+      - S-RUN-SUBMIT-ERROR
+      - S-HIST-LOADING
+      - S-HIST-EMPTY
+      - S-HIST-ERROR
+      - S-HIST-READY
+      - S-HIST-FILTER-EMPTY
+      - S-HIST-REPEAT-PENDING
+      - S-HIST-REPEAT-ERROR
+      - S-GLOBAL-UNAUTHORIZED
+      - S-GLOBAL-HR-FORBIDDEN
+      - S-GLOBAL-OFFLINE
+    ds_reuse:
+      - primitives/card
+      - primitives/button
+      - primitives/button-secondary
+      - primitives/input
+      - primitives/error
+      - patterns/notes-header
+      - states/loading
+      - states/empty
+      - states/search-empty
+    ds_gaps:
+      - GAP-02-select
+      - GAP-04-upload
+      - GAP-05-status-chip
+      - GAP-07-link
+      - GAP-08-semantic-colors
+      - GAP-09-layout-wide
+      - GAP-10-small-type
+      - GAP-12-progress
+      - GAP-14-metadata-list
+    scenarios:
+      - SVERKA-E2E-01
+      - SVERKA-E2E-02
+      - SVERKA-E2E-03
+      - SVERKA-E2E-11
+      - SVERKA-E2E-12
+      - SVERKA-E2E-16
+      - SVERKA-E2E-17
+    fixtures:
+      - design/fixtures/run-form.json
+      - design/fixtures/history.json
+    a11y:
+      headings: [h1, h2, h2]
+      landmarks: [main]
+      focus_order: [gk, sk, template, file, submit, history-filters, history-list]
+      live_regions: [sk-status, file-status, file-errors, history-status]
+      min_target_px: 44
+      color_not_sole_cue: true
+    mobile:
+      breakpoints: [360, 768, 1280]
+      above_fold_360:
+        - h1
+        - gk-select
+        - sk-select
+        - file-upload-label
+      history: stacked-rows
+      buttons: full-width
+
+  - id: tpl-sverka-result
+    title: Результат сверки
+    route: /sverka/{runId}
+    route_params: [runId]
+    purpose: >
+      Показать, что сверка завершена и насколько результат расходится с
+      системой: предупреждения, свод, список расхождений с подсветкой, фильтры,
+      живые данные договоров и заявок ЗХ.
+    content_spec: design/content-specs/tpl-sverka-result.md
+    route_intent: design/intents/sverka-result.md
+    layout:
+      mode: wide
+      max_width_px: 1120
+      container: app-wide
+      note: >
+        Шире текущих 640 px: 15 колонок не читаются в узкой колонке. Токена
+        широкой раскладки в DS 1.0.1 нет — GAP-09.
+    surfaces:
+      - result-header
+      - warnings
+      - summary
+      - filters
+      - deviations
+      - zx-columns
+    sections:
+      - id: sec-header
+        order: 1
+        blocks: [back-link, h1, metadata, export]
+      - id: sec-warnings
+        order: 2
+        blocks: [w1, w2]
+      - id: sec-summary
+        order: 3
+        blocks: [kpi-total, summary-table]
+      - id: sec-filters
+        order: 4
+        blocks: [filter-category, filter-contract, filter-search, filter-reference, filter-reset, result-count]
+      - id: sec-list
+        order: 5
+        blocks: [deviation-table, zx-contracts, zx-requests, zx-actions, show-more]
+    states:
+      - S-RES-LOADING
+      - S-RES-PROCESSING
+      - S-RES-ERROR
+      - S-RES-NO-DATA
+      - S-RES-READY
+      - S-RES-EMPTY
+      - S-RES-FILTER-EMPTY
+      - S-RES-EXPORT-DISABLED
+      - S-RES-EXPORT-PENDING
+      - S-RES-EXPORT-ERROR
+      - S-RES-ZX-NO-CONTRACTS
+      - S-RES-ZX-NO-ACTIONS
+      - S-RES-BIG-TABLE
+      - S-RES-LONG-VALUES
+      - S-GLOBAL-UNAUTHORIZED
+      - S-GLOBAL-HR-FORBIDDEN
+      - S-GLOBAL-OFFLINE
+    ds_reuse:
+      - primitives/card
+      - primitives/button
+      - primitives/button-secondary
+      - primitives/input
+      - primitives/error
+      - patterns/notes-header
+      - patterns/search-field
+      - patterns/search-clear
+      - states/loading
+      - states/empty
+      - states/search-empty
+    ds_gaps:
+      - GAP-01-table
+      - GAP-02-select
+      - GAP-03-multiselect-checkbox
+      - GAP-04-upload
+      - GAP-05-status-chip
+      - GAP-06-inline-notice
+      - GAP-07-link
+      - GAP-08-semantic-colors
+      - GAP-09-layout-wide
+      - GAP-10-small-type
+      - GAP-11-disclosure
+      - GAP-12-progress
+      - GAP-13-incremental-list
+      - GAP-14-metadata-list
+    scenarios:
+      - SVERKA-E2E-04
+      - SVERKA-E2E-05
+      - SVERKA-E2E-06
+      - SVERKA-E2E-07
+      - SVERKA-E2E-08
+      - SVERKA-E2E-09
+      - SVERKA-E2E-10
+      - SVERKA-E2E-13
+      - SVERKA-E2E-14
+      - SVERKA-E2E-15
+    fixtures:
+      - design/fixtures/result-ready.json
+      - design/fixtures/result-empty.json
+      - design/fixtures/result-states.json
+      - design/fixtures/big-table.json
+    a11y:
+      headings: [h1, h2, h2, h2, h2]
+      landmarks: [main]
+      focus_order: [back-link, export, summary, filters, deviations]
+      live_regions: [result-status, filter-count, export-status]
+      min_target_px: 44
+      color_not_sole_cue: true
+      tables:
+        caption: required
+        headers: th-scope-col
+        sticky: [header, first-column]
+    mobile:
+      breakpoints: [360, 768, 1280]
+      above_fold_360:
+        - back-link
+        - h1
+        - gk-sk
+        - status-and-total
+        - warnings
+      summary: horizontal-scroll-sticky-contract
+      deviations: stacked-card-rows
+      filters: collapsed-details
+      table_mode_threshold_px: 768
+
+partials:
+  - id: p-status-chip
+    used_by: [tpl-sverka-launch, tpl-sverka-result]
+    ds_gap: GAP-05-status-chip
+    note: текст статуса + нейтральная плашка; цвет не единственный признак
+  - id: p-category-tag
+    used_by: [tpl-sverka-result]
+    ds_gap: GAP-05-status-chip
+    note: нейтральный тон — «Совпало» и справочные; тон внимания — расхождения
+  - id: p-file-chip
+    used_by: [tpl-sverka-launch]
+    ds_gap: GAP-04-upload
+    note: имя файла + размер + «Заменить»/«Удалить»
+  - id: p-error-summary
+    used_by: [tpl-sverka-launch]
+    ds_gap: GAP-14-metadata-list
+    note: заголовок с фокусом + таблица «Строка / Колонка / Ошибка»
+  - id: p-empty-state
+    used_by: [tpl-sverka-launch, tpl-sverka-result]
+    ds_reuse: [states/empty, states/search-empty]
+    note: I1/I2 и «нет результатов фильтра» — разные тексты и разные состояния
+  - id: p-filter-panel
+    used_by: [tpl-sverka-result]
+    ds_gap: GAP-03-multiselect-checkbox
+    note: details + нативные чекбоксы + select + search
+  - id: p-diff-cell
+    used_by: [tpl-sverka-result]
+    ds_gap: GAP-10-small-type
+    note: пара ячеек с data-diff и sr-only пометкой
+  - id: p-zx-requests
+    used_by: [tpl-sverka-result]
+    ds_gap: GAP-13-incremental-list
+    note: 3 последние заявки + «еще N» + «Свернуть»
+
+non_goals:
+  - Новые DS-компоненты в рамках этой фичи (только фиксация gap + композиции)
+  - React/Tailwind/иная замена vanilla JS + CSS
+  - Модальные окна, тосты как отдельный компонент, тултипы
+  - Пользовательская сортировка колонок
+  - Тёмная тема, кастомные шрифты, иконки-библиотеки
+  - Печатная версия экрана
+  - Редактирование строк результата, комментарии пользователя, отметки «обработано»

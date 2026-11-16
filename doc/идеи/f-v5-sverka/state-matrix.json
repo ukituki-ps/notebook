@@ -1,0 +1,886 @@
+{
+  "schema_version": "design.state-matrix/v1",
+  "feature_id": "f-v5-sverka",
+  "execution_id": "E7135",
+  "step_id": "s02c.design_intent",
+  "ds_release": "1.0.1",
+  "legend": {
+    "I1_base": "«Сверка выполняется. Результат появится автоматически» — код I1 базовой постановки v2",
+    "I2": "«Расхождений не найдено» — код I2 базовой постановки v2",
+    "I1_history": "«Сверок пока нет» — код I1 постановки «История сверок»",
+    "I1_zx": "«Действий с нашей стороны не найдено» — код I1 дополнения «Договоры и заявки ЗХ»",
+    "note": "Один литерал I1 в трёх постановках означает три разных состояния. В матрице используются S-ids, в UI — только тексты."
+  },
+  "surfaces": {
+    "sverka-run": {
+      "template": "tpl-sverka-launch",
+      "route": "/sverka",
+      "testids": [
+        "sverka-page",
+        "sverka-form",
+        "sverka-gk",
+        "sverka-sk",
+        "sverka-template",
+        "sverka-upload",
+        "sverka-file-chip",
+        "sverka-submit",
+        "sverka-error",
+        "sverka-errors",
+        "sverka-errors-table"
+      ],
+      "states": [
+        {
+          "id": "S-RUN-DEFAULT",
+          "label": "Исходное состояние формы",
+          "trigger": "вход в раздел; ГК не выбрана",
+          "visible": ["h1", "подзаголовок", "поле ГК", "поле СК (disabled)", "кнопка «Скачать шаблон»", "зона загрузки", "кнопка «Запустить сверку» (disabled)", "helper «Выберите ГК, СК и файл»"],
+          "hidden": ["ошибки файла", "сводка ошибок"],
+          "copy": {
+            "sk_placeholder": "Сначала выберите группу компаний",
+            "submit_helper": "Выберите ГК, СК и файл"
+          },
+          "aria": {
+            "sk": "disabled, aria-describedby=sk-hint",
+            "submit": "disabled"
+          },
+          "fixture": "design/fixtures/run-form.json#default"
+        },
+        {
+          "id": "S-RUN-GK-SELECTED",
+          "label": "ГК выбрана, список СК загружается",
+          "trigger": "change поля ГК",
+          "visible": ["выбранная ГК", "helper «Загружаем список страховых компаний…»"],
+          "hidden": ["опции СК до ответа", "ошибки файла"],
+          "copy": {
+            "sk_loading": "Загружаем список страховых компаний…"
+          },
+          "aria": {
+            "sk": "aria-busy=true, disabled, aria-live=polite на helper",
+            "announce": "Группа компаний изменена. Выберите страховую компанию."
+          },
+          "notes": ["смена ГК всегда сбрасывает ранее выбранную СК", "файл сохраняется"],
+          "fixture": "design/fixtures/run-form.json#gk_selected_loading"
+        },
+        {
+          "id": "S-RUN-SK-LOADING",
+          "label": "Загрузка списка СК",
+          "trigger": "GET СК по выбранной ГК",
+          "visible": ["текстовый статус загрузки"],
+          "hidden": ["опции СК"],
+          "copy": {
+            "status": "Загружаем список страховых компаний…"
+          },
+          "aria": {
+            "role": "status",
+            "live": "polite"
+          },
+          "fixture": "design/fixtures/run-form.json#gk_selected_loading"
+        },
+        {
+          "id": "S-RUN-SK-EMPTY",
+          "label": "У ГК нет СК с договорами",
+          "trigger": "GET СК вернул пустой список",
+          "visible": ["helper «У выбранной группы компаний нет договоров со страховыми компаниями.»"],
+          "hidden": ["опции СК", "активный submit"],
+          "copy": {
+            "helper": "У выбранной группы компаний нет договоров со страховыми компаниями."
+          },
+          "aria": {
+            "sk": "disabled, aria-describedby=sk-hint"
+          },
+          "fixture": "design/fixtures/run-form.json#sk_empty"
+        },
+        {
+          "id": "S-RUN-SK-ERROR",
+          "label": "Ошибка загрузки СК",
+          "trigger": "GET СК != 2xx / сеть",
+          "visible": ["inline-ошибка", "кнопка «Повторить»"],
+          "hidden": ["опции СК"],
+          "copy": {
+            "error": "Не удалось загрузить список страховых компаний.",
+            "retry": "Повторить"
+          },
+          "aria": {
+            "error": "role=alert"
+          },
+          "fixture": "design/fixtures/run-form.json#sk_error"
+        },
+        {
+          "id": "S-RUN-FILE-SELECTED",
+          "label": "Файл выбран",
+          "trigger": "input change / drop валидного по расширению файла",
+          "visible": ["имя файла", "размер", "кнопки «Заменить файл» и «Удалить файл»"],
+          "hidden": ["E1/E2"],
+          "copy": {
+            "announce": "Файл выбран: <имя>, <размер>"
+          },
+          "aria": {
+            "live": "polite",
+            "file_input": "label связан, accept=.xlsx"
+          },
+          "notes": ["новый файл заменяет предыдущий без подтверждения", "ГК и СК не сбрасываются"],
+          "fixture": "design/fixtures/run-form.json#file_selected"
+        },
+        {
+          "id": "S-RUN-FILE-INVALID",
+          "label": "Файл не .xlsx или больше лимита",
+          "trigger": "E1 / E2",
+          "visible": ["inline-ошибка под зоной загрузки", "выбранное имя файла сохраняется"],
+          "hidden": ["сводка E3–E7"],
+          "copy": {
+            "E1": "Загрузите файл в формате .xlsx",
+            "E2": "Файл больше лимита"
+          },
+          "aria": {
+            "role": "alert",
+            "input": "aria-invalid=true"
+          },
+          "fixture": "design/fixtures/run-form.json#errors[0..1]"
+        },
+        {
+          "id": "S-RUN-VALIDATING",
+          "label": "Проверка файла на сервере",
+          "trigger": "submit при ГК+СК+файл",
+          "visible": ["кнопка «Запускаем сверку…»", "aria-busy"],
+          "hidden": ["сводка ошибок", "список истории не блокируется"],
+          "copy": {
+            "submit": "Запускаем сверку…"
+          },
+          "aria": {
+            "submit": "disabled, aria-busy=true",
+            "form": "aria-busy=true"
+          }
+        },
+        {
+          "id": "S-RUN-VALIDATION-ERRORS",
+          "label": "Файл не прошёл проверки E3–E7",
+          "trigger": "ответ проверки с errors[]",
+          "visible": ["сводка «Файл не принят…»", "счётчик ошибок", "таблица «Строка / Колонка / Ошибка»", "сохранённые ГК/СК/файл"],
+          "hidden": ["экран результата", "новая сверка в истории"],
+          "copy": {
+            "heading": "Файл не принят. Исправьте ошибки и загрузите файл снова.",
+            "count": "Ошибок: N (1 ошибка / 2 ошибки / 5 ошибок)",
+            "columns": ["Строка", "Колонка", "Ошибка"],
+            "row_missing": "—"
+          },
+          "aria": {
+            "heading": "tabindex=-1, фокус после ответа",
+            "table": "caption sr-only «Ошибки файла: строка, колонка, описание»"
+          },
+          "notes": ["показываются все ошибки сразу", "E3/E4 — строка «—»", "E5/E6 сортируются по строке и порядку колонок"],
+          "fixture": "design/fixtures/run-form.json#validation_errors"
+        },
+        {
+          "id": "S-RUN-SUBMITTING",
+          "label": "Сверка запущена, переход на результат",
+          "trigger": "успешный ответ запуска",
+          "visible": ["кнопка «Запускаем сверку…»", "затем переход на /sverka/{runId}"],
+          "hidden": ["сводка ошибок"],
+          "copy": {
+            "announce": "Сверка запущена."
+          },
+          "aria": {
+            "submit": "disabled, aria-busy=true"
+          },
+          "notes": ["повторный клик игнорируется"]
+        },
+        {
+          "id": "S-RUN-SUBMIT-ERROR",
+          "label": "Ошибка сети/сервера при запуске",
+          "trigger": "POST запуска != 2xx (кроме валидации файла)",
+          "visible": ["inline-ошибка", "кнопка снова активна", "все введённые значения сохранены"],
+          "hidden": ["переход на результат"],
+          "copy": {
+            "error": "Не удалось запустить сверку. Проверьте соединение и попробуйте ещё раз."
+          },
+          "aria": {
+            "role": "alert"
+          }
+        }
+      ]
+    },
+    "sverka-history": {
+      "template": "tpl-sverka-launch",
+      "route": "/sverka#history",
+      "testids": [
+        "sverka-history",
+        "sverka-history-count",
+        "sverka-history-filters",
+        "sverka-history-filter-gk",
+        "sverka-history-filter-sk",
+        "sverka-history-filter-status",
+        "sverka-history-reset",
+        "sverka-history-loading",
+        "sverka-history-empty",
+        "sverka-history-no-results",
+        "sverka-history-error",
+        "sverka-history-table",
+        "sverka-history-row",
+        "sverka-history-open",
+        "sverka-history-file",
+        "sverka-history-repeat"
+      ],
+      "states": [
+        {
+          "id": "S-HIST-LOADING",
+          "label": "История загружается",
+          "trigger": "GET списка сверок",
+          "visible": ["«Загружаем историю сверок…»"],
+          "hidden": ["таблица", "пустые состояния"],
+          "copy": {
+            "status": "Загружаем историю сверок…"
+          },
+          "aria": {
+            "role": "status",
+            "live": "polite",
+            "table": "aria-busy=true"
+          },
+          "fixture": "design/fixtures/history.json#loading"
+        },
+        {
+          "id": "S-HIST-EMPTY",
+          "label": "Сверок ещё нет (I1 истории)",
+          "trigger": "GET вернул []",
+          "visible": ["«Сверок пока нет»", "«Запустите первую сверку — форма выше.»", "форма запуска остаётся доступной"],
+          "hidden": ["фильтры", "таблица"],
+          "copy": {
+            "title": "Сверок пока нет",
+            "hint": "Запустите первую сверку — форма выше."
+          },
+          "aria": {
+            "role": "status"
+          },
+          "fixture": "design/fixtures/history.json#empty"
+        },
+        {
+          "id": "S-HIST-READY",
+          "label": "Список сверок",
+          "trigger": "GET вернул >= 1",
+          "visible": ["счётчик «Всего сверок: N»", "фильтры", "таблица/карточки"],
+          "hidden": ["пустые состояния"],
+          "copy": {
+            "count": "Всего сверок: N",
+            "columns": ["Дата и время", "ГК", "СК", "Кто запустил", "Статус", "Расхождений", "Исходный файл", "Действия"]
+          },
+          "notes": ["новые сверху", "для не-«Готова» Расхождений = «—»", "клик по строке открывает результат"],
+          "fixture": "design/fixtures/history.json#ready"
+        },
+        {
+          "id": "S-HIST-FILTER-EMPTY",
+          "label": "Фильтры истории ничего не нашли",
+          "trigger": "фильтр ГК/СК/статус дал 0",
+          "visible": ["активные фильтры", "«По выбранным фильтрам сверок нет.»", "«Сбросить фильтры»"],
+          "hidden": ["таблица"],
+          "copy": {
+            "title": "По выбранным фильтрам сверок нет.",
+            "reset": "Сбросить фильтры"
+          },
+          "aria": {
+            "role": "status"
+          },
+          "notes": ["отличается от S-HIST-EMPTY: сверки существуют, но не проходят фильтр"],
+          "fixture": "design/fixtures/history.json#filter_empty"
+        },
+        {
+          "id": "S-HIST-ERROR",
+          "label": "Ошибка загрузки истории",
+          "trigger": "GET != 2xx / сеть",
+          "visible": ["«Не удалось загрузить историю сверок.»", "«Повторить»"],
+          "hidden": ["таблица", "пустые состояния"],
+          "copy": {
+            "error": "Не удалось загрузить историю сверок.",
+            "retry": "Повторить"
+          },
+          "aria": {
+            "role": "alert"
+          },
+          "fixture": "design/fixtures/history.json#error"
+        },
+        {
+          "id": "S-HIST-REPEAT-PENDING",
+          "label": "Повторный запуск сверки",
+          "trigger": "клик «Повторить» в строке",
+          "visible": ["кнопка «Запускаем…» (disabled) в этой строке", "остальной список активен"],
+          "hidden": [],
+          "copy": {
+            "button": "Запускаем…"
+          },
+          "aria": {
+            "button": "disabled, aria-busy=true"
+          },
+          "notes": ["повторный клик игнорируется", "прежняя сверка не меняется", "по успеху новая сверка появляется первой"],
+          "fixture": "design/fixtures/history.json#ready"
+        },
+        {
+          "id": "S-HIST-REPEAT-ERROR",
+          "label": "Ошибка повторного запуска",
+          "trigger": "POST повтора != 2xx",
+          "visible": ["inline-ошибка над списком", "кнопка «Повторить» снова активна"],
+          "hidden": [],
+          "copy": {
+            "error": "Не удалось запустить повторную сверку. Попробуйте ещё раз."
+          },
+          "aria": {
+            "role": "alert"
+          }
+        }
+      ]
+    },
+    "sverka-result": {
+      "template": "tpl-sverka-result",
+      "route": "/sverka/{runId}",
+      "testids": [
+        "sverka-result-page",
+        "sverka-result-header",
+        "sverka-result-status",
+        "sverka-result-file",
+        "sverka-export",
+        "sverka-export-error",
+        "sverka-warnings",
+        "sverka-warning-w1",
+        "sverka-warning-w2",
+        "sverka-kpi-total",
+        "sverka-summary",
+        "sverka-summary-table",
+        "sverka-summary-total",
+        "sverka-filters",
+        "sverka-filter-category",
+        "sverka-filter-contract",
+        "sverka-filter-search",
+        "sverka-filter-reference",
+        "sverka-filter-reset",
+        "sverka-result-count",
+        "sverka-deviations",
+        "sverka-deviation-row",
+        "sverka-diff",
+        "sverka-no-deviations",
+        "sverka-filter-empty",
+        "sverka-zx-contracts",
+        "sverka-zx-requests",
+        "sverka-zx-more",
+        "sverka-zx-actions",
+        "sverka-result-processing",
+        "sverka-result-error",
+        "sverka-result-no-data",
+        "sverka-show-more"
+      ],
+      "states": [
+        {
+          "id": "S-RES-LOADING",
+          "label": "Результат загружается",
+          "trigger": "GET результата",
+          "visible": ["шапка-скелет без данных", "«Загружаем результат сверки…»"],
+          "hidden": ["свод", "фильтры", "список"],
+          "copy": {
+            "status": "Загружаем результат сверки…"
+          },
+          "aria": {
+            "role": "status",
+            "live": "polite",
+            "main": "aria-busy=true"
+          },
+          "fixture": "design/fixtures/result-states.json#loading"
+        },
+        {
+          "id": "S-RES-PROCESSING",
+          "label": "Сверка выполняется (I1 базовой v2)",
+          "trigger": "статус «Обрабатывается»",
+          "visible": ["шапка: ГК, СК, дата, автор, статус «Обрабатывается», файл", "disabled экспорт + helper", "«Сверка выполняется»", "«Сверка выполняется. Результат появится автоматически»"],
+          "hidden": ["W1/W2", "свод", "фильтры", "список"],
+          "copy": {
+            "heading": "Сверка выполняется",
+            "text": "Сверка выполняется. Результат появится автоматически",
+            "export_helper": "Доступно после завершения сверки."
+          },
+          "aria": {
+            "role": "status",
+            "live": "polite",
+            "export": "disabled"
+          },
+          "notes": ["автообновление без перезагрузки: polling с паузой при скрытой вкладке", "при завершении — announce «Сверка готова. Расхождений: N», фокус не перехватывается"],
+          "fixture": "design/fixtures/result-states.json#processing"
+        },
+        {
+          "id": "S-RES-ERROR",
+          "label": "Ошибка обработки",
+          "trigger": "статус «Ошибка обработки»",
+          "visible": ["шапка со статусом", "блок «Сверка завершилась ошибкой обработки»", "причина (если передана)", "рекомендация"],
+          "hidden": ["W1/W2", "свод", "фильтры", "список", "активный экспорт"],
+          "copy": {
+            "heading": "Сверка завершилась ошибкой обработки",
+            "reason_label": "Причина: <текст из API>",
+            "hint": "Загрузите файл заново или обратитесь к администратору."
+          },
+          "aria": {
+            "role": "alert"
+          },
+          "notes": ["OD-12: без автоматического ретрая из UI", "«Повторить» доступна в истории и создаёт новую сверку"],
+          "fixture": "design/fixtures/result-states.json#processing_error"
+        },
+        {
+          "id": "S-RES-NO-DATA",
+          "label": "Результат недоступен",
+          "trigger": "404 / снимок истёк по retention",
+          "visible": ["шапка без свода", "«Результат сверки недоступен»", "«Файл и результат хранятся ограниченное время.»", "«← К списку сверок»"],
+          "hidden": ["W1/W2", "свод", "фильтры", "список"],
+          "copy": {
+            "title": "Результат сверки недоступен",
+            "hint": "Файл и результат хранятся ограниченное время."
+          },
+          "aria": {
+            "role": "status"
+          },
+          "fixture": "design/fixtures/result-states.json#no_data"
+        },
+        {
+          "id": "S-RES-READY",
+          "label": "Готова: есть расхождения",
+          "trigger": "статус «Готова», deviations > 0",
+          "visible": ["шапка", "W1/W2 при условиях", "KPI «Итого расхождений: N»", "свод с итоговой строкой", "фильтры", "список 15 колонок", "примечание о свежести ЗХ"],
+          "hidden": ["I2", "пустые состояния"],
+          "copy": {
+            "status": "Готова",
+            "kpi": "Итого расхождений: N",
+            "count": "Показано N из M"
+          },
+          "notes": ["сортировка: порядок категорий, затем ФИО", "ссылки ЗХ в новой вкладке", "подсветка обеих ячеек пары"],
+          "fixture": "design/fixtures/result-ready.json"
+        },
+        {
+          "id": "S-RES-EMPTY",
+          "label": "Готова, расхождений нет (I2)",
+          "trigger": "статус «Готова», deviations = 0",
+          "visible": ["шапка", "W1/W2 при условиях", "KPI «Итого расхождений: 0»", "свод с итоговой строкой", "«Расхождений не найдено»", "«Проверены все строки файла и прикреплённые ЗХ»"],
+          "hidden": ["фильтры", "список"],
+          "copy": {
+            "title": "Расхождений не найдено",
+            "hint": "Проверены все строки файла и прикреплённые ЗХ"
+          },
+          "aria": {
+            "role": "status"
+          },
+          "notes": ["свод остаётся видимым", "W1/W2 могут быть видимы одновременно с I2"],
+          "fixture": "design/fixtures/result-empty.json"
+        },
+        {
+          "id": "S-RES-FILTER-EMPTY",
+          "label": "Фильтры ничего не нашли",
+          "trigger": "deviations > 0, но фильтр дал 0",
+          "visible": ["шапка", "свод", "фильтры", "«По выбранным фильтрам расхождений нет»", "«Сбросить фильтры»"],
+          "hidden": ["таблица"],
+          "copy": {
+            "title": "По выбранным фильтрам расхождений нет",
+            "reset": "Сбросить фильтры"
+          },
+          "aria": {
+            "role": "status"
+          },
+          "notes": ["не путать с I2: это состояние фильтра, а не отсутствие расхождений"],
+          "fixture": "design/fixtures/result-ready.json#filter_empty"
+        },
+        {
+          "id": "S-RES-EXPORT-DISABLED",
+          "label": "Экспорт недоступен",
+          "trigger": "статус != «Готова»",
+          "visible": ["кнопка «Выгрузить в Excel» disabled", "helper «Доступно после завершения сверки.»"],
+          "hidden": [],
+          "copy": {
+            "helper": "Доступно после завершения сверки."
+          },
+          "aria": {
+            "button": "disabled, aria-describedby=export-hint"
+          },
+          "notes": ["E8 из постановки («Выгрузка доступна после завершения сверки») не показывается как toast; защита — disabled + helper"]
+        },
+        {
+          "id": "S-RES-EXPORT-PENDING",
+          "label": "Файл готовится",
+          "trigger": "клик «Выгрузить в Excel»",
+          "visible": ["«Готовим файл…»", "disabled"],
+          "hidden": [],
+          "copy": {
+            "button": "Готовим файл…"
+          },
+          "aria": {
+            "button": "disabled, aria-busy=true",
+            "live": "polite"
+          }
+        },
+        {
+          "id": "S-RES-EXPORT-ERROR",
+          "label": "Ошибка экспорта",
+          "trigger": "POST/GET экспорта != 2xx",
+          "visible": ["inline-ошибка «Не удалось подготовить файл. Попробуйте ещё раз.»", "кнопка снова активна"],
+          "hidden": [],
+          "copy": {
+            "error": "Не удалось подготовить файл. Попробуйте ещё раз."
+          },
+          "aria": {
+            "role": "alert"
+          }
+        },
+        {
+          "id": "S-RES-ZX-NO-CONTRACTS",
+          "label": "У ЗХ нет договоров",
+          "trigger": "для строки не найден ЗХ (в т.ч. «Есть в СК, нет в системе»)",
+          "visible": ["«—» в «Договоры ЗХ»", "«—» в «Заявки ЗХ»", "«Действий с нашей стороны не найдено»"],
+          "hidden": ["ссылки"],
+          "copy": {
+            "empty": "—",
+            "actions": "Действий с нашей стороны не найдено"
+          },
+          "notes": ["поиск для «Есть в СК, нет в системе» — по ФИО+ДР в любых статусах и с любыми СК"],
+          "fixture": "design/fixtures/result-ready.json#zx_no_contracts"
+        },
+        {
+          "id": "S-RES-ZX-NO-ACTIONS",
+          "label": "ЗХ найден, заявок нет (I1 дополнения 3)",
+          "trigger": "ЗХ есть, requests = 0",
+          "visible": ["договоры ЗХ (ссылки)", "«—» в «Заявки ЗХ»", "«Действий с нашей стороны не найдено»"],
+          "hidden": ["«еще N»"],
+          "copy": {
+            "actions": "Действий с нашей стороны не найдено"
+          },
+          "fixture": "design/fixtures/result-ready.json#deviations[4]"
+        },
+        {
+          "id": "S-RES-ZX-MORE",
+          "label": "Заявок больше трёх",
+          "trigger": "requests_count > 3",
+          "visible": ["3 последние заявки", "кнопка «еще N»"],
+          "hidden": ["остальные заявки"],
+          "copy": {
+            "more": "еще N (еще 1 заявка / еще 2 заявки / еще 5 заявок)",
+            "collapse": "Свернуть"
+          },
+          "aria": {
+            "button": "aria-expanded=false"
+          },
+          "fixture": "design/fixtures/result-ready.json#deviations[0]"
+        },
+        {
+          "id": "S-RES-BIG-TABLE",
+          "label": "Большой список расхождений",
+          "trigger": "deviations > 200",
+          "visible": ["первые 200 строк", "«Показано 200 из M»", "«Показать ещё 200»"],
+          "hidden": ["остальные строки до раскрытия"],
+          "copy": {
+            "show_more": "Показать ещё 200"
+          },
+          "notes": ["фильтры работают по всему снимку, не только по отрендеренным строкам", "content-visibility:auto"],
+          "fixture": "design/fixtures/big-table.json"
+        },
+        {
+          "id": "S-RES-LONG-VALUES",
+          "label": "Длинные значения",
+          "trigger": "длинные ФИО/программа/номер/комментарий",
+          "visible": ["перенос по словам, без ellipsis", "номера nowrap", "строка растёт по высоте"],
+          "hidden": [],
+          "notes": ["проверено на fixtures/result-ready.json#long_values"],
+          "fixture": "design/fixtures/result-ready.json#long_values"
+        }
+      ]
+    }
+  },
+  "global_states": [
+    {
+      "id": "S-GLOBAL-UNAUTHORIZED",
+      "label": "Сессия истекла",
+      "trigger": "401 на любом запросе раздела",
+      "visible": ["сообщение «Сессия истекла. Войдите снова.»", "redirect на /login"],
+      "copy": {
+        "message": "Сессия истекла. Войдите снова."
+      },
+      "aria": {
+        "role": "alert"
+      },
+      "notes": ["как в текущем web/app.js: очистка токена и переход"]
+    },
+    {
+      "id": "S-GLOBAL-HR-FORBIDDEN",
+      "label": "Нет доступа к разделу (HR)",
+      "trigger": "403 / роль клиента",
+      "visible": ["«Раздел доступен только сотрудникам ГК.»", "ссылка «К заметкам»"],
+      "hidden": ["форма", "история", "результат"],
+      "copy": {
+        "title": "Раздел доступен только сотрудникам ГК.",
+        "back": "К заметкам"
+      },
+      "notes": ["пункт меню раздела у HR отсутствует", "прямой URL не раскрывает данные"]
+    },
+    {
+      "id": "S-GLOBAL-OFFLINE",
+      "label": "Нет сети",
+      "trigger": "network error",
+      "visible": ["нейтральная плашка «Нет сети. Проверьте соединение.»", "сохранённые данные остаются"],
+      "hidden": [],
+      "copy": {
+        "message": "Нет сети. Проверьте соединение."
+      },
+      "aria": {
+        "role": "status",
+        "live": "polite"
+      },
+      "notes": ["не стирать уже показанный результат", "запуск/повтор/экспорт — ошибка с действием"]
+    },
+    {
+      "id": "S-GLOBAL-NOT-FOUND",
+      "label": "Сверка не найдена",
+      "trigger": "404 по runId",
+      "visible": ["«Сверка не найдена.»", "«← К списку сверок»"],
+      "hidden": ["шапка", "свод", "список"],
+      "copy": {
+        "title": "Сверка не найдена."
+      }
+    },
+    {
+      "id": "S-GLOBAL-SERVER-ERROR",
+      "label": "Ошибка сервера",
+      "trigger": "5xx",
+      "visible": ["«Не удалось загрузить данные. Попробуйте ещё раз.»", "«Повторить»"],
+      "copy": {
+        "message": "Не удалось загрузить данные. Попробуйте ещё раз.",
+        "retry": "Повторить"
+      },
+      "aria": {
+        "role": "alert"
+      }
+    }
+  ],
+  "transitions": [
+    {
+      "from": "S-RUN-DEFAULT",
+      "event": "выбор ГК",
+      "to": "S-RUN-GK-SELECTED",
+      "effect": "сброс СК, загрузка списка СК"
+    },
+    {
+      "from": "S-RUN-GK-SELECTED",
+      "event": "успешный список СК",
+      "to": "S-RUN-DEFAULT",
+      "effect": "СК активна, placeholder «Выберите страховую компанию»"
+    },
+    {
+      "from": "S-RUN-GK-SELECTED",
+      "event": "пустой список СК",
+      "to": "S-RUN-SK-EMPTY"
+    },
+    {
+      "from": "S-RUN-GK-SELECTED",
+      "event": "ошибка списка СК",
+      "to": "S-RUN-SK-ERROR"
+    },
+    {
+      "from": "S-RUN-DEFAULT",
+      "event": "выбор файла",
+      "to": "S-RUN-FILE-SELECTED"
+    },
+    {
+      "from": "S-RUN-FILE-SELECTED",
+      "event": "файл не .xlsx / больше лимита",
+      "to": "S-RUN-FILE-INVALID"
+    },
+    {
+      "from": "S-RUN-FILE-INVALID",
+      "event": "выбор корректного файла",
+      "to": "S-RUN-FILE-SELECTED"
+    },
+    {
+      "from": "S-RUN-FILE-SELECTED",
+      "event": "submit (ГК+СК+файл)",
+      "to": "S-RUN-VALIDATING"
+    },
+    {
+      "from": "S-RUN-VALIDATING",
+      "event": "ошибки E3–E7",
+      "to": "S-RUN-VALIDATION-ERRORS"
+    },
+    {
+      "from": "S-RUN-VALIDATING",
+      "event": "успех",
+      "to": "S-RUN-SUBMITTING",
+      "effect": "переход на /sverka/{runId}"
+    },
+    {
+      "from": "S-RUN-VALIDATING",
+      "event": "сеть/5xx",
+      "to": "S-RUN-SUBMIT-ERROR"
+    },
+    {
+      "from": "S-RUN-VALIDATION-ERRORS",
+      "event": "замена файла",
+      "to": "S-RUN-FILE-SELECTED",
+      "effect": "ГК/СК сохранены, сводка ошибок скрыта"
+    },
+    {
+      "from": "S-HIST-LOADING",
+      "event": "[]",
+      "to": "S-HIST-EMPTY"
+    },
+    {
+      "from": "S-HIST-LOADING",
+      "event": ">=1",
+      "to": "S-HIST-READY"
+    },
+    {
+      "from": "S-HIST-LOADING",
+      "event": "ошибка",
+      "to": "S-HIST-ERROR"
+    },
+    {
+      "from": "S-HIST-READY",
+      "event": "фильтр дал 0",
+      "to": "S-HIST-FILTER-EMPTY"
+    },
+    {
+      "from": "S-HIST-FILTER-EMPTY",
+      "event": "сброс фильтров",
+      "to": "S-HIST-READY"
+    },
+    {
+      "from": "S-HIST-READY",
+      "event": "«Повторить»",
+      "to": "S-HIST-REPEAT-PENDING",
+      "effect": "новая сверка сверху, прежняя не меняется"
+    },
+    {
+      "from": "S-HIST-REPEAT-PENDING",
+      "event": "успех",
+      "to": "S-HIST-READY"
+    },
+    {
+      "from": "S-HIST-REPEAT-PENDING",
+      "event": "ошибка",
+      "to": "S-HIST-REPEAT-ERROR"
+    },
+    {
+      "from": "S-RES-LOADING",
+      "event": "«Обрабатывается»",
+      "to": "S-RES-PROCESSING"
+    },
+    {
+      "from": "S-RES-LOADING",
+      "event": "«Готова», deviations>0",
+      "to": "S-RES-READY"
+    },
+    {
+      "from": "S-RES-LOADING",
+      "event": "«Готова», deviations=0",
+      "to": "S-RES-EMPTY"
+    },
+    {
+      "from": "S-RES-LOADING",
+      "event": "«Ошибка обработки»",
+      "to": "S-RES-ERROR"
+    },
+    {
+      "from": "S-RES-LOADING",
+      "event": "404 / retention",
+      "to": "S-RES-NO-DATA"
+    },
+    {
+      "from": "S-RES-PROCESSING",
+      "event": "poll: «Готова»",
+      "to": "S-RES-READY",
+      "effect": "без перезагрузки; announce «Сверка готова. Расхождений: N»"
+    },
+    {
+      "from": "S-RES-PROCESSING",
+      "event": "poll: «Ошибка обработки»",
+      "to": "S-RES-ERROR"
+    },
+    {
+      "from": "S-RES-READY",
+      "event": "фильтр дал 0",
+      "to": "S-RES-FILTER-EMPTY"
+    },
+    {
+      "from": "S-RES-FILTER-EMPTY",
+      "event": "сброс фильтров",
+      "to": "S-RES-READY"
+    },
+    {
+      "from": "S-RES-READY",
+      "event": "экспорт",
+      "to": "S-RES-EXPORT-PENDING"
+    },
+    {
+      "from": "S-RES-EXPORT-PENDING",
+      "event": "файл получен",
+      "to": "S-RES-READY"
+    },
+    {
+      "from": "S-RES-EXPORT-PENDING",
+      "event": "ошибка",
+      "to": "S-RES-EXPORT-ERROR"
+    }
+  ],
+  "state_invariants": [
+    {
+      "id": "SI-01",
+      "statement": "Ошибка валидации файла не сбрасывает ГК, СК и выбранный файл.",
+      "states": ["S-RUN-VALIDATION-ERRORS", "S-RUN-FILE-INVALID"]
+    },
+    {
+      "id": "SI-02",
+      "statement": "I2 (нет расхождений) и пустой результат фильтра — разные состояния с разными текстами и разным набором видимых блоков.",
+      "states": ["S-RES-EMPTY", "S-RES-FILTER-EMPTY", "S-HIST-EMPTY", "S-HIST-FILTER-EMPTY"]
+    },
+    {
+      "id": "SI-03",
+      "statement": "Автообновление «Обрабатывается → Готова» не перезагружает страницу и не перехватывает фокус.",
+      "states": ["S-RES-PROCESSING", "S-RES-READY"]
+    },
+    {
+      "id": "SI-04",
+      "statement": "Фильтры результата меняют только клиентское представление и URL; данные снимка не перезапрашиваются.",
+      "states": ["S-RES-READY", "S-RES-FILTER-EMPTY"]
+    },
+    {
+      "id": "SI-05",
+      "statement": "Свод и «Итого расхождений» не зависят от фильтров и от «Показывать для справки».",
+      "states": ["S-RES-READY", "S-RES-FILTER-EMPTY"]
+    },
+    {
+      "id": "SI-06",
+      "statement": "Экспорт недоступен, пока статус не «Готова»; файл никогда не бывает частичным.",
+      "states": ["S-RES-PROCESSING", "S-RES-ERROR", "S-RES-EXPORT-DISABLED"]
+    },
+    {
+      "id": "SI-07",
+      "statement": "Данные ЗХ читаются на момент открытия экрана, а не на момент сверки; заявка после сверки видна при следующем открытии.",
+      "states": ["S-RES-READY", "S-RES-ZX-NO-ACTIONS", "S-RES-ZX-NO-CONTRACTS"]
+    },
+    {
+      "id": "SI-08",
+      "statement": "«Повторить» создаёт новую сверку; прежняя строка и её результат не меняются.",
+      "states": ["S-HIST-REPEAT-PENDING", "S-HIST-READY"]
+    },
+    {
+      "id": "SI-09",
+      "statement": "Отличающиеся значения подсвечиваются в обеих ячейках пары и дублируются текстовой пометкой для скринридера.",
+      "states": ["S-RES-READY"]
+    },
+    {
+      "id": "SI-10",
+      "statement": "Длинные значения не обрезаются; сокращается только имя файла, и полное имя остаётся доступным.",
+      "states": ["S-RES-LONG-VALUES", "S-RES-BIG-TABLE"]
+    }
+  ],
+  "copy_codes": {
+    "E1": "Загрузите файл в формате .xlsx",
+    "E2": "Файл больше лимита",
+    "E3": "В файле нет колонки «<название>». Скачайте шаблон и перенесите данные в него",
+    "E4": "В файле нет данных для сверки",
+    "E5": "Не заполнено обязательное поле",
+    "E6": "Некорректная дата. Формат — ДД.ММ.ГГГГ",
+    "E7": "Договор <номер> не найден среди договоров ГК «<ГК>» со СК «<СК>»",
+    "E8": "Выгрузка доступна после завершения сверки",
+    "W1": "В файле нет данных по договорам: <номера>. Сверка по ним не проводилась",
+    "W2": "По договору <номер> в файле СК <N> чел., в системе <M> чел. Возможно, массовое прикрепление или открепление не отражено",
+    "I1_base": "Сверка выполняется. Результат появится автоматически",
+    "I2": "Расхождений не найдено",
+    "I1_history": "Сверок пока нет",
+    "I1_zx": "Действий с нашей стороны не найдено"
+  }
+}

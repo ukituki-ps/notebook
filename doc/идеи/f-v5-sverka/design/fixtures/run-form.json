@@ -1,0 +1,155 @@
+{
+  "schema": "design.fixture/v1",
+  "fixture": "run-form",
+  "feature_id": "f-v5-sverka",
+  "purpose": "Контент и состояния формы запуска и проверки файла (E1–E7)",
+  "gk": [
+    { "id": "gk-sever", "name": "ООО «Северная логистика»" },
+    { "id": "gk-voskhod", "name": "АО «Группа Восход»" }
+  ],
+  "sk_by_gk": {
+    "gk-sever": [
+      { "id": "sk-alfa", "name": "СК «АльфаСтрахование»" },
+      { "id": "sk-sogaz", "name": "СК «Согаз»" },
+      { "id": "sk-ingos", "name": "СК «Ингосстрах»" }
+    ],
+    "gk-voskhod": [
+      { "id": "sk-sogaz", "name": "СК «Согаз»" }
+    ]
+  },
+  "scenarios": {
+    "default": {
+      "gk": null,
+      "sk": null,
+      "file": null,
+      "sk_disabled": true,
+      "submit_disabled": true,
+      "sk_placeholder": "Сначала выберите группу компаний",
+      "submit_helper": "Выберите ГК, СК и файл"
+    },
+    "gk_selected_loading": {
+      "gk": "gk-sever",
+      "sk": null,
+      "sk_status": "Загружаем список страховых компаний…",
+      "sk_busy": true
+    },
+    "sk_empty": {
+      "gk": "gk-voskhod",
+      "sk_list": [],
+      "helper": "У выбранной группы компаний нет договоров со страховыми компаниями."
+    },
+    "sk_error": {
+      "gk": "gk-sever",
+      "error": "Не удалось загрузить список страховых компаний.",
+      "retry": true
+    },
+    "file_selected": {
+      "gk": "gk-sever",
+      "sk": "sk-alfa",
+      "file": {
+        "name": "Сверка_застрахованных_СЗЛ_Альфа_2026-11-10.xlsx",
+        "size_bytes": 184320,
+        "size_human": "180 КБ"
+      },
+      "submit_disabled": false
+    }
+  },
+  "template_file": {
+    "name": "Шаблон сверки застрахованных.xlsx",
+    "columns": [
+      { "name": "№ договора", "required": true },
+      { "name": "ФИО", "required": true },
+      { "name": "Дата рождения", "required": true },
+      { "name": "Программа", "required": true },
+      { "name": "Тип программы", "required": false },
+      { "name": "Страхователь", "required": false },
+      { "name": "№ полиса СК", "required": false },
+      { "name": "Дата начала программы", "required": false }
+    ]
+  },
+  "errors": [
+    {
+      "code": "E1",
+      "scope": "file",
+      "row": null,
+      "column": null,
+      "message": "Загрузите файл в формате .xlsx",
+      "where": "под зоной загрузки"
+    },
+    {
+      "code": "E2",
+      "scope": "file",
+      "row": null,
+      "column": null,
+      "message": "Файл больше лимита",
+      "where": "под зоной загрузки"
+    },
+    {
+      "code": "E3",
+      "scope": "file",
+      "row": null,
+      "column": "Дата рождения",
+      "message": "В файле нет колонки «Дата рождения». Скачайте шаблон и перенесите данные в него",
+      "where": "таблица ошибок"
+    },
+    {
+      "code": "E4",
+      "scope": "file",
+      "row": null,
+      "column": null,
+      "message": "В файле нет данных для сверки",
+      "where": "таблица ошибок"
+    },
+    {
+      "code": "E5",
+      "scope": "row",
+      "row": 5,
+      "column": "Дата рождения",
+      "message": "Не заполнено обязательное поле",
+      "where": "таблица ошибок"
+    },
+    {
+      "code": "E6",
+      "scope": "row",
+      "row": 8,
+      "column": "Дата рождения",
+      "message": "Некорректная дата. Формат — ДД.ММ.ГГГГ",
+      "where": "таблица ошибок"
+    },
+    {
+      "code": "E7",
+      "scope": "row",
+      "row": 8,
+      "column": "№ договора",
+      "message": "Договор 0330R/045/9999/26 не найден среди договоров ГК «ООО «Северная логистика»» со СК «СК «АльфаСтрахование»»",
+      "where": "таблица ошибок"
+    }
+  ],
+  "validation_errors": {
+    "heading": "Файл не принят. Исправьте ошибки и загрузите файл снова.",
+    "count_text": "Ошибок: 4",
+    "columns": ["Строка", "Колонка", "Ошибка"],
+    "rows": [
+      { "row": "—", "column": "Дата рождения", "message": "В файле нет колонки «Дата рождения». Скачайте шаблон и перенесите данные в него" },
+      { "row": 5, "column": "Дата рождения", "message": "Не заполнено обязательное поле" },
+      { "row": 8, "column": "Дата рождения", "message": "Некорректная дата. Формат — ДД.ММ.ГГГГ" },
+      { "row": 8, "column": "№ договора", "message": "Договор 0330R/045/9999/26 не найден среди договоров ГК «ООО «Северная логистика»» со СК «СК «АльфаСтрахование»»" }
+    ],
+    "retained": {
+      "gk": "ООО «Северная логистика»",
+      "sk": "СК «АльфаСтрахование»",
+      "file": "Сверка_застрахованных_СЗЛ_Альфа_2026-11-10.xlsx"
+    }
+  },
+  "errors_edge_cases": {
+    "empty_rows_skipped": true,
+    "columns_found_by_name": true,
+    "column_order_irrelevant": true,
+    "extra_columns_allowed": true,
+    "all_errors_at_once": true,
+    "boundary_dates": {
+      "valid": ["01.01.1900", "31.12.2026", "29.02.2024"],
+      "invalid": ["29.02.2025", "31.04.2026", "1.1.2026", "2026-11-16", ""]
+    }
+  }
+}

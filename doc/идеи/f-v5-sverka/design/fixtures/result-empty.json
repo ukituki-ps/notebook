@@ -1,0 +1,94 @@
+{
+  "schema": "design.fixture/v1",
+  "fixture": "result-empty",
+  "feature_id": "f-v5-sverka",
+  "purpose": "Готова, расхождений нет (I2) при видимом W1 — проверяет, что пустой результат не скрывает предупреждения и свод",
+  "header": {
+    "run_id": "SV-2026-11-15-0037",
+    "gk": "ООО «Северная логистика»",
+    "sk": "СК «Согаз»",
+    "started_at": "2026-11-15T16:08:00+03:00",
+    "started_at_display": "15.11.2026, 16:08",
+    "started_by": "Константинопольская-Северная Александра-Мария Владимировна",
+    "status": "Готова",
+    "source_file": {
+      "name": "Сверка_застрахованных_СЗЛ_Согаз_2026-11-14_финальная_версия_после_уточнений.xlsx",
+      "size_human": "1,1 МБ",
+      "available": true
+    },
+    "export": {
+      "enabled": true,
+      "filename": "Сверка ООО «Северная логистика» СК «Согаз» 15.11.2026.xlsx"
+    },
+    "freshness_note": "Данные по договорам и заявкам ЗХ — на момент открытия экрана, а не на момент сверки."
+  },
+  "warnings": {
+    "W1": {
+      "contracts": ["0330R/045/5469/26"],
+      "text": "В файле нет данных по договорам: 0330R/045/5469/26. Сверка по ним не проводилась"
+    },
+    "W2": []
+  },
+  "kpi": {
+    "total_deviations": 0,
+    "contracts": 1,
+    "file_rows": 118,
+    "total_label": "Итого расхождений: 0"
+  },
+  "summary": {
+    "rows": [
+      {
+        "contract": "0330R/045/5466/26",
+        "legal_entity": "ООО «Северная логистика»",
+        "insurer_sk": "ООО «Северная логистика»",
+        "file_count": 118,
+        "attached": 118,
+        "in_process": 0,
+        "matched": 118,
+        "in_sk_not_system": 0,
+        "in_system_not_sk": 0,
+        "other_legal_entity": 0,
+        "fio": 0,
+        "dob": 0,
+        "program": 0,
+        "extra_program": 0,
+        "dup_file": 0,
+        "dup_sk": 0,
+        "dup_system": 0,
+        "total": 0
+      }
+    ],
+    "total_row": {
+      "contract": "Итого",
+      "file_count": 118,
+      "attached": 118,
+      "in_process": 0,
+      "matched": 118,
+      "in_sk_not_system": 0,
+      "in_system_not_sk": 0,
+      "other_legal_entity": 0,
+      "fio": 0,
+      "dob": 0,
+      "program": 0,
+      "extra_program": 0,
+      "dup_file": 0,
+      "dup_sk": 0,
+      "dup_system": 0,
+      "total": 0
+    }
+  },
+  "empty_state": {
+    "state": "S-RES-EMPTY",
+    "title": "Расхождений не найдено",
+    "hint": "Проверены все строки файла и прикреплённые ЗХ",
+    "filters_hidden": true,
+    "list_hidden": true,
+    "summary_visible": true,
+    "warnings_visible": true
+  },
+  "deviations": [],
+  "long_values": {
+    "started_by": "Константинопольская-Северная Александра-Мария Владимировна",
+    "source_file": "Сверка_застрахованных_СЗЛ_Согаз_2026-11-14_финальная_версия_после_уточнений.xlsx"
+  }
+}
