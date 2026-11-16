@@ -605,5 +605,63 @@
       "в артефактах нет новых DS-компонентов",
       "артефакты не меняют web/, tools/, design/"
     ]
-  }
+  },
+  "reference": [
+    {
+      "id": "REF-1",
+      "kind": "in-product",
+      "title": "Notebook — экран Notes (текущий UI)",
+      "source": [
+        "web/index.html",
+        "web/app.js",
+        "web/app.css",
+        "arch/structure/ui-pages/notes.yaml"
+      ],
+      "why": "Единственный существующий экран продукта на том же стеке: оболочка .app 640 px, карточка, шапка, list/loading/empty/error, aria-live, testid-конвенция.",
+      "borrowed": [
+        "карточка + одноколоночная оболочка для /sverka",
+        "разделение loading / empty / search-empty / error",
+        "aria-live и testid-конвенция",
+        "нативные контролы и системный шрифт"
+      ],
+      "not_borrowed": [
+        "in-memory хранилище заметок",
+        "логика заметок"
+      ]
+    },
+    {
+      "id": "REF-2",
+      "kind": "external-pattern",
+      "title": "GOV.UK Design System — Error summary",
+      "url": "https://design-system.service.gov.uk/components/error-summary/",
+      "why": "Ошибки файла E3–E7 показываются все сразу и требуют сводки, связанной с полями/строками.",
+      "borrowed": [
+        "сводка ошибок над формой, фокус на сводку после ответа",
+        "все ошибки одновременно, а не первая",
+        "в тексте ошибки — что не так и что сделать"
+      ],
+      "not_borrowed": [
+        "визуальный стиль GOV.UK",
+        "постраничная навигация"
+      ]
+    },
+    {
+      "id": "REF-3",
+      "kind": "external-pattern",
+      "title": "Carbon Design System — Data table",
+      "url": "https://carbondesignsystem.com/components/data-table/usage/",
+      "why": "Свод и список расхождений — большие таблицы с числовыми колонками, sticky header и горизонтальным скроллом.",
+      "borrowed": [
+        "sticky header и закреплённая первая колонка",
+        "плотность строк и выравнивание чисел",
+        "поведение больших таблиц: порционный рендер, счётчик показанного"
+      ],
+      "not_borrowed": [
+        "batch actions",
+        "inline edit",
+        "toolbar-иконки",
+        "виртуализация"
+      ]
+    }
+  ]
 }
